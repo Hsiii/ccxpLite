@@ -491,43 +491,12 @@
       return null;
     }
 
-    const imageShell = ensureCaptchaSkeletonStructure(rootNode.ownerDocument || document, mediaRow, image);
-    return { input, image, mediaRow, imageShell, scope };
-  }
-
-  function ensureCaptchaSkeletonStructure(targetDocument, mediaRow, image) {
-    const existingShell = image.closest(".ccxp-lite-captcha-image-shell");
-    if (existingShell) {
-      ensureCaptchaSkeletonNode(targetDocument, existingShell);
-      return existingShell;
-    }
-
-    const imageShell = targetDocument.createElement("span");
-    imageShell.className = "ccxp-lite-captcha-image-shell";
-    image.parentNode?.insertBefore(imageShell, image);
-    imageShell.appendChild(image);
-    ensureCaptchaSkeletonNode(targetDocument, imageShell);
-    return imageShell;
-  }
-
-  function ensureCaptchaSkeletonNode(targetDocument, imageShell) {
-    if (imageShell.querySelector(".ccxp-lite-captcha-skeleton")) {
-      return;
-    }
-
-    const skeleton = targetDocument.createElement("span");
-    skeleton.className = "ccxp-lite-captcha-skeleton";
-    skeleton.setAttribute("aria-hidden", "true");
-    imageShell.appendChild(skeleton);
+    return { input, image, mediaRow, scope };
   }
 
   function setCaptchaLoadingState(state, isLoading) {
     if (!state) {
       return;
-    }
-
-    if (state.imageShell) {
-      state.imageShell.dataset.ccxpLiteCaptchaLoading = isLoading ? "true" : "false";
     }
 
     if (state.input) {

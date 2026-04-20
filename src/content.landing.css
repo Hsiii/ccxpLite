@@ -729,54 +729,23 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   vertical-align: middle;
 }
 
-.ccxp-lite-landing-login .ccxp-lite-captcha-image-shell {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 96px;
-  min-height: 32px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--ccxp-lite-surface) 76%, #d8dee8);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ccxp-lite-border) 82%, transparent);
-}
-
-.ccxp-lite-landing-login .ccxp-lite-captcha-image-shell > img {
-  position: relative;
-  z-index: 1;
-  transition: opacity 140ms ease;
-}
-
-.ccxp-lite-landing-login .ccxp-lite-captcha-skeleton {
-  position: absolute;
-  inset: 0;
-  display: block;
+.ccxp-lite-landing-login .inputtext[name="passwd2"][aria-busy="true"] {
+  color: transparent;
+  caret-color: transparent;
   background:
     linear-gradient(
       100deg,
-      rgba(255, 255, 255, 0) 12%,
-      rgba(255, 255, 255, 0.62) 42%,
-      rgba(255, 255, 255, 0) 68%
+      rgba(255, 255, 255, 0) 8%,
+      rgba(255, 255, 255, 0.7) 42%,
+      rgba(255, 255, 255, 0) 72%
     ),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ccxp-lite-surface) 70%, #d6dde7),
-      color-mix(in srgb, var(--ccxp-lite-surface) 82%, #edf2f7)
+      color-mix(in srgb, var(--ccxp-lite-surface) 74%, #d8dee8),
+      color-mix(in srgb, var(--ccxp-lite-surface) 88%, #eef2f7)
     );
   background-size: 180% 100%, 100% 100%;
   background-position: 160% 0, 0 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 120ms ease;
-}
-
-.ccxp-lite-landing-login .ccxp-lite-captcha-image-shell[data-ccxp-lite-captcha-loading="true"] > img {
-  opacity: 0.18;
-}
-
-.ccxp-lite-landing-login .ccxp-lite-captcha-image-shell[data-ccxp-lite-captcha-loading="true"] .ccxp-lite-captcha-skeleton {
-  opacity: 1;
   animation: ccxp-lite-captcha-shimmer 1.1s linear infinite;
 }
 
@@ -786,7 +755,6 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 }
 
 .ccxp-lite-landing-login .ccxp-lite-captcha-media-row > img,
-.ccxp-lite-landing-login .ccxp-lite-captcha-media-row > .ccxp-lite-captcha-image-shell,
 .ccxp-lite-landing-login .ccxp-lite-captcha-media-row > .ccxp-lite-audio-icon-button,
 .ccxp-lite-landing-login .ccxp-lite-captcha-media-row > .ccxp-lite-audio-icon-link {
   display: block;
