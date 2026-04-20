@@ -242,6 +242,7 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
+    const captchaAutofillState = createCaptchaAutofillState(targetDocument, loginSection);
 
     removeNode(findCalendarTable(loginSection));
     removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
@@ -310,7 +311,7 @@
     }
 
     targetDocument.body.replaceChildren(shell);
-    enableLoginCaptchaAutofill(targetDocument, loginSection);
+    enableLoginCaptchaAutofill(targetDocument, loginSection, captchaAutofillState);
     restoreLoginValidationGuards(targetDocument, loginValidationState);
     targetDocument.body.dataset.ccxpLiteLandingApplied = "true";
     onReady();
@@ -390,19 +391,34 @@
     }
   }
 
-  function enableLoginCaptchaAutofill(targetDocument, rootNode) {
-    const form = getLoginForm(targetDocument);
+  function createCaptchaAutofillState(targetDocument, rootNode) {
     const captchaField = resolveCaptchaField(rootNode);
-    if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !captchaField) {
+    if (!captchaField) {
+      return null;
+    }
+
+    const state = {
+      ...captchaField,
+      lastRequestedSrc: "",
+      requestToken: 0,
+      pendingRequest: null,
+      pendingSrc: "",
+      cachedAnswer: "",
+      cachedSrc: ""
+    };
+
+    primeCaptchaAutofill(targetDocument, state);
+    return state;
+  }
+
+  function enableLoginCaptchaAutofill(targetDocument, rootNode, existingState) {
+    const form = getLoginForm(targetDocument);
+    const state = existingState || createCaptchaAutofillState(targetDocument, rootNode);
+    if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
 
-    const { input: captchaInput, image: captchaImage } = captchaField;
-
-    const state = {
-      lastRequestedSrc: "",
-      requestToken: 0
-    };
+    const { input: captchaInput, image: captchaImage } = state;
 
     const triggerAutofill = () => {
       autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state);
@@ -420,9 +436,9 @@
       attributeFilter: ["src"]
     });
 
-    if (captchaImage.complete) {
-      triggerAutofill();
-    }
+    triggerAutofill();
+    window.requestAnimationFrame(triggerAutofill);
+    window.setTimeout(triggerAutofill, 0);
 
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
@@ -454,8 +470,7 @@
     state.requestToken += 1;
     const requestToken = state.requestToken;
 
-    downloadCaptchaImageBytes(targetDocument, captchaSrc)
-      .then((imageBytes) => requestCaptchaAnswer(captchaSrc, imageBytes))
+    requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc)
       .then((answer) => {
         if (requestToken !== state.requestToken || !answer) {
           return;
@@ -470,6 +485,50 @@
           state.lastRequestedSrc = "";
         }
       });
+  }
+
+  function primeCaptchaAutofill(targetDocument, state) {
+    if (!state || !state.image) {
+      return;
+    }
+
+    const captchaSrc = getCaptchaRequestSource(state.image, targetDocument);
+    if (!captchaSrc) {
+      return;
+    }
+
+    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(() => {});
+  }
+
+  function requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc) {
+    if (state.cachedSrc === captchaSrc && state.cachedAnswer) {
+      return Promise.resolve(state.cachedAnswer);
+    }
+
+    if (state.pendingSrc === captchaSrc && state.pendingRequest) {
+      return state.pendingRequest;
+    }
+
+    const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
+      .then((imageBytes) => requestCaptchaAnswer(captchaSrc, imageBytes))
+      .then((answer) => {
+        if (answer) {
+          state.cachedSrc = captchaSrc;
+          state.cachedAnswer = answer;
+        }
+
+        return answer;
+      })
+      .finally(() => {
+        if (state.pendingSrc === captchaSrc) {
+          state.pendingSrc = "";
+          state.pendingRequest = null;
+        }
+      });
+
+    state.pendingSrc = captchaSrc;
+    state.pendingRequest = request;
+    return request;
   }
 
   function getCaptchaRequestSource(captchaImage, targetDocument) {
