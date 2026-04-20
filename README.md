@@ -1,5 +1,11 @@
 # ccxpLite
-A minimalism theme pack Chrome extension for [NTHU CCXP](https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/).
+A lightweight Chrome extension that enhances usability of the NTHU academic information system ([CCXP]((https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/))) with a cleaner experience.
+
+## Feature
+- Restructured login page prioritizing login usability
+- Categorized sidebar instead of scattered functions
+- Save favorite functions for quick access
+- Saturation and texture suppression for a cleaner look
 
 ## Installation
 The extension is published on [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb).
