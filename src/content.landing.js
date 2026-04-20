@@ -480,14 +480,51 @@
     }
 
     const scope = input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") || rootNode;
-    const image = scope.querySelector(".ccxp-lite-captcha-media-row > img, img[src*='auth_img.php']")
-      || rootNode.querySelector(".ccxp-lite-captcha-media-row > img, img[src*='auth_img.php']");
+    const mediaRow = scope.querySelector(".ccxp-lite-captcha-media-row")
+      || rootNode.querySelector(".ccxp-lite-captcha-media-row");
+    const image = scope.querySelector(".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']")
+      || rootNode.querySelector(".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']");
 
-    if (!image) {
+    if (!image || !mediaRow) {
       return null;
     }
 
-    return { input, image };
+    const imageShell = ensureCaptchaSkeletonStructure(rootNode.ownerDocument || document, mediaRow, image);
+    return { input, image, mediaRow, imageShell, scope };
+  }
+
+  function ensureCaptchaSkeletonStructure(targetDocument, mediaRow, image) {
+    const existingShell = image.closest(".ccxp-lite-captcha-image-shell");
+    if (existingShell) {
+      ensureCaptchaSkeletonNode(targetDocument, existingShell);
+      return existingShell;
+    }
+
+    const imageShell = targetDocument.createElement("span");
+    imageShell.className = "ccxp-lite-captcha-image-shell";
+    image.parentNode?.insertBefore(imageShell, image);
+    imageShell.appendChild(image);
+    ensureCaptchaSkeletonNode(targetDocument, imageShell);
+    return imageShell;
+  }
+
+  function ensureCaptchaSkeletonNode(targetDocument, imageShell) {
+    if (imageShell.querySelector(".ccxp-lite-captcha-skeleton")) {
+      return;
+    }
+
+    const skeleton = targetDocument.createElement("span");
+    skeleton.className = "ccxp-lite-captcha-skeleton";
+    skeleton.setAttribute("aria-hidden", "true");
+    imageShell.appendChild(skeleton);
+  }
+
+  function setCaptchaLoadingState(state, isLoading) {
+    if (!state?.imageShell) {
+      return;
+    }
+
+    state.imageShell.dataset.ccxpLiteCaptchaLoading = isLoading ? "true" : "false";
   }
 
   function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
@@ -499,6 +536,7 @@
     state.lastRequestedSrc = captchaSrc;
     state.requestToken += 1;
     const requestToken = state.requestToken;
+    setCaptchaLoadingState(state, true);
 
     requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc)
       .then((answer) => {
@@ -509,10 +547,12 @@
         captchaInput.value = answer;
         captchaInput.dispatchEvent(new Event("input", { bubbles: true }));
         captchaInput.dispatchEvent(new Event("change", { bubbles: true }));
+        setCaptchaLoadingState(state, false);
       })
       .catch(() => {
         if (requestToken === state.requestToken) {
           state.lastRequestedSrc = "";
+          setCaptchaLoadingState(state, false);
         }
       });
   }
@@ -527,6 +567,7 @@
       return;
     }
 
+    setCaptchaLoadingState(state, true);
     requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(() => {});
   }
 
