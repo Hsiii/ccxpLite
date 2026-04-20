@@ -392,15 +392,12 @@
 
   function enableLoginCaptchaAutofill(targetDocument, rootNode) {
     const form = getLoginForm(targetDocument);
-    if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true") {
+    const captchaField = resolveCaptchaField(rootNode);
+    if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !captchaField) {
       return;
     }
 
-    const captchaInput = form.querySelector("input[name='passwd2']");
-    const captchaImage = findStructuredCaptchaImage(captchaInput, rootNode);
-    if (!captchaInput || !captchaImage) {
-      return;
-    }
+    const { input: captchaInput, image: captchaImage } = captchaField;
 
     const state = {
       lastRequestedSrc: "",
@@ -430,18 +427,21 @@
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
 
-  function findStructuredCaptchaImage(captchaInput, rootNode) {
-    if (!captchaInput) {
+  function resolveCaptchaField(rootNode) {
+    const input = rootNode.querySelector("input[name='passwd2']");
+    if (!input) {
       return null;
     }
 
-    const captchaField = captchaInput.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field");
-    const structuredImage = captchaField?.querySelector(".ccxp-lite-captcha-media-row > img");
-    if (structuredImage) {
-      return structuredImage;
+    const scope = input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") || rootNode;
+    const image = scope.querySelector(".ccxp-lite-captcha-media-row > img, img[src*='auth_img.php']")
+      || rootNode.querySelector(".ccxp-lite-captcha-media-row > img, img[src*='auth_img.php']");
+
+    if (!image) {
+      return null;
     }
 
-    return rootNode.querySelector(".ccxp-lite-captcha-media-row > img") || null;
+    return { input, image };
   }
 
   function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
