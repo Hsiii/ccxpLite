@@ -285,7 +285,13 @@
     }
 
     ensureThemeDocument(mainDocument, "main");
-    mainDocument.body.classList.add(TOKENS.mainClass);
+    const mainBody = mainDocument.body;
+    if (!mainBody) {
+      retry();
+      return;
+    }
+
+    mainBody.classList.add(TOKENS.mainClass);
     markMainReady();
   }
 
