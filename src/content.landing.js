@@ -608,20 +608,16 @@
         }
 
         return response.arrayBuffer();
-      })
-      .then((buffer) => Array.from(new Uint8Array(buffer)));
+      });
   }
 
-  function requestCaptchaAnswer(captchaSrc, imageBytes) {
+  function requestCaptchaAnswer(_captchaSrc, imageBytes) {
     return fetch(CAPTCHA_SERVER_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/octet-stream"
       },
-      body: JSON.stringify({
-        src: captchaSrc,
-        img: imageBytes
-      })
+      body: imageBytes
     })
       .then((response) => {
         if (!response.ok) {
