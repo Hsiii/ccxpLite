@@ -15,7 +15,7 @@
   const FRAMESET_ROWS = "0,*";
   const LOADING_SPRITE_ID = "ccxp-lite-loading-sprite";
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
-  const LOADING_SPRITE_TIMEOUT_MS = 8000;
+  const LOADING_SPRITE_TIMEOUT_MS = 4000;
 
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
