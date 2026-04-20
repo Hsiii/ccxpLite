@@ -242,7 +242,6 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    enableLoginCaptchaAutofill(targetDocument, loginSection);
 
     removeNode(findCalendarTable(loginSection));
     removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
@@ -311,6 +310,7 @@
     }
 
     targetDocument.body.replaceChildren(shell);
+    enableLoginCaptchaAutofill(targetDocument, loginSection);
     restoreLoginValidationGuards(targetDocument, loginValidationState);
     targetDocument.body.dataset.ccxpLiteLandingApplied = "true";
     onReady();
