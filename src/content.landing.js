@@ -2,6 +2,7 @@
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
   const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
+  const CAPTCHA_SERVER_URL = "https://nthu-ccxp-captcha.vercel.app/api/decaptcha";
 
   function isSupportedInquirePath(targetDocument) {
     const pathName = ((targetDocument.location && targetDocument.location.pathname) || "").toLowerCase();
@@ -241,6 +242,7 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
+    enableLoginCaptchaAutofill(targetDocument, loginSection);
 
     removeNode(findCalendarTable(loginSection));
     removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
@@ -386,6 +388,127 @@
     if (fnstrField && tokenFromImage && fnstrField.value !== tokenFromImage) {
       fnstrField.value = tokenFromImage;
     }
+  }
+
+  function enableLoginCaptchaAutofill(targetDocument, rootNode) {
+    const form = getLoginForm(targetDocument);
+    if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true") {
+      return;
+    }
+
+    const captchaInput = form.querySelector("input[name='passwd2']");
+    const captchaImage = rootNode.querySelector("img[src*='auth_img.php']");
+    if (!captchaInput || !captchaImage) {
+      return;
+    }
+
+    const state = {
+      lastRequestedSrc: "",
+      requestToken: 0
+    };
+
+    const triggerAutofill = () => {
+      autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state);
+    };
+
+    captchaImage.addEventListener("load", triggerAutofill);
+
+    const observer = new MutationObserver((mutations) => {
+      if (mutations.some((mutation) => mutation.attributeName === "src")) {
+        triggerAutofill();
+      }
+    });
+    observer.observe(captchaImage, {
+      attributes: true,
+      attributeFilter: ["src"]
+    });
+
+    if (captchaImage.complete) {
+      triggerAutofill();
+    }
+
+    form.dataset.ccxpLiteCaptchaAutofillBound = "true";
+  }
+
+  function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
+    const captchaSrc = getCaptchaRequestSource(captchaImage, targetDocument);
+    if (!captchaSrc || state.lastRequestedSrc === captchaSrc) {
+      return;
+    }
+
+    state.lastRequestedSrc = captchaSrc;
+    state.requestToken += 1;
+    const requestToken = state.requestToken;
+
+    downloadCaptchaImageBytes(targetDocument, captchaSrc)
+      .then((imageBytes) => requestCaptchaAnswer(captchaSrc, imageBytes))
+      .then((answer) => {
+        if (requestToken !== state.requestToken || !answer) {
+          return;
+        }
+
+        captchaInput.value = answer;
+        captchaInput.dispatchEvent(new Event("input", { bubbles: true }));
+        captchaInput.dispatchEvent(new Event("change", { bubbles: true }));
+      })
+      .catch(() => {
+        if (requestToken === state.requestToken) {
+          state.lastRequestedSrc = "";
+        }
+      });
+  }
+
+  function getCaptchaRequestSource(captchaImage, targetDocument) {
+    const rawSource = String(captchaImage?.getAttribute("src") || "").trim();
+    if (!rawSource) {
+      return "";
+    }
+
+    try {
+      const parsed = new URL(rawSource, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
+      const pathSegments = parsed.pathname.split("/").filter(Boolean);
+      const fileName = pathSegments[pathSegments.length - 1] || "";
+      return `${fileName}${parsed.search}`;
+    } catch (_error) {
+      const trimmedSource = rawSource.replace(/^https?:\/\/[^/]+\//i, "");
+      const sourceSegments = trimmedSource.split("/").filter(Boolean);
+      return sourceSegments[sourceSegments.length - 1] || "";
+    }
+  }
+
+  function downloadCaptchaImageBytes(targetDocument, captchaSrc) {
+    const captchaUrl = new URL(captchaSrc, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
+
+    return fetch(captchaUrl.toString(), { credentials: "include" })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`captcha-download-failed:${response.status}`);
+        }
+
+        return response.arrayBuffer();
+      })
+      .then((buffer) => Array.from(new Uint8Array(buffer)));
+  }
+
+  function requestCaptchaAnswer(captchaSrc, imageBytes) {
+    return fetch(CAPTCHA_SERVER_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        src: captchaSrc,
+        img: imageBytes
+      })
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`captcha-decode-failed:${response.status}`);
+        }
+
+        return response.json();
+      })
+      .then((json) => String(json?.answer || "").trim());
   }
 
   function extractPwdstrFromImage(imageNode, targetDocument) {
