@@ -4,6 +4,7 @@
   const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
   const CAPTCHA_SERVER_URL = "https://nthu-ccxp-captcha.vercel.app/api/decaptcha";
   const CAPTCHA_SERVER_ORIGIN = new URL(CAPTCHA_SERVER_URL).origin;
+  const CAPTCHA_AUTOFILL_TIMEOUT_MS = 2500;
   const captchaAutofillStateByDocument = new WeakMap();
 
   function isSupportedInquirePath(targetDocument) {
@@ -452,6 +453,7 @@
       requestToken: 0,
       pendingRequest: null,
       pendingSrc: "",
+      failedSrc: "",
       cachedAnswer: "",
       cachedSrc: ""
     };
@@ -520,16 +522,22 @@
   }
 
   function setCaptchaLoadingState(state, isLoading) {
-    if (!state?.imageShell) {
+    if (!state) {
       return;
     }
 
-    state.imageShell.dataset.ccxpLiteCaptchaLoading = isLoading ? "true" : "false";
+    if (state.imageShell) {
+      state.imageShell.dataset.ccxpLiteCaptchaLoading = isLoading ? "true" : "false";
+    }
+
+    if (state.input) {
+      state.input.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
   }
 
   function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
     const captchaSrc = getCaptchaRequestSource(captchaImage, targetDocument);
-    if (!captchaSrc || state.lastRequestedSrc === captchaSrc) {
+    if (!captchaSrc || state.lastRequestedSrc === captchaSrc || state.failedSrc === captchaSrc) {
       return;
     }
 
@@ -547,12 +555,12 @@
         captchaInput.value = answer;
         captchaInput.dispatchEvent(new Event("input", { bubbles: true }));
         captchaInput.dispatchEvent(new Event("change", { bubbles: true }));
+        state.failedSrc = "";
         setCaptchaLoadingState(state, false);
       })
       .catch(() => {
         if (requestToken === state.requestToken) {
-          state.lastRequestedSrc = "";
-          setCaptchaLoadingState(state, false);
+          fallbackToManualCaptchaEntry(state, captchaSrc);
         }
       });
   }
@@ -568,7 +576,25 @@
     }
 
     setCaptchaLoadingState(state, true);
-    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(() => {});
+    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc)
+      .catch(() => {
+        fallbackToManualCaptchaEntry(state, captchaSrc);
+      });
+  }
+
+  function fallbackToManualCaptchaEntry(state, captchaSrc) {
+    if (!state) {
+      return;
+    }
+
+    state.lastRequestedSrc = "";
+    state.failedSrc = captchaSrc || "";
+    state.requestToken += 1;
+    setCaptchaLoadingState(state, false);
+
+    if (state.input) {
+      state.input.removeAttribute("aria-busy");
+    }
   }
 
   function ensureCaptchaPreconnect(targetDocument) {
@@ -642,7 +668,7 @@
   function downloadCaptchaImageBytes(targetDocument, captchaSrc) {
     const captchaUrl = new URL(captchaSrc, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
 
-    return fetch(captchaUrl.toString(), { credentials: "include" })
+    return fetchWithTimeout(captchaUrl.toString(), { credentials: "include" }, CAPTCHA_AUTOFILL_TIMEOUT_MS)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`captcha-download-failed:${response.status}`);
@@ -653,13 +679,13 @@
   }
 
   function requestCaptchaAnswer(_captchaSrc, imageBytes) {
-    return fetch(CAPTCHA_SERVER_URL, {
+    return fetchWithTimeout(CAPTCHA_SERVER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/octet-stream"
       },
       body: imageBytes
-    })
+    }, CAPTCHA_AUTOFILL_TIMEOUT_MS)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`captcha-decode-failed:${response.status}`);
@@ -668,6 +694,18 @@
         return response.json();
       })
       .then((json) => String(json?.answer || "").trim());
+  }
+
+  function fetchWithTimeout(resource, options = {}, timeoutMs = CAPTCHA_AUTOFILL_TIMEOUT_MS) {
+    const controller = new AbortController();
+    const timerId = window.setTimeout(() => controller.abort(), timeoutMs);
+
+    return fetch(resource, {
+      ...options,
+      signal: controller.signal
+    }).finally(() => {
+      window.clearTimeout(timerId);
+    });
   }
 
   function extractPwdstrFromImage(imageNode, targetDocument) {
