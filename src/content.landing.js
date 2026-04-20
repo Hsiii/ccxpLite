@@ -397,7 +397,7 @@
     }
 
     const captchaInput = form.querySelector("input[name='passwd2']");
-    const captchaImage = rootNode.querySelector("img[src*='auth_img.php']");
+    const captchaImage = findStructuredCaptchaImage(captchaInput, rootNode);
     if (!captchaInput || !captchaImage) {
       return;
     }
@@ -428,6 +428,20 @@
     }
 
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
+  }
+
+  function findStructuredCaptchaImage(captchaInput, rootNode) {
+    if (!captchaInput) {
+      return null;
+    }
+
+    const captchaField = captchaInput.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field");
+    const structuredImage = captchaField?.querySelector(".ccxp-lite-captcha-media-row > img");
+    if (structuredImage) {
+      return structuredImage;
+    }
+
+    return rootNode.querySelector(".ccxp-lite-captcha-media-row > img") || null;
   }
 
   function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
