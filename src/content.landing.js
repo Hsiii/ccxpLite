@@ -3,6 +3,8 @@
   const { shared } = namespace;
   const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
   const CAPTCHA_SERVER_URL = "https://nthu-ccxp-captcha.vercel.app/api/decaptcha";
+  const CAPTCHA_SERVER_ORIGIN = new URL(CAPTCHA_SERVER_URL).origin;
+  const captchaAutofillStateByDocument = new WeakMap();
 
   function isSupportedInquirePath(targetDocument) {
     const pathName = ((targetDocument.location && targetDocument.location.pathname) || "").toLowerCase();
@@ -15,6 +17,15 @@
     }
 
     return Boolean(getLoginForm(targetDocument) || hasLandingTabContent(targetDocument));
+  }
+
+  function preloadLandingCaptcha(targetDocument) {
+    if (!isLandingPage(targetDocument)) {
+      return;
+    }
+
+    ensureCaptchaPreconnect(targetDocument);
+    getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
   }
 
   function hasLandingTabContent(targetDocument) {
@@ -242,7 +253,7 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    const captchaAutofillState = createCaptchaAutofillState(targetDocument, loginSection);
+    const captchaAutofillState = getOrCreateCaptchaAutofillState(targetDocument, loginSection);
 
     removeNode(findCalendarTable(loginSection));
     removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
@@ -391,29 +402,9 @@
     }
   }
 
-  function createCaptchaAutofillState(targetDocument, rootNode) {
-    const captchaField = resolveCaptchaField(rootNode);
-    if (!captchaField) {
-      return null;
-    }
-
-    const state = {
-      ...captchaField,
-      lastRequestedSrc: "",
-      requestToken: 0,
-      pendingRequest: null,
-      pendingSrc: "",
-      cachedAnswer: "",
-      cachedSrc: ""
-    };
-
-    primeCaptchaAutofill(targetDocument, state);
-    return state;
-  }
-
   function enableLoginCaptchaAutofill(targetDocument, rootNode, existingState) {
     const form = getLoginForm(targetDocument);
-    const state = existingState || createCaptchaAutofillState(targetDocument, rootNode);
+    const state = existingState || getOrCreateCaptchaAutofillState(targetDocument, rootNode);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
@@ -441,6 +432,45 @@
     window.setTimeout(triggerAutofill, 0);
 
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
+  }
+
+  function getOrCreateCaptchaAutofillState(targetDocument, rootNode) {
+    const existingState = captchaAutofillStateByDocument.get(targetDocument);
+    if (existingState) {
+      syncCaptchaAutofillState(targetDocument, existingState, rootNode);
+      return existingState;
+    }
+
+    const captchaField = resolveCaptchaField(rootNode);
+    if (!captchaField) {
+      return null;
+    }
+
+    const state = {
+      ...captchaField,
+      lastRequestedSrc: "",
+      requestToken: 0,
+      pendingRequest: null,
+      pendingSrc: "",
+      cachedAnswer: "",
+      cachedSrc: ""
+    };
+
+    captchaAutofillStateByDocument.set(targetDocument, state);
+    primeCaptchaAutofill(targetDocument, state);
+    return state;
+  }
+
+  function syncCaptchaAutofillState(targetDocument, state, rootNode) {
+    const latestField = resolveCaptchaField(rootNode);
+    if (!latestField) {
+      return state;
+    }
+
+    state.input = latestField.input;
+    state.image = latestField.image;
+    primeCaptchaAutofill(targetDocument, state);
+    return state;
   }
 
   function resolveCaptchaField(rootNode) {
@@ -498,6 +528,25 @@
     }
 
     requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(() => {});
+  }
+
+  function ensureCaptchaPreconnect(targetDocument) {
+    if (!targetDocument || !targetDocument.head) {
+      return;
+    }
+
+    const origins = [CAPTCHA_SERVER_ORIGIN, targetDocument.location?.origin].filter(Boolean);
+    origins.forEach((origin) => {
+      if (targetDocument.head.querySelector(`link[rel='preconnect'][href='${origin}']`)) {
+        return;
+      }
+
+      const link = targetDocument.createElement("link");
+      link.rel = "preconnect";
+      link.href = origin;
+      link.crossOrigin = "anonymous";
+      targetDocument.head.appendChild(link);
+    });
   }
 
   function requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc) {
@@ -2549,6 +2598,7 @@
   namespace.landing = {
     isSupportedInquirePath,
     isLandingPage,
+    preloadLandingCaptcha,
     simplifyLandingPage
   };
 })(window);

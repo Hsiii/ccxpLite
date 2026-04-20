@@ -22,6 +22,7 @@
 
   function attachAndApply() {
     if (isLandingPage(document)) {
+      landing.preloadLandingCaptcha(document);
       simplifyLandingPage(document, {
         retry,
         onReady: markLandingReady
