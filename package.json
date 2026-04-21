@@ -4,6 +4,7 @@
   "version": "1.2.0",
   "description": "A minimalism theme plugin for NTHU CCXP.",
   "scripts": {
-    "build": "node scripts/build.mjs"
+    "build": "node scripts/build.mjs",
+    "test": "bun test"
   }
 }
