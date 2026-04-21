@@ -1,8 +1,8 @@
 {
   "appName": {
-    "message": "ccxpLite - NTHU CCXP minimalist theme + decaptcha"
+    "message": "ccxpLite - NTHU CCXP overhaul + decaptcha"
   },
   "appDescription": {
-    "message": "A cleaner UI and login decaptcha that achieves over 97% accuracy for your convenience."
+    "message": "A cleaner UI and 0 latency login decaptcha that achieves over 97% accuracy for your convenience."
   }
 }
