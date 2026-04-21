@@ -501,7 +501,41 @@
 
     if (state.input) {
       state.input.setAttribute("aria-busy", isLoading ? "true" : "false");
+      if (isLoading) {
+        clearCaptchaTimeoutFlash(state);
+      }
     }
+  }
+
+  function clearCaptchaTimeoutFlash(state) {
+    if (!state?.input) {
+      return;
+    }
+
+    if (state.timeoutFlashTimer) {
+      window.clearTimeout(state.timeoutFlashTimer);
+      state.timeoutFlashTimer = null;
+    }
+
+    state.input.removeAttribute("data-timeout-flash");
+  }
+
+  function flashCaptchaTimeout(state) {
+    if (!state?.input) {
+      return;
+    }
+
+    clearCaptchaTimeoutFlash(state);
+    void state.input.offsetWidth;
+    state.input.setAttribute("data-timeout-flash", "true");
+    state.timeoutFlashTimer = window.setTimeout(() => {
+      if (!state.input) {
+        return;
+      }
+
+      state.input.removeAttribute("data-timeout-flash");
+      state.timeoutFlashTimer = null;
+    }, 1600);
   }
 
   function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
@@ -527,9 +561,9 @@
         state.failedSrc = "";
         setCaptchaLoadingState(state, false);
       })
-      .catch(() => {
+      .catch((error) => {
         if (requestToken === state.requestToken) {
-          fallbackToManualCaptchaEntry(state, captchaSrc);
+          fallbackToManualCaptchaEntry(state, captchaSrc, { didTimeout: isCaptchaTimeoutError(error) });
         }
       });
   }
@@ -546,12 +580,12 @@
 
     setCaptchaLoadingState(state, true);
     requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc)
-      .catch(() => {
-        fallbackToManualCaptchaEntry(state, captchaSrc);
+      .catch((error) => {
+        fallbackToManualCaptchaEntry(state, captchaSrc, { didTimeout: isCaptchaTimeoutError(error) });
       });
   }
 
-  function fallbackToManualCaptchaEntry(state, captchaSrc) {
+  function fallbackToManualCaptchaEntry(state, captchaSrc, options = {}) {
     if (!state) {
       return;
     }
@@ -563,6 +597,10 @@
 
     if (state.input) {
       state.input.removeAttribute("aria-busy");
+    }
+
+    if (options.didTimeout) {
+      flashCaptchaTimeout(state);
     }
   }
 
@@ -665,13 +703,37 @@
       .then((json) => String(json?.answer || "").trim());
   }
 
+  function isCaptchaTimeoutError(error) {
+    return Boolean(
+      error
+      && (
+        error.name === "AbortError"
+        || error.name === "TimeoutError"
+        || error.code === "CAPTCHA_TIMEOUT"
+      )
+    );
+  }
+
   function fetchWithTimeout(resource, options = {}, timeoutMs = CAPTCHA_AUTOFILL_TIMEOUT_MS) {
     const controller = new AbortController();
-    const timerId = window.setTimeout(() => controller.abort(), timeoutMs);
+    let didTimeout = false;
+    const timerId = window.setTimeout(() => {
+      didTimeout = true;
+      controller.abort();
+    }, timeoutMs);
 
     return fetch(resource, {
       ...options,
       signal: controller.signal
+    }).catch((error) => {
+      if (didTimeout && error?.name === "AbortError") {
+        const timeoutError = new Error("captcha-timeout");
+        timeoutError.name = "TimeoutError";
+        timeoutError.code = "CAPTCHA_TIMEOUT";
+        throw timeoutError;
+      }
+
+      throw error;
     }).finally(() => {
       window.clearTimeout(timerId);
     });

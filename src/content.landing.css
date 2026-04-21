@@ -751,6 +751,10 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   animation: ccxp-lite-captcha-shimmer 1s linear infinite;
 }
 
+.ccxp-lite-landing-login .inputtext[name="passwd2"][data-timeout-flash="true"] {
+  animation: ccxp-lite-captcha-timeout-outline 1.4s ease-out 1;
+}
+
 .ccxp-lite-landing-login .ccxp-lite-captcha-row .ccxp-lite-image-action-button,
 .ccxp-lite-landing-login .ccxp-lite-captcha-row .ccxp-lite-image-link-button {
   margin-inline: auto;
@@ -770,6 +774,26 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 
   to {
     background-position: -40% 0, 0 0;
+  }
+}
+
+@keyframes ccxp-lite-captcha-timeout-outline {
+  0% {
+    outline: 1px solid color-mix(in srgb, var(--ccxp-lite-type-danger-color) 0%, transparent);
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ccxp-lite-type-danger-color) 0%, transparent);
+  }
+
+  18% {
+    outline: 2px solid color-mix(in srgb, var(--ccxp-lite-type-danger-color) 78%, white);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ccxp-lite-type-danger-color) 14%, transparent);
+  }
+
+  100% {
+    outline: 1px solid color-mix(in srgb, var(--ccxp-lite-type-danger-color) 0%, transparent);
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ccxp-lite-type-danger-color) 0%, transparent);
   }
 }
 
