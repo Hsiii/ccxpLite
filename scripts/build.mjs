@@ -10,7 +10,7 @@ const distDir = join(projectRoot, "dist");
 const outputZip = join(distDir, "ccxpLite.zip");
 const stagingDir = mkdtempSync(join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py");
-const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "decaptcha", "tiny_net.pt");
+const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "decaptcha_best_val_seq.pt");
 const generatedModelPath = join(srcDir, "content.decaptcha.model.js");
 const filesToPack = [
   "manifest.json",
