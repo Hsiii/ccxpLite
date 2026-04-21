@@ -4,7 +4,7 @@
   const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
   const CAPTCHA_SERVER_URL = "https://nthu-ccxp-captcha.vercel.app/api/decaptcha";
   const CAPTCHA_SERVER_ORIGIN = new URL(CAPTCHA_SERVER_URL).origin;
-  const CAPTCHA_AUTOFILL_TIMEOUT_MS = 2500;
+  const CAPTCHA_AUTOFILL_TIMEOUT_MS = 10000;
   const captchaAutofillStateByDocument = new WeakMap();
 
   function isSupportedInquirePath(targetDocument) {
