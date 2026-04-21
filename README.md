@@ -25,4 +25,4 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 
 ## Decaptcha
 The extension bundles the decaptcha model and runs inference locally in the content script.
-When `../ccxpDecaptcha/decaptcha/tiny_net.pt` is available, the build regenerates `src/content.decaptcha.model.js` from that checkpoint before packaging.
+When `../ccxpDecaptcha/decaptcha_best_val_seq.pt` is available, the build regenerates `src/content.decaptcha.model.js` from that checkpoint before packaging.

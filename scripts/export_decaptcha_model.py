@@ -61,9 +61,10 @@ def rebuild_tensor_v2(storage, storage_offset, size, stride, requires_grad, back
     return TensorData(shape, flat)
 
 
-def load_state_dict(checkpoint_path):
+def load_checkpoint(checkpoint_path):
     with zipfile.ZipFile(checkpoint_path, "r") as archive:
         storage_cache = {}
+        root_prefix = archive.namelist()[0].split("/", 1)[0]
 
         def persistent_load(pid):
             if not isinstance(pid, tuple) or pid[0] != "storage":
@@ -75,7 +76,7 @@ def load_state_dict(checkpoint_path):
             if cache_key in storage_cache:
                 return storage_cache[cache_key]
 
-            raw = archive.read(f"archive/data/{cache_key}")
+            raw = archive.read(f"{root_prefix}/data/{cache_key}")
             if storage_type is FloatStorage:
                 values = list(struct.unpack("<" + ("f" * size), raw[: 4 * size]))
             elif storage_type is LongStorage:
@@ -86,12 +87,23 @@ def load_state_dict(checkpoint_path):
             storage_cache[cache_key] = values
             return values
 
-        unpickler = PTUnpickler(io.BytesIO(archive.read("archive/data.pkl")))
+        unpickler = PTUnpickler(io.BytesIO(archive.read(f"{root_prefix}/data.pkl")))
         unpickler.persistent_load = persistent_load
         return unpickler.load()
 
 
-def to_model_payload(state):
+def extract_state_dict(checkpoint):
+    if isinstance(checkpoint, OrderedDict):
+        return checkpoint
+    if isinstance(checkpoint, dict):
+        state_dict = checkpoint.get("state_dict")
+        if isinstance(state_dict, (OrderedDict, dict)):
+            return state_dict
+    raise ValueError("Unsupported checkpoint format: expected an OrderedDict or a dict with `state_dict`.")
+
+
+def to_model_payload(checkpoint):
+    state = extract_state_dict(checkpoint)
     tensors = {}
     for key, tensor in state.items():
         if key.endswith("num_batches_tracked"):
@@ -101,11 +113,11 @@ def to_model_payload(state):
             "data": tensor.data,
         }
 
+    digits = checkpoint.get("digits", 6) if isinstance(checkpoint, dict) else 6
     return {
-        "digits": 6,
-        "maxValidWidth": 100,
-        "eps": 1e-5,
-        "tensors": tensors,
+      "digits": digits,
+      "eps": 1e-5,
+      "tensors": tensors,
     }
 
 
@@ -130,7 +142,7 @@ def main():
     parser = argparse.ArgumentParser(description="Export the ccxp decaptcha checkpoint into a bundled JS model file.")
     parser.add_argument(
         "--checkpoint",
-        default=str(project_root.parent / "ccxpDecaptcha" / "decaptcha" / "tiny_net.pt"),
+        default=str(project_root.parent / "ccxpDecaptcha" / "decaptcha_best_val_seq.pt"),
         help="Path to the source checkpoint.",
     )
     parser.add_argument(
@@ -142,8 +154,8 @@ def main():
 
     checkpoint_path = Path(args.checkpoint).resolve()
     output_path = Path(args.output).resolve()
-    state = load_state_dict(checkpoint_path)
-    output_path.write_text(render_model_script(to_model_payload(state)), encoding="utf-8")
+    checkpoint = load_checkpoint(checkpoint_path)
+    output_path.write_text(render_model_script(to_model_payload(checkpoint)), encoding="utf-8")
 
 
 if __name__ == "__main__":

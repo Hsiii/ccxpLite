@@ -8,7 +8,6 @@
   }
 })(typeof globalThis !== "undefined" ? globalThis : this, function createCcxpLiteDecaptcha(globalScope) {
   const DIGITS = 6;
-  const MAX_VALID_WIDTH = 100;
   const EPS = 1e-5;
 
   function getNamespace() {
@@ -36,7 +35,6 @@
 
     return {
       digits: model.digits || DIGITS,
-      maxValidWidth: model.maxValidWidth || MAX_VALID_WIDTH,
       eps: model.eps || EPS,
       tensors: model.preparedTensors,
     };
@@ -141,66 +139,48 @@
     return tensor.data[flatIndex];
   }
 
-  function extractPatchesFromRgba(width, height, rgba, options = {}) {
-    const digits = options.digits || DIGITS;
-    const maxValidWidth = options.maxValidWidth || MAX_VALID_WIDTH;
-    const usableWidth = Math.min(width, maxValidWidth);
+  function extractImageTensorFromRgba(width, height, rgba) {
+    const tensorData = new Float32Array(3 * height * width);
+    let writeIndex = 0;
 
-    if (usableWidth < digits) {
-      throw new Error("Captcha image is too narrow.");
-    }
-
-    const widthPerDigit = Math.floor(usableWidth / digits);
-    const splitPoints = [];
-    for (let offset = 0; offset < usableWidth; offset += widthPerDigit) {
-      splitPoints.push(offset);
-    }
-
-    if (splitPoints.length <= digits) {
-      throw new Error("Captcha split points are invalid.");
-    }
-
-    const patches = [];
-
-    for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
-      const x0 = splitPoints[digitIndex];
-      const x1 = splitPoints[digitIndex + 1];
-      const patchWidth = x1 - x0;
-      const patchData = new Float32Array(3 * height * patchWidth);
-      let writeIndex = 0;
-
-      for (let channel = 0; channel < 3; channel += 1) {
-        for (let y = 0; y < height; y += 1) {
-          for (let x = x0; x < x1; x += 1) {
-            const pixelIndex = ((y * width) + x) * 4;
-            patchData[writeIndex] = rgba[pixelIndex + channel] / 255;
-            writeIndex += 1;
-          }
+    for (let channel = 0; channel < 3; channel += 1) {
+      for (let y = 0; y < height; y += 1) {
+        for (let x = 0; x < width; x += 1) {
+          const pixelIndex = ((y * width) + x) * 4;
+          tensorData[writeIndex] = rgba[pixelIndex + channel] / 255;
+          writeIndex += 1;
         }
       }
-
-      patches.push(createTensor([3, height, patchWidth], patchData));
     }
 
-    return patches;
+    return createTensor([3, height, width], tensorData);
   }
 
-  function conv2d(inputTensor, weight, bias, stride = 2, padding = 1) {
+  function conv2d(inputTensor, weight, bias = null, options = {}) {
+    const stride = options.stride || 1;
+    const padding = options.padding || 0;
+    const groups = options.groups || 1;
     const [inChannels, inHeight, inWidth] = inputTensor.shape;
-    const [outChannels, , kernelHeight, kernelWidth] = weight.shape;
+    const [outChannels, channelsPerGroup, kernelHeight, kernelWidth] = weight.shape;
     const outHeight = Math.floor((inHeight + (2 * padding) - kernelHeight) / stride) + 1;
     const outWidth = Math.floor((inWidth + (2 * padding) - kernelWidth) / stride) + 1;
     const out = new Float32Array(outChannels * outHeight * outWidth);
+    const outChannelsPerGroup = outChannels / groups;
 
     let outIndex = 0;
     for (let outChannel = 0; outChannel < outChannels; outChannel += 1) {
+      const groupIndex = Math.floor(outChannel / outChannelsPerGroup);
+      const inputChannelOffset = groupIndex * channelsPerGroup;
+
       for (let outY = 0; outY < outHeight; outY += 1) {
         for (let outX = 0; outX < outWidth; outX += 1) {
-          let acc = bias.data[outChannel];
+          let acc = bias ? bias.data[outChannel] : 0;
           const inY0 = (outY * stride) - padding;
           const inX0 = (outX * stride) - padding;
 
-          for (let inChannel = 0; inChannel < inChannels; inChannel += 1) {
+          for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex += 1) {
+            const inputChannel = inputChannelOffset + channelIndex;
+
             for (let kernelY = 0; kernelY < kernelHeight; kernelY += 1) {
               const inY = inY0 + kernelY;
               if (inY < 0 || inY >= inHeight) {
@@ -213,7 +193,7 @@
                   continue;
                 }
 
-                acc += tensorGet(inputTensor, [inChannel, inY, inX]) * tensorGet(weight, [outChannel, inChannel, kernelY, kernelX]);
+                acc += tensorGet(inputTensor, [inputChannel, inY, inX]) * tensorGet(weight, [outChannel, channelIndex, kernelY, kernelX]);
               }
             }
           }
@@ -256,19 +236,19 @@
     return createTensor(inputTensor.shape, out);
   }
 
-  function adaptiveAvgPool2d2x2(inputTensor) {
+  function adaptiveAvgPool2d(inputTensor, outHeight, outWidth) {
     const [channels, inHeight, inWidth] = inputTensor.shape;
-    const out = new Float32Array(channels * 4);
+    const out = new Float32Array(channels * outHeight * outWidth);
     let outIndex = 0;
 
     for (let channel = 0; channel < channels; channel += 1) {
-      for (let outY = 0; outY < 2; outY += 1) {
-        const y0 = Math.floor((outY * inHeight) / 2);
-        const y1 = Math.ceil(((outY + 1) * inHeight) / 2);
+      for (let pooledY = 0; pooledY < outHeight; pooledY += 1) {
+        const y0 = Math.floor((pooledY * inHeight) / outHeight);
+        const y1 = Math.ceil(((pooledY + 1) * inHeight) / outHeight);
 
-        for (let outX = 0; outX < 2; outX += 1) {
-          const x0 = Math.floor((outX * inWidth) / 2);
-          const x1 = Math.ceil(((outX + 1) * inWidth) / 2);
+        for (let pooledX = 0; pooledX < outWidth; pooledX += 1) {
+          const x0 = Math.floor((pooledX * inWidth) / outWidth);
+          const x1 = Math.ceil(((pooledX + 1) * inWidth) / outWidth);
 
           let total = 0;
           let count = 0;
@@ -285,7 +265,7 @@
       }
     }
 
-    return createTensor([channels, 2, 2], out);
+    return createTensor([channels, outHeight, outWidth], out);
   }
 
   function linear(inputVector, weight, bias) {
@@ -318,45 +298,83 @@
     return bestIndex;
   }
 
-  function predictDigitsForPatches(patches) {
+  function applyDepthwiseSeparableBlock(inputTensor, tensors, prefix, options = {}) {
+    const stride = options.stride || 1;
+    const inputChannels = inputTensor.shape[0];
+    let output = conv2d(inputTensor, tensors[`${prefix}.0.weight`], null, {
+      stride,
+      padding: 1,
+      groups: inputChannels,
+    });
+    output = batchnorm2d(output, tensors[`${prefix}.1.weight`], tensors[`${prefix}.1.bias`], tensors[`${prefix}.1.running_mean`], tensors[`${prefix}.1.running_var`]);
+    output = relu(output);
+    output = conv2d(output, tensors[`${prefix}.3.weight`], null, {
+      stride: 1,
+      padding: 0,
+      groups: 1,
+    });
+    output = batchnorm2d(output, tensors[`${prefix}.4.weight`], tensors[`${prefix}.4.bias`], tensors[`${prefix}.4.running_mean`], tensors[`${prefix}.4.running_var`]);
+    return relu(output);
+  }
+
+  function getHeadInputVectors(pooledTensor, digits) {
+    const channels = pooledTensor.shape[0];
+    const vectors = [];
+
+    for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
+      const vector = new Float32Array(channels);
+      for (let channel = 0; channel < channels; channel += 1) {
+        vector[channel] = tensorGet(pooledTensor, [channel, 0, digitIndex]);
+      }
+      vectors.push(vector);
+    }
+
+    return vectors;
+  }
+
+  function predictDigitsFromTensor(imageTensor) {
     const model = getPreparedModel();
     const tensors = model.tensors;
-    const answer = [];
 
-    patches.forEach((patch) => {
-      let value = conv2d(patch, tensors["0.weight"], tensors["0.bias"], 2, 1);
-      value = batchnorm2d(value, tensors["1.weight"], tensors["1.bias"], tensors["1.running_mean"], tensors["1.running_var"], model.eps);
-      value = relu(value);
-
-      value = conv2d(value, tensors["3.weight"], tensors["3.bias"], 2, 1);
-      value = batchnorm2d(value, tensors["4.weight"], tensors["4.bias"], tensors["4.running_mean"], tensors["4.running_var"], model.eps);
-      value = relu(value);
-
-      value = adaptiveAvgPool2d2x2(value);
-      answer.push(String(argmax(linear(value.data, tensors["8.weight"], tensors["8.bias"]))));
+    let features = conv2d(imageTensor, tensors["features.0.weight"], null, {
+      stride: 2,
+      padding: 1,
+      groups: 1,
     });
+    features = batchnorm2d(features, tensors["features.1.weight"], tensors["features.1.bias"], tensors["features.1.running_mean"], tensors["features.1.running_var"], model.eps);
+    features = relu(features);
 
-    return answer.join("");
+    features = applyDepthwiseSeparableBlock(features, tensors, "features.3.block", { stride: 1 });
+    features = applyDepthwiseSeparableBlock(features, tensors, "features.4.block", { stride: 2 });
+    features = applyDepthwiseSeparableBlock(features, tensors, "features.5.block", { stride: 1 });
+
+    const pooled = adaptiveAvgPool2d(features, 1, model.digits);
+    const headInputs = getHeadInputVectors(pooled, model.digits);
+
+    return headInputs.map((vector, digitIndex) => {
+      const logits = linear(vector, tensors[`heads.${digitIndex}.weight`], tensors[`heads.${digitIndex}.bias`]);
+      return String(argmax(logits));
+    }).join("");
   }
 
   async function predictDigits(imageBytes) {
     const imageData = await decodeImageData(imageBytes);
-    const patches = extractPatchesFromRgba(imageData.width, imageData.height, imageData.data, getPreparedModel());
-    return predictDigitsForPatches(patches);
+    const tensor = extractImageTensorFromRgba(imageData.width, imageData.height, imageData.data);
+    return predictDigitsFromTensor(tensor);
   }
 
   return {
     predictDigits,
     __test: {
       createTensor,
-      extractPatchesFromRgba,
+      extractImageTensorFromRgba,
       conv2d,
       batchnorm2d,
       relu,
-      adaptiveAvgPool2d2x2,
+      adaptiveAvgPool2d,
       linear,
       argmax,
-      predictDigitsForPatches,
+      predictDigitsFromTensor,
       getPreparedModel,
     },
   };
