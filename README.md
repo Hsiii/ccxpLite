@@ -24,4 +24,5 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 | <img src="demo/before/submenu.png" alt="Submenu Before" height="240"> | <img src="demo/after/submenu.png" alt="Submenu After" height="240"> |
 
 ## Decaptcha
-Decaptcha-related implementations lives in [Hsiii/ccxpDecaptcha](https://github.com/Hsiii/ccxpDecaptcha/).
+The extension bundles the decaptcha model and runs inference locally in the content script.
+When `../ccxpDecaptcha/decaptcha/tiny_net.pt` is available, the build regenerates `src/content.decaptcha.model.js` from that checkpoint before packaging.
