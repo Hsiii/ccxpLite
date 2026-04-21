@@ -1,9 +1,10 @@
 (function registerCcxpLiteLanding(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
-  const { shared } = namespace;
+  const { shared, decaptcha } = namespace;
+  if (!shared || !decaptcha) {
+    return;
+  }
   const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
-  const CAPTCHA_SERVER_URL = "https://nthu-ccxp-captcha.vercel.app/api/decaptcha";
-  const CAPTCHA_SERVER_ORIGIN = new URL(CAPTCHA_SERVER_URL).origin;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap();
 
@@ -25,7 +26,6 @@
       return;
     }
 
-    ensureCaptchaPreconnect(targetDocument);
     getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
   }
 
@@ -604,25 +604,6 @@
     }
   }
 
-  function ensureCaptchaPreconnect(targetDocument) {
-    if (!targetDocument || !targetDocument.head) {
-      return;
-    }
-
-    const origins = [CAPTCHA_SERVER_ORIGIN, targetDocument.location?.origin].filter(Boolean);
-    origins.forEach((origin) => {
-      if (targetDocument.head.querySelector(`link[rel='preconnect'][href='${origin}']`)) {
-        return;
-      }
-
-      const link = targetDocument.createElement("link");
-      link.rel = "preconnect";
-      link.href = origin;
-      link.crossOrigin = "anonymous";
-      targetDocument.head.appendChild(link);
-    });
-  }
-
   function requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc) {
     if (state.cachedSrc === captchaSrc && state.cachedAnswer) {
       return Promise.resolve(state.cachedAnswer);
@@ -686,21 +667,8 @@
   }
 
   function requestCaptchaAnswer(_captchaSrc, imageBytes) {
-    return fetchWithTimeout(CAPTCHA_SERVER_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/octet-stream"
-      },
-      body: imageBytes
-    }, CAPTCHA_AUTOFILL_TIMEOUT_MS)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`captcha-decode-failed:${response.status}`);
-        }
-
-        return response.json();
-      })
-      .then((json) => String(json?.answer || "").trim());
+    return Promise.resolve(decaptcha.predictDigits(imageBytes))
+      .then((answer) => String(answer || "").trim());
   }
 
   function isCaptchaTimeoutError(error) {

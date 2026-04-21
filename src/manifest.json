@@ -4,9 +4,6 @@
   "version": "1.2.0",
   "description": "__MSG_appDescription__",
   "default_locale": "en",
-  "host_permissions": [
-    "https://nthu-ccxp-captcha.vercel.app/*"
-  ],
   "icons": {
     "16": "assets/logo.png",
     "32": "assets/logo.png",
@@ -39,6 +36,8 @@
       "js": [
         "content.shared.js",
         "content.sidebar.js",
+        "content.decaptcha.model.js",
+        "content.decaptcha.js",
         "content.landing.js",
         "content.js"
       ]

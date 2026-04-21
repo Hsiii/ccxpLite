@@ -2,3 +2,4 @@
 fixtures/ccxp-snapshot/
 dist/
 .DS_Store
+__pycache__/

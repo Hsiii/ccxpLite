@@ -9,11 +9,16 @@ const srcDir = join(projectRoot, "src");
 const distDir = join(projectRoot, "dist");
 const outputZip = join(distDir, "ccxpLite.zip");
 const stagingDir = mkdtempSync(join(tmpdir(), "ccxp-lite-build-"));
+const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py");
+const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "decaptcha", "tiny_net.pt");
+const generatedModelPath = join(srcDir, "content.decaptcha.model.js");
 const filesToPack = [
   "manifest.json",
   "content.js",
   "content.shared.js",
   "content.sidebar.js",
+  "content.decaptcha.model.js",
+  "content.decaptcha.js",
   "content.landing.js",
   "content.css",
   "content.shared.css",
@@ -28,6 +33,21 @@ const recursiveEntries = new Set(["assets", "_locales"]);
 try {
   mkdirSync(distDir, { recursive: true });
   rmSync(outputZip, { force: true });
+
+  if (existsSync(exportScriptPath) && existsSync(checkpointPath)) {
+    const exportResult = spawnSync("python3", [exportScriptPath, "--checkpoint", checkpointPath, "--output", generatedModelPath], {
+      cwd: projectRoot,
+      stdio: "inherit"
+    });
+
+    if (exportResult.status !== 0) {
+      throw new Error("decaptcha model export failed");
+    }
+  }
+
+  if (!existsSync(generatedModelPath)) {
+    throw new Error(`Missing generated decaptcha model file: ${generatedModelPath}`);
+  }
 
   for (const fileName of filesToPack) {
     const sourcePath = join(srcDir, fileName);
