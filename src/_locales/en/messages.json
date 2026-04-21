@@ -1,8 +1,8 @@
 {
   "appName": {
-    "message": "ccxpLite"
+    "message": "ccxpLite - NTHU CCXP minimalist theme + decaptcha"
   },
   "appDescription": {
-    "message": "A lightweight extension that enhances usability of the NTHU academic information system with a cleaner experience"
+    "message": "A cleaner UI and login decaptcha that achieves over 97% accuracy for your convenience."
   }
 }
