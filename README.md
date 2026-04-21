@@ -3,12 +3,12 @@ A lightweight Chrome extension that enhances usability of the NTHU academic info
 
 ## Feature
 - Restructured login page prioritizing login usability
-- Auto decaptcha for login page
+- Auto decaptcha for login page (97.7% accuracy)
 - Save favorite functions for quick access
-- Categorized sidebar instead of scattered functions
+- Categorized sidebar menu for better navigation
 - Saturation and texture suppression for a cleaner look
 
-## Installation
+## Download & Installation
 The extension is published on [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb).
 
 ## Demo
@@ -24,5 +24,4 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 | <img src="demo/before/submenu.png" alt="Submenu Before" height="240"> | <img src="demo/after/submenu.png" alt="Submenu After" height="240"> |
 
 ## Decaptcha
-The extension bundles the decaptcha model and runs inference locally in the content script.
-When `../ccxpDecaptcha/decaptcha_best_val_seq.pt` is available, the build regenerates `src/content.decaptcha.model.js` from that checkpoint before packaging.
+The extension bundles a decaptcha model from [ccxpDecaptcha](https://github.com/Hsiii/ccxpDecaptcha) and runs inference locally in the content script.
