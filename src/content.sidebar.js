@@ -587,6 +587,10 @@
     button.setAttribute("title", linkItem.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
 
+    if (depth > 1) {
+      button.appendChild(createRowLeadingSpacer(targetDocument));
+    }
+
     button.appendChild(createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)));
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
     button.addEventListener("click", () => activateLegacyLink(linkItem, targetDocument));
