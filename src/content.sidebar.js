@@ -663,7 +663,7 @@
       return 0;
     }
 
-    return Math.max(0, depth);
+    return Math.max(0, depth - 1);
   }
 
   function activateLegacyLink(linkItem, navDocument) {
