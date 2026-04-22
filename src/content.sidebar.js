@@ -437,6 +437,7 @@
     button.type = "button";
     button.className = "ccxp-lite-row-button ccxp-lite-expandable";
     button.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    button.setAttribute("title", group.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel(group.kind, depth)));
 
     const leading = targetDocument.createElement("span");
@@ -577,6 +578,7 @@
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = `ccxp-lite-row-button ${toneClass}`;
+    button.setAttribute("title", linkItem.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
 
