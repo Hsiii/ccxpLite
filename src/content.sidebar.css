@@ -139,8 +139,8 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-search-spacer {
   flex: 0 0 auto;
-  width: 14px;
-  height: 14px;
+  width: var(--ccxp-lite-size-sidebar-search-spacer);
+  height: var(--ccxp-lite-size-sidebar-search-spacer);
   visibility: hidden;
 }
 
@@ -171,9 +171,9 @@ html[data-ccxp-lite-scope="nav"] body {
   bottom: 0;
   left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-    (var(--ccxp-lite-size-sidebar-category-leading) / 2) - 1px
+    (var(--ccxp-lite-size-sidebar-category-leading) / 2) - (var(--ccxp-lite-size-sidebar-guide-line) / 2)
   );
-  width: 2px;
+  width: var(--ccxp-lite-size-sidebar-guide-line);
   background: var(--ccxp-lite-border);
   pointer-events: none;
 }
@@ -192,7 +192,7 @@ html[data-ccxp-lite-scope="nav"] body {
   );
   padding-right: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-    20px +
+    var(--ccxp-lite-size-sidebar-control) +
     var(--ccxp-lite-spacing-brand-inline)
   );
   border: 0;
@@ -245,11 +245,11 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-row-leading {
   display: inline-flex;
-  flex: 0 0 20px;
+  flex: 0 0 var(--ccxp-lite-size-sidebar-control);
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: var(--ccxp-lite-size-sidebar-control);
+  height: var(--ccxp-lite-size-sidebar-control);
   color: inherit;
   margin-left: 0;
 }
@@ -266,8 +266,8 @@ html[data-ccxp-lite-scope="nav"] body {
   background: transparent;
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
-  width: 20px;
-  height: 20px;
+  width: var(--ccxp-lite-size-sidebar-control);
+  height: var(--ccxp-lite-size-sidebar-control);
   transform: translateY(-50%);
   transition: transform 120ms ease, color 120ms ease;
 }
@@ -283,8 +283,8 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-favorite-star {
-  width: 20px;
-  height: 20px;
+  width: var(--ccxp-lite-size-sidebar-control);
+  height: var(--ccxp-lite-size-sidebar-control);
   color: currentColor;
   opacity: 0.9;
 }
@@ -314,8 +314,8 @@ html[data-ccxp-lite-scope="nav"] body {
   position: absolute;
   top: 50%;
   right: var(--ccxp-lite-sidebar-row-padding-x);
-  width: 20px;
-  height: 20px;
+  width: var(--ccxp-lite-size-sidebar-control);
+  height: var(--ccxp-lite-size-sidebar-control);
   color: currentColor;
   transform: translateY(-50%);
   transition: transform 120ms ease;
@@ -335,8 +335,8 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-row-leading svg,
 .ccxp-lite-category-icon {
-  width: 20px !important;
-  height: 20px !important;
+  width: var(--ccxp-lite-size-sidebar-control) !important;
+  height: var(--ccxp-lite-size-sidebar-control) !important;
   color: inherit;
   opacity: 0.85;
 }
