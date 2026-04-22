@@ -142,7 +142,7 @@ def main():
     parser = argparse.ArgumentParser(description="Export the ccxp decaptcha checkpoint into a bundled JS model file.")
     parser.add_argument(
         "--checkpoint",
-        default=str(project_root.parent / "ccxpDecaptcha" / "decaptcha_best_val_seq.pt"),
+        default=str(project_root.parent / "ccxpDecaptcha" / "out" / "best.pt"),
         help="Path to the source checkpoint.",
     )
     parser.add_argument(

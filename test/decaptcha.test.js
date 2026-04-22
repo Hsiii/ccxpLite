@@ -98,6 +98,6 @@ describe("decaptcha tensor ops", () => {
 describe("decaptcha model parity", () => {
   test("matches the Python reference answer on a deterministic synthetic full image", () => {
     const answer = decaptcha.__test.predictDigitsFromTensor(createSyntheticImageTensor());
-    expect(answer).toBe("448844");
+    expect(answer).toBe("077770");
   });
 });
