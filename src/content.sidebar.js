@@ -458,6 +458,9 @@
     if (isExpanded) {
       const children = targetDocument.createElement("div");
       children.className = "ccxp-lite-link-list";
+      if (depth === 1) {
+        children.classList.add("ccxp-lite-link-list-first-layer");
+      }
 
       group.directLinks.forEach((linkItem) => {
         children.appendChild(createLinkButton(targetDocument, linkItem, "ccxp-lite-item", depth + 1, strings, onFavoritesChange));
