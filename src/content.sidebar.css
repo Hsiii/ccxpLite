@@ -82,7 +82,7 @@ html[data-ccxp-lite-scope="nav"] body {
   pointer-events: none;
 }
 
-.ccxp-lite-sidebar-search:focus-within::before {
+.ccxp-lite-sidebar-search:has(.ccxp-lite-sidebar-search-input:focus-visible)::before {
   border-color: rgba(121, 36, 133, 0.28);
   box-shadow: 0 0 0 3px rgba(121, 36, 133, 0.08);
 }
