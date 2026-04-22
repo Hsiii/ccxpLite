@@ -67,7 +67,7 @@ html[data-ccxp-lite-scope="nav"] body {
   display: flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
-  margin-block: 15px 14px;
+  margin-block: 0 14px;
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
 }
 
