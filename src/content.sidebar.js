@@ -587,7 +587,7 @@
     button.setAttribute("title", linkItem.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
 
-    if (depth > 1) {
+    if (depth > 0) {
       button.appendChild(createRowLeadingSpacer(targetDocument));
     }
 
@@ -665,10 +665,6 @@
   function getSidebarIndentLevel(kind, depth) {
     if (kind === "category") {
       return 0;
-    }
-
-    if (kind === "link") {
-      return Math.max(0, depth);
     }
 
     return Math.max(0, depth - 1);
