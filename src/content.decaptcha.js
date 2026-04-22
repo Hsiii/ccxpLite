@@ -36,6 +36,7 @@
     return {
       digits: model.digits || DIGITS,
       eps: model.eps || EPS,
+      cropRight: Number.isFinite(model.cropRight) ? model.cropRight : 0,
       tensors: model.preparedTensors,
     };
   }
@@ -139,13 +140,20 @@
     return tensor.data[flatIndex];
   }
 
-  function extractImageTensorFromRgba(width, height, rgba) {
-    const tensorData = new Float32Array(3 * height * width);
+  function extractImageTensorFromRgba(width, height, rgba, options = {}) {
+    const cropRight = Math.max(0, Math.trunc(options.cropRight || 0));
+    const usableWidth = width - cropRight;
+
+    if (usableWidth <= 0) {
+      throw new Error("Captcha crop removes the entire image width.");
+    }
+
+    const tensorData = new Float32Array(3 * height * usableWidth);
     let writeIndex = 0;
 
     for (let channel = 0; channel < 3; channel += 1) {
       for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < width; x += 1) {
+        for (let x = 0; x < usableWidth; x += 1) {
           const pixelIndex = ((y * width) + x) * 4;
           tensorData[writeIndex] = rgba[pixelIndex + channel] / 255;
           writeIndex += 1;
@@ -153,7 +161,7 @@
       }
     }
 
-    return createTensor([3, height, width], tensorData);
+    return createTensor([3, height, usableWidth], tensorData);
   }
 
   function conv2d(inputTensor, weight, bias = null, options = {}) {
@@ -359,7 +367,7 @@
 
   async function predictDigits(imageBytes) {
     const imageData = await decodeImageData(imageBytes);
-    const tensor = extractImageTensorFromRgba(imageData.width, imageData.height, imageData.data);
+    const tensor = extractImageTensorFromRgba(imageData.width, imageData.height, imageData.data, getPreparedModel());
     return predictDigitsFromTensor(tensor);
   }
 

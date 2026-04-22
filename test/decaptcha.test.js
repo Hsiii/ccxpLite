@@ -23,7 +23,7 @@ function createSyntheticImageTensor() {
 }
 
 describe("decaptcha preprocessing", () => {
-  test("converts a full captcha image into CHW float data", () => {
+  test("converts a cropped captcha image into CHW float data", () => {
     const width = 113;
     const height = 36;
     const rgba = new Uint8ClampedArray(width * height * 4);
@@ -38,11 +38,11 @@ describe("decaptcha preprocessing", () => {
       }
     }
 
-    const tensor = decaptcha.__test.extractImageTensorFromRgba(width, height, rgba);
-    expect(tensor.shape).toEqual([3, 36, 113]);
+    const tensor = decaptcha.__test.extractImageTensorFromRgba(width, height, rgba, { cropRight: 13 });
+    expect(tensor.shape).toEqual([3, 36, 100]);
     expect(tensor.data[0]).toBeCloseTo(0, 6);
-    expect(tensor.data[(36 * 113)]).toBeCloseTo(0, 6);
-    expect(tensor.data[(3 * 36 * 113) - 1]).toBeCloseTo(200 / 255, 6);
+    expect(tensor.data[(36 * 100)]).toBeCloseTo(0, 6);
+    expect(tensor.data[(3 * 36 * 100) - 1]).toBeCloseTo(200 / 255, 6);
   });
 });
 
@@ -97,7 +97,26 @@ describe("decaptcha tensor ops", () => {
 
 describe("decaptcha model parity", () => {
   test("matches the Python reference answer on a deterministic synthetic full image", () => {
-    const answer = decaptcha.__test.predictDigitsFromTensor(createSyntheticImageTensor());
-    expect(answer).toBe("077770");
+    const model = decaptcha.__test.getPreparedModel();
+    const answer = decaptcha.__test.predictDigitsFromTensor(
+      decaptcha.__test.extractImageTensorFromRgba(113, 36, (() => {
+        const width = 113;
+        const height = 36;
+        const rgba = new Uint8ClampedArray(width * height * 4);
+
+        for (let y = 0; y < height; y += 1) {
+          for (let x = 0; x < width; x += 1) {
+            const index = ((y * width) + x) * 4;
+            rgba[index] = (x * 3 + y) % 256;
+            rgba[index + 1] = (x + y * 5) % 256;
+            rgba[index + 2] = (x * 7 + y * 11) % 256;
+            rgba[index + 3] = 255;
+          }
+        }
+
+        return rgba;
+      })(), model)
+    );
+    expect(answer).toBe("077774");
   });
 });

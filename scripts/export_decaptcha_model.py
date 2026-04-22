@@ -117,6 +117,7 @@ def to_model_payload(checkpoint):
     return {
       "digits": digits,
       "eps": 1e-5,
+      "cropRight": 13,
       "tensors": tensors,
     }
 
