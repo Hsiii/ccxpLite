@@ -583,9 +583,9 @@
     button.className = `ccxp-lite-row-button ${toneClass}`;
     button.setAttribute("title", linkItem.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
-    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
 
     button.appendChild(createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)));
+    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
     button.addEventListener("click", () => activateLegacyLink(linkItem, targetDocument));
 
     return button;
@@ -617,7 +617,7 @@
   function createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange) {
     const favoriteButton = targetDocument.createElement("button");
     favoriteButton.type = "button";
-    favoriteButton.className = "ccxp-lite-row-leading ccxp-lite-favorite-toggle";
+    favoriteButton.className = "ccxp-lite-favorite-toggle";
 
     const isFavorite = isFavoriteLink(linkItem, getFavoriteIds());
     favoriteButton.setAttribute("aria-pressed", isFavorite ? "true" : "false");
