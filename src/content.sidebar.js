@@ -663,6 +663,10 @@
       return 0;
     }
 
+    if (kind === "link") {
+      return Math.max(0, depth);
+    }
+
     return Math.max(0, depth - 1);
   }
 
