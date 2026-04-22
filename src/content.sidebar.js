@@ -47,16 +47,12 @@
       brand.appendChild(createBrandImage(navDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath));
       brand.appendChild(createBrandCopy(navDocument, "ccxp-lite-sidebar-brand-copy", "ccxp-lite-sidebar-brand-title", strings.sidebarTitle));
 
-      const divider = navDocument.createElement("div");
-      divider.className = "ccxp-lite-sidebar-divider";
-
       const search = createSidebarSearch(navDocument, strings);
 
       const list = navDocument.createElement("aside");
       list.className = "ccxp-lite-sidebar-list";
 
       header.appendChild(brand);
-      header.appendChild(divider);
       header.appendChild(search);
       shell.appendChild(header);
       shell.appendChild(list);

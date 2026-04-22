@@ -62,32 +62,12 @@ html[data-ccxp-lite-scope="nav"] body {
   letter-spacing: 0.01em;
 }
 
-.ccxp-lite-sidebar-divider {
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  flex: 0 0 auto;
-  width: auto;
-  height: var(--ccxp-lite-size-sidebar-header-divider-height);
-  margin: 0;
-  margin-inline: var(--ccxp-lite-sidebar-row-padding-x);
-}
-
-.ccxp-lite-sidebar-divider::before {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--ccxp-lite-sidebar-divider-color);
-}
-
 .ccxp-lite-sidebar-search {
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
-  margin-block: 14px;
+  margin-block: 15px 14px;
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
 }
 
