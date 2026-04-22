@@ -437,7 +437,7 @@
     button.type = "button";
     button.className = "ccxp-lite-row-button ccxp-lite-expandable";
     button.setAttribute("aria-expanded", isExpanded ? "true" : "false");
-    button.style.setProperty("--ccxp-lite-row-indent", `${getSidebarIndent(group.kind, depth)}px`);
+    button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel(group.kind, depth)));
 
     const leading = targetDocument.createElement("span");
     if (group.kind === "category") {
@@ -577,7 +577,7 @@
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = `ccxp-lite-row-button ${toneClass}`;
-    button.style.setProperty("--ccxp-lite-row-indent", `${getSidebarIndent("link", depth)}px`);
+    button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
 
     button.appendChild(createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)));
@@ -650,12 +650,12 @@
     return item.id === itemId || (item.sections || []).some((childItem) => hasExpandableId(childItem, itemId));
   }
 
-  function getSidebarIndent(kind, depth) {
-    const padding = Number.parseInt(TOKENS.sidebarRowPaddingX, 10);
+  function getSidebarIndentLevel(kind, depth) {
     if (kind === "category") {
-      return padding;
+      return 0;
     }
-    return padding + Math.max(0, depth - 1) * Number.parseInt(TOKENS.sidebarTreeIndentStep, 10);
+
+    return Math.max(0, depth);
   }
 
   function activateLegacyLink(linkItem, navDocument) {

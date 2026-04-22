@@ -28,7 +28,7 @@
     sidebarRowPaddingY: "12px",
     sidebarRowPaddingX: "10px",
     sidebarRowGap: "6px",
-    sidebarTreeIndentStep: "16px",
+    sidebarTreeIndentStep: "1em",
     radiusSm: "10px",
     radiusMd: "14px",
     radiusLg: "20px",

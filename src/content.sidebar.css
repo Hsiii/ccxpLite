@@ -152,7 +152,10 @@ html[data-ccxp-lite-scope="nav"] body {
   width: 100%;
   min-width: 0;
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
-  padding-left: 10px;
+  padding-left: calc(
+    var(--ccxp-lite-sidebar-row-padding-x) +
+    (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-sidebar-tree-indent-step))
+  );
   border: 0;
   border-radius: var(--ccxp-lite-radius-sm);
   background: transparent;
@@ -160,9 +163,8 @@ html[data-ccxp-lite-scope="nav"] body {
   cursor: pointer;
   font: var(--ccxp-lite-type-nav);
   text-align: left;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
+  overflow: hidden;
   transition: background-color 120ms ease, color 120ms ease;
 }
 
@@ -248,16 +250,18 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-row-label {
   min-width: 0;
-  white-space: normal;
-  word-break: break-word;
-  overflow-wrap: anywhere;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ccxp-lite-row-label-wrap {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   min-width: 0;
   flex: 1 1 auto;
+  overflow: hidden;
   gap: var(--ccxp-lite-spacing-brand-inline);
 }
 
