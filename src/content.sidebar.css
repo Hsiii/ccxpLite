@@ -22,6 +22,7 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
   padding-block: 12px;
+  padding-inline: 6px;
   font-family: var(--ccxp-lite-font-brand);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
   line-height: 1;
@@ -80,6 +81,7 @@ html[data-ccxp-lite-scope="nav"] body {
   gap: var(--ccxp-lite-spacing-brand-inline);
   margin-block: 14px;
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
+  padding-inline: calc(var(--ccxp-lite-sidebar-row-padding-x) + 6px);
 }
 
 .ccxp-lite-sidebar-search::before {
