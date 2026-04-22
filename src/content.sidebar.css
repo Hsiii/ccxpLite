@@ -12,6 +12,7 @@ html[data-ccxp-lite-scope="nav"] body {
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
   overscroll-behavior: none;
   background: var(--ccxp-lite-sidebar-surface);
 }
@@ -22,7 +23,6 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
   padding-block: 12px;
-  margin-inline: 6px;
   font-family: var(--ccxp-lite-font-brand);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
   line-height: 1;
@@ -80,7 +80,6 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
   margin-block: 14px;
-  margin-inline: 6px;
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
 }
 
