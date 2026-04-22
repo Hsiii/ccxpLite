@@ -39,6 +39,8 @@
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
       const shell = navDocument.createElement("div");
       shell.className = TOKENS.sidebarClass;
+      const header = navDocument.createElement("div");
+      header.className = "ccxp-lite-sidebar-header";
 
       const brand = navDocument.createElement("div");
       brand.className = "ccxp-lite-sidebar-brand";
@@ -53,9 +55,10 @@
       const list = navDocument.createElement("aside");
       list.className = "ccxp-lite-sidebar-list";
 
-      shell.appendChild(brand);
-      shell.appendChild(divider);
-      shell.appendChild(search);
+      header.appendChild(brand);
+      header.appendChild(divider);
+      header.appendChild(search);
+      shell.appendChild(header);
       shell.appendChild(list);
 
       navDocument.body.replaceChildren(shell);

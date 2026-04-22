@@ -12,9 +12,17 @@ html[data-ccxp-lite-scope="nav"] body {
   flex-direction: column;
   overflow-y: hidden;
   overflow-x: hidden;
-  scrollbar-gutter: stable both-edges;
   overscroll-behavior: none;
   background: var(--ccxp-lite-sidebar-surface);
+}
+
+.ccxp-lite-sidebar-header {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  scrollbar-gutter: stable both-edges;
 }
 
 .ccxp-lite-sidebar-brand {
