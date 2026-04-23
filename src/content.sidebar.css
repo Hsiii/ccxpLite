@@ -175,6 +175,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-pane {
   display: flex;
   flex-direction: column;
+  gap: var(--ccxp-lite-spacing-md);
   min-width: 0;
   min-height: 0;
   height: 100%;
@@ -189,11 +190,15 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   justify-content: space-between;
   gap: var(--ccxp-lite-spacing-sm);
-  margin-bottom: var(--ccxp-lite-spacing-md);
 }
 
 .ccxp-lite-pane-header-detail {
   justify-content: flex-start;
+}
+
+.ccxp-lite-pane-body {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .ccxp-lite-section-heading {
@@ -249,6 +254,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-link-card {
   width: 100%;
   padding: var(--ccxp-lite-spacing-inset-sm);
+  min-height: var(--ccxp-lite-size-sidebar-section-card-min-height);
   border-radius: var(--ccxp-lite-radius-sm);
   cursor: pointer;
   text-align: left;
@@ -281,8 +287,8 @@ html[data-ccxp-lite-scope="nav"] body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: var(--ccxp-lite-size-sidebar-section-icon);
+  height: var(--ccxp-lite-size-sidebar-section-icon);
   border-radius: var(--ccxp-lite-radius-sm);
   background: var(--ccxp-lite-surface-muted);
   color: var(--ccxp-lite-brand);
@@ -363,12 +369,9 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-link-card {
-  display: block;
+  display: flex;
+  align-items: center;
   padding-right: calc(var(--ccxp-lite-size-icon-button-md) + var(--ccxp-lite-spacing-sm));
-}
-
-.ccxp-lite-link-card-pinned {
-  min-height: 56px;
 }
 
 .ccxp-lite-favorite-toggle {
@@ -430,7 +433,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-destination-frame {
   display: block;
   width: 100%;
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - var(--ccxp-lite-size-sidebar-destination-frame-offset));
   border: 0;
   background: var(--ccxp-lite-surface);
 }
@@ -483,7 +486,7 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-skeleton-card {
-  min-height: 56px;
+  min-height: var(--ccxp-lite-size-sidebar-section-card-min-height);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-sm);
 }

@@ -570,7 +570,7 @@
     section.appendChild(header);
 
     const body = targetDocument.createElement("div");
-    body.className = "ccxp-lite-pinned-list";
+    body.className = "ccxp-lite-pane-body ccxp-lite-pinned-list";
 
     if (!favoriteState.hasLoaded) {
       body.appendChild(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
@@ -605,7 +605,7 @@
     section.appendChild(header);
 
     const body = targetDocument.createElement("div");
-    body.className = `ccxp-lite-category-browser is-${state.viewMode}`;
+    body.className = `ccxp-lite-pane-body ccxp-lite-category-browser is-${state.viewMode}`;
 
     if (categories.length === 0) {
       body.appendChild(
@@ -822,7 +822,7 @@
 
     const button = targetDocument.createElement("button");
     button.type = "button";
-    button.className = "ccxp-lite-link-card ccxp-lite-link-card-pinned";
+    button.className = "ccxp-lite-link-card";
     button.setAttribute("title", linkItem.label);
     button.appendChild(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
