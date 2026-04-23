@@ -85,17 +85,11 @@
       const brandMeta = hostDocument.createElement("div");
       brandMeta.className = "ccxp-lite-sidebar-brand-meta";
 
-      const brandSeparator = hostDocument.createElement("span");
-      brandSeparator.className = "ccxp-lite-sidebar-brand-separator";
-      brandSeparator.textContent = strings.sidebarBrandSeparator;
-      brandMeta.appendChild(brandSeparator);
-
       const repoLink = hostDocument.createElement("a");
       repoLink.className = "ccxp-lite-sidebar-brand-repo-link";
       repoLink.href = "https://github.com/Hsiii/ccxpLite";
       repoLink.target = "_blank";
       repoLink.rel = "noreferrer noopener";
-      repoLink.setAttribute("title", strings.sidebarGitHubLinkTitle);
       repoLink.textContent = strings.sidebarGitHubLink;
       brandMeta.appendChild(repoLink);
 
