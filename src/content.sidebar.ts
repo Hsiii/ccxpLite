@@ -82,6 +82,23 @@
         ),
       );
 
+      const brandMeta = hostDocument.createElement("div");
+      brandMeta.className = "ccxp-lite-sidebar-brand-meta";
+
+      const brandSeparator = hostDocument.createElement("span");
+      brandSeparator.className = "ccxp-lite-sidebar-brand-separator";
+      brandSeparator.textContent = strings.sidebarBrandSeparator;
+      brandMeta.appendChild(brandSeparator);
+
+      const repoLink = hostDocument.createElement("a");
+      repoLink.className = "ccxp-lite-sidebar-brand-repo-link";
+      repoLink.href = "https://github.com/Hsiii/ccxpLite";
+      repoLink.target = "_blank";
+      repoLink.rel = "noreferrer noopener";
+      repoLink.setAttribute("title", strings.sidebarGitHubLinkTitle);
+      repoLink.textContent = strings.sidebarGitHubLink;
+      brandMeta.appendChild(repoLink);
+
       const breadcrumb = hostDocument.createElement("div");
       breadcrumb.className = "ccxp-lite-sidebar-breadcrumb";
 
@@ -94,6 +111,7 @@
       footer.className = "ccxp-lite-sidebar-footer";
 
       header.appendChild(brand);
+      header.appendChild(brandMeta);
       header.appendChild(breadcrumb);
       header.appendChild(search);
       shell.appendChild(header);
@@ -484,7 +502,7 @@
     }
 
     breadcrumb.replaceChildren(createBreadcrumb(hostDocument, activeCategory, strings));
-    footer.replaceChildren(createGitHubLink(hostDocument, strings));
+    footer.replaceChildren();
     content.innerHTML = "";
 
     if (state.activeLeaf) {
@@ -1489,21 +1507,6 @@
     );
 
     return icon;
-  }
-
-  function createGitHubLink(targetDocument, strings) {
-    const link = targetDocument.createElement("a");
-    link.className = "ccxp-lite-github-link";
-    link.href = "https://github.com/Hsiii/ccxpLite";
-    link.target = "_blank";
-    link.rel = "noreferrer noopener";
-    link.appendChild(createFavoriteStarIcon(targetDocument, true));
-
-    const label = targetDocument.createElement("span");
-    label.textContent = strings.sidebarGitHubLink;
-    link.appendChild(label);
-
-    return link;
   }
 
   function createCategoryIcon(targetDocument, iconName) {
