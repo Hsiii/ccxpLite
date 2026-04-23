@@ -1,17 +1,18 @@
 import { copyFileSync, cpSync, mkdtempSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { spawnSync } from "node:child_process";
-import { fileURLToPath } from "node:url";
 
-const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
+const projectRoot = process.cwd();
 const srcDir = join(projectRoot, "src");
+const compiledSrcDir = join(projectRoot, ".build", "src");
 const distDir = join(projectRoot, "dist");
 const outputZip = join(distDir, "ccxpLite.zip");
 const stagingDir = mkdtempSync(join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py");
 const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
-const generatedModelPath = join(srcDir, "content.decaptcha.model.js");
+const generatedModelPath = join(srcDir, "content.decaptcha.model.ts");
+const buildTsconfigPath = join(projectRoot, "tsconfig.build.json");
 const filesToPack = [
   "manifest.json",
   "content.js",
@@ -32,6 +33,7 @@ const recursiveEntries = new Set(["assets", "_locales"]);
 
 try {
   mkdirSync(distDir, { recursive: true });
+  rmSync(compiledSrcDir, { recursive: true, force: true });
   rmSync(outputZip, { force: true });
 
   if (existsSync(exportScriptPath) && existsSync(checkpointPath)) {
@@ -53,8 +55,18 @@ try {
     throw new Error(`Missing generated decaptcha model file: ${generatedModelPath}`);
   }
 
+  const compileResult = spawnSync("bunx", ["tsc", "-p", buildTsconfigPath], {
+    cwd: projectRoot,
+    stdio: "inherit",
+  });
+
+  if (compileResult.status !== 0) {
+    throw new Error("TypeScript extension build failed");
+  }
+
   for (const fileName of filesToPack) {
-    const sourcePath = join(srcDir, fileName);
+    const sourceBaseDir = fileName.endsWith(".js") ? compiledSrcDir : srcDir;
+    const sourcePath = join(sourceBaseDir, fileName);
 
     if (!existsSync(sourcePath)) {
       throw new Error(`Missing required source file: ${sourcePath}`);

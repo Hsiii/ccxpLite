@@ -2,6 +2,7 @@ node_modules/
 .playwright-cli/
 fixtures/ccxp-snapshot/
 dist/
+.build/
 .husky/_/
 .eslintcache
 coverage/

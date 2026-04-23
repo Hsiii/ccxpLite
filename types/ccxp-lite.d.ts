@@ -11,5 +11,9 @@ declare global {
   }
 
   var CCXP_LITE: any;
-  var chrome: any;
+  var module:
+    | {
+        exports?: unknown;
+      }
+    | undefined;
 }

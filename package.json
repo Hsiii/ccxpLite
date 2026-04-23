@@ -8,7 +8,7 @@
     "bun": ">=1.3.9"
   },
   "scripts": {
-    "build": "bun run scripts/build.mjs",
+    "build": "bun run scripts/build.ts",
     "test": "bun test",
     "lint": "bunx eslint .",
     "lint:fix": "bunx eslint . --fix",
@@ -19,21 +19,24 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,mjs,cjs,json,md,css}": [
+    "*.{ts,tsx,js,mjs,cjs,json,md,css}": [
       "bunx prettier --write"
     ],
-    "*.{js,mjs,cjs}": [
+    "*.{ts,tsx,js,mjs,cjs}": [
       "bunx eslint --fix"
     ]
   },
   "devDependencies": {
     "@eslint/js": "^9.25.1",
+    "@types/chrome": "^0.1.24",
+    "@types/node": "^24.9.1",
     "bun-types": "^1.3.9",
     "eslint": "^9.25.1",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
     "prettier": "^3.5.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.46.2"
   }
 }

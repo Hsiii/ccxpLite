@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function registerCcxpLiteLanding(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, decaptcha } = namespace;

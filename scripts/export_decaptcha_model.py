@@ -141,7 +141,7 @@ def render_model_script(payload):
 
 def main():
     project_root = Path(__file__).resolve().parent.parent
-    parser = argparse.ArgumentParser(description="Export the ccxp decaptcha checkpoint into a bundled JS model file.")
+    parser = argparse.ArgumentParser(description="Export the ccxp decaptcha checkpoint into a bundled TS model file.")
     parser.add_argument(
         "--checkpoint",
         default=str(project_root.parent / "ccxpDecaptcha" / "out" / "best.pt"),
@@ -149,8 +149,8 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default=str(project_root / "src" / "content.decaptcha.model.js"),
-        help="Path to the generated JS file.",
+        default=str(project_root / "src" / "content.decaptcha.model.ts"),
+        help="Path to the generated TS file.",
     )
     args = parser.parse_args()
 

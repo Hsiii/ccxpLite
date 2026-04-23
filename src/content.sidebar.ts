@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function registerCcxpLiteSidebar(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
@@ -817,7 +818,7 @@
     }
 
     const mainFrame =
-      window.top && window.top.frames ? /** @type {any} */ (window.top.frames).main : null;
+      window.top && window.top.frames ? /** @type {any} */ window.top.frames.main : null;
 
     if (normalizedTarget === "main" && mainFrame) {
       mainFrame.location.href = resolvedUrl;

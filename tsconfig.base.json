@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "strict": false,
+    "skipLibCheck": true,
+    "noEmit": true
+  }
+}
