@@ -6,11 +6,13 @@
     return;
   }
 
-  const { ensureThemeDocument, removeNode } = shared;
+  const { removeNode } = shared;
   const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landing;
 
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
+  const FRAMESET_COLUMNS = "*,0";
+  const FRAMESET_ROWS = "0,*";
   const LOADING_SPRITE_ID = "ccxp-lite-loading-sprite";
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
   const LOADING_SPRITE_TIMEOUT_MS = 8000;
@@ -35,8 +37,9 @@
       return;
     }
 
+    applyFramesetLayout();
     attachFrameListener(frames.nav, () => {
-      sidebar.simplifySidebar(frames.nav, retry, { hostDocument: document });
+      sidebar.simplifySidebar(frames.nav, retry);
       updateLoadingStateForNav(frames.nav);
       markMainReady();
     });
@@ -45,8 +48,7 @@
       removeHeader(frames.top);
     }
 
-    ensureAppShell(frames);
-    sidebar.simplifySidebar(frames.nav, retry, { hostDocument: document });
+    sidebar.simplifySidebar(frames.nav, retry);
     updateLoadingStateForNav(frames.nav);
     markMainReady();
   }
@@ -247,50 +249,17 @@
     window.setTimeout(attachAndApply, RETRY_DELAY_MS);
   }
 
-  function ensureAppShell(frames) {
-    ensureThemeDocument(document, "nav");
-    ensureDocumentBody();
+  function applyFramesetLayout() {
+    const topFrameset = document.querySelector("frameset[rows]");
+    const innerFrameset = document.querySelector("frameset[cols]");
 
-    const existingBody = document.getElementById("ccxp-lite-app-body");
-    if (existingBody) {
-      return existingBody;
+    if (topFrameset) {
+      topFrameset.setAttribute("rows", FRAMESET_ROWS);
     }
 
-    hideLegacyFramesets();
-
-    if (frames.nav) {
-      frames.nav.style.display = "none";
+    if (innerFrameset) {
+      innerFrameset.setAttribute("cols", FRAMESET_COLUMNS);
     }
-
-    if (frames.main) {
-      frames.main.setAttribute("name", "ccxp-lite-legacy-main");
-      frames.main.style.display = "none";
-    }
-
-    const body = ensureDocumentBody();
-    body.id = "ccxp-lite-app-body";
-    return body;
-  }
-
-  function ensureDocumentBody() {
-    if (document.body) {
-      return document.body;
-    }
-
-    const body = document.createElement("body");
-    document.documentElement.appendChild(body);
-    return body;
-  }
-
-  function hideLegacyFramesets() {
-    document.documentElement.dataset.ccxpLiteScope = "nav";
-    Array.from(document.querySelectorAll("frameset, frame")).forEach((node) => {
-      if (node instanceof HTMLElement) {
-        node.style.display = "none";
-      } else {
-        node.setAttribute("style", "display:none");
-      }
-    });
   }
 
   function removeHeader(topFrame) {
