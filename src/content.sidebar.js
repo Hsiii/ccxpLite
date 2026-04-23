@@ -438,6 +438,10 @@
     button.setAttribute("aria-expanded", isExpanded ? "true" : "false");
     button.setAttribute("title", group.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel(group.kind, depth)));
+    button.style.setProperty("--ccxp-lite-tree-depth", String(Math.max(0, depth)));
+    if (depth > 0) {
+      button.classList.add("ccxp-lite-row-tree");
+    }
 
     const leading = targetDocument.createElement("span");
     if (group.kind === "category") {
@@ -457,9 +461,6 @@
     if (isExpanded) {
       const children = targetDocument.createElement("div");
       children.className = "ccxp-lite-link-list";
-      if (group.kind === "category") {
-        children.classList.add("ccxp-lite-link-list-first-layer");
-      }
 
       group.directLinks.forEach((linkItem) => {
         children.appendChild(createLinkButton(targetDocument, linkItem, "ccxp-lite-item", depth + 1, strings, onFavoritesChange));
@@ -582,6 +583,10 @@
     button.className = `ccxp-lite-row-button ${toneClass}`;
     button.setAttribute("title", linkItem.label);
     button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel("link", depth)));
+    button.style.setProperty("--ccxp-lite-tree-depth", String(Math.max(0, depth)));
+    if (depth > 0) {
+      button.classList.add("ccxp-lite-row-tree");
+    }
 
     if (depth > 0) {
       button.appendChild(createRowLeadingSpacer(targetDocument));
