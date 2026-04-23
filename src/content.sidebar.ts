@@ -27,6 +27,7 @@
   const favoriteSubscribers = new Set();
   const sidebarUiStateByDocument = new WeakMap();
   let favoriteStorageSyncBound = false;
+  const DESTINATION_LOAD_TIMEOUT_MS = 8000;
 
   function simplifySidebar(navFrame, retry, options = {}) {
     const navDocument = navFrame.contentDocument;
@@ -497,6 +498,7 @@
           () => renderSidebar(hostDocument, navDocument, modelInput, strings),
         ),
       );
+      restoreSidebarScroll(content, state.scrollTopByView.destination);
       return;
     }
 
@@ -506,6 +508,7 @@
           renderSidebar(hostDocument, navDocument, modelInput, strings),
         ),
       );
+      restoreSidebarScroll(content, state.scrollTopByView.category);
       return;
     }
 
@@ -520,6 +523,7 @@
         () => renderSidebar(hostDocument, navDocument, modelInput, strings),
       ),
     );
+    restoreSidebarScroll(content, state.scrollTopByView.root);
   }
 
   function getSidebarUiState(navDocument) {
@@ -532,6 +536,11 @@
       searchQuery: "",
       viewMode: "grid",
       activeLeaf: null,
+      scrollTopByView: {
+        root: 0,
+        category: 0,
+        destination: 0,
+      },
     };
 
     sidebarUiStateByDocument.set(navDocument, state);
@@ -611,8 +620,16 @@
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-pinned-list";
 
-    if (favorites.length === 0) {
-      body.appendChild(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
+    if (!favoriteState.hasLoaded) {
+      body.appendChild(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
+    } else if (favorites.length === 0) {
+      body.appendChild(
+        createEmptyState(
+          targetDocument,
+          strings.sidebarFavoritesEmptyTitle,
+          strings.sidebarFavoritesEmptyBody,
+        ),
+      );
     } else {
       favorites.forEach((linkItem) => {
         body.appendChild(
@@ -639,11 +656,18 @@
     body.className = `ccxp-lite-category-browser is-${state.viewMode}`;
 
     if (categories.length === 0) {
-      body.appendChild(createEmptyState(targetDocument, strings.sidebarSearchNoResults));
+      body.appendChild(
+        createEmptyState(
+          targetDocument,
+          strings.sidebarSearchEmptyTitle,
+          strings.sidebarSearchEmptyBody,
+        ),
+      );
     } else {
       categories.forEach((category) => {
         body.appendChild(
           createCategoryCard(targetDocument, category, state.viewMode, () => {
+            persistSidebarScroll(targetDocument, "root");
             state.currentCategoryId = category.id;
             state.activeLeaf = null;
             rerender();
@@ -682,8 +706,10 @@
     backButton.appendChild(createBackIcon(targetDocument));
     backButton.addEventListener("click", () => {
       if (state.activeLeaf) {
+        persistSidebarScroll(targetDocument, "destination");
         state.activeLeaf = null;
       } else {
+        persistSidebarScroll(targetDocument, "category");
         state.currentCategoryId = "";
       }
       rerender();
@@ -696,7 +722,13 @@
     body.className = "ccxp-lite-category-detail";
 
     if (!filteredCategory) {
-      body.appendChild(createEmptyState(targetDocument, strings.sidebarSearchNoResults));
+      body.appendChild(
+        createEmptyState(
+          targetDocument,
+          strings.sidebarSearchEmptyTitle,
+          strings.sidebarSearchEmptyBody,
+        ),
+      );
     } else {
       if ((filteredCategory.directLinks || []).length > 0) {
         body.appendChild(
@@ -717,7 +749,13 @@
       });
 
       if (body.childElementCount === 0) {
-        body.appendChild(createEmptyState(targetDocument, strings.emptyGroup));
+        body.appendChild(
+          createEmptyState(
+            targetDocument,
+            strings.sidebarSectionEmptyTitle,
+            strings.sidebarSectionEmptyBody,
+          ),
+        );
       }
     }
 
@@ -866,11 +904,36 @@
     return card;
   }
 
-  function createEmptyState(targetDocument, text) {
+  function createEmptyState(targetDocument, title, body) {
     const empty = targetDocument.createElement("div");
     empty.className = "ccxp-lite-empty";
-    empty.textContent = text;
+
+    const titleNode = targetDocument.createElement("div");
+    titleNode.className = "ccxp-lite-empty-title";
+    titleNode.textContent = title;
+    empty.appendChild(titleNode);
+
+    if (body) {
+      const bodyNode = targetDocument.createElement("div");
+      bodyNode.className = "ccxp-lite-empty-body";
+      bodyNode.textContent = body;
+      empty.appendChild(bodyNode);
+    }
+
     return empty;
+  }
+
+  function createSkeletonStack(targetDocument, count, itemClassName) {
+    const wrap = targetDocument.createElement("div");
+    wrap.className = "ccxp-lite-skeleton-stack";
+
+    Array.from({ length: count }).forEach(() => {
+      const item = targetDocument.createElement("div");
+      item.className = itemClassName;
+      wrap.appendChild(item);
+    });
+
+    return wrap;
   }
 
   function createRowLabel(targetDocument, text, withExternalLinkIcon) {
@@ -1024,12 +1087,14 @@
 
   function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
     const state = getSidebarUiState(targetDocument);
+    persistSidebarScroll(targetDocument, "category");
     state.activeLeaf = {
       id: linkItem.id,
       label: linkItem.label,
       href: linkItem.href,
       target: linkItem.target,
       clickLinkArgs: linkItem.clickLinkArgs,
+      nonce: Date.now(),
     };
     captureInitialMainFrameUrl();
     rerender();
@@ -1073,14 +1138,89 @@
     const frameWrap = targetDocument.createElement("div");
     frameWrap.className = "ccxp-lite-destination-wrap";
 
+    const loading = targetDocument.createElement("div");
+    loading.className = "ccxp-lite-destination-loading";
+    loading.appendChild(createSkeletonStack(targetDocument, 1, "ccxp-lite-skeleton-progress"));
+    const loadingLabel = targetDocument.createElement("div");
+    loadingLabel.className = "ccxp-lite-destination-loading-label";
+    loadingLabel.textContent = strings.sidebarDestinationLoading;
+    loading.appendChild(loadingLabel);
+    loading.appendChild(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-frame-line"));
+
+    const error = targetDocument.createElement("div");
+    error.className = "ccxp-lite-destination-error";
+    error.hidden = true;
+    error.appendChild(
+      createEmptyState(
+        targetDocument,
+        strings.sidebarDestinationErrorTitle,
+        strings.sidebarDestinationErrorBody,
+      ),
+    );
+
+    const actions = targetDocument.createElement("div");
+    actions.className = "ccxp-lite-destination-actions";
+
+    const retryButton = targetDocument.createElement("button");
+    retryButton.type = "button";
+    retryButton.className = "ccxp-lite-destination-action";
+    retryButton.textContent = strings.sidebarRetry;
+    retryButton.addEventListener("click", () => {
+      const state = getSidebarUiState(targetDocument);
+      state.activeLeaf = {
+        ...state.activeLeaf,
+        nonce: Date.now(),
+      };
+      rerender();
+    });
+
+    const openButton = targetDocument.createElement("button");
+    openButton.type = "button";
+    openButton.className = "ccxp-lite-destination-action";
+    openButton.textContent = strings.sidebarOpenInNewTab;
+    openButton.addEventListener("click", () => openLeafInNewTab(activeLeaf, navDocument));
+
+    actions.appendChild(retryButton);
+    actions.appendChild(openButton);
+    error.appendChild(actions);
+
     const frame = targetDocument.createElement("iframe");
     frame.className = "ccxp-lite-destination-frame";
     frame.setAttribute("frameborder", "0");
     frame.setAttribute("scrolling", "auto");
     frame.title = activeLeaf.label;
-    frame.addEventListener("load", () => simplifyEmbeddedFrame(frame));
+    frame.hidden = true;
+
+    let hasSettled = false;
+    const settleSuccess = () => {
+      if (hasSettled) {
+        return;
+      }
+      hasSettled = true;
+      window.clearTimeout(timeoutId);
+      simplifyEmbeddedFrame(frame);
+      loading.hidden = true;
+      error.hidden = true;
+      frame.hidden = false;
+    };
+
+    const settleError = () => {
+      if (hasSettled) {
+        return;
+      }
+      hasSettled = true;
+      loading.hidden = true;
+      frame.hidden = true;
+      error.hidden = false;
+    };
+
+    const timeoutId = window.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
+    frame.addEventListener("load", settleSuccess, { once: true });
+    frame.addEventListener("error", settleError, { once: true });
     activateLegacyLink(activeLeaf, navDocument, frame);
 
+    frameWrap.appendChild(loading);
+    frameWrap.appendChild(error);
     frameWrap.appendChild(frame);
     section.appendChild(frameWrap);
     return section;
@@ -1120,6 +1260,28 @@
     } catch (_error) {
       // Ignore session storage failures.
     }
+  }
+
+  function openLeafInNewTab(activeLeaf, navDocument) {
+    const resolvedUrl = new URL(activeLeaf.href, navDocument.location.href).toString();
+    window.open(resolvedUrl, "_blank", "noopener");
+  }
+
+  function persistSidebarScroll(targetDocument, viewKey) {
+    const content = targetDocument.querySelector(".ccxp-lite-sidebar-content");
+    if (!content) {
+      return;
+    }
+
+    const state = getSidebarUiState(targetDocument);
+    state.scrollTopByView[viewKey] = content.scrollTop;
+  }
+
+  function restoreSidebarScroll(contentNode, scrollTop) {
+    const resolvedScrollTop = Number.isFinite(scrollTop) ? scrollTop : 0;
+    window.requestAnimationFrame(() => {
+      contentNode.scrollTop = resolvedScrollTop;
+    });
   }
 
   function readInitialFrameHref() {
