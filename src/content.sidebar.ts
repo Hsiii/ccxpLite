@@ -85,17 +85,20 @@
         ),
       );
 
+      const repoMark = hostDocument.createElement("span");
+      repoMark.className = "ccxp-lite-sidebar-brand-partner-mark";
+      repoMark.appendChild(createBrandCloseIcon(hostDocument));
+
       const repoLink = hostDocument.createElement("a");
-      repoLink.className = "ccxp-lite-sidebar-brand-partner";
+      repoLink.className = "ccxp-lite-sidebar-brand-partner-link";
       repoLink.href = "https://github.com/Hsiii/ccxpLite";
       repoLink.target = "_blank";
       repoLink.rel = "noreferrer noopener";
       repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
-      repoLink.appendChild(createBrandCloseIcon(hostDocument));
 
       const repoLabel = hostDocument.createElement("span");
       repoLabel.className = "ccxp-lite-sidebar-brand-partner-label";
-      repoLabel.textContent = strings.sidebarBrandPartner;
+      repoLabel.textContent = strings.sidebarGitHubLink;
       repoLink.appendChild(repoLabel);
 
       const search = createSidebarSearch(hostDocument, strings);
@@ -107,6 +110,7 @@
       footer.className = "ccxp-lite-sidebar-footer";
 
       brandGroup.appendChild(brand);
+      brandGroup.appendChild(repoMark);
       brandGroup.appendChild(repoLink);
       header.appendChild(brandGroup);
       header.appendChild(search);
