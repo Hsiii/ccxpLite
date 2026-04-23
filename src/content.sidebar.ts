@@ -99,9 +99,6 @@
       repoLink.textContent = strings.sidebarGitHubLink;
       brandMeta.appendChild(repoLink);
 
-      const breadcrumb = hostDocument.createElement("div");
-      breadcrumb.className = "ccxp-lite-sidebar-breadcrumb";
-
       const search = createSidebarSearch(hostDocument, strings);
 
       const content = hostDocument.createElement("main");
@@ -112,7 +109,6 @@
 
       header.appendChild(brand);
       header.appendChild(brandMeta);
-      header.appendChild(breadcrumb);
       header.appendChild(search);
       shell.appendChild(header);
       shell.appendChild(content);
@@ -428,9 +424,8 @@
     }
 
     const content = shell.querySelector(".ccxp-lite-sidebar-content");
-    const breadcrumb = shell.querySelector(".ccxp-lite-sidebar-breadcrumb");
     const footer = shell.querySelector(".ccxp-lite-sidebar-footer");
-    if (!content || !breadcrumb || !footer) {
+    if (!content || !footer) {
       return;
     }
 
@@ -463,7 +458,6 @@
       state.currentCategoryId = "";
     }
 
-    breadcrumb.replaceChildren(createBreadcrumb(hostDocument, activeCategory, strings));
     footer.replaceChildren();
     content.innerHTML = "";
 
@@ -542,28 +536,6 @@
     search.appendChild(input);
 
     return search;
-  }
-
-  function createBreadcrumb(targetDocument, activeCategory, strings) {
-    const fragment = targetDocument.createDocumentFragment();
-    const home = targetDocument.createElement("span");
-    home.className = "ccxp-lite-breadcrumb-item";
-    home.textContent = strings.sidebarBreadcrumbHome;
-    fragment.appendChild(home);
-
-    if (activeCategory) {
-      const separator = targetDocument.createElement("span");
-      separator.className = "ccxp-lite-breadcrumb-separator";
-      separator.textContent = "/";
-      fragment.appendChild(separator);
-
-      const current = targetDocument.createElement("span");
-      current.className = "ccxp-lite-breadcrumb-item is-current";
-      current.textContent = activeCategory.label;
-      fragment.appendChild(current);
-    }
-
-    return fragment;
   }
 
   function createDashboardView(
