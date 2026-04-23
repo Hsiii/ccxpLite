@@ -1,0 +1,1162 @@
+// @ts-nocheck
+(function registerCcxpLiteLandingLogin(globalScope) {
+  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const { shared, landingLocale, landingSupport } = namespace;
+  if (!shared || !landingLocale || !landingSupport) {
+    return;
+  }
+
+  const { getLocalizedStrings, moveChildNodes, removeNode } = shared;
+  const { resolveLandingLocale, getLoginForm } = landingLocale;
+  const { findLoginSourceCell } = landingSupport;
+
+  function enhancePasswordVisibilityToggle(targetDocument, rootNode) {
+    const passwordFields = Array.from(
+      rootNode.querySelectorAll(
+        "input[name='passwd'], input[type='password']:not([name='passwd2'])",
+      ),
+    );
+    const seen = new Set();
+    const strings = getLandingStrings(targetDocument);
+
+    passwordFields.forEach((field) => {
+      if (!field || seen.has(field) || field.dataset.ccxpLitePasswordToggle === "true") {
+        return;
+      }
+
+      seen.add(field);
+      field.type = "password";
+      removeRedundantPasswordLabelEyeIcon(field);
+
+      const wrapper = targetDocument.createElement("span");
+      wrapper.className = "ccxp-lite-password-field";
+
+      if (!field.parentNode) {
+        return;
+      }
+
+      field.parentNode.insertBefore(wrapper, field);
+      wrapper.appendChild(field);
+
+      const toggleButton = targetDocument.createElement("button");
+      toggleButton.type = "button";
+      toggleButton.className = "ccxp-lite-password-toggle";
+      toggleButton.setAttribute("aria-label", strings.showPassword);
+      toggleButton.appendChild(createPasswordVisibilityIcon(targetDocument, false));
+
+      toggleButton.addEventListener("click", () => {
+        const isHidden = field.type !== "text";
+        field.type = isHidden ? "text" : "password";
+        toggleButton.setAttribute(
+          "aria-label",
+          isHidden ? strings.hidePassword : strings.showPassword,
+        );
+        toggleButton.replaceChildren(createPasswordVisibilityIcon(targetDocument, isHidden));
+      });
+
+      wrapper.appendChild(toggleButton);
+      field.dataset.ccxpLitePasswordToggle = "true";
+    });
+  }
+
+  function removeRedundantPasswordLabelEyeIcon(passwordField) {
+    if (!passwordField) {
+      return;
+    }
+
+    const inlineScope = passwordField.closest("form") || passwordField.parentElement;
+    if (inlineScope) {
+      const legacyInlineToggles = Array.from(
+        inlineScope.querySelectorAll(
+          "svg#showPassword, svg#hidePassword, svg[onclick*='togglePassword']",
+        ),
+      );
+
+      legacyInlineToggles.forEach((node) => {
+        const relation = node.compareDocumentPosition(passwordField);
+        const isBeforeField = Boolean(relation & Node.DOCUMENT_POSITION_FOLLOWING);
+
+        if (isBeforeField) {
+          node.remove();
+        }
+      });
+    }
+
+    const row = passwordField.closest("tr");
+    if (!row || row.dataset.ccxpLitePasswordLabelCleaned === "true") {
+      return;
+    }
+
+    const labelCell = row.querySelector("th, td");
+    if (!labelCell) {
+      return;
+    }
+
+    const labelText = String(labelCell.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    const isPasswordLabel = /(密碼|password)/i.test(labelText);
+
+    if (isPasswordLabel) {
+      Array.from(labelCell.querySelectorAll("svg")).forEach((node) => node.remove());
+
+      Array.from(labelCell.querySelectorAll("a, button, span, i")).forEach((node) => {
+        const text = String(node.textContent || "")
+          .replace(/\s+/g, " ")
+          .trim();
+        const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
+
+        if (!text && hasOnlyIconChild) {
+          node.remove();
+        }
+      });
+    }
+
+    const eyePattern = /(eye|show|hide|visible|visibility|view|顯示|隱藏|密碼)/i;
+    const candidates = Array.from(labelCell.querySelectorAll("img, svg, i, span, a, button"));
+
+    candidates.forEach((node) => {
+      const hints = [
+        node.getAttribute("alt"),
+        node.getAttribute("title"),
+        node.getAttribute("aria-label"),
+        node.getAttribute("class"),
+        node.getAttribute("src"),
+        node.textContent,
+      ]
+        .map((value) => String(value || "").toLowerCase())
+        .join(" ");
+
+      if (hints.includes("👁") || eyePattern.test(hints)) {
+        node.remove();
+      }
+    });
+
+    row.dataset.ccxpLitePasswordLabelCleaned = "true";
+  }
+
+  function normalizeLoginFormLayout(rootNode) {
+    const forms = Array.from(rootNode.querySelectorAll("form"));
+
+    forms.forEach((formNode) => {
+      if (formNode.dataset.ccxpLiteFormStructured !== "true") {
+        structureLoginFormRows(rootNode.ownerDocument, formNode);
+        rebuildFlatLoginFormLabels(rootNode.ownerDocument, formNode);
+        groupLoginFieldRows(rootNode.ownerDocument, formNode);
+      }
+
+      formNode.classList.add("ccxp-lite-login-form");
+      formNode.dataset.ccxpLiteFormStructured = "true";
+    });
+  }
+
+  function structureLoginFormRows(targetDocument, formNode) {
+    const rows = Array.from(formNode.querySelectorAll("tr"));
+
+    rows.forEach((rowNode, rowIndex) => {
+      if (!rowNode || rowNode.dataset.ccxpLiteLoginRow === "true") {
+        return;
+      }
+
+      const cells = Array.from(rowNode.querySelectorAll(":scope > th, :scope > td"));
+      if (cells.length === 0) {
+        return;
+      }
+
+      const fieldPairs = collectLoginFieldPairs(rowNode, cells);
+      if (fieldPairs.length === 0) {
+        return;
+      }
+
+      const replacementRows = fieldPairs.map((fieldPair, pairIndex) => {
+        const fieldId = ensureFieldId(fieldPair.fieldNode, rowIndex, pairIndex);
+        return buildLoginFieldRow(targetDocument, fieldPair, fieldId, Math.max(1, cells.length));
+      });
+
+      rowNode.replaceWith(...replacementRows);
+      replacementRows.forEach((replacementRow) => {
+        replacementRow.dataset.ccxpLiteLoginRow = "true";
+      });
+
+      const table = rowNode.closest("table");
+      if (table) {
+        table.classList.add("ccxp-lite-login-form-table");
+      }
+    });
+  }
+
+  function rebuildFlatLoginFormLabels(targetDocument, formNode) {
+    const fields = Array.from(formNode.querySelectorAll("input, select, textarea"));
+
+    fields.forEach((fieldNode, fieldIndex) => {
+      const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
+      if (
+        ["hidden", "submit", "button", "image", "reset", "checkbox", "radio", "file"].includes(
+          inputType,
+        )
+      ) {
+        return;
+      }
+
+      if (fieldNode.parentNode !== formNode) {
+        return;
+      }
+
+      const labelSourceNode = findLegacyInlineLabelNode(fieldNode, formNode);
+      if (!labelSourceNode) {
+        return;
+      }
+
+      const labelText = getNodeText(labelSourceNode);
+      if (!labelText) {
+        return;
+      }
+
+      const fieldId = ensureFieldId(fieldNode, fieldIndex);
+      const labelNode = targetDocument.createElement("label");
+      labelNode.className = "ccxp-lite-login-field-label";
+      labelNode.setAttribute("for", fieldId);
+      labelNode.textContent = labelText;
+
+      labelSourceNode.replaceWith(labelNode);
+    });
+  }
+
+  function buildLoginFieldRow(targetDocument, fieldPair, fieldId, columnCount) {
+    const row = targetDocument.createElement("tr");
+    row.className = "ccxp-lite-login-field-row";
+
+    const mergedCell = targetDocument.createElement("td");
+    mergedCell.className = "ccxp-lite-login-field-cell";
+    mergedCell.colSpan = columnCount;
+
+    const fieldGroup = targetDocument.createElement("div");
+    fieldGroup.className = "ccxp-lite-login-field";
+
+    const label = targetDocument.createElement("label");
+    label.className = "ccxp-lite-login-field-label";
+    label.setAttribute("for", fieldId);
+    label.textContent = resolveLoginFieldLabel(fieldPair, targetDocument);
+
+    const controlWrap = targetDocument.createElement("div");
+    controlWrap.className = "ccxp-lite-login-field-control";
+    removeInlineLoginLabelNodes(fieldPair.fieldCell, fieldPair.fieldNode);
+    moveChildNodes(fieldPair.fieldCell, controlWrap);
+
+    fieldGroup.appendChild(label);
+    fieldGroup.appendChild(controlWrap);
+    mergedCell.appendChild(fieldGroup);
+    row.appendChild(mergedCell);
+
+    return row;
+  }
+
+  function groupLoginFieldRows(targetDocument, formNode) {
+    if (!formNode || formNode.dataset.ccxpLiteFieldRowsGrouped === "true") {
+      return;
+    }
+
+    const fieldRows = Array.from(formNode.querySelectorAll("tr.ccxp-lite-login-field-row"));
+    if (fieldRows.length === 0) {
+      return;
+    }
+
+    const fieldsContainer = targetDocument.createElement("div");
+    fieldsContainer.className = "ccxp-lite-login-fields";
+
+    const firstTable = fieldRows[0].closest("table");
+    if (firstTable && firstTable.parentNode) {
+      firstTable.parentNode.insertBefore(fieldsContainer, firstTable);
+    } else {
+      formNode.insertBefore(fieldsContainer, formNode.firstChild);
+    }
+
+    fieldRows.forEach((rowNode) => {
+      const fieldGroup = rowNode.querySelector(".ccxp-lite-login-field");
+      if (fieldGroup) {
+        fieldsContainer.appendChild(fieldGroup);
+      }
+
+      removeNode(rowNode);
+    });
+
+    Array.from(formNode.querySelectorAll("table.ccxp-lite-login-form-table")).forEach(
+      (tableNode) => {
+        if (!tableNode.querySelector("tr")) {
+          removeNode(tableNode);
+        }
+      },
+    );
+
+    formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
+  }
+
+  function collectLoginFieldPairs(rowNode, cells) {
+    const pairs = [];
+    const usedFieldCells = new Set();
+
+    cells.forEach((cellNode, cellIndex) => {
+      const fieldNode = findPrimaryFieldControl(cellNode);
+      if (!fieldNode) {
+        return;
+      }
+
+      const fieldCell = fieldNode.closest("th, td") || cellNode;
+      if (usedFieldCells.has(fieldCell)) {
+        return;
+      }
+
+      const fieldCellIndex = cells.indexOf(fieldCell);
+      const labelCell = resolveLabelCellForField(
+        cells,
+        fieldCellIndex >= 0 ? fieldCellIndex : cellIndex,
+      );
+      const labelText = getPreferredLoginLabelText(labelCell, fieldCell, fieldNode);
+
+      pairs.push({
+        fieldNode,
+        fieldCell,
+        labelText,
+      });
+
+      usedFieldCells.add(fieldCell);
+    });
+
+    if (pairs.length > 0) {
+      return pairs;
+    }
+
+    const fallbackFieldNode = findPrimaryFieldControl(rowNode);
+    if (!fallbackFieldNode) {
+      return pairs;
+    }
+
+    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells[cells.length - 1];
+    const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
+
+    pairs.push({
+      fieldNode: fallbackFieldNode,
+      fieldCell: fallbackFieldCell,
+      labelText: getPreferredLoginLabelText(
+        fallbackLabelCell,
+        fallbackFieldCell,
+        fallbackFieldNode,
+      ),
+    });
+
+    return pairs;
+  }
+
+  function resolveLabelCellForField(cells, fieldCellIndex) {
+    for (let index = fieldCellIndex - 1; index >= 0; index -= 1) {
+      const candidate = cells[index];
+      if (!candidate) {
+        continue;
+      }
+
+      if (findPrimaryFieldControl(candidate)) {
+        continue;
+      }
+
+      if (!getNodeText(candidate)) {
+        continue;
+      }
+
+      return candidate;
+    }
+
+    return cells[0] || null;
+  }
+
+  function getNodeText(node) {
+    return String((node && node.textContent) || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function findLegacyInlineLabelNode(fieldNode, boundaryNode) {
+    let currentNode = fieldNode.previousSibling;
+
+    while (currentNode && currentNode !== boundaryNode) {
+      if (currentNode.nodeType === Node.TEXT_NODE && !getNodeText(currentNode)) {
+        currentNode = currentNode.previousSibling;
+        continue;
+      }
+
+      if (currentNode.nodeType === Node.ELEMENT_NODE) {
+        const tagName = currentNode.tagName.toLowerCase();
+
+        if (tagName === "br") {
+          currentNode = currentNode.previousSibling;
+          continue;
+        }
+
+        if (["svg", "img", "a", "button"].includes(tagName)) {
+          currentNode = currentNode.previousSibling;
+          continue;
+        }
+
+        if (tagName === "label" && currentNode.classList.contains("ccxp-lite-login-field-label")) {
+          return null;
+        }
+      }
+
+      return getNodeText(currentNode) ? currentNode : null;
+    }
+
+    return null;
+  }
+
+  function getPreferredLoginLabelText(labelCell, fieldCell, fieldNode) {
+    const explicitLabel = getNodeText(labelCell);
+    if (explicitLabel) {
+      return explicitLabel;
+    }
+
+    return getInlineLoginLabelText(fieldCell, fieldNode);
+  }
+
+  function resolveLoginFieldLabel(fieldPair, targetDocument) {
+    const explicitLabel = String((fieldPair && fieldPair.labelText) || "").trim();
+    if (explicitLabel) {
+      return explicitLabel;
+    }
+
+    const fieldName = String(
+      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) || "",
+    )
+      .trim()
+      .toLowerCase();
+    const strings = getLandingStrings(targetDocument);
+
+    if (fieldName === "account") {
+      return strings.fieldAccount;
+    }
+
+    if (fieldName === "id") {
+      return strings.fieldStudentId;
+    }
+
+    if (fieldName === "passwd" || fieldName === "password") {
+      return strings.fieldPassword;
+    }
+
+    if (fieldName === "passwd2" || fieldName === "captcha" || fieldName === "code") {
+      return strings.fieldVerificationCode;
+    }
+
+    return fieldName || strings.fieldGeneric;
+  }
+
+  function getInlineLoginLabelText(fieldCell, fieldNode) {
+    if (!fieldCell || !fieldNode) {
+      return "";
+    }
+
+    const leadingNodes = collectLeadingNodesBeforeField(fieldCell, fieldNode);
+    return leadingNodes
+      .map((node) => getNodeText(node))
+      .join(" ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function removeInlineLoginLabelNodes(fieldCell, fieldNode) {
+    collectLeadingNodesBeforeField(fieldCell, fieldNode).forEach((node) => {
+      removeNode(node);
+    });
+  }
+
+  function collectLeadingNodesBeforeField(fieldCell, fieldNode) {
+    if (!fieldCell || !fieldNode || fieldNode.parentNode !== fieldCell) {
+      return [];
+    }
+
+    const leadingNodes = [];
+    let currentNode = fieldCell.firstChild;
+    while (currentNode && currentNode !== fieldNode) {
+      const nextNode = currentNode.nextSibling;
+      const textContent = getNodeText(currentNode);
+      const isBreak =
+        currentNode.nodeType === Node.ELEMENT_NODE &&
+        currentNode.tagName &&
+        currentNode.tagName.toLowerCase() === "br";
+
+      if (textContent || isBreak) {
+        leadingNodes.push(currentNode);
+      }
+
+      currentNode = nextNode;
+    }
+
+    return leadingNodes;
+  }
+
+  function findPrimaryFieldControl(scopeNode) {
+    const candidates = Array.from(scopeNode.querySelectorAll("input, select, textarea"));
+
+    return (
+      candidates.find((field) => {
+        const inputType = (field.getAttribute("type") || "text").toLowerCase();
+        return !["hidden", "submit", "button", "image", "checkbox", "radio", "file"].includes(
+          inputType,
+        );
+      }) || null
+    );
+  }
+
+  function ensureFieldId(fieldNode, rowIndex, pairIndex = 0) {
+    if (fieldNode.id) {
+      return fieldNode.id;
+    }
+
+    const baseName =
+      String(fieldNode.getAttribute("name") || "field")
+        .trim()
+        .replace(/[^a-zA-Z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "field";
+    const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
+    const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;
+    fieldNode.id = generatedId;
+    return generatedId;
+  }
+
+  function removeLoginResetControls(rootNode) {
+    const resetControls = Array.from(
+      rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
+    );
+
+    resetControls.forEach((controlNode) => {
+      removeNode(controlNode);
+    });
+  }
+
+  function forceCaptchaLabelDisplay(rootNode) {
+    const captchaLabelPattern = /(驗證碼|captcha)/i;
+    const spans = Array.from(rootNode.querySelectorAll("span"));
+
+    spans.forEach((spanNode) => {
+      const labelText = String(spanNode.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim();
+      if (!labelText || !captchaLabelPattern.test(labelText)) {
+        return;
+      }
+
+      spanNode.style.display = "block";
+    });
+  }
+
+  function replaceLoginFormImageButtons(targetDocument, rootNode) {
+    const imageSubmitInputs = Array.from(rootNode.querySelectorAll("form input[type='image']"));
+
+    imageSubmitInputs.forEach((inputNode) => {
+      if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
+        return;
+      }
+
+      if (shouldKeepLegacyLoginImageSubmit(inputNode)) {
+        return;
+      }
+
+      if (isVerificationAudioControl(inputNode)) {
+        const audioButton = createAudioIconButtonFromImageInput(targetDocument, inputNode);
+        inputNode.replaceWith(audioButton);
+        audioButton.dataset.ccxpLiteImageButtonReplaced = "true";
+        return;
+      }
+
+      if (isAdjacentLoginClearControl(inputNode)) {
+        removeNode(inputNode);
+        return;
+      }
+
+      const label = resolveLegacyImageButtonLabel(inputNode);
+      if (!label) {
+        return;
+      }
+
+      if (isClearActionLabel(label)) {
+        removeNode(inputNode);
+        return;
+      }
+
+      const button = targetDocument.createElement("button");
+      button.type = "submit";
+      button.className = "button ccxp-lite-image-action-button";
+      button.textContent = label;
+
+      if (inputNode.id) {
+        button.id = inputNode.id;
+      }
+
+      if (inputNode.name) {
+        button.name = inputNode.name;
+      }
+
+      if (inputNode.title) {
+        button.title = inputNode.title;
+      }
+
+      if (inputNode.className) {
+        button.className = `${button.className} ${inputNode.className}`.trim();
+      }
+
+      if (inputNode.disabled) {
+        button.disabled = true;
+      }
+
+      ["onclick", "formaction", "formmethod", "formenctype", "formtarget", "tabindex"].forEach(
+        (attributeName) => {
+          const value = inputNode.getAttribute(attributeName);
+          if (value) {
+            button.setAttribute(attributeName, value);
+          }
+        },
+      );
+
+      if (inputNode.hasAttribute("formnovalidate")) {
+        button.setAttribute("formnovalidate", "");
+      }
+
+      inputNode.replaceWith(button);
+      button.dataset.ccxpLiteImageButtonReplaced = "true";
+    });
+
+    const imageAnchors = Array.from(rootNode.querySelectorAll("form a > img[alt]"));
+    imageAnchors.forEach((imageNode) => {
+      const anchor = imageNode.closest("a");
+      if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
+        return;
+      }
+
+      if (isVerificationAudioControl(imageNode)) {
+        anchor.classList.add("ccxp-lite-audio-icon-link");
+        anchor.setAttribute(
+          "aria-label",
+          resolveLegacyImageButtonLabel(imageNode) ||
+            getLandingStrings(targetDocument).playVerificationAudio,
+        );
+        anchor.replaceChildren(createAudioIcon(targetDocument));
+        anchor.dataset.ccxpLiteImageButtonReplaced = "true";
+        return;
+      }
+
+      if (isAdjacentLoginClearControl(imageNode)) {
+        removeNode(anchor);
+        return;
+      }
+
+      const label = resolveLegacyImageButtonLabel(imageNode);
+      if (!label) {
+        return;
+      }
+
+      if (isClearActionLabel(label)) {
+        removeNode(anchor);
+        return;
+      }
+
+      anchor.classList.add("ccxp-lite-image-link-button");
+      anchor.replaceChildren(targetDocument.createTextNode(label));
+      anchor.dataset.ccxpLiteImageButtonReplaced = "true";
+    });
+  }
+
+  function wrapPrimaryLoginButtons(targetDocument, rootNode) {
+    const forms = Array.from(rootNode.querySelectorAll("form"));
+
+    forms.forEach((formNode) => {
+      normalizeNativeLoginSubmitControls(targetDocument, formNode);
+
+      const allActionButtons = Array.from(
+        formNode.querySelectorAll(".ccxp-lite-image-action-button, .ccxp-lite-image-link-button"),
+      );
+      if (allActionButtons.length === 0) {
+        return;
+      }
+
+      let actionGroup = formNode.querySelector(".ccxp-lite-login-action-group");
+      if (!actionGroup) {
+        actionGroup = targetDocument.createElement("div");
+        actionGroup.className = "ccxp-lite-login-action-group";
+        allActionButtons[0].parentNode?.insertBefore(actionGroup, allActionButtons[0]);
+      }
+
+      const primaryCandidates = allActionButtons.filter((buttonNode) =>
+        isPrimaryLoginActionLabel(buttonNode.textContent),
+      );
+      const primaryButton = primaryCandidates[0] || allActionButtons[0];
+      const orderedButtons = [
+        primaryButton,
+        ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton),
+      ];
+
+      orderedButtons.forEach((buttonNode) => {
+        buttonNode.classList.remove(
+          "ccxp-lite-login-primary-button",
+          "ccxp-lite-login-secondary-button",
+        );
+        if (buttonNode === primaryButton) {
+          buttonNode.classList.add("ccxp-lite-login-primary-button");
+        } else {
+          buttonNode.classList.add("ccxp-lite-login-secondary-button");
+        }
+
+        actionGroup.appendChild(buttonNode);
+      });
+    });
+  }
+
+  function normalizeNativeLoginSubmitControls(targetDocument, formNode) {
+    const nativeSubmitInputs = Array.from(formNode.querySelectorAll("input[type='submit']"));
+
+    nativeSubmitInputs.forEach((inputNode) => {
+      if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
+        return;
+      }
+
+      const label = String(
+        inputNode.value || inputNode.getAttribute("value") || inputNode.textContent || "",
+      )
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (!label) {
+        return;
+      }
+
+      const button = targetDocument.createElement("button");
+      button.type = "submit";
+      button.className = "ccxp-lite-image-action-button";
+      button.textContent = label;
+      button.value = label;
+      button.setAttribute("value", label);
+
+      Array.from(inputNode.attributes).forEach((attribute) => {
+        const attributeName = attribute.name.toLowerCase();
+        if (attributeName === "type" || attributeName === "class") {
+          return;
+        }
+
+        button.setAttribute(attribute.name, attribute.value);
+      });
+
+      if (inputNode.className) {
+        button.className = `${button.className} ${inputNode.className}`.trim();
+      }
+
+      if (inputNode.disabled) {
+        button.disabled = true;
+      }
+
+      inputNode.replaceWith(button);
+      button.dataset.ccxpLiteSubmitRebuilt = "true";
+    });
+
+    const nativeSubmitButtons = Array.from(
+      formNode.querySelectorAll("button[type='submit'], button:not([type])"),
+    );
+    nativeSubmitButtons.forEach((buttonNode) => {
+      if (
+        buttonNode.classList.contains("ccxp-lite-audio-icon-button") ||
+        buttonNode.classList.contains("ccxp-lite-image-action-button")
+      ) {
+        return;
+      }
+
+      buttonNode.classList.add("ccxp-lite-image-action-button");
+    });
+  }
+
+  function isPrimaryLoginActionLabel(rawLabel) {
+    const normalizedLabel = String(rawLabel || "")
+      .replace(/\s+/g, "")
+      .trim()
+      .toLowerCase();
+
+    if (!normalizedLabel) {
+      return false;
+    }
+
+    return /(登入|登录|login|signin|logon|送出|確定|确定|submit)/i.test(normalizedLabel);
+  }
+
+  function removeLoginSpacingArtifacts(targetDocument, rootNode) {
+    Array.from(rootNode.querySelectorAll("br")).forEach((node) => removeNode(node));
+
+    const textNodes = [];
+    const walker = targetDocument.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);
+    let currentNode = walker.nextNode();
+
+    while (currentNode) {
+      textNodes.push(currentNode);
+      currentNode = walker.nextNode();
+    }
+
+    textNodes.forEach((textNode) => {
+      const normalized = String(textNode.textContent || "").replace(/\u00a0|&nbsp;|&npsp;/gi, " ");
+      if (normalized.trim()) {
+        textNode.textContent = normalized;
+        return;
+      }
+
+      removeNode(textNode);
+    });
+  }
+
+  function alignCaptchaMediaRow(targetDocument, rootNode) {
+    const captchaImages = Array.from(rootNode.querySelectorAll("img[src*='auth_img.php']"));
+
+    captchaImages.forEach((captchaImage) => {
+      const host = captchaImage.parentElement;
+      if (!host) {
+        return;
+      }
+
+      const audioControl = host.querySelector(
+        ".ccxp-lite-audio-icon-button, .ccxp-lite-audio-icon-link",
+      );
+      if (!audioControl) {
+        return;
+      }
+
+      const rowNode = captchaImage.closest("tr");
+      if (rowNode) {
+        rowNode.classList.add("ccxp-lite-captcha-row");
+      }
+
+      let mediaRow = host.querySelector(":scope > .ccxp-lite-captcha-media-row");
+      if (!mediaRow) {
+        mediaRow = targetDocument.createElement("span");
+        mediaRow.className = "ccxp-lite-captcha-media-row";
+        host.insertBefore(mediaRow, captchaImage);
+      }
+
+      if (captchaImage.parentNode !== mediaRow) {
+        mediaRow.appendChild(captchaImage);
+      }
+
+      if (audioControl.parentNode !== mediaRow) {
+        mediaRow.appendChild(audioControl);
+      }
+    });
+  }
+
+  function resolveLegacyImageButtonLabel(node) {
+    if (!node) {
+      return "";
+    }
+
+    const explicitAlt = normalizeLegacyButtonLabel(node.getAttribute("alt"));
+    if (explicitAlt) {
+      return explicitAlt;
+    }
+
+    if (node.tagName && node.tagName.toLowerCase() === "input") {
+      const parentForm = node.form;
+      const pairedImage = parentForm
+        ? parentForm.querySelector(`img[alt][src='${cssEscape(node.getAttribute("src") || "")}]`)
+        : null;
+      const pairedAlt = normalizeLegacyButtonLabel(pairedImage && pairedImage.getAttribute("alt"));
+      if (pairedAlt) {
+        return pairedAlt;
+      }
+    }
+
+    const titleLabel = normalizeLegacyButtonLabel(node.getAttribute("title"));
+    if (titleLabel) {
+      return titleLabel;
+    }
+
+    return "";
+  }
+
+  function normalizeLegacyButtonLabel(rawLabel) {
+    return String(rawLabel || "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function shouldKeepLegacyLoginImageSubmit(inputNode) {
+    if (!inputNode || !inputNode.form) {
+      return false;
+    }
+
+    const action = String(inputNode.form.getAttribute("action") || "").toLowerCase();
+    const isLoginFlowForm =
+      action.includes("pre_select_entry.php") || action.includes("select_entry.php");
+    if (!isLoginFlowForm) {
+      return false;
+    }
+
+    if (isVerificationAudioControl(inputNode) || isAdjacentLoginClearControl(inputNode)) {
+      return false;
+    }
+
+    const label = resolveLegacyImageButtonLabel(inputNode);
+    if (isClearActionLabel(label)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function isClearActionLabel(label) {
+    const normalized = String(label || "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+
+    return (
+      normalized.includes("清除") ||
+      normalized.includes("clear") ||
+      normalized.includes("重填") ||
+      normalized.includes("reset")
+    );
+  }
+
+  function isVerificationAudioControl(node) {
+    if (!node) {
+      return false;
+    }
+
+    const row = node.closest("tr");
+    if (row && row.querySelector("input[name='passwd2']")) {
+      return true;
+    }
+
+    const hintText = [
+      node.getAttribute("alt"),
+      node.getAttribute("title"),
+      node.getAttribute("src"),
+      node.getAttribute("onclick"),
+    ]
+      .map((value) => String(value || "").toLowerCase())
+      .join(" ");
+
+    return /(voice|audio|sound|speak|listen|語音|朗讀|播放)/.test(hintText);
+  }
+
+  function isAdjacentLoginClearControl(node) {
+    if (!node) {
+      return false;
+    }
+
+    const row = node.closest("tr");
+    if (!row || row.querySelector("input[name='passwd2']")) {
+      return false;
+    }
+
+    if (isClearLikeControl(node)) {
+      return true;
+    }
+
+    const controls = collectLegacyActionControls(row);
+    if (controls.length < 2) {
+      return false;
+    }
+
+    const loginIndex = controls.findIndex((controlNode) => isLoginLikeControl(controlNode));
+    const currentIndex = controls.findIndex(
+      (controlNode) => controlNode === node || controlNode.contains(node),
+    );
+
+    if (loginIndex < 0 || currentIndex < 0 || currentIndex <= loginIndex) {
+      return false;
+    }
+
+    const isTwoImagePair =
+      controls.length === 2 && controls.every((controlNode) => isImageActionControl(controlNode));
+
+    return isTwoImagePair;
+  }
+
+  function collectLegacyActionControls(row) {
+    return Array.from(
+      row.querySelectorAll(
+        "input[type='image'], input[type='submit'], input[type='reset'], button, a > img",
+      ),
+    ).filter((node) => {
+      if (node.matches("a > img")) {
+        return true;
+      }
+
+      const type = String(node.getAttribute("type") || "").toLowerCase();
+      if (node.tagName === "BUTTON" && !type) {
+        return true;
+      }
+
+      return ["image", "submit", "reset", "button"].includes(type);
+    });
+  }
+
+  function isImageActionControl(node) {
+    if (!node) {
+      return false;
+    }
+
+    if (node.matches("a > img")) {
+      return true;
+    }
+
+    return String(node.getAttribute("type") || "").toLowerCase() === "image";
+  }
+
+  function isLoginLikeControl(node) {
+    const hints = extractControlHints(node);
+    return /(登入|login|sign\s*-?\s*in|submit)/i.test(hints);
+  }
+
+  function isClearLikeControl(node) {
+    const type = String(node.getAttribute("type") || "").toLowerCase();
+    if (type === "reset") {
+      return true;
+    }
+
+    const hints = extractControlHints(node);
+    return /(清除|重填|clear|reset)/i.test(hints);
+  }
+
+  function extractControlHints(node) {
+    const anchor = node.matches("a > img") ? node.closest("a") : null;
+
+    return [
+      node.getAttribute("alt"),
+      node.getAttribute("title"),
+      node.getAttribute("name"),
+      node.getAttribute("id"),
+      node.getAttribute("value"),
+      node.getAttribute("src"),
+      node.getAttribute("onclick"),
+      node.textContent,
+      anchor && anchor.getAttribute("href"),
+      anchor && anchor.getAttribute("onclick"),
+      anchor && anchor.textContent,
+    ]
+      .map((value) => String(value || ""))
+      .join(" ")
+      .toLowerCase();
+  }
+
+  function createAudioIconButtonFromImageInput(targetDocument, inputNode) {
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.className = "ccxp-lite-audio-icon-button";
+    button.appendChild(createAudioIcon(targetDocument));
+
+    const label =
+      resolveLegacyImageButtonLabel(inputNode) ||
+      getLandingStrings(targetDocument).playVerificationAudio;
+    button.setAttribute("aria-label", label);
+    button.title = label;
+
+    if (inputNode.id) {
+      button.id = inputNode.id;
+    }
+
+    if (inputNode.className) {
+      button.className = `${button.className} ${inputNode.className}`.trim();
+    }
+
+    if (inputNode.disabled) {
+      button.disabled = true;
+    }
+
+    ["onclick", "tabindex"].forEach((attributeName) => {
+      const value = inputNode.getAttribute(attributeName);
+      if (value) {
+        button.setAttribute(attributeName, value);
+      }
+    });
+
+    return button;
+  }
+
+  function getLandingStrings(targetDocument) {
+    return getLocalizedStrings(
+      resolveLandingLocale(
+        targetDocument,
+        targetDocument.querySelector("ul.links"),
+        findLoginSourceCell(targetDocument, getLoginForm(targetDocument)),
+        getLoginForm(targetDocument),
+      ),
+    );
+  }
+
+  function createAudioIcon(targetDocument) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    ["M11 5 6 9H2v6h4l5 4z", "M15.5 8.5a5 5 0 0 1 0 7", "M18.5 5.5a9 9 0 0 1 0 13"].forEach(
+      (pathData) => {
+        const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        icon.appendChild(path);
+      },
+    );
+
+    return icon;
+  }
+
+  function cssEscape(value) {
+    return String(value || "")
+      .replace(/\\/g, "\\\\")
+      .replace(/'/g, "\\'");
+  }
+
+  function createPasswordVisibilityIcon(targetDocument, visible) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    if (visible) {
+      [
+        "M10.733 5.076A10.744 10.744 0 0 1 12 5c4.596 0 8.51 2.934 9.938 7a10.454 10.454 0 0 1-1.077 2.167",
+        "M14.084 14.158a3 3 0 0 1-4.242-4.242",
+        "M17.479 17.499A10.75 10.75 0 0 1 12 19c-4.596 0-8.51-2.934-9.938-7a10.525 10.525 0 0 1 4.423-5.29",
+        "M2 2l20 20",
+      ].forEach((pathData) => {
+        const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        icon.appendChild(path);
+      });
+    } else {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute(
+        "d",
+        "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+      );
+      icon.appendChild(path);
+
+      const circle = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
+      circle.setAttribute("cx", "12");
+      circle.setAttribute("cy", "12");
+      circle.setAttribute("r", "3");
+      icon.appendChild(circle);
+    }
+
+    return icon;
+  }
+
+  namespace.landingLogin = {
+    enhancePasswordVisibilityToggle,
+    normalizeLoginFormLayout,
+    removeLoginResetControls,
+    forceCaptchaLabelDisplay,
+    replaceLoginFormImageButtons,
+    wrapPrimaryLoginButtons,
+    removeLoginSpacingArtifacts,
+    alignCaptchaMediaRow,
+  };
+})(window);

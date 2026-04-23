@@ -1,6 +1,14 @@
-import { copyFileSync, cpSync, mkdtempSync, mkdirSync, rmSync, existsSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  mkdtempSync,
+  mkdirSync,
+  readdirSync,
+  rmSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const projectRoot = process.cwd();
@@ -14,23 +22,31 @@ const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py
 const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
 const generatedModelPath = join(srcDir, "content.decaptcha.model.ts");
 const buildTsconfigPath = join(projectRoot, "tsconfig.build.json");
-const filesToPack = [
-  "manifest.json",
-  "content.js",
-  "content.shared.js",
-  "content.sidebar.js",
-  "content.decaptcha.model.js",
-  "content.decaptcha.js",
-  "content.landing.js",
-  "content.css",
-  "content.shared.css",
-  "content.landing.css",
-  "content.main.css",
-  "content.sidebar.css",
-  "assets",
-  "_locales",
-];
-const recursiveEntries = new Set(["assets", "_locales"]);
+function copyTree(
+  sourceDir: string,
+  targetDir: string,
+  shouldCopy: (sourcePath: string, isDirectory: boolean) => boolean,
+) {
+  mkdirSync(targetDir, { recursive: true });
+
+  for (const entryName of readdirSync(sourceDir)) {
+    const sourcePath = join(sourceDir, entryName);
+    const targetPath = join(targetDir, entryName);
+    const isDirectory = lstatSync(sourcePath).isDirectory();
+
+    if (!shouldCopy(sourcePath, isDirectory)) {
+      continue;
+    }
+
+    if (isDirectory) {
+      copyTree(sourcePath, targetPath, shouldCopy);
+      continue;
+    }
+
+    mkdirSync(dirname(targetPath), { recursive: true });
+    copyFileSync(sourcePath, targetPath);
+  }
+}
 
 try {
   mkdirSync(distDir, { recursive: true });
@@ -68,28 +84,28 @@ try {
     throw new Error("TypeScript extension build failed");
   }
 
-  for (const fileName of filesToPack) {
-    const sourceBaseDir = fileName.endsWith(".js") ? compiledSrcDir : srcDir;
-    const sourcePath = join(sourceBaseDir, fileName);
+  copyTree(
+    srcDir,
+    stagingDir,
+    (sourcePath, isDirectory) => isDirectory || !sourcePath.endsWith(".ts"),
+  );
+  copyTree(
+    srcDir,
+    unpackedDir,
+    (sourcePath, isDirectory) => isDirectory || !sourcePath.endsWith(".ts"),
+  );
+  copyTree(
+    compiledSrcDir,
+    stagingDir,
+    (sourcePath, isDirectory) => isDirectory || sourcePath.endsWith(".js"),
+  );
+  copyTree(
+    compiledSrcDir,
+    unpackedDir,
+    (sourcePath, isDirectory) => isDirectory || sourcePath.endsWith(".js"),
+  );
 
-    if (!existsSync(sourcePath)) {
-      throw new Error(`Missing required source file: ${sourcePath}`);
-    }
-
-    const stagingPath = join(stagingDir, fileName);
-    const unpackedPath = join(unpackedDir, fileName);
-
-    if (recursiveEntries.has(fileName)) {
-      cpSync(sourcePath, stagingPath, { recursive: true });
-      cpSync(sourcePath, unpackedPath, { recursive: true });
-      continue;
-    }
-
-    copyFileSync(sourcePath, stagingPath);
-    copyFileSync(sourcePath, unpackedPath);
-  }
-
-  const zipResult = spawnSync("zip", ["-q", "-r", outputZip, ...filesToPack], {
+  const zipResult = spawnSync("zip", ["-q", "-r", outputZip, "."], {
     cwd: stagingDir,
     stdio: "inherit",
   });

@@ -1,0 +1,255 @@
+// @ts-nocheck
+(function registerCcxpLiteLandingBootstrap(globalScope) {
+  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const {
+    shared,
+    landingLocale,
+    landingValidation,
+    landingCaptcha,
+    landingTabs,
+    landingSupport,
+    landingLogin,
+  } = namespace;
+  if (
+    !shared ||
+    !landingLocale ||
+    !landingValidation ||
+    !landingCaptcha ||
+    !landingTabs ||
+    !landingSupport ||
+    !landingLogin
+  ) {
+    return;
+  }
+
+  const {
+    TOKENS,
+    ASSETS,
+    ensureThemeDocument,
+    getLocalizedStrings,
+    createBrandImage,
+    createBrandCopy,
+    moveChildNodes,
+    removeNode,
+    isDocumentComplete,
+  } = shared;
+  const { isSupportedInquirePath, isLandingPage, resolveLandingLocale, getLoginForm } =
+    landingLocale;
+  const { captureLoginValidationState, restoreLoginValidationGuards } = landingValidation;
+  const { enableLoginCaptchaAutofill, getOrCreateCaptchaAutofillState } = landingCaptcha;
+  const { createLandingSection, wireLandingTabs } = landingTabs;
+  const {
+    findLoginSourceCell,
+    findAnnouncementTable,
+    findUtilityLinksTable,
+    findCannotLoginLink,
+    findServiceLink,
+    buildHeaderUtilityLinks,
+    buildLandingSupportLinks,
+    collapseLegacyServiceRow,
+    collapseLegacyCannotLoginLink,
+    collapseLegacyUtilityRow,
+    collapseLegacyThreeColumnRows,
+    findCalendarTable,
+    prepareAnnouncementTable,
+  } = landingSupport;
+  const {
+    normalizeLoginFormLayout,
+    removeLoginResetControls,
+    forceCaptchaLabelDisplay,
+    replaceLoginFormImageButtons,
+    wrapPrimaryLoginButtons,
+    removeLoginSpacingArtifacts,
+    alignCaptchaMediaRow,
+    enhancePasswordVisibilityToggle,
+  } = landingLogin;
+
+  function preloadLandingCaptcha(targetDocument) {
+    if (!isLandingPage(targetDocument)) {
+      return;
+    }
+
+    getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
+  }
+
+  function simplifyLandingPage(targetDocument, options = {}) {
+    const retryFn = typeof options.retry === "function" ? options.retry : () => {};
+    const onReady = typeof options.onReady === "function" ? options.onReady : () => {};
+
+    if (!targetDocument.body || !targetDocument.head) {
+      retryFn();
+      return;
+    }
+
+    if (targetDocument.body.dataset.ccxpLiteLandingApplied === "true") {
+      return;
+    }
+
+    if (!isDocumentComplete(targetDocument)) {
+      retryFn();
+      return;
+    }
+
+    const loginForm = getLoginForm(targetDocument);
+    const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
+    const tabNavigation = targetDocument.querySelector(".tab");
+    const tabContents = Array.from(targetDocument.querySelectorAll(".tabcontent"));
+    const languageLinks = targetDocument.querySelector("ul.links");
+    const announcementTable = findAnnouncementTable(targetDocument);
+    const utilityLinks = findUtilityLinksTable(targetDocument);
+    const cannotLoginLink = findCannotLoginLink(targetDocument, utilityLinks);
+    const serviceLink = findServiceLink(targetDocument);
+    const locale = resolveLandingLocale(targetDocument, languageLinks, loginSourceCell, loginForm);
+    const strings = getLocalizedStrings(locale);
+
+    if (!loginSourceCell) {
+      retryFn();
+      return;
+    }
+
+    const loginValidationState = captureLoginValidationState(targetDocument);
+
+    ensureThemeDocument(targetDocument, "landing");
+
+    const shell = targetDocument.createElement("main");
+    shell.className = TOKENS.landingClass;
+
+    const topSection = createLandingSection(targetDocument, "ccxp-lite-landing-top");
+    const headerSection = createLandingSection(targetDocument, "ccxp-lite-landing-header");
+    const brandSection = createLandingSection(targetDocument, "ccxp-lite-landing-brand");
+    const langSection = createLandingSection(targetDocument, "ccxp-lite-landing-lang");
+    const loginSection = createLandingSection(targetDocument, "ccxp-lite-landing-login");
+    const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
+    const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
+
+    brandSection.appendChild(
+      createBrandImage(
+        targetDocument,
+        "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
+        ASSETS.sidebarBrandLogoPath,
+      ),
+    );
+    brandSection.appendChild(
+      createBrandCopy(
+        targetDocument,
+        "ccxp-lite-landing-brand-copy ccxp-lite-sidebar-brand-copy",
+        "ccxp-lite-sidebar-brand-title",
+        strings.sidebarTitle,
+      ),
+    );
+
+    if (languageLinks) {
+      langSection.appendChild(languageLinks);
+    }
+
+    const loginHeaderLabel = targetDocument.createElement("h1");
+    loginHeaderLabel.className = "ccxp-lite-landing-login-label";
+    loginHeaderLabel.textContent = strings.loginTitle;
+    loginSection.appendChild(loginHeaderLabel);
+
+    if (loginForm) {
+      loginSection.appendChild(loginForm);
+    } else {
+      moveChildNodes(loginSourceCell, loginSection);
+    }
+
+    normalizeLoginFormLayout(loginSection);
+    removeLoginResetControls(loginSection);
+    forceCaptchaLabelDisplay(loginSection);
+    replaceLoginFormImageButtons(targetDocument, loginSection);
+    wrapPrimaryLoginButtons(targetDocument, loginSection);
+    removeLoginSpacingArtifacts(targetDocument, loginSection);
+    alignCaptchaMediaRow(targetDocument, loginSection);
+    enhancePasswordVisibilityToggle(targetDocument, loginSection);
+    const captchaAutofillState = getOrCreateCaptchaAutofillState(targetDocument, loginSection);
+
+    removeNode(findCalendarTable(loginSection));
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
+
+    collapseLegacyThreeColumnRows(targetDocument.body);
+
+    headerSection.appendChild(brandSection);
+    if (languageLinks) {
+      headerSection.appendChild(langSection);
+    }
+
+    const utilityHeaderLinks = buildHeaderUtilityLinks(
+      targetDocument,
+      utilityLinks,
+      cannotLoginLink,
+      strings,
+    );
+    if (utilityHeaderLinks) {
+      if (languageLinks) {
+        headerSection.insertBefore(utilityHeaderLinks, langSection);
+      } else {
+        headerSection.appendChild(utilityHeaderLinks);
+      }
+    }
+
+    if (utilityLinks) {
+      collapseLegacyUtilityRow(utilityLinks);
+      removeNode(utilityLinks);
+    }
+
+    topSection.appendChild(headerSection);
+    topSection.appendChild(loginSection);
+    shell.appendChild(topSection);
+
+    const supportLinks = buildLandingSupportLinks(
+      targetDocument,
+      serviceLink,
+      cannotLoginLink,
+      strings,
+    );
+    if (serviceLink) {
+      collapseLegacyServiceRow(serviceLink);
+    }
+
+    if (cannotLoginLink) {
+      collapseLegacyCannotLoginLink(cannotLoginLink);
+    }
+
+    if (tabNavigation && tabContents.length > 0) {
+      const tabsHeader = targetDocument.createElement("div");
+      tabsHeader.className = "ccxp-lite-landing-tabs-header";
+      tabsHeader.appendChild(tabNavigation);
+
+      if (supportLinks) {
+        tabsHeader.appendChild(supportLinks);
+      }
+
+      tabsSection.appendChild(tabsHeader);
+      tabContents.forEach((tabContent) => {
+        collapseLegacyThreeColumnRows(tabContent);
+        tabsSection.appendChild(tabContent);
+      });
+
+      wireLandingTabs(targetDocument, tabNavigation, tabContents, strings);
+      shell.appendChild(tabsSection);
+    } else if (supportLinks) {
+      const supportSection = createLandingSection(targetDocument, "ccxp-lite-landing-support-only");
+      supportSection.appendChild(supportLinks);
+      shell.appendChild(supportSection);
+    }
+
+    if (announcementTable) {
+      prepareAnnouncementTable(announcementTable, strings);
+      noticesSection.appendChild(announcementTable);
+      shell.appendChild(noticesSection);
+    }
+
+    targetDocument.body.replaceChildren(shell);
+    enableLoginCaptchaAutofill(targetDocument, loginSection, captchaAutofillState);
+    restoreLoginValidationGuards(targetDocument, loginValidationState);
+    targetDocument.body.dataset.ccxpLiteLandingApplied = "true";
+    onReady();
+  }
+
+  namespace.landingBootstrap = {
+    isSupportedInquirePath,
+    isLandingPage,
+    preloadLandingCaptcha,
+    simplifyLandingPage,
+  };
+})(window);
