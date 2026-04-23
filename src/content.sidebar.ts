@@ -289,26 +289,12 @@
 
   function normalizeTopLevelGroup(folderNode, index, navDocument) {
     const directLinks = [];
-    const sections = [];
     const groupLabel = toPlainText(folderNode.desc, navDocument);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
 
     (folderNode.children || []).forEach((childNode) => {
       if (childNode && childNode.children) {
-        if (shouldFlattenTopLevelGroupSections(groupLabel)) {
-          collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, directLinks);
-          return;
-        }
-
-        const section = normalizeSectionNode(
-          childNode,
-          `${index}-${sections.length}`,
-          navDocument,
-          groupPathSegments,
-        );
-        if (section) {
-          sections.push(section);
-        }
+        collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, directLinks);
         return;
       }
 
@@ -322,13 +308,9 @@
       id: `group-${index}`,
       label: groupLabel,
       directLinks,
-      sections,
+      sections: [],
       kind: "group",
     };
-  }
-
-  function shouldFlattenTopLevelGroupSections(groupLabel) {
-    return groupLabel === "就學貸款";
   }
 
   function collectNestedLinksIntoGroup(folderNode, navDocument, parentPathSegments, directLinks) {
@@ -343,49 +325,6 @@
         directLinks.push(linkItem);
       }
     });
-  }
-
-  function normalizeSectionNode(folderNode, indexKey, navDocument, parentPathSegments) {
-    const directLinks = [];
-    const sections = [];
-    const label = toPlainText(folderNode.desc, navDocument);
-    const sectionPathSegments = buildFavoritePathSegments(
-      parentPathSegments,
-      label,
-      `section-${indexKey}`,
-    );
-
-    (folderNode.children || []).forEach((childNode) => {
-      if (childNode && childNode.children) {
-        const section = normalizeSectionNode(
-          childNode,
-          `${indexKey}-${sections.length}`,
-          navDocument,
-          sectionPathSegments,
-        );
-        if (section) {
-          sections.push(section);
-        }
-        return;
-      }
-
-      const linkItem = normalizeLinkItem(childNode, navDocument, sectionPathSegments);
-      if (linkItem) {
-        directLinks.push(linkItem);
-      }
-    });
-
-    if (!label && directLinks.length === 0 && sections.length === 0) {
-      return null;
-    }
-
-    return {
-      id: `section-${indexKey}`,
-      label,
-      directLinks,
-      sections,
-      kind: "section",
-    };
   }
 
   function normalizeLinkItem(itemNode, navDocument, parentPathSegments) {
