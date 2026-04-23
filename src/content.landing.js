@@ -4,12 +4,25 @@
   if (!shared || !decaptcha) {
     return;
   }
-  const { TOKENS, ASSETS, ensureThemeDocument, getLocalizedStrings, createBrandImage, createBrandCopy, moveChildNodes, removeNode, isDocumentComplete } = shared;
+  const {
+    TOKENS,
+    ASSETS,
+    ensureThemeDocument,
+    getLocalizedStrings,
+    createBrandImage,
+    createBrandCopy,
+    moveChildNodes,
+    removeNode,
+    isDocumentComplete,
+  } = shared;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap();
 
   function isSupportedInquirePath(targetDocument) {
-    const pathName = ((targetDocument.location && targetDocument.location.pathname) || "").toLowerCase();
+    const pathName = (
+      (targetDocument.location && targetDocument.location.pathname) ||
+      ""
+    ).toLowerCase();
     return /\/ccxp\/inquire\/(?:index\.php)?\/?$/.test(pathName);
   }
 
@@ -34,7 +47,10 @@
   }
 
   function resolveLandingLocale(targetDocument, languageLinks, loginSourceCell, loginForm) {
-    const htmlLang = ((targetDocument.documentElement && targetDocument.documentElement.lang) || "").toLowerCase();
+    const htmlLang = (
+      (targetDocument.documentElement && targetDocument.documentElement.lang) ||
+      ""
+    ).toLowerCase();
     if (htmlLang.startsWith("en")) {
       return "en";
     }
@@ -43,7 +59,10 @@
       return "zh";
     }
 
-    const search = ((targetDocument.location && targetDocument.location.search) || "").toLowerCase();
+    const search = (
+      (targetDocument.location && targetDocument.location.search) ||
+      ""
+    ).toLowerCase();
     const langMatch = search.match(/[?&]lang=([^&]+)/);
     if (langMatch) {
       const langValue = decodeURIComponent(langMatch[1]);
@@ -56,7 +75,9 @@
     }
 
     if (languageLinks) {
-      const currentLangNode = languageLinks.querySelector(".active, .current, .selected, [aria-current='page'], strong, b");
+      const currentLangNode = languageLinks.querySelector(
+        ".active, .current, .selected, [aria-current='page'], strong, b",
+      );
       if (currentLangNode) {
         const currentLangText = (currentLangNode.textContent || "").toLowerCase();
         if (/english/.test(currentLangText)) {
@@ -70,20 +91,22 @@
 
     const formInputTextSample = loginForm
       ? Array.from(loginForm.querySelectorAll("input, select, textarea, button"))
-        .map((node) => [
-          node.getAttribute("placeholder") || "",
-          node.getAttribute("value") || "",
-          node.getAttribute("title") || "",
-          node.getAttribute("aria-label") || "",
-          node.getAttribute("name") || ""
-        ].join(" "))
-        .join(" ")
+          .map((node) =>
+            [
+              node.getAttribute("placeholder") || "",
+              node.getAttribute("value") || "",
+              node.getAttribute("title") || "",
+              node.getAttribute("aria-label") || "",
+              node.getAttribute("name") || "",
+            ].join(" "),
+          )
+          .join(" ")
       : "";
 
     const loginTextSample = [
       loginForm && loginForm.textContent,
       loginSourceCell && loginSourceCell.textContent,
-      formInputTextSample
+      formInputTextSample,
     ]
       .filter(Boolean)
       .join(" ")
@@ -92,7 +115,7 @@
     const localePairs = [
       { zh: ["帳號", "學號"], en: ["account", "username", "user id", "student id"] },
       { zh: ["密碼"], en: ["password"] },
-      { zh: ["驗證碼"], en: ["captcha", "verification code", "security code"] }
+      { zh: ["驗證碼"], en: ["captcha", "verification code", "security code"] },
     ];
 
     let zhHits = 0;
@@ -123,11 +146,17 @@
 
     const candidates = forms.filter((form) => {
       const action = (form.getAttribute("action") || "").toLowerCase();
-      const hasKnownAction = action.includes("pre_select_entry.php") || action.includes("select_entry.php");
-      const hasPasswordField = Boolean(form.querySelector("input[type='password'], input[name='passwd'], input[name='passwd2']"));
-      const hasAccountLikeField = Boolean(form.querySelector("input[name='account'], input[name='id'], input[type='text']"));
-      const hasCredentials = Boolean(form.querySelector("input[name='account']"))
-        && Boolean(form.querySelector("input[name='passwd'], input[name='passwd2']"));
+      const hasKnownAction =
+        action.includes("pre_select_entry.php") || action.includes("select_entry.php");
+      const hasPasswordField = Boolean(
+        form.querySelector("input[type='password'], input[name='passwd'], input[name='passwd2']"),
+      );
+      const hasAccountLikeField = Boolean(
+        form.querySelector("input[name='account'], input[name='id'], input[type='text']"),
+      );
+      const hasCredentials =
+        Boolean(form.querySelector("input[name='account']")) &&
+        Boolean(form.querySelector("input[name='passwd'], input[name='passwd2']"));
       return hasKnownAction || hasCredentials || (hasPasswordField && hasAccountLikeField);
     });
 
@@ -221,14 +250,20 @@
     const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
     const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
 
-    brandSection.appendChild(createBrandImage(targetDocument, "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath));
+    brandSection.appendChild(
+      createBrandImage(
+        targetDocument,
+        "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
+        ASSETS.sidebarBrandLogoPath,
+      ),
+    );
     brandSection.appendChild(
       createBrandCopy(
         targetDocument,
         "ccxp-lite-landing-brand-copy ccxp-lite-sidebar-brand-copy",
         "ccxp-lite-sidebar-brand-title",
-        strings.sidebarTitle
-      )
+        strings.sidebarTitle,
+      ),
     );
 
     if (languageLinks) {
@@ -266,7 +301,12 @@
       headerSection.appendChild(langSection);
     }
 
-    const utilityHeaderLinks = buildHeaderUtilityLinks(targetDocument, utilityLinks, cannotLoginLink, strings);
+    const utilityHeaderLinks = buildHeaderUtilityLinks(
+      targetDocument,
+      utilityLinks,
+      cannotLoginLink,
+      strings,
+    );
     if (utilityHeaderLinks) {
       if (languageLinks) {
         headerSection.insertBefore(utilityHeaderLinks, langSection);
@@ -284,7 +324,12 @@
     topSection.appendChild(loginSection);
     shell.appendChild(topSection);
 
-    const supportLinks = buildLandingSupportLinks(targetDocument, serviceLink, cannotLoginLink, strings);
+    const supportLinks = buildLandingSupportLinks(
+      targetDocument,
+      serviceLink,
+      cannotLoginLink,
+      strings,
+    );
     if (serviceLink) {
       collapseLegacyServiceRow(serviceLink);
     }
@@ -344,7 +389,7 @@
     return {
       startedAt: Date.now(),
       fnstrDate: dayPart,
-      fnstrSeed: seedPart
+      fnstrSeed: seedPart,
     };
   }
 
@@ -425,7 +470,7 @@
     });
     observer.observe(captchaImage, {
       attributes: true,
-      attributeFilter: ["src"]
+      attributeFilter: ["src"],
     });
 
     triggerAutofill();
@@ -455,7 +500,7 @@
       pendingSrc: "",
       failedSrc: "",
       cachedAnswer: "",
-      cachedSrc: ""
+      cachedSrc: "",
     };
 
     captchaAutofillStateByDocument.set(targetDocument, state);
@@ -481,11 +526,18 @@
       return null;
     }
 
-    const scope = input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") || rootNode;
-    const mediaRow = scope.querySelector(".ccxp-lite-captcha-media-row")
-      || rootNode.querySelector(".ccxp-lite-captcha-media-row");
-    const image = scope.querySelector(".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']")
-      || rootNode.querySelector(".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']");
+    const scope =
+      input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") || rootNode;
+    const mediaRow =
+      scope.querySelector(".ccxp-lite-captcha-media-row") ||
+      rootNode.querySelector(".ccxp-lite-captcha-media-row");
+    const image =
+      scope.querySelector(
+        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
+      ) ||
+      rootNode.querySelector(
+        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
+      );
 
     if (!image || !mediaRow) {
       return null;
@@ -563,7 +615,9 @@
       })
       .catch((error) => {
         if (requestToken === state.requestToken) {
-          fallbackToManualCaptchaEntry(state, captchaSrc, { didTimeout: isCaptchaTimeoutError(error) });
+          fallbackToManualCaptchaEntry(state, captchaSrc, {
+            didTimeout: isCaptchaTimeoutError(error),
+          });
         }
       });
   }
@@ -579,10 +633,13 @@
     }
 
     setCaptchaLoadingState(state, true);
-    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc)
-      .catch((error) => {
-        fallbackToManualCaptchaEntry(state, captchaSrc, { didTimeout: isCaptchaTimeoutError(error) });
-      });
+    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(
+      (error) => {
+        fallbackToManualCaptchaEntry(state, captchaSrc, {
+          didTimeout: isCaptchaTimeoutError(error),
+        });
+      },
+    );
   }
 
   function fallbackToManualCaptchaEntry(state, captchaSrc, options = {}) {
@@ -642,7 +699,12 @@
     }
 
     try {
-      const parsed = new URL(rawSource, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
+      const parsed = new URL(
+        rawSource,
+        targetDocument.location && targetDocument.location.href
+          ? targetDocument.location.href
+          : window.location.href,
+      );
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
       const fileName = pathSegments[pathSegments.length - 1] || "";
       return `${fileName}${parsed.search}`;
@@ -654,31 +716,38 @@
   }
 
   function downloadCaptchaImageBytes(targetDocument, captchaSrc) {
-    const captchaUrl = new URL(captchaSrc, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
+    const captchaUrl = new URL(
+      captchaSrc,
+      targetDocument.location && targetDocument.location.href
+        ? targetDocument.location.href
+        : window.location.href,
+    );
 
-    return fetchWithTimeout(captchaUrl.toString(), { credentials: "include" }, CAPTCHA_AUTOFILL_TIMEOUT_MS)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`captcha-download-failed:${response.status}`);
-        }
+    return fetchWithTimeout(
+      captchaUrl.toString(),
+      { credentials: "include" },
+      CAPTCHA_AUTOFILL_TIMEOUT_MS,
+    ).then((response) => {
+      if (!response.ok) {
+        throw new Error(`captcha-download-failed:${response.status}`);
+      }
 
-        return response.arrayBuffer();
-      });
+      return response.arrayBuffer();
+    });
   }
 
   function requestCaptchaAnswer(_captchaSrc, imageBytes) {
-    return Promise.resolve(decaptcha.predictDigits(imageBytes))
-      .then((answer) => String(answer || "").trim());
+    return Promise.resolve(decaptcha.predictDigits(imageBytes)).then((answer) =>
+      String(answer || "").trim(),
+    );
   }
 
   function isCaptchaTimeoutError(error) {
     return Boolean(
-      error
-      && (
-        error.name === "AbortError"
-        || error.name === "TimeoutError"
-        || error.code === "CAPTCHA_TIMEOUT"
-      )
+      error &&
+      (error.name === "AbortError" ||
+        error.name === "TimeoutError" ||
+        error.code === "CAPTCHA_TIMEOUT"),
     );
   }
 
@@ -692,19 +761,21 @@
 
     return fetch(resource, {
       ...options,
-      signal: controller.signal
-    }).catch((error) => {
-      if (didTimeout && error?.name === "AbortError") {
-        const timeoutError = new Error("captcha-timeout");
-        timeoutError.name = "TimeoutError";
-        timeoutError.code = "CAPTCHA_TIMEOUT";
-        throw timeoutError;
-      }
+      signal: controller.signal,
+    })
+      .catch((error) => {
+        if (didTimeout && error?.name === "AbortError") {
+          const timeoutError = new Error("captcha-timeout");
+          timeoutError.name = "TimeoutError";
+          timeoutError.code = "CAPTCHA_TIMEOUT";
+          throw timeoutError;
+        }
 
-      throw error;
-    }).finally(() => {
-      window.clearTimeout(timerId);
-    });
+        throw error;
+      })
+      .finally(() => {
+        window.clearTimeout(timerId);
+      });
   }
 
   function extractPwdstrFromImage(imageNode, targetDocument) {
@@ -715,7 +786,12 @@
     const rawSrc = imageNode.getAttribute("src") || "";
 
     try {
-      const parsed = new URL(rawSrc, targetDocument.location && targetDocument.location.href ? targetDocument.location.href : window.location.href);
+      const parsed = new URL(
+        rawSrc,
+        targetDocument.location && targetDocument.location.href
+          ? targetDocument.location.href
+          : window.location.href,
+      );
       return parsed.searchParams.get("pwdstr") || "";
     } catch (_error) {
       const match = rawSrc.match(/[?&]pwdstr=([^&]+)/i);
@@ -729,12 +805,19 @@
     return section;
   }
 
-  function wireLandingTabs(targetDocument, tabNavigation, tabContents, strings = getLocalizedStrings("zh")) {
+  function wireLandingTabs(
+    targetDocument,
+    tabNavigation,
+    tabContents,
+    strings = getLocalizedStrings("zh"),
+  ) {
     if (!tabNavigation || !Array.isArray(tabContents) || tabContents.length === 0) {
       return;
     }
 
-    const tabButtons = Array.from(tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']"));
+    const tabButtons = Array.from(
+      tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']"),
+    );
     if (tabButtons.length === 0) {
       return;
     }
@@ -769,10 +852,12 @@
       return tabPanels.find((panel) => panel.id === legacyTarget) || null;
     };
 
-    const buttonPanelMap = tabButtons.map((button, index) => {
-      const panel = resolvePanelByLegacyTarget(button) || tabPanels[index] || null;
-      return { button, panel };
-    }).filter((entry) => Boolean(entry.panel));
+    const buttonPanelMap = tabButtons
+      .map((button, index) => {
+        const panel = resolvePanelByLegacyTarget(button) || tabPanels[index] || null;
+        return { button, panel };
+      })
+      .filter((entry) => Boolean(entry.panel));
 
     if (buttonPanelMap.length === 0) {
       return;
@@ -809,12 +894,16 @@
     });
 
     const getActiveIndex = () => {
-      const byButtonClass = buttonPanelMap.findIndex(({ button }) => button.classList.contains("active"));
+      const byButtonClass = buttonPanelMap.findIndex(({ button }) =>
+        button.classList.contains("active"),
+      );
       if (byButtonClass >= 0) {
         return byButtonClass;
       }
 
-      const byPanelVisibility = buttonPanelMap.findIndex(({ panel }) => panel.style.display !== "none" && !panel.hidden);
+      const byPanelVisibility = buttonPanelMap.findIndex(
+        ({ panel }) => panel.style.display !== "none" && !panel.hidden,
+      );
       if (byPanelVisibility >= 0) {
         return byPanelVisibility;
       }
@@ -853,7 +942,9 @@
           activateTabAt((index + 1) % buttonPanelMap.length, { focusButton: true });
         } else if (event.key === "ArrowLeft") {
           event.preventDefault();
-          activateTabAt((index - 1 + buttonPanelMap.length) % buttonPanelMap.length, { focusButton: true });
+          activateTabAt((index - 1 + buttonPanelMap.length) % buttonPanelMap.length, {
+            focusButton: true,
+          });
         } else if (event.key === "Home") {
           event.preventDefault();
           activateTabAt(0, { focusButton: true });
@@ -868,7 +959,12 @@
   }
 
   function structureLandingTabNavigation(targetDocument, tabNavigation, buttonPanelMap) {
-    if (!targetDocument || !tabNavigation || !Array.isArray(buttonPanelMap) || buttonPanelMap.length === 0) {
+    if (
+      !targetDocument ||
+      !tabNavigation ||
+      !Array.isArray(buttonPanelMap) ||
+      buttonPanelMap.length === 0
+    ) {
       return;
     }
 
@@ -897,7 +993,10 @@
       return;
     }
 
-    const label = String(button.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
+    const label = String(button.textContent || "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .toLowerCase();
     if (/(學生|校友|student|alumni)/i.test(label)) {
       panel.classList.add("ccxp-lite-student-alumni-panel");
     }
@@ -905,7 +1004,7 @@
 
   function extractLegacyTabTarget(button) {
     const onclickValue = String(button.getAttribute("onclick") || "");
-    const targetMatch = onclickValue.match(/['\"]([^'\"]+)['\"]/);
+    const targetMatch = onclickValue.match(/['"]([^'"]+)['"]/);
     return targetMatch ? targetMatch[1] : "";
   }
 
@@ -914,8 +1013,9 @@
       return loginForm.closest("td, table, section, article") || loginForm;
     }
 
-    return Array.from(targetDocument.querySelectorAll("td, table, div, section, article"))
-      .find((cell) => cell.querySelector("form"));
+    return Array.from(targetDocument.querySelectorAll("td, table, div, section, article")).find(
+      (cell) => cell.querySelector("form"),
+    );
   }
 
   function findCalendarTable(targetNode) {
@@ -924,20 +1024,22 @@
       return null;
     }
 
-    return Array.from(targetNode.querySelectorAll("table"))
-      .find((table) => table.contains(calendarFrame) && ["月曆", "Calendar"].some((text) => table.textContent.includes(text)));
+    return Array.from(targetNode.querySelectorAll("table")).find(
+      (table) =>
+        table.contains(calendarFrame) &&
+        ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
+    );
   }
 
   function findAnnouncementTable(targetDocument) {
-    const rightPanel = Array.from(targetDocument.querySelectorAll("td"))
-      .find((cell) => {
-        const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
-        if (widthText !== "35%" && widthText !== "35") {
-          return false;
-        }
+    const rightPanel = Array.from(targetDocument.querySelectorAll("td")).find((cell) => {
+      const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
+      if (widthText !== "35%" && widthText !== "35") {
+        return false;
+      }
 
-        return Boolean(cell.querySelector(".board_item, .board_subject"));
-      });
+      return Boolean(cell.querySelector(".board_item, .board_subject"));
+    });
 
     const panelTables = rightPanel ? Array.from(rightPanel.querySelectorAll("table")) : [];
     const fallbackTables = Array.from(targetDocument.querySelectorAll("table"));
@@ -953,7 +1055,8 @@
         .find((cell) => cell.classList.contains("board_item"));
 
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
-      const hasNoticeHeading = headingText.includes("系統公告") || headingText.includes("system notice");
+      const hasNoticeHeading =
+        headingText.includes("系統公告") || headingText.includes("system notice");
 
       if (!hasNoticeHeading) {
         return false;
@@ -978,19 +1081,24 @@
         const secondCell = cells[1];
         const firstClass = firstCell.classList;
         const secondClass = secondCell.classList;
-        const isBoardPair = (firstClass.contains("board_0") && secondClass.contains("board_0"))
-          || (firstClass.contains("board_1") && secondClass.contains("board_1"));
+        const isBoardPair =
+          (firstClass.contains("board_0") && secondClass.contains("board_0")) ||
+          (firstClass.contains("board_1") && secondClass.contains("board_1"));
 
         if (!isBoardPair) {
           return false;
         }
 
-        const rawDate = String(firstCell.textContent || "").replace(/\s+/g, "").trim();
+        const rawDate = String(firstCell.textContent || "")
+          .replace(/\s+/g, "")
+          .trim();
         if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
           return false;
         }
 
-        const topicText = String(secondCell.textContent || "").replace(/\s+/g, " ").trim();
+        const topicText = String(secondCell.textContent || "")
+          .replace(/\s+/g, " ")
+          .trim();
         return topicText.length > 8;
       });
 
@@ -1035,12 +1143,16 @@
 
       const hasOnlyDecorativeCells = cells.every((cell) => {
         const hasBgColor = String(cell.getAttribute("bgcolor") || "").trim().length > 0;
-        const text = String(cell.textContent || "").replace(/\s+/g, "").trim();
+        const text = String(cell.textContent || "")
+          .replace(/\s+/g, "")
+          .trim();
         return hasBgColor && text.length === 0;
       });
 
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
-        const text = String(cell.textContent || "").replace(/\s+/g, "").trim();
+        const text = String(cell.textContent || "")
+          .replace(/\s+/g, "")
+          .trim();
         if (text.length > 0) {
           return false;
         }
@@ -1048,8 +1160,9 @@
         return !cell.querySelector("img, iframe, table, form, input, button, a, ul, ol, p");
       });
 
-      const hasLegacySpacerHeight = String(row.getAttribute("height") || "").trim().length > 0
-        || cells.some((cell) => String(cell.getAttribute("height") || "").trim().length > 0);
+      const hasLegacySpacerHeight =
+        String(row.getAttribute("height") || "").trim().length > 0 ||
+        cells.some((cell) => String(cell.getAttribute("height") || "").trim().length > 0);
 
       if (hasOnlyDecorativeCells) {
         removeNode(row);
@@ -1083,7 +1196,9 @@
         return;
       }
 
-      const rawDate = String(cells[0].textContent || "").replace(/\s+/g, "").trim();
+      const rawDate = String(cells[0].textContent || "")
+        .replace(/\s+/g, "")
+        .trim();
       if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
         return;
       }
@@ -1092,7 +1207,7 @@
       const topicContent = topicCell.cloneNode(true);
       entries.push({
         date: rawDate,
-        topicContent
+        topicContent,
       });
     });
 
@@ -1147,14 +1262,14 @@
 
   function findUtilityLinksTable(targetDocument) {
     const anchor = targetDocument.querySelector(
-      "a[href*='ccc.site.nthu.edu.tw'], a[href*='aisccc.site.nthu.edu.tw'], a[href*='nthu-en.site.nthu.edu.tw']"
+      "a[href*='ccc.site.nthu.edu.tw'], a[href*='aisccc.site.nthu.edu.tw'], a[href*='nthu-en.site.nthu.edu.tw']",
     );
     return anchor ? anchor.closest("table") : null;
   }
 
   function findServiceLink(targetDocument) {
     const anchor = targetDocument.querySelector("a[href*='inquire_cpr.html']");
-    return anchor ? (anchor.closest("div") || anchor) : null;
+    return anchor ? anchor.closest("div") || anchor : null;
   }
 
   function findCannotLoginLink(targetDocument, utilityLinksTable) {
@@ -1172,7 +1287,9 @@
     };
 
     if (!utilityLinksTable) {
-      const fallbackAnchor = targetDocument.querySelector("a[href*='forget.php'], a[href*='inquire_cpr.html']");
+      const fallbackAnchor = targetDocument.querySelector(
+        "a[href*='forget.php'], a[href*='inquire_cpr.html']",
+      );
       return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
     }
 
@@ -1182,7 +1299,9 @@
       return fromUtility;
     }
 
-    const fallbackAnchor = targetDocument.querySelector("a[href*='forget.php'], a[href*='inquire_cpr.html']");
+    const fallbackAnchor = targetDocument.querySelector(
+      "a[href*='forget.php'], a[href*='inquire_cpr.html']",
+    );
     return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
   }
 
@@ -1191,14 +1310,20 @@
       .replace(/\s+/g, "")
       .toLowerCase();
 
-    return normalized.includes("無法登入")
-      || normalized.includes("无法登入")
-      || normalized.includes("cannotlogin")
-      || normalized.includes("can'tlogin")
-      || normalized.includes("cantlogin");
+    return (
+      normalized.includes("無法登入") ||
+      normalized.includes("无法登入") ||
+      normalized.includes("cannotlogin") ||
+      normalized.includes("can'tlogin") ||
+      normalized.includes("cantlogin")
+    );
   }
 
-  function buildServicePhoneLink(targetDocument, serviceLinkNode, strings = getLocalizedStrings("zh")) {
+  function buildServicePhoneLink(
+    targetDocument,
+    serviceLinkNode,
+    strings = getLocalizedStrings("zh"),
+  ) {
     if (!serviceLinkNode) {
       return null;
     }
@@ -1216,7 +1341,9 @@
     }
 
     const sourceLabel = String(sourceAnchor.textContent || "").trim();
-    const labelText = isCannotLoginLabel(sourceLabel) ? strings.cannotLogin : (sourceLabel || strings.cannotLogin);
+    const labelText = isCannotLoginLabel(sourceLabel)
+      ? strings.cannotLogin
+      : sourceLabel || strings.cannotLogin;
     return buildLandingSupportLink(targetDocument, sourceAnchor, labelText);
   }
 
@@ -1240,7 +1367,12 @@
     return anchor;
   }
 
-  function buildLandingSupportLinks(targetDocument, serviceLinkNode, cannotLoginAnchor, strings = getLocalizedStrings("zh")) {
+  function buildLandingSupportLinks(
+    targetDocument,
+    serviceLinkNode,
+    cannotLoginAnchor,
+    strings = getLocalizedStrings("zh"),
+  ) {
     const servicePhoneLink = buildServicePhoneLink(targetDocument, serviceLinkNode, strings);
     const cannotLoginLink = buildCannotLoginLink(targetDocument, cannotLoginAnchor, strings);
 
@@ -1314,16 +1446,16 @@
   }
 
   function removeAdjacentLegacyBreak(node, direction) {
-    const sibling = direction === "previous"
-      ? node.previousSibling
-      : node.nextSibling;
+    const sibling = direction === "previous" ? node.previousSibling : node.nextSibling;
 
     if (!sibling) {
       return;
     }
 
     if (sibling.nodeType === Node.TEXT_NODE) {
-      const normalizedText = String(sibling.textContent || "").replace(/\u00a0/g, " ").trim();
+      const normalizedText = String(sibling.textContent || "")
+        .replace(/\u00a0/g, " ")
+        .trim();
       if (normalizedText.length === 0) {
         removeNode(sibling);
       }
@@ -1335,14 +1467,17 @@
     }
   }
 
-  function buildHeaderUtilityLinks(targetDocument, utilityLinksTable, excludedAnchor, strings = getLocalizedStrings("zh")) {
+  function buildHeaderUtilityLinks(
+    targetDocument,
+    utilityLinksTable,
+    excludedAnchor,
+    strings = getLocalizedStrings("zh"),
+  ) {
     if (!utilityLinksTable) {
       return null;
     }
 
-    const excludedHref = excludedAnchor
-      ? String(excludedAnchor.getAttribute("href") || "")
-      : "";
+    const excludedHref = excludedAnchor ? String(excludedAnchor.getAttribute("href") || "") : "";
 
     const anchors = Array.from(utilityLinksTable.querySelectorAll("a[href]"))
       .filter((anchor) => anchor !== excludedAnchor)
@@ -1388,7 +1523,17 @@
       return;
     }
 
-    ["onclick", "onmousedown", "onmouseup", "onmouseover", "onmouseout", "onmouseenter", "onmouseleave", "onkeydown", "onkeyup"].forEach((name) => {
+    [
+      "onclick",
+      "onmousedown",
+      "onmouseup",
+      "onmouseover",
+      "onmouseout",
+      "onmouseenter",
+      "onmouseleave",
+      "onkeydown",
+      "onkeyup",
+    ].forEach((name) => {
       const value = sourceAnchor.getAttribute(name);
       if (value) {
         targetAnchor.setAttribute(name, value);
@@ -1407,7 +1552,11 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M15 3h6v6", "M10 14 21 3", "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"].forEach((pathData) => {
+    [
+      "M15 3h6v6",
+      "M10 14 21 3",
+      "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+    ].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.appendChild(path);
@@ -1457,7 +1606,9 @@
       return false;
     }
 
-    const hasInteractiveContent = cells.some((cell) => cell.querySelector("a, button, input, select, textarea, table, iframe"));
+    const hasInteractiveContent = cells.some((cell) =>
+      cell.querySelector("a, button, input, select, textarea, table, iframe"),
+    );
     if (hasInteractiveContent) {
       return false;
     }
@@ -1473,7 +1624,9 @@
     }
 
     const rowHeight = String(row.getAttribute("height") || "").trim();
-    const cellHasHeight = cells.some((cell) => String(cell.getAttribute("height") || "").trim().length > 0);
+    const cellHasHeight = cells.some(
+      (cell) => String(cell.getAttribute("height") || "").trim().length > 0,
+    );
 
     return rowHeight.length > 0 || cellHasHeight;
   }
@@ -1483,14 +1636,21 @@
       return false;
     }
 
-    const widthText = String(cell.getAttribute("width") || "").trim().toLowerCase();
-    const normalizedText = String(cell.textContent || "").replace(/\u00a0/g, " ").trim();
+    const widthText = String(cell.getAttribute("width") || "")
+      .trim()
+      .toLowerCase();
+    const normalizedText = String(cell.textContent || "")
+      .replace(/\u00a0/g, " ")
+      .trim();
 
     if ((widthText === "3%" || widthText === "3") && normalizedText.length === 0) {
       return true;
     }
 
-    return normalizedText.length === 0 && cell.querySelector("table, iframe, form, input, button, a") === null;
+    return (
+      normalizedText.length === 0 &&
+      cell.querySelector("table, iframe, form, input, button, a") === null
+    );
   }
 
   function collapseLegacyThreeColumnRows(rootNode) {
@@ -1521,7 +1681,11 @@
         return;
       }
 
-      const spacerCell = cells.find((cell) => isLegacySpacerCell(cell) || normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width) === "3%");
+      const spacerCell = cells.find(
+        (cell) =>
+          isLegacySpacerCell(cell) ||
+          normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width) === "3%",
+      );
 
       removeNode(leftCell);
       removeNode(spacerCell);
@@ -1574,7 +1738,11 @@
       return false;
     }
 
-    return cell.querySelector("img, iframe, form, input, button, select, textarea, a, object, embed, video, audio, table, div, span, ul, ol, p") === null;
+    return (
+      cell.querySelector(
+        "img, iframe, form, input, button, select, textarea, a, object, embed, video, audio, table, div, span, ul, ol, p",
+      ) === null
+    );
   }
 
   function shouldSkipLegacyRowCollapse(row) {
@@ -1605,7 +1773,11 @@
   }
 
   function enhancePasswordVisibilityToggle(targetDocument, rootNode) {
-    const passwordFields = Array.from(rootNode.querySelectorAll("input[name='passwd'], input[type='password']:not([name='passwd2'])"));
+    const passwordFields = Array.from(
+      rootNode.querySelectorAll(
+        "input[name='passwd'], input[type='password']:not([name='passwd2'])",
+      ),
+    );
     const seen = new Set();
     const strings = getLandingStrings(targetDocument);
 
@@ -1637,7 +1809,10 @@
       toggleButton.addEventListener("click", () => {
         const isHidden = field.type !== "text";
         field.type = isHidden ? "text" : "password";
-        toggleButton.setAttribute("aria-label", isHidden ? strings.hidePassword : strings.showPassword);
+        toggleButton.setAttribute(
+          "aria-label",
+          isHidden ? strings.hidePassword : strings.showPassword,
+        );
         toggleButton.replaceChildren(createPasswordVisibilityIcon(targetDocument, isHidden));
       });
 
@@ -1653,7 +1828,11 @@
 
     const inlineScope = passwordField.closest("form") || passwordField.parentElement;
     if (inlineScope) {
-      const legacyInlineToggles = Array.from(inlineScope.querySelectorAll("svg#showPassword, svg#hidePassword, svg[onclick*='togglePassword']"));
+      const legacyInlineToggles = Array.from(
+        inlineScope.querySelectorAll(
+          "svg#showPassword, svg#hidePassword, svg[onclick*='togglePassword']",
+        ),
+      );
 
       legacyInlineToggles.forEach((node) => {
         const relation = node.compareDocumentPosition(passwordField);
@@ -1705,7 +1884,7 @@
         node.getAttribute("aria-label"),
         node.getAttribute("class"),
         node.getAttribute("src"),
-        node.textContent
+        node.textContent,
       ]
         .map((value) => String(value || "").toLowerCase())
         .join(" ");
@@ -1773,7 +1952,11 @@
 
     fields.forEach((fieldNode, fieldIndex) => {
       const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
-      if (["hidden", "submit", "button", "image", "reset", "checkbox", "radio", "file"].includes(inputType)) {
+      if (
+        ["hidden", "submit", "button", "image", "reset", "checkbox", "radio", "file"].includes(
+          inputType,
+        )
+      ) {
         return;
       }
 
@@ -1859,11 +2042,13 @@
       removeNode(rowNode);
     });
 
-    Array.from(formNode.querySelectorAll("table.ccxp-lite-login-form-table")).forEach((tableNode) => {
-      if (!tableNode.querySelector("tr")) {
-        removeNode(tableNode);
-      }
-    });
+    Array.from(formNode.querySelectorAll("table.ccxp-lite-login-form-table")).forEach(
+      (tableNode) => {
+        if (!tableNode.querySelector("tr")) {
+          removeNode(tableNode);
+        }
+      },
+    );
 
     formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
@@ -1884,13 +2069,16 @@
       }
 
       const fieldCellIndex = cells.indexOf(fieldCell);
-      const labelCell = resolveLabelCellForField(cells, fieldCellIndex >= 0 ? fieldCellIndex : cellIndex);
+      const labelCell = resolveLabelCellForField(
+        cells,
+        fieldCellIndex >= 0 ? fieldCellIndex : cellIndex,
+      );
       const labelText = getPreferredLoginLabelText(labelCell, fieldCell, fieldNode);
 
       pairs.push({
         fieldNode,
         fieldCell,
-        labelText
+        labelText,
       });
 
       usedFieldCells.add(fieldCell);
@@ -1911,7 +2099,11 @@
     pairs.push({
       fieldNode: fallbackFieldNode,
       fieldCell: fallbackFieldCell,
-      labelText: getPreferredLoginLabelText(fallbackLabelCell, fallbackFieldCell, fallbackFieldNode)
+      labelText: getPreferredLoginLabelText(
+        fallbackLabelCell,
+        fallbackFieldCell,
+        fallbackFieldNode,
+      ),
     });
 
     return pairs;
@@ -1987,12 +2179,14 @@
   }
 
   function resolveLoginFieldLabel(fieldPair, targetDocument) {
-    const explicitLabel = String(fieldPair && fieldPair.labelText || "").trim();
+    const explicitLabel = String((fieldPair && fieldPair.labelText) || "").trim();
     if (explicitLabel) {
       return explicitLabel;
     }
 
-    const fieldName = String(fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name") || "")
+    const fieldName = String(
+      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) || "",
+    )
       .trim()
       .toLowerCase();
     const strings = getLandingStrings(targetDocument);
@@ -2045,9 +2239,10 @@
     while (currentNode && currentNode !== fieldNode) {
       const nextNode = currentNode.nextSibling;
       const textContent = getNodeText(currentNode);
-      const isBreak = currentNode.nodeType === Node.ELEMENT_NODE
-        && currentNode.tagName
-        && currentNode.tagName.toLowerCase() === "br";
+      const isBreak =
+        currentNode.nodeType === Node.ELEMENT_NODE &&
+        currentNode.tagName &&
+        currentNode.tagName.toLowerCase() === "br";
 
       if (textContent || isBreak) {
         leadingNodes.push(currentNode);
@@ -2062,10 +2257,14 @@
   function findPrimaryFieldControl(scopeNode) {
     const candidates = Array.from(scopeNode.querySelectorAll("input, select, textarea"));
 
-    return candidates.find((field) => {
-      const inputType = (field.getAttribute("type") || "text").toLowerCase();
-      return !["hidden", "submit", "button", "image", "checkbox", "radio", "file"].includes(inputType);
-    }) || null;
+    return (
+      candidates.find((field) => {
+        const inputType = (field.getAttribute("type") || "text").toLowerCase();
+        return !["hidden", "submit", "button", "image", "checkbox", "radio", "file"].includes(
+          inputType,
+        );
+      }) || null
+    );
   }
 
   function ensureFieldId(fieldNode, rowIndex, pairIndex = 0) {
@@ -2073,10 +2272,11 @@
       return fieldNode.id;
     }
 
-    const baseName = String(fieldNode.getAttribute("name") || "field")
-      .trim()
-      .replace(/[^a-zA-Z0-9_-]+/g, "-")
-      .replace(/^-+|-+$/g, "") || "field";
+    const baseName =
+      String(fieldNode.getAttribute("name") || "field")
+        .trim()
+        .replace(/[^a-zA-Z0-9_-]+/g, "-")
+        .replace(/^-+|-+$/g, "") || "field";
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;
     fieldNode.id = generatedId;
@@ -2084,7 +2284,9 @@
   }
 
   function removeLoginResetControls(rootNode) {
-    const resetControls = Array.from(rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"));
+    const resetControls = Array.from(
+      rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
+    );
 
     resetControls.forEach((controlNode) => {
       removeNode(controlNode);
@@ -2096,7 +2298,9 @@
     const spans = Array.from(rootNode.querySelectorAll("span"));
 
     spans.forEach((spanNode) => {
-      const labelText = String(spanNode.textContent || "").replace(/\s+/g, " ").trim();
+      const labelText = String(spanNode.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
         return;
       }
@@ -2164,12 +2368,14 @@
         button.disabled = true;
       }
 
-      ["onclick", "formaction", "formmethod", "formenctype", "formtarget", "tabindex"].forEach((attributeName) => {
-        const value = inputNode.getAttribute(attributeName);
-        if (value) {
-          button.setAttribute(attributeName, value);
-        }
-      });
+      ["onclick", "formaction", "formmethod", "formenctype", "formtarget", "tabindex"].forEach(
+        (attributeName) => {
+          const value = inputNode.getAttribute(attributeName);
+          if (value) {
+            button.setAttribute(attributeName, value);
+          }
+        },
+      );
 
       if (inputNode.hasAttribute("formnovalidate")) {
         button.setAttribute("formnovalidate", "");
@@ -2188,7 +2394,11 @@
 
       if (isVerificationAudioControl(imageNode)) {
         anchor.classList.add("ccxp-lite-audio-icon-link");
-        anchor.setAttribute("aria-label", resolveLegacyImageButtonLabel(imageNode) || getLandingStrings(targetDocument).playVerificationAudio);
+        anchor.setAttribute(
+          "aria-label",
+          resolveLegacyImageButtonLabel(imageNode) ||
+            getLandingStrings(targetDocument).playVerificationAudio,
+        );
         anchor.replaceChildren(createAudioIcon(targetDocument));
         anchor.dataset.ccxpLiteImageButtonReplaced = "true";
         return;
@@ -2221,7 +2431,9 @@
     forms.forEach((formNode) => {
       normalizeNativeLoginSubmitControls(targetDocument, formNode);
 
-      const allActionButtons = Array.from(formNode.querySelectorAll(".ccxp-lite-image-action-button, .ccxp-lite-image-link-button"));
+      const allActionButtons = Array.from(
+        formNode.querySelectorAll(".ccxp-lite-image-action-button, .ccxp-lite-image-link-button"),
+      );
       if (allActionButtons.length === 0) {
         return;
       }
@@ -2233,15 +2445,20 @@
         allActionButtons[0].parentNode?.insertBefore(actionGroup, allActionButtons[0]);
       }
 
-      const primaryCandidates = allActionButtons.filter((buttonNode) => isPrimaryLoginActionLabel(buttonNode.textContent));
+      const primaryCandidates = allActionButtons.filter((buttonNode) =>
+        isPrimaryLoginActionLabel(buttonNode.textContent),
+      );
       const primaryButton = primaryCandidates[0] || allActionButtons[0];
       const orderedButtons = [
         primaryButton,
-        ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton)
+        ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton),
       ];
 
       orderedButtons.forEach((buttonNode) => {
-        buttonNode.classList.remove("ccxp-lite-login-primary-button", "ccxp-lite-login-secondary-button");
+        buttonNode.classList.remove(
+          "ccxp-lite-login-primary-button",
+          "ccxp-lite-login-secondary-button",
+        );
         if (buttonNode === primaryButton) {
           buttonNode.classList.add("ccxp-lite-login-primary-button");
         } else {
@@ -2261,7 +2478,9 @@
         return;
       }
 
-      const label = String(inputNode.value || inputNode.getAttribute("value") || inputNode.textContent || "")
+      const label = String(
+        inputNode.value || inputNode.getAttribute("value") || inputNode.textContent || "",
+      )
         .replace(/\s+/g, " ")
         .trim();
 
@@ -2297,9 +2516,14 @@
       button.dataset.ccxpLiteSubmitRebuilt = "true";
     });
 
-    const nativeSubmitButtons = Array.from(formNode.querySelectorAll("button[type='submit'], button:not([type])"));
+    const nativeSubmitButtons = Array.from(
+      formNode.querySelectorAll("button[type='submit'], button:not([type])"),
+    );
     nativeSubmitButtons.forEach((buttonNode) => {
-      if (buttonNode.classList.contains("ccxp-lite-audio-icon-button") || buttonNode.classList.contains("ccxp-lite-image-action-button")) {
+      if (
+        buttonNode.classList.contains("ccxp-lite-audio-icon-button") ||
+        buttonNode.classList.contains("ccxp-lite-image-action-button")
+      ) {
         return;
       }
 
@@ -2352,7 +2576,9 @@
         return;
       }
 
-      const audioControl = host.querySelector(".ccxp-lite-audio-icon-button, .ccxp-lite-audio-icon-link");
+      const audioControl = host.querySelector(
+        ".ccxp-lite-audio-icon-button, .ccxp-lite-audio-icon-link",
+      );
       if (!audioControl) {
         return;
       }
@@ -2420,7 +2646,8 @@
     }
 
     const action = String(inputNode.form.getAttribute("action") || "").toLowerCase();
-    const isLoginFlowForm = action.includes("pre_select_entry.php") || action.includes("select_entry.php");
+    const isLoginFlowForm =
+      action.includes("pre_select_entry.php") || action.includes("select_entry.php");
     if (!isLoginFlowForm) {
       return false;
     }
@@ -2442,10 +2669,12 @@
       .replace(/\s+/g, "")
       .toLowerCase();
 
-    return normalized.includes("清除")
-      || normalized.includes("clear")
-      || normalized.includes("重填")
-      || normalized.includes("reset");
+    return (
+      normalized.includes("清除") ||
+      normalized.includes("clear") ||
+      normalized.includes("重填") ||
+      normalized.includes("reset")
+    );
   }
 
   function isVerificationAudioControl(node) {
@@ -2462,7 +2691,7 @@
       node.getAttribute("alt"),
       node.getAttribute("title"),
       node.getAttribute("src"),
-      node.getAttribute("onclick")
+      node.getAttribute("onclick"),
     ]
       .map((value) => String(value || "").toLowerCase())
       .join(" ");
@@ -2490,32 +2719,37 @@
     }
 
     const loginIndex = controls.findIndex((controlNode) => isLoginLikeControl(controlNode));
-    const currentIndex = controls.findIndex((controlNode) => controlNode === node || controlNode.contains(node));
+    const currentIndex = controls.findIndex(
+      (controlNode) => controlNode === node || controlNode.contains(node),
+    );
 
     if (loginIndex < 0 || currentIndex < 0 || currentIndex <= loginIndex) {
       return false;
     }
 
-    const isTwoImagePair = controls.length === 2
-      && controls.every((controlNode) => isImageActionControl(controlNode));
+    const isTwoImagePair =
+      controls.length === 2 && controls.every((controlNode) => isImageActionControl(controlNode));
 
     return isTwoImagePair;
   }
 
   function collectLegacyActionControls(row) {
-    return Array.from(row.querySelectorAll("input[type='image'], input[type='submit'], input[type='reset'], button, a > img"))
-      .filter((node) => {
-        if (node.matches("a > img")) {
-          return true;
-        }
+    return Array.from(
+      row.querySelectorAll(
+        "input[type='image'], input[type='submit'], input[type='reset'], button, a > img",
+      ),
+    ).filter((node) => {
+      if (node.matches("a > img")) {
+        return true;
+      }
 
-        const type = String(node.getAttribute("type") || "").toLowerCase();
-        if (node.tagName === "BUTTON" && !type) {
-          return true;
-        }
+      const type = String(node.getAttribute("type") || "").toLowerCase();
+      if (node.tagName === "BUTTON" && !type) {
+        return true;
+      }
 
-        return ["image", "submit", "reset", "button"].includes(type);
-      });
+      return ["image", "submit", "reset", "button"].includes(type);
+    });
   }
 
   function isImageActionControl(node) {
@@ -2559,7 +2793,7 @@
       node.textContent,
       anchor && anchor.getAttribute("href"),
       anchor && anchor.getAttribute("onclick"),
-      anchor && anchor.textContent
+      anchor && anchor.textContent,
     ]
       .map((value) => String(value || ""))
       .join(" ")
@@ -2572,7 +2806,9 @@
     button.className = "ccxp-lite-audio-icon-button";
     button.appendChild(createAudioIcon(targetDocument));
 
-    const label = resolveLegacyImageButtonLabel(inputNode) || getLandingStrings(targetDocument).playVerificationAudio;
+    const label =
+      resolveLegacyImageButtonLabel(inputNode) ||
+      getLandingStrings(targetDocument).playVerificationAudio;
     button.setAttribute("aria-label", label);
     button.title = label;
 
@@ -2599,12 +2835,14 @@
   }
 
   function getLandingStrings(targetDocument) {
-    return getLocalizedStrings(resolveLandingLocale(
-      targetDocument,
-      targetDocument.querySelector("ul.links"),
-      findLoginSourceCell(targetDocument, getLoginForm(targetDocument)),
-      getLoginForm(targetDocument)
-    ));
+    return getLocalizedStrings(
+      resolveLandingLocale(
+        targetDocument,
+        targetDocument.querySelector("ul.links"),
+        findLoginSourceCell(targetDocument, getLoginForm(targetDocument)),
+        getLoginForm(targetDocument),
+      ),
+    );
   }
 
   function createAudioIcon(targetDocument) {
@@ -2617,11 +2855,13 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M11 5 6 9H2v6h4l5 4z", "M15.5 8.5a5 5 0 0 1 0 7", "M18.5 5.5a9 9 0 0 1 0 13"].forEach((pathData) => {
-      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", pathData);
-      icon.appendChild(path);
-    });
+    ["M11 5 6 9H2v6h4l5 4z", "M15.5 8.5a5 5 0 0 1 0 7", "M18.5 5.5a9 9 0 0 1 0 13"].forEach(
+      (pathData) => {
+        const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        icon.appendChild(path);
+      },
+    );
 
     return icon;
   }
@@ -2647,7 +2887,7 @@
         "M10.733 5.076A10.744 10.744 0 0 1 12 5c4.596 0 8.51 2.934 9.938 7a10.454 10.454 0 0 1-1.077 2.167",
         "M14.084 14.158a3 3 0 0 1-4.242-4.242",
         "M17.479 17.499A10.75 10.75 0 0 1 12 19c-4.596 0-8.51-2.934-9.938-7a10.525 10.525 0 0 1 4.423-5.29",
-        "M2 2l20 20"
+        "M2 2l20 20",
       ].forEach((pathData) => {
         const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathData);
@@ -2655,7 +2895,10 @@
       });
     } else {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0");
+      path.setAttribute(
+        "d",
+        "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+      );
       icon.appendChild(path);
 
       const circle = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -2668,11 +2911,10 @@
     return icon;
   }
 
-
   namespace.landing = {
     isSupportedInquirePath,
     isLandingPage,
     preloadLandingCaptcha,
-    simplifyLandingPage
+    simplifyLandingPage,
   };
 })(window);

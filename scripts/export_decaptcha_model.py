@@ -124,7 +124,8 @@ def to_model_payload(checkpoint):
 
 def render_model_script(payload):
     payload_json = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
-    return """(function bootstrapCcxpLiteDecaptchaModel(globalScope, factory) {
+    return """// @ts-nocheck
+(function bootstrapCcxpLiteDecaptchaModel(globalScope, factory) {
   const model = factory();
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   namespace.decaptchaModel = model;

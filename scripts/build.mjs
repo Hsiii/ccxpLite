@@ -26,7 +26,7 @@ const filesToPack = [
   "content.main.css",
   "content.sidebar.css",
   "assets",
-  "_locales"
+  "_locales",
 ];
 const recursiveEntries = new Set(["assets", "_locales"]);
 
@@ -35,10 +35,14 @@ try {
   rmSync(outputZip, { force: true });
 
   if (existsSync(exportScriptPath) && existsSync(checkpointPath)) {
-    const exportResult = spawnSync("python3", [exportScriptPath, "--checkpoint", checkpointPath, "--output", generatedModelPath], {
-      cwd: projectRoot,
-      stdio: "inherit"
-    });
+    const exportResult = spawnSync(
+      "python3",
+      [exportScriptPath, "--checkpoint", checkpointPath, "--output", generatedModelPath],
+      {
+        cwd: projectRoot,
+        stdio: "inherit",
+      },
+    );
 
     if (exportResult.status !== 0) {
       throw new Error("decaptcha model export failed");
@@ -68,7 +72,7 @@ try {
 
   const zipResult = spawnSync("zip", ["-q", "-r", outputZip, ...filesToPack], {
     cwd: stagingDir,
-    stdio: "inherit"
+    stdio: "inherit",
   });
 
   if (zipResult.status !== 0) {

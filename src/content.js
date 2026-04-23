@@ -25,7 +25,7 @@
       landing.preloadLandingCaptcha(document);
       simplifyLandingPage(document, {
         retry,
-        onReady: markLandingReady
+        onReady: markLandingReady,
       });
       return;
     }
@@ -64,7 +64,7 @@
       navReady: false,
       mainReady: false,
       timerId: null,
-      released: false
+      released: false,
     };
 
     state.timerId = window.setTimeout(() => {
@@ -155,7 +155,11 @@
     }
 
     const navDocument = navFrame && navFrame.contentDocument;
-    if (navDocument && navDocument.body && navDocument.body.dataset.ccxpLiteSidebarApplied === "true") {
+    if (
+      navDocument &&
+      navDocument.body &&
+      navDocument.body.dataset.ccxpLiteSidebarApplied === "true"
+    ) {
       loadingState.navReady = true;
     }
 

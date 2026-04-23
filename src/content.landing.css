@@ -746,8 +746,12 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
       color-mix(in srgb, var(--ccxp-lite-surface) 60%, #d4d9e1),
       color-mix(in srgb, var(--ccxp-lite-surface) 86%, #eef2f6)
     );
-  background-size: 210% 100%, 100% 100%;
-  background-position: 160% 0, 0 0;
+  background-size:
+    210% 100%,
+    100% 100%;
+  background-position:
+    160% 0,
+    0 0;
   animation: ccxp-lite-captcha-shimmer 1s linear infinite;
 }
 
@@ -769,11 +773,15 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 
 @keyframes ccxp-lite-captcha-shimmer {
   from {
-    background-position: 160% 0, 0 0;
+    background-position:
+      160% 0,
+      0 0;
   }
 
   to {
-    background-position: -40% 0, 0 0;
+    background-position:
+      -40% 0,
+      0 0;
   }
 }
 

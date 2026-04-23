@@ -20,9 +20,7 @@
         "content.main.css",
         "content.sidebar.css"
       ],
-      "matches": [
-        "https://www.ccxp.nthu.edu.tw/*"
-      ]
+      "matches": ["https://www.ccxp.nthu.edu.tw/*"]
     }
   ],
   "content_scripts": [

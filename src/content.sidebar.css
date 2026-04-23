@@ -77,8 +77,11 @@ html[data-ccxp-lite-scope="nav"] body {
   inset: 0;
   border: 1px solid var(--ccxp-lite-sidebar-search-border);
   border-radius: var(--ccxp-lite-radius-sm);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.98), var(--ccxp-lite-sidebar-search-surface));
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.98),
+    var(--ccxp-lite-sidebar-search-surface)
+  );
   pointer-events: none;
 }
 
@@ -151,9 +154,9 @@ html[data-ccxp-lite-scope="nav"] body {
   bottom: 0;
   left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-    ((var(--ccxp-lite-tree-depth, 1) - 1) * var(--ccxp-lite-sidebar-tree-indent-step)) +
-    (var(--ccxp-lite-size-sidebar-category-leading) / 2) -
-    (var(--ccxp-lite-size-sidebar-guide-line) / 2)
+      ((var(--ccxp-lite-tree-depth, 1) - 1) * var(--ccxp-lite-sidebar-tree-indent-step)) +
+      (var(--ccxp-lite-size-sidebar-category-leading) / 2) -
+      (var(--ccxp-lite-size-sidebar-guide-line) / 2)
   );
   width: var(--ccxp-lite-size-sidebar-guide-line);
   background: var(--ccxp-lite-border);
@@ -170,12 +173,11 @@ html[data-ccxp-lite-scope="nav"] body {
   padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
   padding-left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
-    (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-sidebar-tree-indent-step))
+      (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-sidebar-tree-indent-step))
   );
   padding-right: calc(
-    var(--ccxp-lite-sidebar-row-padding-x) +
-    var(--ccxp-lite-size-sidebar-control) +
-    var(--ccxp-lite-spacing-brand-inline)
+    var(--ccxp-lite-sidebar-row-padding-x) + var(--ccxp-lite-size-sidebar-control) +
+      var(--ccxp-lite-spacing-brand-inline)
   );
   border: 0;
   border-radius: var(--ccxp-lite-radius-sm);
@@ -186,7 +188,9 @@ html[data-ccxp-lite-scope="nav"] body {
   text-align: left;
   white-space: nowrap;
   overflow: hidden;
-  transition: background-color 120ms ease, color 120ms ease;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
 }
 
 .ccxp-lite-row-button:hover {
@@ -251,7 +255,9 @@ html[data-ccxp-lite-scope="nav"] body {
   width: var(--ccxp-lite-size-sidebar-control);
   height: var(--ccxp-lite-size-sidebar-control);
   transform: translateY(-50%);
-  transition: transform 120ms ease, color 120ms ease;
+  transition:
+    transform 120ms ease,
+    color 120ms ease;
 }
 
 .ccxp-lite-favorite-toggle:hover,

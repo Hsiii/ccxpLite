@@ -1,13 +1,23 @@
 (function registerCcxpLiteSidebar(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
-  const { TOKENS, STRINGS, SIDEBAR_CATEGORIES, ASSETS, ensureThemeDocument, getLocalizedStrings, resolveLocaleFromDocument, createBrandImage, createBrandCopy } = shared;
+  const {
+    TOKENS,
+    STRINGS,
+    SIDEBAR_CATEGORIES,
+    ASSETS,
+    ensureThemeDocument,
+    getLocalizedStrings,
+    resolveLocaleFromDocument,
+    createBrandImage,
+    createBrandCopy,
+  } = shared;
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
   const favoriteState = {
     ids: new Set(),
     hasLoaded: false,
-    pendingLoad: null
+    pendingLoad: null,
   };
   const favoriteSubscribers = new Set();
   let favoriteStorageSyncBound = false;
@@ -20,7 +30,10 @@
       return;
     }
 
-    if (navDocument.body.dataset.ccxpLiteSidebarApplied !== "true" && !shared.isDocumentComplete(navDocument)) {
+    if (
+      navDocument.body.dataset.ccxpLiteSidebarApplied !== "true" &&
+      !shared.isDocumentComplete(navDocument)
+    ) {
       retry();
       return;
     }
@@ -44,8 +57,17 @@
 
       const brand = navDocument.createElement("div");
       brand.className = "ccxp-lite-sidebar-brand";
-      brand.appendChild(createBrandImage(navDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath));
-      brand.appendChild(createBrandCopy(navDocument, "ccxp-lite-sidebar-brand-copy", "ccxp-lite-sidebar-brand-title", strings.sidebarTitle));
+      brand.appendChild(
+        createBrandImage(navDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
+      );
+      brand.appendChild(
+        createBrandCopy(
+          navDocument,
+          "ccxp-lite-sidebar-brand-copy",
+          "ccxp-lite-sidebar-brand-title",
+          strings.sidebarTitle,
+        ),
+      );
 
       const search = createSidebarSearch(navDocument, strings);
 
@@ -67,7 +89,8 @@
       navDocument.body.dataset.ccxpLiteSidebarApplied = "true";
     }
 
-    const rerender = () => renderSidebar(navDocument, () => buildSidebarModel(rawTree, navDocument, strings), strings);
+    const rerender = () =>
+      renderSidebar(navDocument, () => buildSidebarModel(rawTree, navDocument, strings), strings);
     ensureFavoriteStorageSync();
     favoriteSubscribers.add(rerender);
     ensureFavoriteIdsLoaded(rerender);
@@ -83,7 +106,7 @@
 
     return {
       items,
-      initialExpandedItemIds: favoriteIds.size > 0 ? ["category-favorites"] : []
+      initialExpandedItemIds: favoriteIds.size > 0 ? ["category-favorites"] : [],
     };
   }
 
@@ -107,10 +130,9 @@
         directLinks: dedupeLinkItems(favoriteLinks),
         sections: [],
         emptyMessage: strings.sidebarFavoritesEmpty || "Press star at any function to save it here",
-        kind: "category"
+        kind: "category",
       },
-      ...SIDEBAR_CATEGORIES
-      .map((category) => {
+      ...SIDEBAR_CATEGORIES.map((category) => {
         const categoryItems = buckets.get(category.id) || [];
         if (categoryItems.length === 0) {
           return null;
@@ -120,25 +142,30 @@
           id: `category-${category.id}`,
           label: strings[category.labelKey] || category.fallbackLabel || category.id,
           icon: category.icon,
-          directLinks: categoryItems.filter((item) => item.kind === "link").map((item) => item.linkItem),
+          directLinks: categoryItems
+            .filter((item) => item.kind === "link")
+            .map((item) => item.linkItem),
           sections: categoryItems.filter((item) => item.kind !== "link"),
           emptyMessage: strings.emptyGroup,
-          kind: "category"
+          kind: "category",
         };
-      })
-      .filter(Boolean)
+      }).filter(Boolean),
     ].filter(Boolean);
   }
 
   function findCategoryForItem(item) {
     const candidateLabels = collectSidebarLabels(item);
 
-    return SIDEBAR_CATEGORIES.find((category) =>
-      category.itemLabels.some((label) => {
-        const normalizedCategoryLabel = normalizeSidebarLabel(label);
-        return candidateLabels.some((candidateLabel) => isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel));
-      })
-    ) || null;
+    return (
+      SIDEBAR_CATEGORIES.find((category) =>
+        category.itemLabels.some((label) => {
+          const normalizedCategoryLabel = normalizeSidebarLabel(label);
+          return candidateLabels.some((candidateLabel) =>
+            isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel),
+          );
+        }),
+      ) || null
+    );
   }
 
   function normalizeSidebarLabel(label) {
@@ -180,9 +207,11 @@
       return false;
     }
 
-    return normalizedCategoryLabel === candidateLabel
-      || candidateLabel.includes(normalizedCategoryLabel)
-      || normalizedCategoryLabel.includes(candidateLabel);
+    return (
+      normalizedCategoryLabel === candidateLabel ||
+      candidateLabel.includes(normalizedCategoryLabel) ||
+      normalizedCategoryLabel.includes(candidateLabel)
+    );
   }
 
   function normalizeRootEntry(entryNode, index, navDocument) {
@@ -203,7 +232,7 @@
       id: `link-${index}`,
       label: linkItem.label,
       linkItem,
-      kind: "link"
+      kind: "link",
     };
   }
 
@@ -215,7 +244,12 @@
 
     (folderNode.children || []).forEach((childNode) => {
       if (childNode && childNode.children) {
-        const section = normalizeSectionNode(childNode, `${index}-${sections.length}`, navDocument, groupPathSegments);
+        const section = normalizeSectionNode(
+          childNode,
+          `${index}-${sections.length}`,
+          navDocument,
+          groupPathSegments,
+        );
         if (section) {
           sections.push(section);
         }
@@ -233,7 +267,7 @@
       label: groupLabel,
       directLinks,
       sections,
-      kind: "group"
+      kind: "group",
     };
   }
 
@@ -241,11 +275,20 @@
     const directLinks = [];
     const sections = [];
     const label = toPlainText(folderNode.desc, navDocument);
-    const sectionPathSegments = buildFavoritePathSegments(parentPathSegments, label, `section-${indexKey}`);
+    const sectionPathSegments = buildFavoritePathSegments(
+      parentPathSegments,
+      label,
+      `section-${indexKey}`,
+    );
 
     (folderNode.children || []).forEach((childNode) => {
       if (childNode && childNode.children) {
-        const section = normalizeSectionNode(childNode, `${indexKey}-${sections.length}`, navDocument, sectionPathSegments);
+        const section = normalizeSectionNode(
+          childNode,
+          `${indexKey}-${sections.length}`,
+          navDocument,
+          sectionPathSegments,
+        );
         if (section) {
           sections.push(section);
         }
@@ -267,7 +310,7 @@
       label,
       directLinks,
       sections,
-      kind: "section"
+      kind: "section",
     };
   }
 
@@ -292,19 +335,19 @@
         pathSegments,
         href: parsedLink.href,
         target: parsedLink.target,
-        clickLinkArgs
+        clickLinkArgs,
       }),
       legacyId: createLegacyLinkId({
         label,
         href: parsedLink.href,
         target: parsedLink.target,
-        clickLinkArgs
+        clickLinkArgs,
       }),
       label,
       pathSegments,
       href: parsedLink.href,
       target: parsedLink.target,
-      clickLinkArgs
+      clickLinkArgs,
     };
   }
 
@@ -314,7 +357,7 @@
 
     return {
       href: hrefMatch ? hrefMatch[1] : "",
-      target: targetMatch ? targetMatch[1] : "main"
+      target: targetMatch ? targetMatch[1] : "main",
     };
   }
 
@@ -326,7 +369,7 @@
 
     return {
       name: match[1],
-      url: match[2]
+      url: match[2],
     };
   }
 
@@ -346,14 +389,20 @@
       .replace(/\\"/g, "&quot;")
       .replace(/\\'/g, "&#39;")
       .replace(/<br\s*\/?>/gi, " ");
-    return (scratch.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return (scratch.textContent || "").replace(/\s+/g, " ").trim();
   }
 
   function extractLegacyVisibleText(rawHtml) {
-    return [...String(rawHtml).replace(/<br\s*\/?>/gi, "\n").matchAll(/>([^<>]+)/g)]
-      .map((match) => String(match[1] || "").replace(/\s+/g, " ").trim())
+    return [
+      ...String(rawHtml)
+        .replace(/<br\s*\/?>/gi, "\n")
+        .matchAll(/>([^<>]+)/g),
+    ]
+      .map((match) =>
+        String(match[1] || "")
+          .replace(/\s+/g, " ")
+          .trim(),
+      )
       .filter(Boolean)
       .join(" ")
       .trim();
@@ -377,9 +426,7 @@
     }
     const model = typeof modelInput === "function" ? modelInput() : modelInput;
     const searchQuery = searchInput ? searchInput.value.trim() : "";
-    const activeModel = searchQuery
-      ? filterSidebarModel(model, searchQuery)
-      : model;
+    const activeModel = searchQuery ? filterSidebarModel(model, searchQuery) : model;
     const initialExpandedIds = new Set(model.initialExpandedItemIds || []);
     const storedExpandedIds = shell.dataset.expandedItemIds
       ? shell.dataset.expandedItemIds.split(",").filter(Boolean)
@@ -388,10 +435,14 @@
       searchQuery
         ? Array.from(activeModel.initialExpandedItemIds || [])
         : storedExpandedIds && storedExpandedIds.length > 0
-          ? storedExpandedIds.filter((itemId) => model.items.some((item) => hasExpandableId(item, itemId)))
-          : Array.from(initialExpandedIds)
+          ? storedExpandedIds.filter((itemId) =>
+              model.items.some((item) => hasExpandableId(item, itemId)),
+            )
+          : Array.from(initialExpandedIds),
     );
-    const hasFavoritesCategory = activeModel.items.some((item) => item && item.id === "category-favorites");
+    const hasFavoritesCategory = activeModel.items.some(
+      (item) => item && item.id === "category-favorites",
+    );
     if (hasFavoritesCategory) {
       expandedItemIds.add("category-favorites");
     }
@@ -409,25 +460,47 @@
 
       activeModel.items.forEach((item) => {
         if (item.kind === "category" || item.kind === "group" || item.kind === "section") {
-          sidebarList.appendChild(createExpandableGroup(navDocument, item, expandedItemIds, 0, strings, (groupId) => {
-            if (expandedItemIds.has(groupId)) {
-              expandedItemIds.delete(groupId);
-            } else {
-              expandedItemIds.add(groupId);
-            }
-            renderItems();
-          }, () => renderSidebar(navDocument, modelInput, strings)));
+          sidebarList.appendChild(
+            createExpandableGroup(
+              navDocument,
+              item,
+              expandedItemIds,
+              0,
+              strings,
+              (groupId) => {
+                if (expandedItemIds.has(groupId)) {
+                  expandedItemIds.delete(groupId);
+                } else {
+                  expandedItemIds.add(groupId);
+                }
+                renderItems();
+              },
+              () => renderSidebar(navDocument, modelInput, strings),
+            ),
+          );
           return;
         }
 
-        sidebarList.appendChild(createLinkButton(navDocument, item.linkItem, "ccxp-lite-item", 0, strings, () => renderSidebar(navDocument, modelInput, strings)));
+        sidebarList.appendChild(
+          createLinkButton(navDocument, item.linkItem, "ccxp-lite-item", 0, strings, () =>
+            renderSidebar(navDocument, modelInput, strings),
+          ),
+        );
       });
     };
 
     renderItems();
   }
 
-  function createExpandableGroup(targetDocument, group, expandedItemIds, depth, strings, onToggle, onFavoritesChange) {
+  function createExpandableGroup(
+    targetDocument,
+    group,
+    expandedItemIds,
+    depth,
+    strings,
+    onToggle,
+    onFavoritesChange,
+  ) {
     const isExpanded = expandedItemIds.has(group.id);
     const linkList = targetDocument.createElement("div");
     linkList.className = `ccxp-lite-sidebar-group${group.kind === "category" ? " ccxp-lite-category" : ""}`;
@@ -437,7 +510,10 @@
     button.className = "ccxp-lite-row-button ccxp-lite-expandable";
     button.setAttribute("aria-expanded", isExpanded ? "true" : "false");
     button.setAttribute("title", group.label);
-    button.style.setProperty("--ccxp-lite-row-depth", String(getSidebarIndentLevel(group.kind, depth)));
+    button.style.setProperty(
+      "--ccxp-lite-row-depth",
+      String(getSidebarIndentLevel(group.kind, depth)),
+    );
 
     const leading = targetDocument.createElement("span");
     if (group.kind === "category") {
@@ -463,11 +539,30 @@
       }
 
       group.directLinks.forEach((linkItem) => {
-        children.appendChild(createLinkButton(targetDocument, linkItem, "ccxp-lite-item", depth + 1, strings, onFavoritesChange));
+        children.appendChild(
+          createLinkButton(
+            targetDocument,
+            linkItem,
+            "ccxp-lite-item",
+            depth + 1,
+            strings,
+            onFavoritesChange,
+          ),
+        );
       });
 
       group.sections.forEach((section) => {
-        children.appendChild(createExpandableGroup(targetDocument, section, expandedItemIds, depth + 1, strings, onToggle, onFavoritesChange));
+        children.appendChild(
+          createExpandableGroup(
+            targetDocument,
+            section,
+            expandedItemIds,
+            depth + 1,
+            strings,
+            onToggle,
+            onFavoritesChange,
+          ),
+        );
       });
 
       if (children.childElementCount > 0) {
@@ -519,7 +614,7 @@
 
     return {
       items,
-      initialExpandedItemIds: Array.from(expandedItemIds)
+      initialExpandedItemIds: Array.from(expandedItemIds),
     };
   }
 
@@ -532,7 +627,9 @@
       return isSearchMatch(item.label, normalizedQuery) ? item : null;
     }
 
-    const directLinks = (item.directLinks || []).filter((linkItem) => isSearchMatch(linkItem.label, normalizedQuery));
+    const directLinks = (item.directLinks || []).filter((linkItem) =>
+      isSearchMatch(linkItem.label, normalizedQuery),
+    );
     const sections = (item.sections || [])
       .map((section) => filterSidebarItem(section, normalizedQuery, expandedItemIds))
       .filter(Boolean);
@@ -553,12 +650,16 @@
     return {
       ...item,
       directLinks: itemMatches ? item.directLinks : directLinks,
-      sections: itemMatches ? item.sections : sections
+      sections: itemMatches ? item.sections : sections,
     };
   }
 
   function collectExpandableIds(item, expandedItemIds) {
-    if (!item || !expandedItemIds || (item.kind !== "category" && item.kind !== "group" && item.kind !== "section")) {
+    if (
+      !item ||
+      !expandedItemIds ||
+      (item.kind !== "category" && item.kind !== "group" && item.kind !== "section")
+    ) {
       return;
     }
 
@@ -577,7 +678,14 @@
       .trim();
   }
 
-  function createLinkButton(targetDocument, linkItem, toneClass, depth, strings, onFavoritesChange) {
+  function createLinkButton(
+    targetDocument,
+    linkItem,
+    toneClass,
+    depth,
+    strings,
+    onFavoritesChange,
+  ) {
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = `ccxp-lite-row-button ${toneClass}`;
@@ -588,7 +696,9 @@
       button.appendChild(createRowLeadingSpacer(targetDocument));
     }
 
-    button.appendChild(createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)));
+    button.appendChild(
+      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
+    );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange));
     button.addEventListener("click", () => activateLegacyLink(linkItem, targetDocument));
 
@@ -625,8 +735,16 @@
 
     const isFavorite = isFavoriteLink(linkItem, getFavoriteIds());
     favoriteButton.setAttribute("aria-pressed", isFavorite ? "true" : "false");
-    favoriteButton.setAttribute("aria-label", isFavorite ? `${strings.sidebarRemoveFavorite}: ${linkItem.label}` : `${strings.sidebarAddFavorite}: ${linkItem.label}`);
-    favoriteButton.setAttribute("title", isFavorite ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite);
+    favoriteButton.setAttribute(
+      "aria-label",
+      isFavorite
+        ? `${strings.sidebarRemoveFavorite}: ${linkItem.label}`
+        : `${strings.sidebarAddFavorite}: ${linkItem.label}`,
+    );
+    favoriteButton.setAttribute(
+      "title",
+      isFavorite ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite,
+    );
     favoriteButton.appendChild(createFavoriteStarIcon(targetDocument, isFavorite));
 
     favoriteButton.addEventListener("click", (event) => {
@@ -656,7 +774,10 @@
       return false;
     }
 
-    return item.id === itemId || (item.sections || []).some((childItem) => hasExpandableId(childItem, itemId));
+    return (
+      item.id === itemId ||
+      (item.sections || []).some((childItem) => hasExpandableId(childItem, itemId))
+    );
   }
 
   function getSidebarIndentLevel(kind, depth) {
@@ -695,8 +816,11 @@
       return;
     }
 
-    if (normalizedTarget === "main" && window.top && window.top.frames && window.top.frames.main) {
-      window.top.frames.main.location.href = resolvedUrl;
+    const mainFrame =
+      window.top && window.top.frames ? /** @type {any} */ (window.top.frames).main : null;
+
+    if (normalizedTarget === "main" && mainFrame) {
+      mainFrame.location.href = resolvedUrl;
       return;
     }
 
@@ -718,7 +842,11 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M15 3h6v6", "M10 14 21 3", "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"].forEach((pathData) => {
+    [
+      "M15 3h6v6",
+      "M10 14 21 3",
+      "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+    ].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.appendChild(path);
@@ -739,7 +867,10 @@
     icon.setAttribute("aria-hidden", "true");
 
     const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-    path.setAttribute("d", "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z");
+    path.setAttribute(
+      "d",
+      "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z",
+    );
     icon.appendChild(path);
 
     return icon;
@@ -805,7 +936,13 @@
       if (storage) {
         try {
           const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) || "[]");
-          resolve(new Set(Array.isArray(storedValue) ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean) : []));
+          resolve(
+            new Set(
+              Array.isArray(storedValue)
+                ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+                : [],
+            ),
+          );
           return;
         } catch (_error) {
           // Fall through to migration fallback.
@@ -839,7 +976,11 @@
         nextValue = [];
       }
 
-      favoriteState.ids = new Set(Array.isArray(nextValue) ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean) : []);
+      favoriteState.ids = new Set(
+        Array.isArray(nextValue)
+          ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+          : [],
+      );
       favoriteState.hasLoaded = true;
       notifyFavoriteSubscribers();
     });
@@ -884,7 +1025,8 @@
 
   function readLegacyFavoritesFromExtensionStorage() {
     return new Promise((resolve) => {
-      const storageApi = typeof chrome !== "undefined" && chrome.storage ? chrome.storage.local : null;
+      const storageApi =
+        typeof chrome !== "undefined" && chrome.storage ? chrome.storage.local : null;
       if (!storageApi) {
         resolve(new Set());
         return;
@@ -897,7 +1039,13 @@
         }
 
         const storedValue = result ? result["ccxp-lite-sidebar-favorites"] : [];
-        resolve(new Set(Array.isArray(storedValue) ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean) : []));
+        resolve(
+          new Set(
+            Array.isArray(storedValue)
+              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+              : [],
+          ),
+        );
       });
     });
   }
@@ -920,7 +1068,9 @@
       }
     });
 
-    (item.sections || []).forEach((section) => collectFavoriteLinks(section, favoriteIds, favoriteLinks));
+    (item.sections || []).forEach((section) =>
+      collectFavoriteLinks(section, favoriteIds, favoriteLinks),
+    );
   }
 
   function dedupeLinkItems(linkItems) {
@@ -949,7 +1099,7 @@
       pathSignature,
       normalizeFavoriteText(linkItem.label),
       normalizeFavoriteText(linkItem.target),
-      clickSignature
+      clickSignature,
     ].join("||");
   }
 
@@ -962,7 +1112,7 @@
       normalizeFavoriteText(linkItem.label),
       normalizeFavoriteUrl(linkItem.href),
       normalizeFavoriteText(linkItem.target),
-      clickSignature
+      clickSignature,
     ].join("||");
   }
 
@@ -977,7 +1127,7 @@
         label: parts[0],
         href: parts[1],
         target: parts[2],
-        clickLinkArgs: parseFavoriteClickSignature(parts[3])
+        clickLinkArgs: parseFavoriteClickSignature(parts[3]),
       });
     }
 
@@ -989,7 +1139,7 @@
       pathSegments: parseFavoritePathSignature(parts[1]),
       label: parts[2],
       target: parts[3],
-      clickLinkArgs: parseFavoriteClickSignature(parts[4])
+      clickLinkArgs: parseFavoriteClickSignature(parts[4]),
     });
   }
 
@@ -1010,13 +1160,13 @@
     if (separatorIndex === -1) {
       return {
         name: normalizedSignature,
-        url: ""
+        url: "",
       };
     }
 
     return {
       name: normalizedSignature.slice(0, separatorIndex),
-      url: normalizedSignature.slice(separatorIndex + 2)
+      url: normalizedSignature.slice(separatorIndex + 2),
     };
   }
 
@@ -1069,12 +1219,14 @@
       const volatileParams = ["acixstore", "sid", "session", "phpsessid", "token", "_", "t"];
       volatileParams.forEach((key) => url.searchParams.delete(key));
 
-      const sortedEntries = Array.from(url.searchParams.entries()).sort(([leftKey, leftValue], [rightKey, rightValue]) => {
-        if (leftKey === rightKey) {
-          return leftValue.localeCompare(rightValue);
-        }
-        return leftKey.localeCompare(rightKey);
-      });
+      const sortedEntries = Array.from(url.searchParams.entries()).sort(
+        ([leftKey, leftValue], [rightKey, rightValue]) => {
+          if (leftKey === rightKey) {
+            return leftValue.localeCompare(rightValue);
+          }
+          return leftKey.localeCompare(rightKey);
+        },
+      );
 
       url.search = "";
       sortedEntries.forEach(([key, entryValue]) => url.searchParams.append(key, entryValue));
@@ -1157,7 +1309,7 @@
       "circle-user-round": [
         "M17.925 20.056a6 6 0 0 0-11.851.001",
         { tag: "circle", attributes: { cx: "12", cy: "11", r: "4" } },
-        { tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } }
+        { tag: "circle", attributes: { cx: "12", cy: "12", r: "10" } },
       ],
       "calendar-range": [
         "M8 2v4",
@@ -1166,7 +1318,7 @@
         "M7 14h5",
         "M16 14h1",
         "M16 18h1",
-        "M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+        "M3 6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
       ],
       "notepad-text": [
         "M8 2v4",
@@ -1175,32 +1327,25 @@
         "M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z",
         "M8 10h6",
         "M8 14h8",
-        "M8 18h5"
+        "M8 18h5",
       ],
       "message-square-more": [
         "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z",
         "M8 10h.01",
         "M12 10h.01",
-        "M16 10h.01"
+        "M16 10h.01",
       ],
       "refresh-cw": [
         "M21 2v6h-6",
         "M3 22v-6h6",
         "M20.49 9A9 9 0 0 0 5.64 5.64L3 8",
-        "M3.51 15A9 9 0 0 0 18.36 18.36L21 16"
+        "M3.51 15A9 9 0 0 0 18.36 18.36L21 16",
       ],
-      "graduation-cap": [
-        "m22 10-10-5L2 10l10 5z",
-        "M6 12v5c3 2 9 2 12 0v-5",
-        "M19 13v6"
-      ],
-      "dollar-sign": [
-        "M12 2v20",
-        "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"
-      ],
+      "graduation-cap": ["m22 10-10-5L2 10l10 5z", "M6 12v5c3 2 9 2 12 0v-5", "M19 13v6"],
+      "dollar-sign": ["M12 2v20", "M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"],
       house: [
         "M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8",
-        "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+        "M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
       ],
       "notebook-pen": [
         "M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4",
@@ -1208,7 +1353,7 @@
         "M2 10h4",
         "M2 14h4",
         "M2 18h4",
-        "M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"
+        "M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z",
       ],
       school: [
         "M14 21v-3a2 2 0 0 0-4 0v3",
@@ -1216,21 +1361,16 @@
         "m4 6 7.106-3.79a2 2 0 0 1 1.788 0L20 6",
         "m6 11-3.52 2.147a1 1 0 0 0-.48.854V19a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-5a1 1 0 0 0-.48-.853L18 11",
         "M6 4.933V21",
-        "M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4"
+        "M12 11a2 2 0 1 0 0-4 2 2 0 0 0 0 4",
       ],
-      megaphone: [
-        "M3 11v2",
-        "M11 5 18 3v18l-7-2-5-4V9z",
-        "M11 19v3",
-        "M7 15v5"
-      ],
+      megaphone: ["M3 11v2", "M11 5 18 3v18l-7-2-5-4V9z", "M11 19v3", "M7 15v5"],
       star: [
-        "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z"
+        "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z",
       ],
       folders: [
         "M2 6a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z",
-        "M2 10h20"
-      ]
+        "M2 10h20",
+      ],
     };
 
     return iconShapeMap[iconName] || iconShapeMap.folders;
@@ -1249,9 +1389,15 @@
     nodes.set("foldersTree", root);
 
     const stringPattern = "\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'";
-    const rootRegex = new RegExp(`^foldersTree\\s*=\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)$`);
-    const folderRegex = new RegExp(`^(\\w+)\\s*=\\s*insFld\\s*\\(\\s*(\\w+)\\s*,\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`);
-    const docRegex = new RegExp(`^insDoc\\s*\\(\\s*(\\w+)\\s*,\\s*gLnk\\s*\\(\\s*([^,]+?)\\s*,\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`);
+    const rootRegex = new RegExp(
+      `^foldersTree\\s*=\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)$`,
+    );
+    const folderRegex = new RegExp(
+      `^(\\w+)\\s*=\\s*insFld\\s*\\(\\s*(\\w+)\\s*,\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`,
+    );
+    const docRegex = new RegExp(
+      `^insDoc\\s*\\(\\s*(\\w+)\\s*,\\s*gLnk\\s*\\(\\s*([^,]+?)\\s*,\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`,
+    );
 
     statements.forEach((statement) => {
       const rootMatch = statement.match(rootRegex);
@@ -1282,7 +1428,7 @@
 
         parentNode.children.push({
           desc: parseJsStringLiteral(descLiteral),
-          link: buildLegacyLinkString(targetToken.trim(), parseJsStringLiteral(hrefLiteral))
+          link: buildLegacyLinkString(targetToken.trim(), parseJsStringLiteral(hrefLiteral)),
         });
       }
     });
@@ -1294,14 +1440,14 @@
     const quote = literal[0];
     const inner = literal.slice(1, -1);
 
-    if (quote === "\"") {
+    if (quote === '"') {
       return JSON.parse(literal);
     }
 
     return inner
       .replace(/\\\\/g, "\\")
       .replace(/\\'/g, "'")
-      .replace(/\\"/g, "\"")
+      .replace(/\\"/g, '"')
       .replace(/\\n/g, "\n")
       .replace(/\\r/g, "\r")
       .replace(/\\t/g, "\t");
@@ -1317,6 +1463,6 @@
   }
 
   namespace.sidebar = {
-    simplifySidebar
+    simplifySidebar,
   };
 })(window);

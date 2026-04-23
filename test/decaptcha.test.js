@@ -4,24 +4,6 @@ globalThis.CCXP_LITE = {};
 require("../src/content.decaptcha.model.js");
 const decaptcha = require("../src/content.decaptcha.js");
 
-function createSyntheticImageTensor() {
-  const width = 113;
-  const height = 36;
-  const rgba = new Uint8ClampedArray(width * height * 4);
-
-  for (let y = 0; y < height; y += 1) {
-    for (let x = 0; x < width; x += 1) {
-      const index = ((y * width) + x) * 4;
-      rgba[index] = (x * 3 + y) % 256;
-      rgba[index + 1] = (x + y * 5) % 256;
-      rgba[index + 2] = (x * 7 + y * 11) % 256;
-      rgba[index + 3] = 255;
-    }
-  }
-
-  return decaptcha.__test.extractImageTensorFromRgba(width, height, rgba);
-}
-
 describe("decaptcha preprocessing", () => {
   test("converts a cropped captcha image into CHW float data", () => {
     const width = 113;
@@ -30,7 +12,7 @@ describe("decaptcha preprocessing", () => {
 
     for (let y = 0; y < height; y += 1) {
       for (let x = 0; x < width; x += 1) {
-        const index = ((y * width) + x) * 4;
+        const index = (y * width + x) * 4;
         rgba[index] = x % 256;
         rgba[index + 1] = y % 256;
         rgba[index + 2] = 200;
@@ -38,22 +20,19 @@ describe("decaptcha preprocessing", () => {
       }
     }
 
-    const tensor = decaptcha.__test.extractImageTensorFromRgba(width, height, rgba, { cropRight: 13 });
+    const tensor = decaptcha.__test.extractImageTensorFromRgba(width, height, rgba, {
+      cropRight: 13,
+    });
     expect(tensor.shape).toEqual([3, 36, 100]);
     expect(tensor.data[0]).toBeCloseTo(0, 6);
-    expect(tensor.data[(36 * 100)]).toBeCloseTo(0, 6);
-    expect(tensor.data[(3 * 36 * 100) - 1]).toBeCloseTo(200 / 255, 6);
+    expect(tensor.data[36 * 100]).toBeCloseTo(0, 6);
+    expect(tensor.data[3 * 36 * 100 - 1]).toBeCloseTo(200 / 255, 6);
   });
 });
 
 describe("decaptcha tensor ops", () => {
   test("computes grouped conv2d for depthwise kernels", () => {
-    const input = decaptcha.__test.createTensor([2, 2, 2], [
-      1, 2,
-      3, 4,
-      10, 20,
-      30, 40,
-    ]);
+    const input = decaptcha.__test.createTensor([2, 2, 2], [1, 2, 3, 4, 10, 20, 30, 40]);
     const weight = decaptcha.__test.createTensor([2, 1, 1, 1], [2, 3]);
 
     const output = decaptcha.__test.conv2d(input, weight, null, { groups: 2 });
@@ -74,20 +53,19 @@ describe("decaptcha tensor ops", () => {
     const relu = decaptcha.__test.relu(decaptcha.__test.createTensor([1, 2, 2], [-2, -1, 0, 3]));
     expect(Array.from(relu.data)).toEqual([0, 0, 0, 3]);
 
-    const pooled = decaptcha.__test.adaptiveAvgPool2d(decaptcha.__test.createTensor([1, 4, 4], [
-      1, 2, 3, 4,
-      5, 6, 7, 8,
-      9, 10, 11, 12,
-      13, 14, 15, 16,
-    ]), 1, 2);
+    const pooled = decaptcha.__test.adaptiveAvgPool2d(
+      decaptcha.__test.createTensor(
+        [1, 4, 4],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+      ),
+      1,
+      2,
+    );
     expect(Array.from(pooled.data)).toEqual([7.5, 9.5]);
 
     const logits = decaptcha.__test.linear(
       new Float32Array([1, 2, 3]),
-      decaptcha.__test.createTensor([2, 3], [
-        1, 0, 1,
-        0, 1, 0,
-      ]),
+      decaptcha.__test.createTensor([2, 3], [1, 0, 1, 0, 1, 0]),
       decaptcha.__test.createTensor([2], [0.5, -1]),
     );
     expect(Array.from(logits)).toEqual([4.5, 1]);
@@ -99,23 +77,28 @@ describe("decaptcha model parity", () => {
   test("matches the Python reference answer on a deterministic synthetic full image", () => {
     const model = decaptcha.__test.getPreparedModel();
     const answer = decaptcha.__test.predictDigitsFromTensor(
-      decaptcha.__test.extractImageTensorFromRgba(113, 36, (() => {
-        const width = 113;
-        const height = 36;
-        const rgba = new Uint8ClampedArray(width * height * 4);
+      decaptcha.__test.extractImageTensorFromRgba(
+        113,
+        36,
+        (() => {
+          const width = 113;
+          const height = 36;
+          const rgba = new Uint8ClampedArray(width * height * 4);
 
-        for (let y = 0; y < height; y += 1) {
-          for (let x = 0; x < width; x += 1) {
-            const index = ((y * width) + x) * 4;
-            rgba[index] = (x * 3 + y) % 256;
-            rgba[index + 1] = (x + y * 5) % 256;
-            rgba[index + 2] = (x * 7 + y * 11) % 256;
-            rgba[index + 3] = 255;
+          for (let y = 0; y < height; y += 1) {
+            for (let x = 0; x < width; x += 1) {
+              const index = (y * width + x) * 4;
+              rgba[index] = (x * 3 + y) % 256;
+              rgba[index + 1] = (x + y * 5) % 256;
+              rgba[index + 2] = (x * 7 + y * 11) % 256;
+              rgba[index + 3] = 255;
+            }
           }
-        }
 
-        return rgba;
-      })(), model)
+          return rgba;
+        })(),
+        model,
+      ),
     );
     expect(answer).toBe("077774");
   });

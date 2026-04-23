@@ -32,8 +32,8 @@
     radiusSm: "10px",
     radiusMd: "14px",
     radiusLg: "20px",
-    fontSans: "\"Noto Sans TC\", \"PingFang TC\", \"Microsoft JhengHei\", sans-serif",
-    fontBrand: "\"Futura\", \"Futura PT\", \"Avenir Next\", sans-serif",
+    fontSans: '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif',
+    fontBrand: '"Futura", "Futura PT", "Avenir Next", sans-serif',
     fontWeightRegular: "400",
     fontWeightStrong: "700",
     fontWeightHeavy: "800",
@@ -58,7 +58,7 @@
     sidebarWidth: "288px",
     sidebarClass: "ccxp-lite-sidebar-shell",
     mainClass: "ccxp-lite-main-skin",
-    landingClass: "ccxp-lite-landing-shell"
+    landingClass: "ccxp-lite-landing-shell",
   };
 
   const LOCALIZED_STRINGS = {
@@ -97,7 +97,7 @@
       sidebarCategoryHousingAndLife: "Housing & Life",
       sidebarCategoryForms: "Forms",
       sidebarCategoryCampusSystems: "Campus Systems",
-      sidebarCategoryAnnouncementsAndVoting: "Notices & Voting"
+      sidebarCategoryAnnouncementsAndVoting: "Notices & Voting",
     },
     zh: {
       sidebarTitle: "校務資訊系統",
@@ -134,8 +134,8 @@
       sidebarCategoryHousingAndLife: "住宿與生活",
       sidebarCategoryForms: "表單系統",
       sidebarCategoryCampusSystems: "校園系統",
-      sidebarCategoryAnnouncementsAndVoting: "公告與投票"
-    }
+      sidebarCategoryAnnouncementsAndVoting: "公告與投票",
+    },
   };
 
   const STRINGS = LOCALIZED_STRINGS.zh;
@@ -146,84 +146,110 @@
       labelKey: "sidebarCategoryProfile",
       fallbackLabel: "個人資料",
       icon: "circle-user-round",
-      itemLabels: ["帳號相關維護", "個人資料維護", "導師聯繫資料", "原住民資料系統"]
+      itemLabels: ["帳號相關維護", "個人資料維護", "導師聯繫資料", "原住民資料系統"],
     },
     {
       id: "planning-and-enrollment",
       labelKey: "sidebarCategoryPlanningAndEnrollment",
       fallbackLabel: "預排與選課",
       icon: "calendar-range",
-      itemLabels: ["預排系統 Tentative schedule", "選課 Select courses", "校際/跨系統選修", "暑修 Summer courses"]
+      itemLabels: [
+        "預排系統 Tentative schedule",
+        "選課 Select courses",
+        "校際/跨系統選修",
+        "暑修 Summer courses",
+      ],
     },
     {
       id: "courses-and-grades",
       labelKey: "sidebarCategoryCoursesAndGrades",
       fallbackLabel: "課程成績",
       icon: "notepad-text",
-      itemLabels: ["課程、成績 Courses, transcript", "學分&抵免學分"]
+      itemLabels: ["課程、成績 Courses, transcript", "學分&抵免學分"],
     },
     {
       id: "teaching-feedback",
       labelKey: "sidebarCategoryTeachingFeedback",
       fallbackLabel: "教學意見",
       icon: "message-square-more",
-      itemLabels: ["教學意見 Comments about courses", "傑出教學教師票選", "教學助理評量問卷"]
+      itemLabels: ["教學意見 Comments about courses", "傑出教學教師票選", "教學助理評量問卷"],
     },
     {
       id: "status-changes",
       labelKey: "sidebarCategoryStatusChanges",
       fallbackLabel: "學籍異動",
       icon: "refresh-cw",
-      itemLabels: ["申請復學", "保留生申請入學", "轉系所申請", "兵役業務"]
+      itemLabels: ["申請復學", "保留生申請入學", "轉系所申請", "兵役業務"],
     },
     {
       id: "graduation-and-defense",
       labelKey: "sidebarCategoryGraduationAndDefense",
       fallbackLabel: "畢業與口試",
       icon: "graduation-cap",
-      itemLabels: ["畢業審查", "研究生學位考試", "畢業生離校系統", "數位學位證書", "袍服借用申請"]
+      itemLabels: ["畢業審查", "研究生學位考試", "畢業生離校系統", "數位學位證書", "袍服借用申請"],
     },
     {
       id: "payments-and-aid",
       labelKey: "sidebarCategoryPaymentsAndAid",
       fallbackLabel: "繳費與補助",
       icon: "dollar-sign",
-      itemLabels: ["繳費單相關作業(出納組)", "退費查詢", "所得相關查詢", "出納傳票付款查詢", "就學貸款", "弱勢助學作業", "學雜費減免作業", "國外差旅費"]
+      itemLabels: [
+        "繳費單相關作業(出納組)",
+        "退費查詢",
+        "所得相關查詢",
+        "出納傳票付款查詢",
+        "就學貸款",
+        "弱勢助學作業",
+        "學雜費減免作業",
+        "國外差旅費",
+      ],
     },
     {
       id: "housing-and-life",
       labelKey: "sidebarCategoryHousingAndLife",
       fallbackLabel: "住宿與生活",
       icon: "house",
-      itemLabels: ["外宿資料", "學生宿舍相關", "健康照護系統", "職涯諮詢與評測"]
+      itemLabels: ["外宿資料", "學生宿舍相關", "健康照護系統", "職涯諮詢與評測"],
     },
     {
       id: "forms",
       labelKey: "sidebarCategoryForms",
       fallbackLabel: "表單系統",
       icon: "notebook-pen",
-      itemLabels: ["學生請假系統", "電子表單系統", "計畫差勤及臨時工時登錄系統", "出國申請與報告繳交系統", "校外實習登錄平台"]
+      itemLabels: [
+        "學生請假系統",
+        "電子表單系統",
+        "計畫差勤及臨時工時登錄系統",
+        "出國申請與報告繳交系統",
+        "校外實習登錄平台",
+      ],
     },
     {
       id: "campus-systems",
       labelKey: "sidebarCategoryCampusSystems",
       fallbackLabel: "校園系統",
       icon: "school",
-      itemLabels: ["學習平台", "計通中心相關服務", "研發處資訊系統", "校內其他系統", "明燈平台"]
+      itemLabels: ["學習平台", "計通中心相關服務", "研發處資訊系統", "校內其他系統", "明燈平台"],
     },
     {
       id: "announcements-and-voting",
       labelKey: "sidebarCategoryAnnouncementsAndVoting",
       fallbackLabel: "公告與投票",
       icon: "megaphone",
-      itemLabels: ["會議紀錄", "校內業務公告", "線上投票系統", "線上投票系統(特殊投票)", "校園通報網"]
-    }
+      itemLabels: [
+        "會議紀錄",
+        "校內業務公告",
+        "線上投票系統",
+        "線上投票系統(特殊投票)",
+        "校園通報網",
+      ],
+    },
   ];
 
   const ASSETS = {
     brandLogoPath: "assets/nthu.jpg",
     sidebarBrandLogoPath: "assets/nthu.png",
-    stylesheetPath: "content.css"
+    stylesheetPath: "content.css",
   };
 
   function ensureThemeDocument(targetDocument, scope) {
@@ -250,7 +276,8 @@
       "--ccxp-lite-primary": TOKENS.colorPrimary,
       "--ccxp-lite-accent": TOKENS.colorAccent,
       "--ccxp-lite-brand": TOKENS.colorBrand,
-      "--ccxp-lite-brand-logo-filter": "brightness(0) saturate(100%) invert(19%) sepia(49%) saturate(2697%) hue-rotate(278deg) brightness(89%) contrast(92%)",
+      "--ccxp-lite-brand-logo-filter":
+        "brightness(0) saturate(100%) invert(19%) sepia(49%) saturate(2697%) hue-rotate(278deg) brightness(89%) contrast(92%)",
       "--ccxp-lite-legacy-blue-text": TOKENS.colorLegacyBlueText,
       "--ccxp-lite-legacy-red-text": TOKENS.colorLegacyRedText,
       "--ccxp-lite-bg": TOKENS.colorBg,
@@ -302,9 +329,11 @@
       "--ccxp-lite-font-size-display": TOKENS.fontSizeDisplay,
       "--ccxp-lite-sidebar-width": TOKENS.sidebarWidth,
       "--ccxp-lite-landing-max-width": TOKENS.landingMaxWidth,
-      "--ccxp-lite-type-display": "var(--ccxp-lite-font-weight-heavy) var(--ccxp-lite-font-size-display)/1.1 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-display":
+        "var(--ccxp-lite-font-weight-heavy) var(--ccxp-lite-font-size-display)/1.1 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-display-color": "var(--ccxp-lite-text)",
-      "--ccxp-lite-type-page-title": "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-page-title)/1.2 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-page-title":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-page-title)/1.2 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-page-title-color": "var(--ccxp-lite-text)",
       "--ccxp-lite-type-primary-link": "var(--ccxp-lite-type-body-strong)",
       "--ccxp-lite-type-primary-link-color": "var(--ccxp-lite-primary)",
@@ -312,20 +341,24 @@
       "--ccxp-lite-type-info-color": "var(--ccxp-lite-legacy-blue-text)",
       "--ccxp-lite-type-danger": "var(--ccxp-lite-type-body-strong)",
       "--ccxp-lite-type-danger-color": "var(--ccxp-lite-legacy-red-text)",
-      "--ccxp-lite-type-body-strong": "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body-strong":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-body-strong-color": "var(--ccxp-lite-text)",
-      "--ccxp-lite-type-body": "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body":
+        "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-body-color": "var(--ccxp-lite-text)",
-      "--ccxp-lite-type-body-muted": "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body-muted":
+        "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-body-muted-color": "var(--ccxp-lite-text-muted)",
-      "--ccxp-lite-type-utility": "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-utility)/1.4 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-utility":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-utility)/1.4 var(--ccxp-lite-font-sans)",
       "--ccxp-lite-type-utility-color": "var(--ccxp-lite-primary)",
       "--ccxp-lite-type-nav": "var(--ccxp-lite-type-utility)",
       "--ccxp-lite-type-nav-color": "var(--ccxp-lite-primary)",
       "--ccxp-lite-type-caption": "var(--ccxp-lite-type-utility)",
       "--ccxp-lite-type-caption-color": "var(--ccxp-lite-text-muted)",
       "--ccxp-lite-type-section-label": "var(--ccxp-lite-type-utility)",
-      "--ccxp-lite-type-section-label-color": "var(--ccxp-lite-primary)"
+      "--ccxp-lite-type-section-label-color": "var(--ccxp-lite-primary)",
     };
   }
 
@@ -420,6 +453,6 @@
     createBrandCopy,
     moveChildNodes,
     removeNode,
-    isDocumentComplete
+    isDocumentComplete,
   };
 })(window);

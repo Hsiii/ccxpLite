@@ -1,3 +1,4 @@
+// @ts-nocheck
 (function bootstrapCcxpLiteDecaptchaModel(globalScope, factory) {
   const model = factory();
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
