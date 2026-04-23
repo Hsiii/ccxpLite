@@ -295,6 +295,11 @@
 
     (folderNode.children || []).forEach((childNode) => {
       if (childNode && childNode.children) {
+        if (shouldFlattenTopLevelGroupSections(groupLabel)) {
+          collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, directLinks);
+          return;
+        }
+
         const section = normalizeSectionNode(
           childNode,
           `${index}-${sections.length}`,
@@ -320,6 +325,24 @@
       sections,
       kind: "group",
     };
+  }
+
+  function shouldFlattenTopLevelGroupSections(groupLabel) {
+    return groupLabel === "就學貸款";
+  }
+
+  function collectNestedLinksIntoGroup(folderNode, navDocument, parentPathSegments, directLinks) {
+    (folderNode.children || []).forEach((childNode) => {
+      if (childNode && childNode.children) {
+        collectNestedLinksIntoGroup(childNode, navDocument, parentPathSegments, directLinks);
+        return;
+      }
+
+      const linkItem = normalizeLinkItem(childNode, navDocument, parentPathSegments);
+      if (linkItem) {
+        directLinks.push(linkItem);
+      }
+    });
   }
 
   function normalizeSectionNode(folderNode, indexKey, navDocument, parentPathSegments) {
