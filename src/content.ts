@@ -6,13 +6,11 @@
     return;
   }
 
-  const { TOKENS, ensureThemeDocument, removeNode } = shared;
+  const { ensureThemeDocument, removeNode } = shared;
   const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landing;
 
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
-  const FRAMESET_COLUMNS = "288,*";
-  const FRAMESET_ROWS = "0,*";
   const LOADING_SPRITE_ID = "ccxp-lite-loading-sprite";
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
   const LOADING_SPRITE_TIMEOUT_MS = 8000;
@@ -37,20 +35,20 @@
       return;
     }
 
-    applyFramesetLayout();
     attachFrameListener(frames.nav, () => {
-      sidebar.simplifySidebar(frames.nav, retry);
+      sidebar.simplifySidebar(frames.nav, retry, { hostDocument: document });
       updateLoadingStateForNav(frames.nav);
+      markMainReady();
     });
-    attachFrameListener(frames.main, () => simplifyMainFrame(frames.main));
 
     if (frames.top) {
       removeHeader(frames.top);
     }
 
-    sidebar.simplifySidebar(frames.nav, retry);
+    ensureAppShell(frames);
+    sidebar.simplifySidebar(frames.nav, retry, { hostDocument: document });
     updateLoadingStateForNav(frames.nav);
-    simplifyMainFrame(frames.main);
+    markMainReady();
   }
 
   function initializeLoadingSprite(targetDocument) {
@@ -249,17 +247,50 @@
     window.setTimeout(attachAndApply, RETRY_DELAY_MS);
   }
 
-  function applyFramesetLayout() {
-    const topFrameset = document.querySelector("frameset[rows]");
-    const innerFrameset = document.querySelector("frameset[cols]");
+  function ensureAppShell(frames) {
+    ensureThemeDocument(document, "nav");
+    ensureDocumentBody();
 
-    if (topFrameset) {
-      topFrameset.setAttribute("rows", FRAMESET_ROWS);
+    const existingBody = document.getElementById("ccxp-lite-app-body");
+    if (existingBody) {
+      return existingBody;
     }
 
-    if (innerFrameset) {
-      innerFrameset.setAttribute("cols", FRAMESET_COLUMNS);
+    hideLegacyFramesets();
+
+    if (frames.nav) {
+      frames.nav.style.display = "none";
     }
+
+    if (frames.main) {
+      frames.main.setAttribute("name", "ccxp-lite-legacy-main");
+      frames.main.style.display = "none";
+    }
+
+    const body = ensureDocumentBody();
+    body.id = "ccxp-lite-app-body";
+    return body;
+  }
+
+  function ensureDocumentBody() {
+    if (document.body) {
+      return document.body;
+    }
+
+    const body = document.createElement("body");
+    document.documentElement.appendChild(body);
+    return body;
+  }
+
+  function hideLegacyFramesets() {
+    document.documentElement.dataset.ccxpLiteScope = "nav";
+    Array.from(document.querySelectorAll("frameset, frame")).forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.style.display = "none";
+      } else {
+        node.setAttribute("style", "display:none");
+      }
+    });
   }
 
   function removeHeader(topFrame) {
@@ -278,25 +309,6 @@
     topDocument.body.replaceChildren();
     topDocument.body.dataset.ccxpLiteHeaderRemoved = "true";
     topFrame.setAttribute("scrolling", "no");
-  }
-
-  function simplifyMainFrame(mainFrame) {
-    const mainDocument = mainFrame.contentDocument;
-
-    if (!mainDocument || !mainDocument.head || !mainDocument.body) {
-      retry();
-      return;
-    }
-
-    ensureThemeDocument(mainDocument, "main");
-    const mainBody = mainDocument.body;
-    if (!mainBody) {
-      retry();
-      return;
-    }
-
-    mainBody.classList.add(TOKENS.mainClass);
-    markMainReady();
   }
 
   attachAndApply();

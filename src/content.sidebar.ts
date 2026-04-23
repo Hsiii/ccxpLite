@@ -28,8 +28,9 @@
   const sidebarUiStateByDocument = new WeakMap();
   let favoriteStorageSyncBound = false;
 
-  function simplifySidebar(navFrame, retry) {
+  function simplifySidebar(navFrame, retry, options = {}) {
     const navDocument = navFrame.contentDocument;
+    const hostDocument = options.hostDocument || navDocument;
 
     if (!navDocument || !navDocument.body || !navDocument.head) {
       retry();
@@ -51,43 +52,44 @@
     }
 
     ensureThemeDocument(navDocument, "nav");
+    ensureThemeDocument(hostDocument, "nav");
     const strings = getLocalizedStrings(resolveLocaleFromDocument(navDocument));
     captureInitialMainFrameUrl();
 
-    if (navDocument.body.dataset.ccxpLiteSidebarApplied !== "true") {
+    if (hostDocument.body.dataset.ccxpLiteSidebarApplied !== "true") {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
-      const shell = navDocument.createElement("div");
-      shell.className = TOKENS.sidebarClass;
+      const shell = hostDocument.createElement("div");
+      shell.className = `${TOKENS.sidebarClass} ccxp-lite-app-shell`;
 
-      const header = navDocument.createElement("div");
+      const header = hostDocument.createElement("div");
       header.className = "ccxp-lite-sidebar-header";
 
-      const brand = navDocument.createElement("button");
+      const brand = hostDocument.createElement("button");
       brand.type = "button";
       brand.className = "ccxp-lite-sidebar-brand ccxp-lite-sidebar-brand-button";
       brand.setAttribute("aria-label", strings.sidebarResetHome);
       brand.setAttribute("title", strings.sidebarResetHome);
       brand.appendChild(
-        createBrandImage(navDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
+        createBrandImage(hostDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
       );
       brand.appendChild(
         createBrandCopy(
-          navDocument,
+          hostDocument,
           "ccxp-lite-sidebar-brand-copy",
           "ccxp-lite-sidebar-brand-title",
           strings.sidebarTitle,
         ),
       );
 
-      const breadcrumb = navDocument.createElement("div");
+      const breadcrumb = hostDocument.createElement("div");
       breadcrumb.className = "ccxp-lite-sidebar-breadcrumb";
 
-      const search = createSidebarSearch(navDocument, strings);
+      const search = createSidebarSearch(hostDocument, strings);
 
-      const content = navDocument.createElement("main");
+      const content = hostDocument.createElement("main");
       content.className = "ccxp-lite-sidebar-content";
 
-      const footer = navDocument.createElement("footer");
+      const footer = hostDocument.createElement("footer");
       footer.className = "ccxp-lite-sidebar-footer";
 
       header.appendChild(brand);
@@ -97,7 +99,7 @@
       shell.appendChild(content);
       shell.appendChild(footer);
 
-      navDocument.body.replaceChildren(shell);
+      hostDocument.body.replaceChildren(shell);
 
       if (helperFrame) {
         helperFrame.style.display = "none";
@@ -105,17 +107,27 @@
       }
 
       brand.addEventListener("click", () => {
-        const state = getSidebarUiState(navDocument);
+        const state = getSidebarUiState(hostDocument);
         state.currentCategoryId = "";
-        renderSidebar(navDocument, () => buildSidebarModel(rawTree, navDocument, strings), strings);
-        navigateToInitialMainFrameUrl(navDocument);
+        state.activeLeaf = null;
+        renderSidebar(
+          hostDocument,
+          navDocument,
+          () => buildSidebarModel(rawTree, navDocument, strings),
+          strings,
+        );
       });
 
-      navDocument.body.dataset.ccxpLiteSidebarApplied = "true";
+      hostDocument.body.dataset.ccxpLiteSidebarApplied = "true";
     }
 
     const rerender = () =>
-      renderSidebar(navDocument, () => buildSidebarModel(rawTree, navDocument, strings), strings);
+      renderSidebar(
+        hostDocument,
+        navDocument,
+        () => buildSidebarModel(rawTree, navDocument, strings),
+        strings,
+      );
     ensureFavoriteStorageSync();
     favoriteSubscribers.add(rerender);
     ensureFavoriteIdsLoaded(rerender);
@@ -428,8 +440,8 @@
       .trim();
   }
 
-  function renderSidebar(navDocument, modelInput, strings = STRINGS) {
-    const shell = navDocument.querySelector(`.${TOKENS.sidebarClass}`);
+  function renderSidebar(hostDocument, navDocument, modelInput, strings = STRINGS) {
+    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`);
     if (!shell) {
       return;
     }
@@ -442,12 +454,12 @@
     }
 
     const searchInput = shell.querySelector(".ccxp-lite-sidebar-search-input");
-    const state = getSidebarUiState(navDocument);
+    const state = getSidebarUiState(hostDocument);
 
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
       searchInput.addEventListener("input", () => {
         state.searchQuery = searchInput.value.trim();
-        renderSidebar(navDocument, modelInput, strings);
+        renderSidebar(hostDocument, navDocument, modelInput, strings);
       });
       searchInput.dataset.ccxpLiteSearchBound = "true";
     }
@@ -470,14 +482,28 @@
       state.currentCategoryId = "";
     }
 
-    breadcrumb.replaceChildren(createBreadcrumb(navDocument, activeCategory, strings));
-    footer.replaceChildren(createGitHubLink(navDocument, strings));
+    breadcrumb.replaceChildren(createBreadcrumb(hostDocument, activeCategory, strings));
+    footer.replaceChildren(createGitHubLink(hostDocument, strings));
     content.innerHTML = "";
+
+    if (state.activeLeaf) {
+      content.appendChild(
+        createDestinationView(
+          hostDocument,
+          navDocument,
+          activeCategory,
+          state.activeLeaf,
+          strings,
+          () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+        ),
+      );
+      return;
+    }
 
     if (state.currentCategoryId && activeCategory) {
       content.appendChild(
-        createCategoryDetailView(navDocument, activeCategory, state, strings, () =>
-          renderSidebar(navDocument, modelInput, strings),
+        createCategoryDetailView(hostDocument, navDocument, activeCategory, state, strings, () =>
+          renderSidebar(hostDocument, navDocument, modelInput, strings),
         ),
       );
       return;
@@ -485,12 +511,13 @@
 
     content.appendChild(
       createDashboardView(
+        hostDocument,
         navDocument,
         filterFavoriteLinks(model.favorites.directLinks || [], state.searchQuery),
         filteredCategories,
         state,
         strings,
-        () => renderSidebar(navDocument, modelInput, strings),
+        () => renderSidebar(hostDocument, navDocument, modelInput, strings),
       ),
     );
   }
@@ -504,6 +531,7 @@
       currentCategoryId: "",
       searchQuery: "",
       viewMode: "grid",
+      activeLeaf: null,
     };
 
     sidebarUiStateByDocument.set(navDocument, state);
@@ -549,17 +577,29 @@
     return fragment;
   }
 
-  function createDashboardView(targetDocument, favorites, categories, state, strings, rerender) {
+  function createDashboardView(
+    targetDocument,
+    navDocument,
+    favorites,
+    categories,
+    state,
+    strings,
+    rerender,
+  ) {
     const layout = targetDocument.createElement("div");
     layout.className = "ccxp-lite-dashboard";
 
-    layout.appendChild(createPinnedSection(targetDocument, favorites, strings, rerender));
-    layout.appendChild(createAllSection(targetDocument, categories, state, strings, rerender));
+    layout.appendChild(
+      createPinnedSection(targetDocument, navDocument, favorites, strings, rerender),
+    );
+    layout.appendChild(
+      createAllSection(targetDocument, navDocument, categories, state, strings, rerender),
+    );
 
     return layout;
   }
 
-  function createPinnedSection(targetDocument, favorites, strings, rerender) {
+  function createPinnedSection(targetDocument, navDocument, favorites, strings, rerender) {
     const section = targetDocument.createElement("section");
     section.className = "ccxp-lite-pane ccxp-lite-pane-pinned";
 
@@ -575,7 +615,9 @@
       body.appendChild(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
     } else {
       favorites.forEach((linkItem) => {
-        body.appendChild(createPinnedLinkCard(targetDocument, linkItem, strings, rerender));
+        body.appendChild(
+          createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
+        );
       });
     }
 
@@ -583,7 +625,7 @@
     return section;
   }
 
-  function createAllSection(targetDocument, categories, state, strings, rerender) {
+  function createAllSection(targetDocument, navDocument, categories, state, strings, rerender) {
     const section = targetDocument.createElement("section");
     section.className = "ccxp-lite-pane ccxp-lite-pane-all";
 
@@ -603,6 +645,7 @@
         body.appendChild(
           createCategoryCard(targetDocument, category, state.viewMode, () => {
             state.currentCategoryId = category.id;
+            state.activeLeaf = null;
             rerender();
           }),
         );
@@ -613,7 +656,14 @@
     return section;
   }
 
-  function createCategoryDetailView(targetDocument, category, state, strings, rerender) {
+  function createCategoryDetailView(
+    targetDocument,
+    navDocument,
+    category,
+    state,
+    strings,
+    rerender,
+  ) {
     const filteredCategory = state.searchQuery
       ? filterCategoryTree(category, state.searchQuery)
       : category;
@@ -631,7 +681,11 @@
     backButton.setAttribute("title", strings.sidebarBack);
     backButton.appendChild(createBackIcon(targetDocument));
     backButton.addEventListener("click", () => {
-      state.currentCategoryId = "";
+      if (state.activeLeaf) {
+        state.activeLeaf = null;
+      } else {
+        state.currentCategoryId = "";
+      }
       rerender();
     });
     header.appendChild(backButton);
@@ -646,12 +700,20 @@
     } else {
       if ((filteredCategory.directLinks || []).length > 0) {
         body.appendChild(
-          createLinkCollection(targetDocument, filteredCategory.directLinks, strings, rerender),
+          createLinkCollection(
+            targetDocument,
+            navDocument,
+            filteredCategory.directLinks,
+            strings,
+            rerender,
+          ),
         );
       }
 
       (filteredCategory.sections || []).forEach((group) => {
-        body.appendChild(createCategoryBlock(targetDocument, group, strings, rerender));
+        body.appendChild(
+          createCategoryBlock(targetDocument, navDocument, group, strings, rerender),
+        );
       });
 
       if (body.childElementCount === 0) {
@@ -663,7 +725,7 @@
     return section;
   }
 
-  function createCategoryBlock(targetDocument, group, strings, rerender) {
+  function createCategoryBlock(targetDocument, navDocument, group, strings, rerender) {
     const block = targetDocument.createElement("section");
     block.className = "ccxp-lite-category-block";
 
@@ -675,22 +737,28 @@
     }
 
     if ((group.directLinks || []).length > 0) {
-      block.appendChild(createLinkCollection(targetDocument, group.directLinks, strings, rerender));
+      block.appendChild(
+        createLinkCollection(targetDocument, navDocument, group.directLinks, strings, rerender),
+      );
     }
 
     (group.sections || []).forEach((section) => {
-      block.appendChild(createCategoryBlock(targetDocument, section, strings, rerender));
+      block.appendChild(
+        createCategoryBlock(targetDocument, navDocument, section, strings, rerender),
+      );
     });
 
     return block;
   }
 
-  function createLinkCollection(targetDocument, linkItems, strings, rerender) {
+  function createLinkCollection(targetDocument, navDocument, linkItems, strings, rerender) {
     const list = targetDocument.createElement("div");
     list.className = "ccxp-lite-link-collection";
 
     linkItems.forEach((linkItem) => {
-      list.appendChild(createDetailLinkCard(targetDocument, linkItem, strings, rerender));
+      list.appendChild(
+        createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
+      );
     });
 
     return list;
@@ -758,7 +826,7 @@
     return button;
   }
 
-  function createPinnedLinkCard(targetDocument, linkItem, strings, rerender) {
+  function createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender) {
     const card = targetDocument.createElement("div");
     card.className = "ccxp-lite-pinned-card";
 
@@ -769,14 +837,16 @@
     button.appendChild(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
     );
-    button.addEventListener("click", () => activateLegacyLink(linkItem, targetDocument));
+    button.addEventListener("click", () =>
+      openLeafDestination(targetDocument, navDocument, linkItem, rerender),
+    );
 
     card.appendChild(button);
     card.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     return card;
   }
 
-  function createDetailLinkCard(targetDocument, linkItem, strings, rerender) {
+  function createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender) {
     const card = targetDocument.createElement("div");
     card.className = "ccxp-lite-detail-link-card";
 
@@ -787,7 +857,9 @@
     button.appendChild(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
     );
-    button.addEventListener("click", () => activateLegacyLink(linkItem, targetDocument));
+    button.addEventListener("click", () =>
+      openLeafDestination(targetDocument, navDocument, linkItem, rerender),
+    );
 
     card.appendChild(button);
     card.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
@@ -950,6 +1022,80 @@
     );
   }
 
+  function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
+    const state = getSidebarUiState(targetDocument);
+    state.activeLeaf = {
+      id: linkItem.id,
+      label: linkItem.label,
+      href: linkItem.href,
+      target: linkItem.target,
+      clickLinkArgs: linkItem.clickLinkArgs,
+    };
+    captureInitialMainFrameUrl();
+    rerender();
+  }
+
+  function createDestinationView(
+    targetDocument,
+    navDocument,
+    activeCategory,
+    activeLeaf,
+    strings,
+    rerender,
+  ) {
+    const section = targetDocument.createElement("section");
+    section.className = "ccxp-lite-pane ccxp-lite-pane-detail";
+
+    const header = targetDocument.createElement("div");
+    header.className = "ccxp-lite-pane-header ccxp-lite-pane-header-detail";
+
+    const backButton = targetDocument.createElement("button");
+    backButton.type = "button";
+    backButton.className = "ccxp-lite-back-button";
+    backButton.setAttribute("aria-label", strings.sidebarBack);
+    backButton.setAttribute("title", strings.sidebarBack);
+    backButton.appendChild(createBackIcon(targetDocument));
+    backButton.addEventListener("click", () => {
+      const state = getSidebarUiState(targetDocument);
+      state.activeLeaf = null;
+      rerender();
+    });
+
+    header.appendChild(backButton);
+    header.appendChild(
+      createSectionHeading(
+        targetDocument,
+        activeCategory ? activeCategory.label : activeLeaf.label,
+      ),
+    );
+    section.appendChild(header);
+
+    const frameWrap = targetDocument.createElement("div");
+    frameWrap.className = "ccxp-lite-destination-wrap";
+
+    const frame = targetDocument.createElement("iframe");
+    frame.className = "ccxp-lite-destination-frame";
+    frame.setAttribute("frameborder", "0");
+    frame.setAttribute("scrolling", "auto");
+    frame.title = activeLeaf.label;
+    frame.addEventListener("load", () => simplifyEmbeddedFrame(frame));
+    activateLegacyLink(activeLeaf, navDocument, frame);
+
+    frameWrap.appendChild(frame);
+    section.appendChild(frameWrap);
+    return section;
+  }
+
+  function simplifyEmbeddedFrame(frame) {
+    const frameDocument = frame.contentDocument;
+    if (!frameDocument || !frameDocument.body || !frameDocument.head) {
+      return;
+    }
+
+    ensureThemeDocument(frameDocument, "main");
+    frameDocument.body.classList.add(TOKENS.mainClass);
+  }
+
   function captureInitialMainFrameUrl() {
     const storage = getScopedSessionStorage();
     if (!storage) {
@@ -964,8 +1110,7 @@
       return;
     }
 
-    const mainFrame = window.top && window.top.frames ? window.top.frames.main : null;
-    const currentUrl = readFrameLocationHref(mainFrame);
+    const currentUrl = readInitialFrameHref();
     if (!currentUrl) {
       return;
     }
@@ -977,49 +1122,24 @@
     }
   }
 
-  function navigateToInitialMainFrameUrl(navDocument) {
-    const storage = getScopedSessionStorage();
-    if (!storage) {
-      return;
-    }
-
-    let initialUrl = "";
+  function readInitialFrameHref() {
     try {
-      initialUrl = storage.getItem(INITIAL_MAIN_URL_STORAGE_KEY) || "";
-    } catch (_error) {
-      initialUrl = "";
-    }
-
-    if (!initialUrl) {
-      return;
-    }
-
-    const mainFrame = window.top && window.top.frames ? window.top.frames.main : null;
-    if (mainFrame) {
-      mainFrame.location.href = initialUrl;
-      return;
-    }
-
-    window.location.href = new URL(initialUrl, navDocument.location.href).toString();
-  }
-
-  function readFrameLocationHref(targetFrame) {
-    if (!targetFrame) {
-      return "";
-    }
-
-    try {
-      if (targetFrame.location && targetFrame.location.href) {
-        return targetFrame.location.href;
+      const scopeDocument = window.top ? window.top.document : document;
+      const frame =
+        scopeDocument.querySelector("frame[name='main']") ||
+        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']");
+      if (!frame) {
+        return "";
       }
+
+      const src = frame.getAttribute("src") || "";
+      return src ? new URL(src, scopeDocument.location.href).toString() : "";
     } catch (_error) {
       return "";
     }
-
-    return "";
   }
 
-  function activateLegacyLink(linkItem, navDocument) {
+  function activateLegacyLink(linkItem, navDocument, destinationFrame = null) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
       const helperUrl = new URL("JH/JH01.php", navDocument.location.href);
@@ -1047,11 +1167,8 @@
       return;
     }
 
-    const mainFrame =
-      window.top && window.top.frames ? /** @type {any} */ window.top.frames.main : null;
-
-    if (normalizedTarget === "main" && mainFrame) {
-      mainFrame.location.href = resolvedUrl;
+    if (normalizedTarget === "main" && destinationFrame) {
+      destinationFrame.src = resolvedUrl;
       return;
     }
 

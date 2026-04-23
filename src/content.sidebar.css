@@ -13,6 +13,10 @@ html[data-ccxp-lite-scope="nav"] body {
   color: var(--ccxp-lite-type-body-color);
 }
 
+.ccxp-lite-app-shell {
+  min-height: 100vh;
+}
+
 .ccxp-lite-sidebar-header {
   display: grid;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr) minmax(160px, 220px);
@@ -368,6 +372,21 @@ html[data-ccxp-lite-scope="nav"] body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--ccxp-lite-spacing-sm);
+}
+
+.ccxp-lite-destination-wrap {
+  overflow: hidden;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+  background: var(--ccxp-lite-surface);
+}
+
+.ccxp-lite-destination-frame {
+  display: block;
+  width: 100%;
+  min-height: calc(100vh - 240px);
+  border: 0;
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-empty {
