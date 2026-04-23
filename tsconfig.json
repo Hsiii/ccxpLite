@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "target": "ES2022",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["ES2022", "DOM"],
+    "types": ["bun-types"],
+    "strict": false,
+    "skipLibCheck": true
+  },
+  "include": ["scripts/**/*.mjs", "src/**/*.js", "test/**/*.js", "types/**/*.d.ts"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    ".playwright-cli",
+    "fixtures/ccxp-snapshot",
+    "src/content.decaptcha.model.js"
+  ]
+}

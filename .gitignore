@@ -1,5 +1,10 @@
+node_modules/
 .playwright-cli/
 fixtures/ccxp-snapshot/
 dist/
+.husky/_/
+.eslintcache
+coverage/
+*.tsbuildinfo
 .DS_Store
 __pycache__/
