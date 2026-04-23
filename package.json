@@ -14,7 +14,7 @@
     "lint:fix": "bunx eslint . --fix",
     "format": "bunx prettier . --write",
     "format:check": "bunx prettier . --check",
-    "typecheck": "bunx tsc --noEmit",
+    "typecheck": "bunx tsc --noEmit -p tsconfig.json && bunx tsc --noEmit -p tsconfig.src.json",
     "check": "bun run typecheck && bun run lint && bun run format:check && bun run test",
     "prepare": "husky"
   },

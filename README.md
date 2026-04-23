@@ -28,6 +28,8 @@ bun run build
 
 Git hooks are managed by Husky, with staged-file linting and formatting on commit plus a full project check on push.
 
+For Chrome unpacked loading, use `dist/unpacked` after `bun run build`. The `src/` directory contains TypeScript sources and is not a loadable extension directory by itself.
+
 ## Demo
 
 ### Login Page

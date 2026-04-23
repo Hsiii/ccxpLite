@@ -7,6 +7,7 @@ const projectRoot = process.cwd();
 const srcDir = join(projectRoot, "src");
 const compiledSrcDir = join(projectRoot, ".build", "src");
 const distDir = join(projectRoot, "dist");
+const unpackedDir = join(distDir, "unpacked");
 const outputZip = join(distDir, "ccxpLite.zip");
 const stagingDir = mkdtempSync(join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py");
@@ -33,8 +34,11 @@ const recursiveEntries = new Set(["assets", "_locales"]);
 
 try {
   mkdirSync(distDir, { recursive: true });
+  mkdirSync(unpackedDir, { recursive: true });
   rmSync(compiledSrcDir, { recursive: true, force: true });
+  rmSync(unpackedDir, { recursive: true, force: true });
   rmSync(outputZip, { force: true });
+  mkdirSync(unpackedDir, { recursive: true });
 
   if (existsSync(exportScriptPath) && existsSync(checkpointPath)) {
     const exportResult = spawnSync(
@@ -72,14 +76,17 @@ try {
       throw new Error(`Missing required source file: ${sourcePath}`);
     }
 
-    const destinationPath = join(stagingDir, fileName);
+    const stagingPath = join(stagingDir, fileName);
+    const unpackedPath = join(unpackedDir, fileName);
 
     if (recursiveEntries.has(fileName)) {
-      cpSync(sourcePath, destinationPath, { recursive: true });
+      cpSync(sourcePath, stagingPath, { recursive: true });
+      cpSync(sourcePath, unpackedPath, { recursive: true });
       continue;
     }
 
-    copyFileSync(sourcePath, destinationPath);
+    copyFileSync(sourcePath, stagingPath);
+    copyFileSync(sourcePath, unpackedPath);
   }
 
   const zipResult = spawnSync("zip", ["-q", "-r", outputZip, ...filesToPack], {
@@ -91,7 +98,7 @@ try {
     throw new Error("zip command failed");
   }
 
-  process.stdout.write(`Built ${outputZip}\n`);
+  process.stdout.write(`Built ${outputZip}\nUnpacked extension: ${unpackedDir}\n`);
 } finally {
   rmSync(stagingDir, { recursive: true, force: true });
 }
