@@ -65,6 +65,9 @@
       const header = hostDocument.createElement("div");
       header.className = "ccxp-lite-sidebar-header";
 
+      const brandGroup = hostDocument.createElement("div");
+      brandGroup.className = "ccxp-lite-sidebar-brand-group";
+
       const brand = hostDocument.createElement("button");
       brand.type = "button";
       brand.className = "ccxp-lite-sidebar-brand ccxp-lite-sidebar-brand-button";
@@ -82,16 +85,18 @@
         ),
       );
 
-      const brandMeta = hostDocument.createElement("div");
-      brandMeta.className = "ccxp-lite-sidebar-brand-meta";
-
       const repoLink = hostDocument.createElement("a");
-      repoLink.className = "ccxp-lite-sidebar-brand-repo-link";
+      repoLink.className = "ccxp-lite-sidebar-brand-partner";
       repoLink.href = "https://github.com/Hsiii/ccxpLite";
       repoLink.target = "_blank";
       repoLink.rel = "noreferrer noopener";
-      repoLink.textContent = strings.sidebarGitHubLink;
-      brandMeta.appendChild(repoLink);
+      repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
+      repoLink.appendChild(createBrandCloseIcon(hostDocument));
+
+      const repoLabel = hostDocument.createElement("span");
+      repoLabel.className = "ccxp-lite-sidebar-brand-partner-label";
+      repoLabel.textContent = strings.sidebarBrandPartner;
+      repoLink.appendChild(repoLabel);
 
       const search = createSidebarSearch(hostDocument, strings);
 
@@ -101,8 +106,9 @@
       const footer = hostDocument.createElement("footer");
       footer.className = "ccxp-lite-sidebar-footer";
 
-      header.appendChild(brand);
-      header.appendChild(brandMeta);
+      brandGroup.appendChild(brand);
+      brandGroup.appendChild(repoLink);
+      header.appendChild(brandGroup);
       header.appendChild(search);
       shell.appendChild(header);
       shell.appendChild(content);
@@ -1299,6 +1305,26 @@
     icon.setAttribute("aria-hidden", "true");
 
     ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16", "m21 21-4.3-4.3"].forEach((pathData) => {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      icon.appendChild(path);
+    });
+
+    return icon;
+  }
+
+  function createBrandCloseIcon(targetDocument) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("class", "ccxp-lite-sidebar-brand-partner-icon");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.appendChild(path);
