@@ -418,9 +418,11 @@
     }
 
     if ((group.directLinks || []).length > 0) {
-      block.appendChild(
-        createLinkCollection(targetDocument, navDocument, group.directLinks, strings, rerender),
-      );
+      group.directLinks.forEach((linkItem) => {
+        block.appendChild(
+          createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
+        );
+      });
     }
 
     (group.sections || []).forEach((section) => {
