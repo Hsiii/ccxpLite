@@ -312,9 +312,8 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title,
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title span {
-  font-family: var(--ccxp-lite-font-brand) !important;
-  font-weight: var(--ccxp-lite-font-weight-regular) !important;
-  line-height: 1 !important;
+  font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
+    var(--ccxp-lite-font-brand) !important;
   letter-spacing: 0.01em !important;
 }
 
@@ -326,11 +325,16 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 .ccxp-lite-landing-brand-partner-link:active,
 .ccxp-lite-landing-brand-partner-link:focus-visible,
 .ccxp-lite-landing-brand-partner-label {
-  font-family: var(--ccxp-lite-font-brand) !important;
-  font-weight: var(--ccxp-lite-font-weight-regular) !important;
-  font-size: var(--ccxp-lite-font-size-sidebar-brand) !important;
-  line-height: 1 !important;
+  font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
+    var(--ccxp-lite-font-brand) !important;
   letter-spacing: 0.01em !important;
+}
+
+.ccxp-lite-landing-brand-partner-link,
+.ccxp-lite-landing-brand-partner-link:hover,
+.ccxp-lite-landing-brand-partner-link:active,
+.ccxp-lite-landing-brand-partner-link:focus-visible {
+  vertical-align: top;
 }
 
 .ccxp-lite-landing-login-label {
