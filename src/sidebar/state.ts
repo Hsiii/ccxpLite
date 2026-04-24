@@ -12,7 +12,6 @@
       currentCategoryId: "",
       searchQuery: "",
       activeLeaf: null,
-      legacyMainActive: false,
       scrollTopByView: {
         root: 0,
         category: 0,

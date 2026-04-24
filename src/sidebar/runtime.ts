@@ -10,9 +10,7 @@
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
-  const EMBEDDED_DESTINATION_COLUMNS = "*,0";
-  const LEGACY_MAIN_COLUMNS = `${TOKENS.sidebarWidth},*`;
-  const LEGACY_MAIN_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"];
+  const EXTERNAL_LINK_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"];
 
   function shouldOpenLeafInDestination(linkItem, navDocument) {
     if ((linkItem?.target || "main").toLowerCase() !== "main") {
@@ -24,22 +22,17 @@
       return false;
     }
 
-    return !isLegacyMainOnlyRoute(resolvedUrl);
+    return !isExternalLinkOnlyRoute(resolvedUrl);
   }
 
   function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
-    const state = getSidebarUiState(targetDocument);
-
     if (!shouldOpenLeafInDestination(linkItem, navDocument)) {
-      state.activeLeaf = null;
-      state.legacyMainActive = true;
-      showLegacyMainFrame();
-      activateLegacyLink(linkItem, navDocument);
+      openLeafInNewTab(linkItem, navDocument);
       return;
     }
 
+    const state = getSidebarUiState(targetDocument);
     persistSidebarScroll(targetDocument, "category");
-    state.legacyMainActive = false;
     state.activeLeaf = {
       id: linkItem.id,
       label: linkItem.label,
@@ -48,7 +41,6 @@
       clickLinkArgs: linkItem.clickLinkArgs,
       nonce: Date.now(),
     };
-    hideLegacyMainFrame();
     captureInitialMainFrameUrl();
     rerender();
   }
@@ -127,29 +119,6 @@
     }
   }
 
-  function getInnerFrameset() {
-    try {
-      const scopeDocument = window.top ? window.top.document : document;
-      return scopeDocument.querySelector("frameset[cols]") || null;
-    } catch (_error) {
-      return null;
-    }
-  }
-
-  function showLegacyMainFrame() {
-    const innerFrameset = getInnerFrameset();
-    if (innerFrameset) {
-      innerFrameset.setAttribute("cols", LEGACY_MAIN_COLUMNS);
-    }
-  }
-
-  function hideLegacyMainFrame() {
-    const innerFrameset = getInnerFrameset();
-    if (innerFrameset) {
-      innerFrameset.setAttribute("cols", EMBEDDED_DESTINATION_COLUMNS);
-    }
-  }
-
   function activateLegacyLink(linkItem, navDocument, destinationFrame = null) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
@@ -194,10 +163,10 @@
     return new URL(linkItem.href, navDocument.location.href).toString();
   }
 
-  function isLegacyMainOnlyRoute(resolvedUrl) {
+  function isExternalLinkOnlyRoute(resolvedUrl) {
     try {
       const url = new URL(resolvedUrl);
-      return LEGACY_MAIN_PATH_PREFIXES.some((pathPrefix) => url.pathname.startsWith(pathPrefix));
+      return EXTERNAL_LINK_PATH_PREFIXES.some((pathPrefix) => url.pathname.startsWith(pathPrefix));
     } catch (_error) {
       return false;
     }
@@ -214,8 +183,6 @@
     openLeafDestination,
     simplifyEmbeddedFrame,
     getLegacyMainFrame,
-    showLegacyMainFrame,
-    hideLegacyMainFrame,
     captureInitialMainFrameUrl,
     openLeafInNewTab,
     activateLegacyLink,
