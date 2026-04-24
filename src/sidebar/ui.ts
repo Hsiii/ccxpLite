@@ -545,7 +545,7 @@
     button.className = "ccxp-lite-link-card ccxp-lite-pinned-card";
     button.setAttribute("title", linkItem.label);
     button.appendChild(
-      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
+      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () =>
@@ -561,7 +561,7 @@
     button.className = "ccxp-lite-link-card ccxp-lite-detail-link-card";
     button.setAttribute("title", linkItem.label);
     button.appendChild(
-      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
+      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () =>

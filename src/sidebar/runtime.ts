@@ -155,8 +155,21 @@
     window.location.href = resolvedUrl;
   }
 
-  function isExternalLinkTarget(target) {
-    return (target || "main").toLowerCase() === "_blank";
+  function isExternalLinkTarget(linkItem, navDocument) {
+    const normalizedTarget =
+      typeof linkItem === "string"
+        ? linkItem.toLowerCase()
+        : (linkItem?.target || "main").toLowerCase();
+    if (normalizedTarget === "_blank") {
+      return true;
+    }
+
+    if (!linkItem || typeof linkItem === "string" || !navDocument) {
+      return false;
+    }
+
+    const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
+    return isExternalLinkOnlyRoute(resolvedUrl);
   }
 
   function resolveLeafUrl(linkItem, navDocument) {
