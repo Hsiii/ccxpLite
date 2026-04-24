@@ -18,9 +18,10 @@
         "content.shared.css",
         "content.landing.css",
         "content.main.css",
-        "content.sidebar.css"
+        "content.sidebar.css",
+        "page.pe14d.js"
       ],
-      "matches": ["https://www.ccxp.nthu.edu.tw/*"]
+      "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     }
   ],
   "content_scripts": [
@@ -57,6 +58,14 @@
         "content.landing.js",
         "content.js"
       ]
+    },
+    {
+      "matches": [
+        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/*",
+        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/*"
+      ],
+      "run_at": "document_start",
+      "js": ["content.pe14d.js"]
     }
   ]
 }
