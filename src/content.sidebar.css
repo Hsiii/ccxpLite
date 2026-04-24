@@ -368,14 +368,7 @@ html[data-ccxp-lite-scope="nav"] body {
   width: min(100%, 320px);
   max-width: 320px;
   padding: var(--ccxp-lite-spacing-inset-sm);
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--ccxp-lite-surface) 94%, var(--ccxp-lite-primary-muted-surface)) 0%,
-    var(--ccxp-lite-surface) 100%
-  );
-  box-shadow:
-    0 12px 28px color-mix(in srgb, var(--ccxp-lite-primary) 8%, transparent),
-    0 2px 6px color-mix(in srgb, var(--ccxp-lite-text) 4%, transparent);
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-category-card:hover,
@@ -398,11 +391,7 @@ html[data-ccxp-lite-scope="nav"] body {
   min-height: 112px;
   padding: var(--ccxp-lite-spacing-md);
   border-radius: calc(var(--ccxp-lite-radius-sm) + 2px);
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--ccxp-lite-primary) 16%, white) 0%,
-    color-mix(in srgb, var(--ccxp-lite-accent) 64%, white) 100%
-  );
+  background: var(--ccxp-lite-surface-muted);
 }
 
 .ccxp-lite-category-card-icon {
@@ -411,10 +400,9 @@ html[data-ccxp-lite-scope="nav"] body {
   justify-content: center;
   width: 64px;
   height: 64px;
-  color: color-mix(in srgb, var(--ccxp-lite-brand) 72%, var(--ccxp-lite-text));
+  color: var(--ccxp-lite-brand);
   border-radius: var(--ccxp-lite-radius-full);
-  background: color-mix(in srgb, white 78%, var(--ccxp-lite-primary) 22%);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ccxp-lite-primary) 12%, white);
+  background: var(--ccxp-lite-surface);
   flex: 0 0 auto;
 }
 
@@ -476,12 +464,8 @@ html[data-ccxp-lite-scope="nav"] body {
   margin-top: var(--ccxp-lite-spacing-md);
   padding: 0 var(--ccxp-lite-spacing-md);
   border-radius: var(--ccxp-lite-radius-full);
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--ccxp-lite-primary) 90%, white) 0%,
-    color-mix(in srgb, var(--ccxp-lite-primary) 62%, white) 100%
-  );
-  color: white;
+  background: var(--ccxp-lite-surface-muted);
+  color: var(--ccxp-lite-brand);
 }
 
 .ccxp-lite-category-card-action {
