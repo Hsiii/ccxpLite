@@ -366,13 +366,18 @@ html[data-ccxp-lite-scope="nav"] body {
   grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr);
   grid-template-areas:
     "icon header"
-    "summary summary";
-  align-items: center;
+    ". summary";
+  align-items: start;
   gap: var(--ccxp-lite-spacing-sm);
   min-height: var(--ccxp-lite-size-sidebar-category-card-min-height);
   width: min(100%, 320px);
   max-width: 320px;
   padding: var(--ccxp-lite-spacing-inset-md);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--ccxp-lite-surface) 94%, var(--ccxp-lite-primary-muted-surface)) 0%,
+    var(--ccxp-lite-surface) 100%
+  );
 }
 
 .ccxp-lite-category-card:hover,
@@ -399,6 +404,8 @@ html[data-ccxp-lite-scope="nav"] body {
   width: var(--ccxp-lite-size-sidebar-category-card-icon);
   height: var(--ccxp-lite-size-sidebar-category-card-icon);
   color: var(--ccxp-lite-brand);
+  border-radius: var(--ccxp-lite-radius-xs);
+  background: color-mix(in srgb, var(--ccxp-lite-primary) 8%, var(--ccxp-lite-surface));
   flex: 0 0 auto;
 }
 
@@ -409,10 +416,11 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   min-width: 0;
   gap: var(--ccxp-lite-spacing-sm);
+  min-height: var(--ccxp-lite-size-sidebar-category-card-icon);
 }
 
 .ccxp-lite-category-card-header > .ccxp-lite-inline-icon {
-  color: var(--ccxp-lite-text-muted);
+  color: color-mix(in srgb, var(--ccxp-lite-text-muted) 74%, var(--ccxp-lite-surface));
 }
 
 .ccxp-lite-category-card-title,
@@ -421,6 +429,16 @@ html[data-ccxp-lite-scope="nav"] body {
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--ccxp-lite-text);
+  white-space: nowrap;
+}
+
+.ccxp-lite-category-card-title {
+  font: var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-body) / 1.3
+    var(--ccxp-lite-font-sans);
+  letter-spacing: 0.01em;
+}
+
+.ccxp-lite-row-label {
   font: var(--ccxp-lite-type-body);
   white-space: nowrap;
 }
@@ -431,7 +449,8 @@ html[data-ccxp-lite-scope="nav"] body {
   overflow: hidden;
   color: color-mix(in srgb, var(--ccxp-lite-type-caption-color) 75%, var(--ccxp-lite-surface));
   font: var(--ccxp-lite-type-caption);
-  line-height: 1.4;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
   text-overflow: ellipsis;
   white-space: normal;
   -webkit-box-orient: vertical;
