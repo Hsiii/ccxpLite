@@ -11,7 +11,16 @@
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
 
+  function shouldOpenLeafInDestination(target) {
+    return (target || "main").toLowerCase() === "main";
+  }
+
   function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
+    if (!shouldOpenLeafInDestination(linkItem.target)) {
+      activateLegacyLink(linkItem, navDocument);
+      return;
+    }
+
     const state = getSidebarUiState(targetDocument);
     persistSidebarScroll(targetDocument, "category");
     state.activeLeaf = {
@@ -131,6 +140,7 @@
 
   namespace.sidebarRuntime = {
     DESTINATION_LOAD_TIMEOUT_MS,
+    shouldOpenLeafInDestination,
     openLeafDestination,
     simplifyEmbeddedFrame,
     captureInitialMainFrameUrl,
