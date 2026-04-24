@@ -604,11 +604,11 @@
       dialog.setAttribute("aria-modal", "true");
       dialog.tabIndex = -1;
       Object.assign(dialog.style, {
-        width: "min(100%, 360px)",
+        width: "min(100%, 540px)",
         display: "flex",
         flexDirection: "column",
-        gap: "16px",
-        padding: "24px",
+        gap: "24px",
+        padding: "36px",
         border: "1px solid var(--ccxp-lite-border)",
         borderRadius: "var(--ccxp-lite-radius-md)",
         background: "var(--ccxp-lite-surface)",
@@ -643,6 +643,7 @@
         display: "flex",
         justifyContent: "flex-end",
         gap: "12px",
+        marginTop: "12px",
       });
 
       const keepButton = createDialogActionButton(
