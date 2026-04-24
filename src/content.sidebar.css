@@ -749,6 +749,7 @@ html[data-ccxp-lite-scope="nav"] body {
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas: "media body footer";
     align-items: center;
+    column-gap: var(--ccxp-lite-spacing-sm);
     width: 100%;
     max-width: none;
     min-height: 0;
