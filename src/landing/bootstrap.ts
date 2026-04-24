@@ -82,6 +82,7 @@
     }
 
     if (targetDocument.body.dataset.ccxpLiteLandingApplied === "true") {
+      onReady();
       return;
     }
 

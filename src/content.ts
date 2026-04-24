@@ -88,10 +88,11 @@
           background: #ffffff !important;
         }
 
-        body {
+        html:not([data-ccxp-lite-loading-ready="true"]) body {
           opacity: 0 !important;
         }
 
+        html[data-ccxp-lite-loading-ready="true"] body,
         body[data-ccxp-lite-loading-ready="true"] {
           opacity: 1 !important;
           transition: opacity 120ms ease;
@@ -137,16 +138,24 @@
 
   function releaseLoadingSprite(targetDocument) {
     const sprite = targetDocument.getElementById(LOADING_SPRITE_ID);
+    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID);
+
+    if (targetDocument.documentElement) {
+      targetDocument.documentElement.dataset.ccxpLiteLoadingReady = "true";
+    }
+
     if (targetDocument.body) {
       targetDocument.body.dataset.ccxpLiteLoadingReady = "true";
     }
 
-    if (!sprite) {
-      return;
+    if (sprite) {
+      sprite.style.opacity = "0";
     }
 
-    sprite.style.opacity = "0";
-    window.setTimeout(() => removeNode(sprite), 180);
+    window.setTimeout(() => {
+      removeNode(sprite);
+      removeNode(styleNode);
+    }, 180);
   }
 
   function updateLoadingStateForNav(navFrame) {
