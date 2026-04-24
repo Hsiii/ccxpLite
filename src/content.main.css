@@ -37,10 +37,6 @@ html[data-ccxp-lite-scope="main"] body {
   font: var(--ccxp-lite-type-body);
 }
 
-body.ccxp-lite-main-skin {
-  padding: var(--ccxp-lite-spacing-lg);
-}
-
 html[data-ccxp-lite-scope="main"] a:not(.button):not([class*="button" i]) {
   color: var(--ccxp-lite-type-primary-link-color);
   font: var(--ccxp-lite-type-primary-link);
