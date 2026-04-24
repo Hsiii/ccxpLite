@@ -69,7 +69,7 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-brand-title {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--ccxp-lite-sidebar-row-gap);
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
@@ -82,7 +82,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-brand-partner-mark,
 .ccxp-lite-sidebar-brand-partner-link {
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   min-width: 0;
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
@@ -112,11 +112,14 @@ html[data-ccxp-lite-scope="nav"] body {
   text-decoration: none;
   text-rendering: geometricPrecision;
   position: relative;
+  align-items: center;
+  padding-bottom: 2px;
   transform: none;
   transition: none;
 }
 
 .ccxp-lite-sidebar-brand-partner-label {
+  display: block;
   color: inherit;
 }
 
@@ -130,7 +133,8 @@ html[data-ccxp-lite-scope="nav"] body {
   content: "";
   position: absolute;
   left: 0;
-  bottom: -0.12em;
+  right: 0;
+  bottom: 0;
   width: 100%;
   height: 1px;
   background: currentColor;
