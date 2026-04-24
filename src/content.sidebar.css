@@ -280,15 +280,13 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   justify-content: space-between;
   gap: var(--ccxp-lite-spacing-sm);
-}
-
-.ccxp-lite-dashboard-group .ccxp-lite-pane-header {
-  min-height: 32px;
+  height: 48px;
+  min-height: 48px;
+  flex-shrink: 0;
 }
 
 .ccxp-lite-pane-header-detail {
   justify-content: flex-start;
-  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
 }
 
 .ccxp-lite-pane-body {
