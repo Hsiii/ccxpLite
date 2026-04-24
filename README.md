@@ -16,18 +16,12 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 
 ## Demo
 
-### Login Page
-
-| Before                                                            | After                                                           |
-| ----------------------------------------------------------------- | --------------------------------------------------------------- |
-| <img src="demo/before/login.png" alt="Login Before" height="240"> | <img src="demo/after/login.png" alt="Login After" height="240"> |
-
-### Menu layout
-
-| Before                                                                | After                                                               |
-| --------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| <img src="demo/before/menu.png" alt="Menu Before" height="240">       | <img src="demo/after/menu.png" alt="Menu After" height="240">       |
-| <img src="demo/before/submenu.png" alt="Submenu Before" height="240"> | <img src="demo/after/submenu.png" alt="Submenu After" height="240"> |
+| Before                                                          | After                                                         |
+| --------------------------------------------------------------- | ------------------------------------------------------------- |
+| <img src="demo/before/0.png" alt="Login Before" height="240">   | <img src="demo/after/0.png" alt="Login After" height="240">   |
+| <img src="demo/before/1.png" alt="Menu Before" height="240">    | <img src="demo/after/1.png" alt="Menu After" height="240">    |
+| <img src="demo/before/2.png" alt="Submenu Before" height="240"> | <img src="demo/after/2.png" alt="Submenu After" height="240"> |
+| <img src="demo/before/3.png" alt="Submenu Before" height="240"> | <img src="demo/after/3.png" alt="Submenu After" height="240"> |
 
 ## Decaptcha
 
