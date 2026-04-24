@@ -331,7 +331,8 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-category-browser.is-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  justify-content: start;
 }
 
 .ccxp-lite-category-browser.is-list {
@@ -362,11 +363,14 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-category-card {
   display: grid;
-  grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr) auto;
-  grid-template-rows: auto auto;
-  align-items: start;
+  grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr);
+  grid-template-areas:
+    "icon header"
+    "summary summary";
+  align-items: center;
   gap: var(--ccxp-lite-spacing-sm);
   min-height: var(--ccxp-lite-size-sidebar-category-card-min-height);
+  max-width: 320px;
   padding: var(--ccxp-lite-spacing-inset-md);
 }
 
@@ -379,7 +383,7 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-category-card.is-list {
-  grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr) auto;
+  max-width: none;
 }
 
 .ccxp-lite-link-card {
@@ -390,24 +394,23 @@ html[data-ccxp-lite-scope="nav"] body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  grid-row: 1 / span 2;
+  grid-area: icon;
   width: var(--ccxp-lite-size-sidebar-category-card-icon);
   height: var(--ccxp-lite-size-sidebar-category-card-icon);
   color: var(--ccxp-lite-brand);
   flex: 0 0 auto;
 }
 
-.ccxp-lite-category-card-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
+.ccxp-lite-category-card-header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   min-width: 0;
-  gap: var(--ccxp-lite-spacing-3xs);
-  align-self: center;
+  gap: var(--ccxp-lite-spacing-sm);
 }
 
-.ccxp-lite-category-card > .ccxp-lite-inline-icon {
-  align-self: center;
+.ccxp-lite-category-card-header > .ccxp-lite-inline-icon {
   color: var(--ccxp-lite-text-muted);
 }
 
@@ -422,9 +425,10 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-category-card-summary {
+  grid-area: summary;
   display: -webkit-box;
   overflow: hidden;
-  color: var(--ccxp-lite-type-caption-color);
+  color: color-mix(in srgb, var(--ccxp-lite-type-caption-color) 75%, var(--ccxp-lite-surface));
   font: var(--ccxp-lite-type-caption);
   line-height: 1.4;
   text-overflow: ellipsis;

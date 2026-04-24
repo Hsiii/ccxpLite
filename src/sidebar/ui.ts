@@ -396,23 +396,23 @@
     iconWrap.appendChild(createCategoryIcon(targetDocument, category.icon));
     button.appendChild(iconWrap);
 
-    const body = targetDocument.createElement("span");
-    body.className = "ccxp-lite-category-card-body";
+    const header = targetDocument.createElement("span");
+    header.className = "ccxp-lite-category-card-header";
 
     const title = targetDocument.createElement("span");
     title.className = "ccxp-lite-category-card-title";
     title.textContent = category.label;
-    body.appendChild(title);
+    header.appendChild(title);
+
+    header.appendChild(createForwardIcon(targetDocument));
+    button.appendChild(header);
 
     if (category.summary) {
       const summary = targetDocument.createElement("span");
       summary.className = "ccxp-lite-category-card-summary";
       summary.textContent = category.summary;
-      body.appendChild(summary);
+      button.appendChild(summary);
     }
-
-    button.appendChild(body);
-    button.appendChild(createForwardIcon(targetDocument));
     return button;
   }
 
