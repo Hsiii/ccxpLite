@@ -4,8 +4,6 @@
   const TRANSPORT_FRAME_ID = "ccxp-lite-pe14d-transport";
   const TRANSPORT_FRAME_NAME = "ccxp-lite-pe14d-transport";
   const STATE_STORAGE_KEY = "ccxp-lite-pe14d-submit-state";
-  const TOAST_ID = "ccxp-lite-pe14d-toast";
-  const TOAST_STYLE_ID = "ccxp-lite-pe14d-toast-style";
   const INTERCEPTED_ACTIONS = new Set(["getLabInsList", "ins"]);
   const RESTORE_TTL_MS = 30000;
 
@@ -27,7 +25,6 @@
   }
 
   restorePageState();
-  ensureToastStyles();
   installWhenReady();
 
   function installWhenReady() {
@@ -91,7 +88,6 @@
     const originalTarget = pendingSubmission.originalTarget;
 
     persistSnapshot(snapshot);
-    setPendingUi(true, actionName);
 
     const handleLoad = () => {
       processTransportResponse();
@@ -203,12 +199,6 @@
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
-
-      if (snapshot.actionName === "ins") {
-        showToast("已新增，已保留目前位置");
-      } else if (snapshot.actionName === "getLabInsList") {
-        showToast("已更新任務資訊");
-      }
     };
 
     if (globalScope.document.readyState === "complete") {
@@ -271,9 +261,6 @@
       syncDocumentTitle(responseDocument);
       restoreAfterPatchedUpdate(pendingSubmission.snapshot);
       clearStoredSnapshot();
-      showToast(
-        pendingSubmission.actionName === "ins" ? "已新增，未離開目前頁面" : "已更新任務資訊",
-      );
     } catch (_error) {
       fallbackToHardReload();
       return;
@@ -322,81 +309,7 @@
     }
 
     pendingSubmission.cleanedUp = true;
-    setPendingUi(false, pendingSubmission.actionName);
     pendingSubmission = null;
-  }
-
-  function setPendingUi(isPending, actionName) {
-    if (!globalScope.document.documentElement) {
-      return;
-    }
-
-    globalScope.document.documentElement.dataset.ccxpLitePe14dPending = isPending ? actionName : "";
-    if (!isPending) {
-      return;
-    }
-
-    showToast(actionName === "ins" ? "送出中…" : "更新中…", true);
-  }
-
-  function ensureToastStyles() {
-    if (globalScope.document.getElementById(TOAST_STYLE_ID)) {
-      return;
-    }
-
-    const styleNode = globalScope.document.createElement("style");
-    styleNode.id = TOAST_STYLE_ID;
-    styleNode.textContent = `
-      #${TOAST_ID} {
-        position: fixed;
-        right: 16px;
-        bottom: 16px;
-        z-index: 2147483647;
-        max-width: 280px;
-        padding: 12px 16px;
-        border-radius: 12px;
-        background: rgba(17, 24, 39, 0.88);
-        color: #ffffff;
-        font: 500 14px/1.4 "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-        box-shadow: 0 12px 32px rgba(17, 24, 39, 0.28);
-        opacity: 0;
-        transform: translateY(8px);
-        transition: opacity 140ms ease, transform 140ms ease;
-        pointer-events: none;
-      }
-
-      #${TOAST_ID}[data-visible="true"] {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    `;
-
-    (globalScope.document.head || globalScope.document.documentElement).appendChild(styleNode);
-  }
-
-  function showToast(message, isPersistent = false) {
-    ensureToastStyles();
-
-    let toast = globalScope.document.getElementById(TOAST_ID);
-    if (!(toast instanceof HTMLElement)) {
-      toast = globalScope.document.createElement("div");
-      toast.id = TOAST_ID;
-      (globalScope.document.body || globalScope.document.documentElement).appendChild(toast);
-    }
-
-    toast.textContent = message;
-    toast.dataset.visible = "true";
-
-    if (toast.__ccxpLiteToastTimer) {
-      globalScope.clearTimeout(toast.__ccxpLiteToastTimer);
-      toast.__ccxpLiteToastTimer = null;
-    }
-
-    if (!isPersistent) {
-      toast.__ccxpLiteToastTimer = globalScope.setTimeout(() => {
-        toast.dataset.visible = "false";
-      }, 1800);
-    }
   }
 
   function escapeAttributeValue(value) {
