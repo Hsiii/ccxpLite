@@ -10,19 +10,36 @@
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
+  const EMBEDDED_DESTINATION_COLUMNS = "*,0";
+  const LEGACY_MAIN_COLUMNS = `${TOKENS.sidebarWidth},*`;
+  const LEGACY_MAIN_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"];
 
-  function shouldOpenLeafInDestination(target) {
-    return (target || "main").toLowerCase() === "main";
+  function shouldOpenLeafInDestination(linkItem, navDocument) {
+    if ((linkItem?.target || "main").toLowerCase() !== "main") {
+      return false;
+    }
+
+    const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
+    if (!resolvedUrl) {
+      return false;
+    }
+
+    return !isLegacyMainOnlyRoute(resolvedUrl);
   }
 
   function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
-    if (!shouldOpenLeafInDestination(linkItem.target)) {
+    const state = getSidebarUiState(targetDocument);
+
+    if (!shouldOpenLeafInDestination(linkItem, navDocument)) {
+      state.activeLeaf = null;
+      state.legacyMainActive = true;
+      showLegacyMainFrame();
       activateLegacyLink(linkItem, navDocument);
       return;
     }
 
-    const state = getSidebarUiState(targetDocument);
     persistSidebarScroll(targetDocument, "category");
+    state.legacyMainActive = false;
     state.activeLeaf = {
       id: linkItem.id,
       label: linkItem.label,
@@ -31,6 +48,7 @@
       clickLinkArgs: linkItem.clickLinkArgs,
       nonce: Date.now(),
     };
+    hideLegacyMainFrame();
     captureInitialMainFrameUrl();
     rerender();
   }
@@ -77,7 +95,7 @@
   }
 
   function openLeafInNewTab(activeLeaf, navDocument) {
-    const resolvedUrl = new URL(activeLeaf.href, navDocument.location.href).toString();
+    const resolvedUrl = resolveLeafUrl(activeLeaf, navDocument);
     window.open(resolvedUrl, "_blank", "noopener");
   }
 
@@ -109,6 +127,29 @@
     }
   }
 
+  function getInnerFrameset() {
+    try {
+      const scopeDocument = window.top ? window.top.document : document;
+      return scopeDocument.querySelector("frameset[cols]") || null;
+    } catch (_error) {
+      return null;
+    }
+  }
+
+  function showLegacyMainFrame() {
+    const innerFrameset = getInnerFrameset();
+    if (innerFrameset) {
+      innerFrameset.setAttribute("cols", LEGACY_MAIN_COLUMNS);
+    }
+  }
+
+  function hideLegacyMainFrame() {
+    const innerFrameset = getInnerFrameset();
+    if (innerFrameset) {
+      innerFrameset.setAttribute("cols", EMBEDDED_DESTINATION_COLUMNS);
+    }
+  }
+
   function activateLegacyLink(linkItem, navDocument, destinationFrame = null) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
@@ -124,7 +165,7 @@
       }
     }
 
-    const resolvedUrl = new URL(linkItem.href, navDocument.location.href).toString();
+    const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     const normalizedTarget = (linkItem.target || "main").toLowerCase();
 
     if (normalizedTarget === "_blank") {
@@ -149,6 +190,19 @@
     return (target || "main").toLowerCase() === "_blank";
   }
 
+  function resolveLeafUrl(linkItem, navDocument) {
+    return new URL(linkItem.href, navDocument.location.href).toString();
+  }
+
+  function isLegacyMainOnlyRoute(resolvedUrl) {
+    try {
+      const url = new URL(resolvedUrl);
+      return LEGACY_MAIN_PATH_PREFIXES.some((pathPrefix) => url.pathname.startsWith(pathPrefix));
+    } catch (_error) {
+      return false;
+    }
+  }
+
   function readAcixstore(locationHref) {
     const url = new URL(locationHref);
     return url.searchParams.get("ACIXSTORE") || "";
@@ -160,6 +214,8 @@
     openLeafDestination,
     simplifyEmbeddedFrame,
     getLegacyMainFrame,
+    showLegacyMainFrame,
+    hideLegacyMainFrame,
     captureInitialMainFrameUrl,
     openLeafInNewTab,
     activateLegacyLink,

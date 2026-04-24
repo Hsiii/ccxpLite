@@ -30,7 +30,7 @@
   const { buildSidebarModel, parseSidebarTree } = sidebarData;
   const { getSidebarUiState } = sidebarState;
   const { renderSidebar, createSidebarSearch, createBrandCloseIcon } = sidebarUi;
-  const { captureInitialMainFrameUrl } = sidebarRuntime;
+  const { captureInitialMainFrameUrl, hideLegacyMainFrame } = sidebarRuntime;
 
   function simplifySidebar(navFrame, retry, options = {}) {
     const navDocument = navFrame.contentDocument;
@@ -132,6 +132,8 @@
         const state = getSidebarUiState(hostDocument);
         state.currentCategoryId = "";
         state.activeLeaf = null;
+        state.legacyMainActive = false;
+        hideLegacyMainFrame();
         renderSidebar(
           hostDocument,
           navDocument,
