@@ -677,6 +677,16 @@ html[data-ccxp-lite-scope="nav"] body {
     flex-direction: column;
   }
 
+  .ccxp-lite-dashboard-group,
+  .ccxp-lite-pane {
+    flex: 0 0 auto;
+    height: auto;
+  }
+
+  .ccxp-lite-pane-pinned {
+    max-width: none;
+  }
+
   .ccxp-lite-category-browser.is-grid,
   .ccxp-lite-link-collection {
     grid-template-columns: 1fr;
