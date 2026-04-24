@@ -1,9 +1,18 @@
 html[data-ccxp-lite-scope="landing"],
 html[data-ccxp-lite-scope="landing"] body {
   background: var(--ccxp-lite-bg) !important;
-  color: var(--ccxp-lite-type-body-color);
+  background-image: none !important;
+  color: var(--ccxp-lite-type-body-color) !important;
   max-width: 100vw;
   overflow-x: clip;
+}
+
+html[data-ccxp-lite-scope="landing"] [background] {
+  background-image: none !important;
+}
+
+html[data-ccxp-lite-scope="landing"] [bgcolor] {
+  background-color: transparent !important;
 }
 
 html[data-ccxp-lite-scope="landing"] body {
@@ -1303,11 +1312,6 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
     width: 100% !important;
     max-width: 100%;
   }
-}
-
-.ccxp-lite-landing-links table[background],
-.ccxp-lite-landing-links [background] {
-  background: none !important;
 }
 
 .ccxp-lite-landing-tabs {
