@@ -32,6 +32,7 @@
     moveChildNodes,
     removeNode,
     isDocumentComplete,
+    cleanLegacyAttributes,
   } = shared;
   const { isSupportedInquirePath, isLandingPage, resolveLandingLocale, getLoginForm } =
     landingLocale;
@@ -268,7 +269,13 @@
       shell.appendChild(noticesSection);
     }
 
+    cleanLegacyAttributes(shell);
+    cleanLegacyAttributes(targetDocument);
     targetDocument.body.replaceChildren(shell);
+
+    // Force style override on body as a last resort
+    targetDocument.body.style.setProperty("background-image", "none", "important");
+    targetDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
     enableLoginCaptchaAutofill(targetDocument, loginSection, captchaAutofillState);
     restoreLoginValidationGuards(targetDocument, loginValidationState);
     targetDocument.body.dataset.ccxpLiteLandingApplied = "true";

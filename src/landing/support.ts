@@ -2,7 +2,7 @@
 (function registerCcxpLiteLandingSupport(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
-  const { getLocalizedStrings, removeNode } = shared || {};
+  const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared || {};
 
   function findLoginSourceCell(targetDocument, loginForm) {
     if (loginForm) {
@@ -201,6 +201,9 @@
 
       const topicCell = cells[1];
       const topicContent = topicCell.cloneNode(true);
+      if (typeof cleanLegacyAttributes === "function") {
+        cleanLegacyAttributes(topicContent);
+      }
       entries.push({
         date: rawDate,
         topicContent,
