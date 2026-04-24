@@ -950,6 +950,7 @@
     frame.className = "ccxp-lite-destination-frame";
     frame.setAttribute("frameborder", "0");
     frame.setAttribute("scrolling", "auto");
+    frame.setAttribute("allowTransparency", "true");
     frame.title = activeLeaf.label;
     frame.hidden = true;
     const legacyMainFrame = getLegacyMainFrame();
@@ -961,7 +962,6 @@
       }
       hasSettled = true;
       window.clearTimeout(timeoutId);
-      simplifyEmbeddedFrame(frame);
       loading.hidden = true;
       error.hidden = true;
       frame.hidden = false;
@@ -994,12 +994,16 @@
       }
 
       if (frame.contentDocument && frame.contentDocument.readyState === "complete") {
+        simplifyEmbeddedFrame(frame);
         settleSuccess();
       }
     };
 
     const timeoutId = window.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
-    frame.addEventListener("load", settleSuccess, { once: true });
+    frame.addEventListener("load", () => {
+      simplifyEmbeddedFrame(frame);
+      settleSuccess();
+    });
     frameWrap.appendChild(loading);
     frameWrap.appendChild(error);
     frameWrap.appendChild(frame);

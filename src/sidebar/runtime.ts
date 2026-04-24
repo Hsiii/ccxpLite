@@ -6,7 +6,7 @@
     return;
   }
 
-  const { TOKENS, ensureThemeDocument } = shared;
+  const { TOKENS, ensureThemeDocument, cleanLegacyAttributes } = shared;
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
@@ -42,7 +42,12 @@
     }
 
     ensureThemeDocument(frameDocument, "main");
+    cleanLegacyAttributes(frameDocument);
     frameDocument.body.classList.add(TOKENS.mainClass);
+
+    // Force style override as a last resort
+    frameDocument.body.style.setProperty("background-image", "none", "important");
+    frameDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
   }
 
   function captureInitialMainFrameUrl() {

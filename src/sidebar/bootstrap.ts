@@ -23,6 +23,7 @@
     createBrandImage,
     createBrandCopy,
     isDocumentComplete,
+    cleanLegacyAttributes,
   } = shared;
   const { favoriteSubscribers, ensureFavoriteStorageSync, ensureFavoriteIdsLoaded } =
     sidebarFavorites;
@@ -119,6 +120,7 @@
       shell.appendChild(content);
       shell.appendChild(footer);
 
+      cleanLegacyAttributes(shell);
       hostDocument.body.replaceChildren(shell);
 
       if (helperFrame) {
