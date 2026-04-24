@@ -74,7 +74,7 @@
           id: `category-${category.id}`,
           label: strings[category.labelKey] || category.fallbackLabel || category.id,
           icon: category.icon,
-          summary: (category.summaryLabels || []).join(" "),
+          summary: (category.summaryLabels || []).join(" · "),
           directLinks: [],
           sections,
           emptyMessage: strings.emptyGroup,
