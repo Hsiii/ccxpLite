@@ -292,6 +292,12 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   color: inherit;
 }
 
+.ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-partner-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+}
+
 .ccxp-lite-landing-brand-partner-label::after {
   content: "";
   position: absolute;
