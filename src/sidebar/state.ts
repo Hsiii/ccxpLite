@@ -11,7 +11,6 @@
     const state = {
       currentCategoryId: "",
       searchQuery: "",
-      viewMode: "grid",
       activeLeaf: null,
       scrollTopByView: {
         root: 0,

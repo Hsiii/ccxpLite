@@ -330,12 +330,9 @@ html[data-ccxp-lite-scope="nav"] body {
   align-content: start;
 }
 
-.ccxp-lite-category-browser.is-grid {
+.ccxp-lite-category-browser {
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-}
-
-.ccxp-lite-category-browser.is-list {
-  grid-template-columns: 1fr;
+  align-items: start;
 }
 
 .ccxp-lite-category-card,
@@ -389,16 +386,6 @@ html[data-ccxp-lite-scope="nav"] body {
   background: var(--ccxp-lite-primary-hover-surface);
 }
 
-.ccxp-lite-category-card.is-list {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: "media body footer";
-  align-items: center;
-  max-width: none;
-  min-height: 0;
-  padding: var(--ccxp-lite-spacing-inset-sm);
-  box-shadow: none;
-}
-
 .ccxp-lite-link-card {
   height: var(--ccxp-lite-size-sidebar-section-card-min-height);
 }
@@ -431,29 +418,9 @@ html[data-ccxp-lite-scope="nav"] body {
   flex: 0 0 auto;
 }
 
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-media {
-  min-height: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-}
-
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-icon {
-  width: var(--ccxp-lite-size-sidebar-category-card-icon);
-  height: var(--ccxp-lite-size-sidebar-category-card-icon);
-  border-radius: var(--ccxp-lite-radius-full);
-  background: color-mix(in srgb, var(--ccxp-lite-primary) 10%, white);
-  box-shadow: none;
-}
-
 .ccxp-lite-category-card-icon .ccxp-lite-category-icon {
   width: 28px;
   height: 28px;
-}
-
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-icon .ccxp-lite-category-icon {
-  width: 22px;
-  height: 22px;
 }
 
 .ccxp-lite-category-card-body {
@@ -530,28 +497,6 @@ html[data-ccxp-lite-scope="nav"] body {
   color: inherit;
 }
 
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-body {
-  padding: 0;
-}
-
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-summary {
-  -webkit-line-clamp: 1;
-}
-
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-footer {
-  justify-content: center;
-  min-height: 0;
-  margin-top: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  color: color-mix(in srgb, var(--ccxp-lite-text-muted) 74%, var(--ccxp-lite-surface));
-}
-
-.ccxp-lite-category-card.is-list .ccxp-lite-category-card-action {
-  display: none;
-}
-
 .ccxp-lite-row-label-wrap {
   display: inline-flex;
   align-items: center;
@@ -573,16 +518,6 @@ html[data-ccxp-lite-scope="nav"] body {
   color: var(--ccxp-lite-text-muted);
 }
 
-.ccxp-lite-view-switch {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-}
-
-.ccxp-lite-view-switch-indicator {
-  display: none;
-}
-
 .ccxp-lite-view-button,
 .ccxp-lite-back-button {
   display: inline-flex;
@@ -593,16 +528,6 @@ html[data-ccxp-lite-scope="nav"] body {
   padding: 0;
   border-radius: var(--ccxp-lite-radius-sm);
   cursor: pointer;
-}
-
-.ccxp-lite-view-button {
-  border: 0;
-  background: transparent;
-  color: var(--ccxp-lite-text-muted);
-}
-
-.ccxp-lite-view-button.is-active {
-  color: var(--ccxp-lite-brand);
 }
 
 .ccxp-lite-pinned-card,
@@ -831,8 +756,61 @@ html[data-ccxp-lite-scope="nav"] body {
     max-width: none;
   }
 
-  .ccxp-lite-category-browser.is-grid,
+  .ccxp-lite-category-browser,
   .ccxp-lite-link-collection {
     grid-template-columns: 1fr;
+  }
+
+  .ccxp-lite-category-card {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas: "media body footer";
+    align-items: center;
+    width: 100%;
+    max-width: none;
+    min-height: 0;
+    padding: var(--ccxp-lite-spacing-inset-sm);
+    box-shadow: none;
+  }
+
+  .ccxp-lite-category-card-media {
+    min-height: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .ccxp-lite-category-card-icon {
+    width: var(--ccxp-lite-size-sidebar-category-card-icon);
+    height: var(--ccxp-lite-size-sidebar-category-card-icon);
+    border-radius: var(--ccxp-lite-radius-full);
+    background: color-mix(in srgb, var(--ccxp-lite-primary) 10%, white);
+    box-shadow: none;
+  }
+
+  .ccxp-lite-category-card-icon .ccxp-lite-category-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .ccxp-lite-category-card-body {
+    padding: 0;
+  }
+
+  .ccxp-lite-category-card-summary {
+    -webkit-line-clamp: 1;
+  }
+
+  .ccxp-lite-category-card-footer {
+    justify-content: center;
+    min-height: 0;
+    margin-top: 0;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+    color: color-mix(in srgb, var(--ccxp-lite-text-muted) 74%, var(--ccxp-lite-surface));
+  }
+
+  .ccxp-lite-category-card-action {
+    display: none;
   }
 }

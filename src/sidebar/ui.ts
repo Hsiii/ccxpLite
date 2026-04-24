@@ -194,11 +194,10 @@
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
     header.appendChild(createSectionHeading(targetDocument, strings.sidebarAll));
-    header.appendChild(createViewModeSwitch(targetDocument, state, strings, rerender));
     section.appendChild(header);
 
     const body = targetDocument.createElement("div");
-    body.className = `ccxp-lite-pane-body ccxp-lite-category-browser is-${state.viewMode}`;
+    body.className = "ccxp-lite-pane-body ccxp-lite-category-browser";
 
     if (categories.length === 0) {
       body.appendChild(
@@ -211,7 +210,7 @@
     } else {
       categories.forEach((category) => {
         body.appendChild(
-          createCategoryCard(targetDocument, category, state.viewMode, strings, () => {
+          createCategoryCard(targetDocument, category, strings, () => {
             persistSidebarScroll(targetDocument, "root");
             state.currentCategoryId = category.id;
             state.activeLeaf = null;
@@ -354,40 +353,10 @@
     return heading;
   }
 
-  function createViewModeSwitch(targetDocument, state, strings, rerender) {
-    const controls = targetDocument.createElement("div");
-    controls.className = `ccxp-lite-view-switch is-${state.viewMode}`;
-
-    const indicator = targetDocument.createElement("span");
-    indicator.className = "ccxp-lite-view-switch-indicator";
-    controls.appendChild(indicator);
-
-    [
-      { id: "grid", label: strings.sidebarGridView, icon: createGridIcon },
-      { id: "list", label: strings.sidebarListView, icon: createListIcon },
-    ].forEach((item) => {
-      const button = targetDocument.createElement("button");
-      button.type = "button";
-      button.className = `ccxp-lite-view-button${state.viewMode === item.id ? " is-active" : ""}`;
-      button.setAttribute("aria-label", item.label);
-      button.setAttribute("title", item.label);
-      button.setAttribute("aria-pressed", state.viewMode === item.id ? "true" : "false");
-      button.dataset.viewMode = item.id;
-      button.appendChild(item.icon(targetDocument));
-      button.addEventListener("click", () => {
-        state.viewMode = item.id;
-        rerender();
-      });
-      controls.appendChild(button);
-    });
-
-    return controls;
-  }
-
-  function createCategoryCard(targetDocument, category, viewMode, strings, onOpen) {
+  function createCategoryCard(targetDocument, category, strings, onOpen) {
     const button = targetDocument.createElement("button");
     button.type = "button";
-    button.className = `ccxp-lite-category-card is-${viewMode}`;
+    button.className = "ccxp-lite-category-card";
     button.setAttribute("title", category.label);
     button.addEventListener("click", onOpen);
 
@@ -1034,53 +1003,6 @@
     const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", "m9 6 6 6-6 6");
     icon.appendChild(path);
-
-    return icon;
-  }
-
-  function createGridIcon(targetDocument) {
-    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("class", "ccxp-lite-inline-icon");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("fill", "none");
-    icon.setAttribute("stroke", "currentColor");
-    icon.setAttribute("stroke-width", "2");
-    icon.setAttribute("stroke-linecap", "round");
-    icon.setAttribute("stroke-linejoin", "round");
-    icon.setAttribute("aria-hidden", "true");
-
-    [
-      { x: "3", y: "3", width: "7", height: "7", rx: "1.5" },
-      { x: "14", y: "3", width: "7", height: "7", rx: "1.5" },
-      { x: "3", y: "14", width: "7", height: "7", rx: "1.5" },
-      { x: "14", y: "14", width: "7", height: "7", rx: "1.5" },
-    ].forEach((attributes) => {
-      const rect = targetDocument.createElementNS("http://www.w3.org/2000/svg", "rect");
-      Object.entries(attributes).forEach(([name, value]) => rect.setAttribute(name, value));
-      icon.appendChild(rect);
-    });
-
-    return icon;
-  }
-
-  function createListIcon(targetDocument) {
-    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("class", "ccxp-lite-inline-icon");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("fill", "none");
-    icon.setAttribute("stroke", "currentColor");
-    icon.setAttribute("stroke-width", "2");
-    icon.setAttribute("stroke-linecap", "round");
-    icon.setAttribute("stroke-linejoin", "round");
-    icon.setAttribute("aria-hidden", "true");
-
-    ["M8 6h13", "M8 12h13", "M8 18h13", "M3 6h.01", "M3 12h.01", "M3 18h.01"].forEach(
-      (pathData) => {
-        const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", pathData);
-        icon.appendChild(path);
-      },
-    );
 
     return icon;
   }
