@@ -10,7 +10,7 @@
   const { ensureThemeDocument } = sharedTheme;
   const { getLocalizedStrings, normalizeLocale, resolveLocaleFromDocument } = sharedLocale;
   const { createBrandImage, createBrandCopy } = sharedBrand;
-  const { moveChildNodes, removeNode, isDocumentComplete } = sharedDom;
+  const { moveChildNodes, removeNode, isDocumentComplete, cleanLegacyAttributes } = sharedDom;
 
   namespace.shared = {
     TOKENS,
@@ -27,5 +27,6 @@
     moveChildNodes,
     removeNode,
     isDocumentComplete,
+    cleanLegacyAttributes,
   };
 })(window);
