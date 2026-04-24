@@ -642,7 +642,9 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: flex-end;
   width: 100%;
   margin: 0;
-  height: 20px;
+  height: calc(
+    (var(--ccxp-lite-size-sidebar-section-card-min-height) - var(--ccxp-lite-spacing-md)) / 2
+  );
   box-sizing: border-box;
   padding: 0 var(--ccxp-lite-spacing-inset-sm);
   border: 1px solid var(--ccxp-lite-transparent);
