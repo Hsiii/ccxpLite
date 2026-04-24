@@ -356,7 +356,11 @@
 
   function createViewModeSwitch(targetDocument, state, strings, rerender) {
     const controls = targetDocument.createElement("div");
-    controls.className = "ccxp-lite-view-switch";
+    controls.className = `ccxp-lite-view-switch is-${state.viewMode}`;
+
+    const indicator = targetDocument.createElement("span");
+    indicator.className = "ccxp-lite-view-switch-indicator";
+    controls.appendChild(indicator);
 
     [
       { id: "grid", label: strings.sidebarGridView, icon: createGridIcon },
@@ -368,6 +372,7 @@
       button.setAttribute("aria-label", item.label);
       button.setAttribute("title", item.label);
       button.setAttribute("aria-pressed", state.viewMode === item.id ? "true" : "false");
+      button.dataset.viewMode = item.id;
       button.appendChild(item.icon(targetDocument));
       button.addEventListener("click", () => {
         state.viewMode = item.id;
