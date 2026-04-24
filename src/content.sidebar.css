@@ -366,9 +366,10 @@ html[data-ccxp-lite-scope="nav"] body {
   grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr);
   grid-template-areas:
     "icon header"
-    ". summary";
-  align-items: start;
-  gap: var(--ccxp-lite-spacing-sm);
+    "summary summary";
+  align-items: center;
+  row-gap: var(--ccxp-lite-spacing-inset-sm);
+  column-gap: var(--ccxp-lite-spacing-sm);
   min-height: var(--ccxp-lite-size-sidebar-category-card-min-height);
   width: min(100%, 320px);
   max-width: 320px;
@@ -407,6 +408,7 @@ html[data-ccxp-lite-scope="nav"] body {
   border-radius: var(--ccxp-lite-radius-xs);
   background: color-mix(in srgb, var(--ccxp-lite-primary) 8%, var(--ccxp-lite-surface));
   flex: 0 0 auto;
+  align-self: center;
 }
 
 .ccxp-lite-category-card-header {
@@ -453,6 +455,7 @@ html[data-ccxp-lite-scope="nav"] body {
   letter-spacing: 0.01em;
   text-overflow: ellipsis;
   white-space: normal;
+  padding-top: var(--ccxp-lite-spacing-2xs);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
