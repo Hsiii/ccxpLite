@@ -139,7 +139,7 @@
     layout.className = "ccxp-lite-dashboard";
 
     const shell = targetDocument.createElement("section");
-    shell.className = "ccxp-lite-pane ccxp-lite-dashboard-shell";
+    shell.className = "ccxp-lite-dashboard-shell";
 
     shell.appendChild(
       createPinnedSection(targetDocument, navDocument, favorites, strings, rerender),
@@ -155,7 +155,7 @@
 
   function createPinnedSection(targetDocument, navDocument, favorites, strings, rerender) {
     const section = targetDocument.createElement("section");
-    section.className = "ccxp-lite-dashboard-group ccxp-lite-pane-pinned";
+    section.className = "ccxp-lite-pane ccxp-lite-dashboard-group ccxp-lite-pane-pinned";
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
@@ -189,7 +189,7 @@
 
   function createAllSection(targetDocument, navDocument, categories, state, strings, rerender) {
     const section = targetDocument.createElement("section");
-    section.className = "ccxp-lite-dashboard-group ccxp-lite-pane-all";
+    section.className = "ccxp-lite-pane ccxp-lite-dashboard-group ccxp-lite-pane-all";
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";

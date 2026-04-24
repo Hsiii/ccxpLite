@@ -219,6 +219,10 @@ html[data-ccxp-lite-scope="nav"] body {
   flex: 1 1 auto;
   align-items: stretch;
   gap: var(--ccxp-lite-spacing-md);
+  padding: var(--ccxp-lite-spacing-md);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-md);
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-dashboard-group {
@@ -228,6 +232,11 @@ html[data-ccxp-lite-scope="nav"] body {
   gap: var(--ccxp-lite-spacing-md);
   min-width: 0;
   min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .ccxp-lite-pane-pinned {
