@@ -112,6 +112,8 @@ html[data-ccxp-lite-scope="nav"] body {
   text-decoration: none;
   text-rendering: geometricPrecision;
   position: relative;
+  transform: none;
+  transition: none;
 }
 
 .ccxp-lite-sidebar-brand-partner-label {
