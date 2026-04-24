@@ -1,10 +1,14 @@
 html[data-ccxp-lite-scope="nav"],
 html[data-ccxp-lite-scope="nav"] body {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
   background: var(--ccxp-lite-bg);
 }
 
 .ccxp-lite-sidebar-shell {
   box-sizing: border-box;
+  height: 100%;
   min-height: 100vh;
   padding: 0;
   display: flex;
@@ -14,6 +18,8 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-app-shell {
+  flex: 1 1 auto;
+  height: 100%;
   min-height: 100vh;
 }
 
@@ -207,6 +213,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-content {
   flex: 1 1 auto;
   min-height: 0;
+  height: 100%;
   padding: 0 var(--ccxp-lite-spacing-inset-lg) var(--ccxp-lite-spacing-inset-md);
   overflow-y: auto;
 }
