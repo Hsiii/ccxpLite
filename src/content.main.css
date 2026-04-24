@@ -131,3 +131,7 @@ html[data-ccxp-lite-scope="main"] [size="2" i] {
   color: var(--ccxp-lite-type-caption-color) !important;
   font: var(--ccxp-lite-type-caption) !important;
 }
+
+body.ccxp-lite-main-skin {
+  padding: var(--ccxp-lite-spacing-lg);
+}
