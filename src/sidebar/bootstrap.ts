@@ -91,12 +91,11 @@
       repoMark.className = "ccxp-lite-sidebar-brand-partner-mark";
       repoMark.appendChild(createBrandCloseIcon(hostDocument));
 
-      const repoLink = hostDocument.createElement("a");
+      const repoLink = hostDocument.createElement("button");
+      repoLink.type = "button";
       repoLink.className = "ccxp-lite-sidebar-brand-partner-link";
-      repoLink.href = "https://github.com/Hsiii/ccxpLite";
-      repoLink.target = "_blank";
-      repoLink.rel = "noreferrer noopener";
       repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
+      repoLink.setAttribute("title", strings.sidebarGitHubLink);
 
       const repoLabel = hostDocument.createElement("span");
       repoLabel.className = "ccxp-lite-sidebar-brand-partner-label";
@@ -137,6 +136,10 @@
           () => buildSidebarModel(rawTree, navDocument, strings),
           strings,
         );
+      });
+
+      repoLink.addEventListener("click", () => {
+        window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
       });
 
       hostDocument.body.dataset.ccxpLiteSidebarApplied = "true";
