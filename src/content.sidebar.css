@@ -665,16 +665,22 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-destination-wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: hidden;
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-sm);
-  background: var(--ccxp-lite-surface);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .ccxp-lite-destination-frame {
   display: block;
+  flex: 1 1 auto;
   width: 100%;
-  min-height: calc(100vh - var(--ccxp-lite-size-sidebar-destination-frame-offset));
+  height: 100%;
+  min-height: 0;
   border: 0;
   background: var(--ccxp-lite-surface);
 }
