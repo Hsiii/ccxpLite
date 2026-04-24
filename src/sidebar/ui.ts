@@ -540,43 +540,35 @@
   }
 
   function createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender) {
-    const card = targetDocument.createElement("div");
-    card.className = "ccxp-lite-pinned-card";
-
     const button = targetDocument.createElement("button");
     button.type = "button";
-    button.className = "ccxp-lite-link-card";
+    button.className = "ccxp-lite-link-card ccxp-lite-pinned-card";
     button.setAttribute("title", linkItem.label);
     button.appendChild(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
     );
+    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () =>
       openLeafDestination(targetDocument, navDocument, linkItem, rerender),
     );
 
-    card.appendChild(button);
-    card.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
-    return card;
+    return button;
   }
 
   function createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender) {
-    const card = targetDocument.createElement("div");
-    card.className = "ccxp-lite-detail-link-card";
-
     const button = targetDocument.createElement("button");
     button.type = "button";
-    button.className = "ccxp-lite-link-card";
+    button.className = "ccxp-lite-link-card ccxp-lite-detail-link-card";
     button.setAttribute("title", linkItem.label);
     button.appendChild(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem.target)),
     );
+    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () =>
       openLeafDestination(targetDocument, navDocument, linkItem, rerender),
     );
 
-    card.appendChild(button);
-    card.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
-    return card;
+    return button;
   }
 
   function createEmptyState(targetDocument, title, body) {
@@ -628,8 +620,9 @@
   }
 
   function createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange) {
-    const favoriteButton = targetDocument.createElement("button");
-    favoriteButton.type = "button";
+    const favoriteButton = targetDocument.createElement("span");
+    favoriteButton.setAttribute("role", "button");
+    favoriteButton.tabIndex = 0;
     favoriteButton.className = "ccxp-lite-favorite-toggle";
 
     const isFavorite = isFavoriteLink(linkItem, getFavoriteIds());

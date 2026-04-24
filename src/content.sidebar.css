@@ -427,10 +427,6 @@ html[data-ccxp-lite-scope="nav"] body {
   background: var(--ccxp-lite-primary-hover-surface);
 }
 
-.ccxp-lite-link-card {
-  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
-}
-
 .ccxp-lite-category-card-media {
   grid-area: media;
   display: flex;
@@ -577,34 +573,25 @@ html[data-ccxp-lite-scope="nav"] body {
   outline-offset: 2px;
 }
 
-.ccxp-lite-pinned-card,
-.ccxp-lite-detail-link-card {
-  position: relative;
-  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
-}
-
 .ccxp-lite-link-card {
   display: flex;
   align-items: center;
-  height: 100%;
-  padding-right: calc(var(--ccxp-lite-size-icon-button-md) + var(--ccxp-lite-spacing-sm));
+  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
 }
 
 .ccxp-lite-favorite-toggle {
-  position: absolute;
-  top: 50%;
-  right: var(--ccxp-lite-spacing-inline-sm);
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: var(--ccxp-lite-size-icon-button-sm);
   height: var(--ccxp-lite-size-icon-button-sm);
+  margin-left: auto;
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
-  transform: translateY(-50%);
 }
 
 .ccxp-lite-favorite-toggle:hover,
