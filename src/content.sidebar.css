@@ -81,8 +81,6 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-brand-partner-mark,
 .ccxp-lite-sidebar-brand-partner-link {
-  display: inline-flex;
-  align-items: center;
   min-width: 0;
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
@@ -94,6 +92,8 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-sidebar-brand-partner-mark {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
 }
 
@@ -103,17 +103,22 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-brand-partner-link:hover,
 .ccxp-lite-sidebar-brand-partner-link:active,
 .ccxp-lite-sidebar-brand-partner-link:focus-visible {
+  display: inline-block;
+  min-width: 0;
+  margin: 0;
+  box-sizing: border-box;
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
   font-weight: var(--ccxp-lite-font-weight-regular);
   line-height: 1;
   letter-spacing: 0.01em;
+  white-space: nowrap;
+  vertical-align: top;
   text-decoration: none;
   text-rendering: geometricPrecision;
   position: relative;
-  align-items: center;
-  padding-bottom: 2px;
+  padding: 0 0 2px;
   transform: none;
   transition: none;
 }
