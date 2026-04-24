@@ -351,7 +351,6 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-link-card {
   width: 100%;
   padding: var(--ccxp-lite-spacing-inset-sm);
-  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
   border-radius: var(--ccxp-lite-radius-sm);
   cursor: pointer;
   text-align: left;
@@ -363,9 +362,12 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-category-card {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
+  grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: start;
   gap: var(--ccxp-lite-spacing-sm);
+  min-height: var(--ccxp-lite-size-sidebar-category-card-min-height);
+  padding: var(--ccxp-lite-spacing-inset-md);
 }
 
 .ccxp-lite-category-card:hover,
@@ -377,15 +379,20 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-category-card.is-list {
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: var(--ccxp-lite-size-sidebar-category-card-icon) minmax(0, 1fr) auto;
+}
+
+.ccxp-lite-link-card {
+  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
 }
 
 .ccxp-lite-category-card-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--ccxp-lite-size-sidebar-section-icon);
-  height: var(--ccxp-lite-size-sidebar-section-icon);
+  grid-row: 1 / span 2;
+  width: var(--ccxp-lite-size-sidebar-category-card-icon);
+  height: var(--ccxp-lite-size-sidebar-category-card-icon);
   color: var(--ccxp-lite-brand);
   flex: 0 0 auto;
 }
@@ -393,9 +400,15 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-category-card-body {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   min-width: 0;
-  gap: 0;
+  gap: var(--ccxp-lite-spacing-3xs);
+  align-self: center;
+}
+
+.ccxp-lite-category-card > .ccxp-lite-inline-icon {
+  align-self: center;
+  color: var(--ccxp-lite-text-muted);
 }
 
 .ccxp-lite-category-card-title,
@@ -406,6 +419,18 @@ html[data-ccxp-lite-scope="nav"] body {
   color: var(--ccxp-lite-text);
   font: var(--ccxp-lite-type-body);
   white-space: nowrap;
+}
+
+.ccxp-lite-category-card-summary {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ccxp-lite-type-caption-color);
+  font: var(--ccxp-lite-type-caption);
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: normal;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .ccxp-lite-row-label-wrap {

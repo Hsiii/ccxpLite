@@ -56,6 +56,7 @@
           id: `category-${category.id}`,
           label: strings[category.labelKey] || category.fallbackLabel || category.id,
           icon: category.icon,
+          summary: (category.summaryLabels || []).join(" "),
           directLinks: categoryItems
             .filter((item) => item.kind === "link")
             .map((item) => item.linkItem),

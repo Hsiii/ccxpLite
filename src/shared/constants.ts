@@ -82,10 +82,12 @@
     sizeIconButtonSm: "24px",
     sizeIconButtonMd: "36px",
     sizeSidebarSectionIcon: "42px",
+    sizeSidebarCategoryCardIcon: "48px",
     sizeControlMinWidth: "112px",
     sizeControlHeightSm: "38px",
     sizeControlHeightMd: "44px",
     sizeSidebarSectionCardMinHeight: "56px",
+    sizeSidebarCategoryCardMinHeight: "96px",
     sizeSidebarDestinationFrameOffset: "240px",
     sizeAnnouncementDivider: "18px",
     fontSizePageTitle: "26px",
@@ -225,6 +227,7 @@
       fallbackLabel: "個人資料",
       icon: "circle-user-round",
       itemLabels: ["帳號相關維護", "個人資料維護", "導師聯繫資料", "原住民資料系統"],
+      summaryLabels: ["帳號", "個資", "導師", "原住民"],
     },
     {
       id: "planning-and-enrollment",
@@ -237,6 +240,7 @@
         "校際/跨系統選修",
         "暑修 Summer courses",
       ],
+      summaryLabels: ["預排", "選課", "跨系", "暑修"],
     },
     {
       id: "courses-and-grades",
@@ -244,6 +248,7 @@
       fallbackLabel: "課程成績",
       icon: "notepad-text",
       itemLabels: ["課程、成績 Courses, transcript", "學分&抵免學分"],
+      summaryLabels: ["課程", "成績", "學分", "抵免"],
     },
     {
       id: "teaching-feedback",
@@ -251,6 +256,7 @@
       fallbackLabel: "教學意見",
       icon: "message-square-more",
       itemLabels: ["教學意見 Comments about courses", "傑出教學教師票選", "教學助理評量問卷"],
+      summaryLabels: ["課評", "票選", "助教", "問卷"],
     },
     {
       id: "status-changes",
@@ -258,6 +264,7 @@
       fallbackLabel: "學籍異動",
       icon: "refresh-cw",
       itemLabels: ["申請復學", "保留生申請入學", "轉系所申請", "兵役業務"],
+      summaryLabels: ["復學", "保留", "轉系", "兵役"],
     },
     {
       id: "graduation-and-defense",
@@ -265,6 +272,7 @@
       fallbackLabel: "畢業與口試",
       icon: "graduation-cap",
       itemLabels: ["畢業審查", "研究生學位考試", "畢業生離校系統", "數位學位證書", "袍服借用申請"],
+      summaryLabels: ["審查", "口試", "離校", "學位證"],
     },
     {
       id: "payments-and-aid",
@@ -281,6 +289,7 @@
         "學雜費減免作業",
         "國外差旅費",
       ],
+      summaryLabels: ["繳費", "退費", "貸款", "補助"],
     },
     {
       id: "housing-and-life",
@@ -288,6 +297,7 @@
       fallbackLabel: "住宿與生活",
       icon: "house",
       itemLabels: ["外宿資料", "學生宿舍相關", "健康照護系統", "職涯諮詢與評測"],
+      summaryLabels: ["外宿", "宿舍", "健康", "職涯"],
     },
     {
       id: "forms",
@@ -301,6 +311,7 @@
         "出國申請與報告繳交系統",
         "校外實習登錄平台",
       ],
+      summaryLabels: ["請假", "表單", "差勤", "出國"],
     },
     {
       id: "campus-systems",
@@ -308,6 +319,7 @@
       fallbackLabel: "校園系統",
       icon: "school",
       itemLabels: ["學習平台", "計通中心相關服務", "研發處資訊系統", "校內其他系統", "明燈平台"],
+      summaryLabels: ["學習", "計通", "研發", "校內"],
     },
     {
       id: "announcements-and-voting",
@@ -321,6 +333,7 @@
         "線上投票系統(特殊投票)",
         "校園通報網",
       ],
+      summaryLabels: ["會議", "公告", "投票", "通報"],
     },
   ];
 

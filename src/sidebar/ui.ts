@@ -404,6 +404,13 @@
     title.textContent = category.label;
     body.appendChild(title);
 
+    if (category.summary) {
+      const summary = targetDocument.createElement("span");
+      summary.className = "ccxp-lite-category-card-summary";
+      summary.textContent = category.summary;
+      body.appendChild(summary);
+    }
+
     button.appendChild(body);
     button.appendChild(createForwardIcon(targetDocument));
     return button;
