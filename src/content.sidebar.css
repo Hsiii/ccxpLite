@@ -665,7 +665,7 @@ html[data-ccxp-lite-scope="nav"] body {
   .ccxp-lite-sidebar-search {
     width: min(100%, var(--ccxp-lite-size-sidebar-search-width));
     max-width: 100%;
-    align-self: flex-end;
+    align-self: flex-start;
   }
 
   .ccxp-lite-dashboard {
