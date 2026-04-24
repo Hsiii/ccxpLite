@@ -71,11 +71,13 @@
     content.innerHTML = "";
 
     if (state.activeLeaf) {
+      const activeLeafCategory =
+        activeCategory || findCategoryContainingLeaf(model.categories || [], state.activeLeaf);
       content.appendChild(
         createDestinationView(
           hostDocument,
           navDocument,
-          activeCategory,
+          activeLeafCategory,
           state.activeLeaf,
           strings,
           () => renderSidebar(hostDocument, navDocument, modelInput, strings),
@@ -107,6 +109,42 @@
       ),
     );
     restoreSidebarScroll(content, state.scrollTopByView.root);
+  }
+
+  function findCategoryContainingLeaf(categories, activeLeaf) {
+    if (!activeLeaf) {
+      return null;
+    }
+
+    return (
+      categories.find((category) => {
+        const directLinks = category.directLinks || [];
+        const sections = category.sections || [];
+        return (
+          directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
+          sections.some((section) => sectionContainsLeaf(section, activeLeaf))
+        );
+      }) || null
+    );
+  }
+
+  function sectionContainsLeaf(section, activeLeaf) {
+    const directLinks = section.directLinks || [];
+    const sections = section.sections || [];
+    return (
+      directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
+      sections.some((childSection) => sectionContainsLeaf(childSection, activeLeaf))
+    );
+  }
+
+  function isSameLeaf(linkItem, activeLeaf) {
+    return (
+      linkItem.id === activeLeaf.id ||
+      linkItem.legacyId === activeLeaf.legacyId ||
+      (linkItem.href === activeLeaf.href &&
+        linkItem.target === activeLeaf.target &&
+        linkItem.label === activeLeaf.label)
+    );
   }
 
   function createSidebarSearch(targetDocument, strings) {
@@ -862,12 +900,7 @@
     });
 
     header.appendChild(backButton);
-    header.appendChild(
-      createSectionHeading(
-        targetDocument,
-        activeCategory ? activeCategory.label : activeLeaf.label,
-      ),
-    );
+    header.appendChild(createBreadcrumbHeading(targetDocument, activeCategory, activeLeaf));
     section.appendChild(header);
 
     const frameWrap = targetDocument.createElement("div");
@@ -1000,6 +1033,44 @@
       path.setAttribute("d", pathData);
       icon.appendChild(path);
     });
+
+    return icon;
+  }
+
+  function createBreadcrumbHeading(targetDocument, activeCategory, activeLeaf) {
+    const heading = targetDocument.createElement("h2");
+    heading.className = "ccxp-lite-breadcrumb-heading";
+
+    if (activeCategory) {
+      const category = targetDocument.createElement("span");
+      category.className = "ccxp-lite-breadcrumb-parent";
+      category.textContent = activeCategory.label;
+      heading.appendChild(category);
+      heading.appendChild(createBreadcrumbChevronIcon(targetDocument));
+    }
+
+    const leaf = targetDocument.createElement("span");
+    leaf.className = "ccxp-lite-breadcrumb-current";
+    leaf.textContent = activeLeaf.label;
+    heading.appendChild(leaf);
+
+    return heading;
+  }
+
+  function createBreadcrumbChevronIcon(targetDocument) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("class", "ccxp-lite-breadcrumb-chevron");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", "m9 18 6-6-6-6");
+    icon.appendChild(path);
 
     return icon;
   }
