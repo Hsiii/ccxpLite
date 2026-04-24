@@ -78,18 +78,29 @@
 
   function readInitialFrameHref() {
     try {
-      const scopeDocument = window.top ? window.top.document : document;
-      const frame =
-        scopeDocument.querySelector("frame[name='main']") ||
-        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']");
+      const frame = getLegacyMainFrame();
       if (!frame) {
         return "";
       }
 
+      const scopeDocument = window.top ? window.top.document : document;
       const src = frame.getAttribute("src") || "";
       return src ? new URL(src, scopeDocument.location.href).toString() : "";
     } catch (_error) {
       return "";
+    }
+  }
+
+  function getLegacyMainFrame() {
+    try {
+      const scopeDocument = window.top ? window.top.document : document;
+      return (
+        scopeDocument.querySelector("frame[name='main']") ||
+        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']") ||
+        null
+      );
+    } catch (_error) {
+      return null;
     }
   }
 
@@ -143,6 +154,7 @@
     shouldOpenLeafInDestination,
     openLeafDestination,
     simplifyEmbeddedFrame,
+    getLegacyMainFrame,
     captureInitialMainFrameUrl,
     openLeafInNewTab,
     activateLegacyLink,

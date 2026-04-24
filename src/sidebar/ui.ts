@@ -21,6 +21,7 @@
     DESTINATION_LOAD_TIMEOUT_MS,
     openLeafDestination,
     simplifyEmbeddedFrame,
+    getLegacyMainFrame,
     openLeafInNewTab,
     activateLegacyLink,
     isExternalLinkTarget,
@@ -623,6 +624,7 @@
     frame.setAttribute("scrolling", "auto");
     frame.title = activeLeaf.label;
     frame.hidden = true;
+    const legacyMainFrame = getLegacyMainFrame();
 
     let hasSettled = false;
     const settleSuccess = () => {
@@ -647,15 +649,38 @@
       error.hidden = false;
     };
 
+    const syncFromLegacyMainFrame = () => {
+      if (hasSettled || !legacyMainFrame) {
+        return;
+      }
+
+      try {
+        const legacyWindow = legacyMainFrame.contentWindow;
+        const legacyHref = legacyWindow && legacyWindow.location ? legacyWindow.location.href : "";
+        if (legacyHref && legacyHref !== "about:blank" && frame.src !== legacyHref) {
+          frame.src = legacyHref;
+          return;
+        }
+      } catch (_error) {
+        // Ignore cross-frame location reads and rely on the destination frame event.
+      }
+
+      if (frame.contentDocument && frame.contentDocument.readyState === "complete") {
+        settleSuccess();
+      }
+    };
+
     const timeoutId = window.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
     frame.addEventListener("load", settleSuccess, { once: true });
     frame.addEventListener("error", settleError, { once: true });
-    activateLegacyLink(activeLeaf, navDocument, frame);
-
     frameWrap.appendChild(loading);
     frameWrap.appendChild(error);
     frameWrap.appendChild(frame);
+    if (legacyMainFrame) {
+      legacyMainFrame.addEventListener("load", syncFromLegacyMainFrame, { once: true });
+    }
     section.appendChild(frameWrap);
+    activateLegacyLink(activeLeaf, navDocument, frame);
     return section;
   }
 
