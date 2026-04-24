@@ -1,58 +1,76 @@
 (function registerCcxpLiteSharedTheme(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { sharedConstants } = namespace;
-
   if (!sharedConstants) {
     return;
   }
 
-  const { TOKENS } = sharedConstants;
+  const { TOKENS, ASSETS } = sharedConstants;
 
   function ensureThemeDocument(targetDocument, scope) {
-    if (!targetDocument || !targetDocument.documentElement) {
-      return;
+    if (!targetDocument || !targetDocument.head || !targetDocument.documentElement) {
+      return false;
     }
 
-    const root = targetDocument.documentElement;
-    root.dataset.ccxpLiteThemeScope = scope;
+    targetDocument.documentElement.dataset.ccxpLiteScope = scope;
 
-    if (root.dataset.ccxpLiteThemeApplied === "true") {
-      return;
+    if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
+      const link = targetDocument.createElement("link");
+      link.rel = "stylesheet";
+      link.href = chrome.runtime.getURL(ASSETS.stylesheetPath);
+      link.dataset.ccxpLiteStylesheet = "true";
+      targetDocument.head.appendChild(link);
     }
 
-    applyCssVariables(root, buildCssVariables());
-    root.dataset.ccxpLiteThemeApplied = "true";
+    applyCssVariables(targetDocument.documentElement, buildCssVariables());
+    return true;
   }
 
   function buildCssVariables() {
     return {
-      "--ccxp-lite-color-primary": TOKENS.colorPrimary,
-      "--ccxp-lite-color-accent": TOKENS.colorAccent,
-      "--ccxp-lite-color-brand": TOKENS.colorBrand,
-      "--ccxp-lite-color-legacy-blue-text": TOKENS.colorLegacyBlueText,
-      "--ccxp-lite-color-legacy-red-text": TOKENS.colorLegacyRedText,
-      "--ccxp-lite-color-bg": TOKENS.colorBg,
-      "--ccxp-lite-color-surface": TOKENS.colorSurface,
-      "--ccxp-lite-color-sidebar-surface": TOKENS.colorSidebarSurface,
-      "--ccxp-lite-color-surface-muted": TOKENS.colorSurfaceMuted,
-      "--ccxp-lite-color-border": TOKENS.colorBorder,
-      "--ccxp-lite-color-sidebar-divider": TOKENS.colorSidebarDivider,
-      "--ccxp-lite-color-sidebar-search-surface": TOKENS.colorSidebarSearchSurface,
-      "--ccxp-lite-color-sidebar-search-gradient-start": TOKENS.colorSidebarSearchGradientStart,
-      "--ccxp-lite-color-sidebar-search-border": TOKENS.colorSidebarSearchBorder,
-      "--ccxp-lite-color-primary-focus-border": TOKENS.colorPrimaryFocusBorder,
-      "--ccxp-lite-color-primary-focus-ring": TOKENS.colorPrimaryFocusRing,
-      "--ccxp-lite-color-primary-hover-surface": TOKENS.colorPrimaryHoverSurface,
-      "--ccxp-lite-color-primary-muted-surface": TOKENS.colorPrimaryMutedSurface,
-      "--ccxp-lite-color-primary-glow": TOKENS.colorPrimaryGlow,
-      "--ccxp-lite-color-sidebar-search-placeholder": TOKENS.colorSidebarSearchPlaceholder,
-      "--ccxp-lite-color-text": TOKENS.colorText,
-      "--ccxp-lite-color-text-muted": TOKENS.colorTextMuted,
-      "--ccxp-lite-color-transparent": TOKENS.colorTransparent,
-      "--ccxp-lite-color-skeleton-surface-end-tint": TOKENS.colorSkeletonSurfaceEndTint,
-      "--ccxp-lite-color-skeleton-highlight-start": TOKENS.colorSkeletonHighlightStart,
-      "--ccxp-lite-color-skeleton-highlight-soft": TOKENS.colorSkeletonHighlightSoft,
-      "--ccxp-lite-color-skeleton-highlight-strong": TOKENS.colorSkeletonHighlightStrong,
+      "--ccxp-lite-primary": TOKENS.colorPrimary,
+      "--ccxp-lite-accent": TOKENS.colorAccent,
+      "--ccxp-lite-brand": TOKENS.colorBrand,
+      "--ccxp-lite-brand-logo-filter":
+        "brightness(0) saturate(100%) invert(19%) sepia(49%) saturate(2697%) hue-rotate(278deg) brightness(89%) contrast(92%)",
+      "--ccxp-lite-legacy-blue-text": TOKENS.colorLegacyBlueText,
+      "--ccxp-lite-legacy-red-text": TOKENS.colorLegacyRedText,
+      "--ccxp-lite-bg": TOKENS.colorBg,
+      "--ccxp-lite-surface": TOKENS.colorSurface,
+      "--ccxp-lite-sidebar-surface": TOKENS.colorSidebarSurface,
+      "--ccxp-lite-surface-muted": TOKENS.colorSurfaceMuted,
+      "--ccxp-lite-border": TOKENS.colorBorder,
+      "--ccxp-lite-sidebar-divider-color": TOKENS.colorSidebarDivider,
+      "--ccxp-lite-sidebar-search-surface": TOKENS.colorSidebarSearchSurface,
+      "--ccxp-lite-sidebar-search-gradient-start": TOKENS.colorSidebarSearchGradientStart,
+      "--ccxp-lite-sidebar-search-border": TOKENS.colorSidebarSearchBorder,
+      "--ccxp-lite-primary-focus-border": TOKENS.colorPrimaryFocusBorder,
+      "--ccxp-lite-primary-focus-ring": TOKENS.colorPrimaryFocusRing,
+      "--ccxp-lite-primary-hover-surface": TOKENS.colorPrimaryHoverSurface,
+      "--ccxp-lite-primary-muted-surface": TOKENS.colorPrimaryMutedSurface,
+      "--ccxp-lite-primary-glow": TOKENS.colorPrimaryGlow,
+      "--ccxp-lite-sidebar-search-placeholder": TOKENS.colorSidebarSearchPlaceholder,
+      "--ccxp-lite-text": TOKENS.colorText,
+      "--ccxp-lite-text-muted": TOKENS.colorTextMuted,
+      "--ccxp-lite-transparent": TOKENS.colorTransparent,
+      "--ccxp-lite-skeleton-surface-end-tint": TOKENS.colorSkeletonSurfaceEndTint,
+      "--ccxp-lite-skeleton-highlight-start": TOKENS.colorSkeletonHighlightStart,
+      "--ccxp-lite-skeleton-highlight-soft": TOKENS.colorSkeletonHighlightSoft,
+      "--ccxp-lite-skeleton-highlight-strong": TOKENS.colorSkeletonHighlightStrong,
+      "--ccxp-lite-skeleton-surface-start":
+        "color-mix(in srgb, var(--ccxp-lite-surface) 60%, var(--ccxp-lite-accent))",
+      "--ccxp-lite-skeleton-surface-end":
+        "color-mix(in srgb, var(--ccxp-lite-surface) 86%, var(--ccxp-lite-skeleton-surface-end-tint))",
+      "--ccxp-lite-tabs-active-surface":
+        "color-mix(in srgb, var(--ccxp-lite-surface) 72%, var(--ccxp-lite-accent))",
+      "--ccxp-lite-tabs-focus-outline":
+        "color-mix(in srgb, var(--ccxp-lite-primary) 45%, var(--ccxp-lite-bg))",
+      "--ccxp-lite-danger-flash-transparent":
+        "color-mix(in srgb, var(--ccxp-lite-type-danger-color) 0%, var(--ccxp-lite-transparent))",
+      "--ccxp-lite-danger-flash-outline":
+        "color-mix(in srgb, var(--ccxp-lite-type-danger-color) 78%, var(--ccxp-lite-bg))",
+      "--ccxp-lite-danger-flash-shadow":
+        "color-mix(in srgb, var(--ccxp-lite-type-danger-color) 14%, var(--ccxp-lite-transparent))",
       "--ccxp-lite-spacing-xs": TOKENS.spacingXs,
       "--ccxp-lite-spacing-sm": TOKENS.spacingSm,
       "--ccxp-lite-spacing-md": TOKENS.spacingMd,
@@ -70,11 +88,11 @@
       "--ccxp-lite-sidebar-row-padding-x": TOKENS.sidebarRowPaddingX,
       "--ccxp-lite-sidebar-row-gap": TOKENS.sidebarRowGap,
       "--ccxp-lite-sidebar-tree-indent-step": TOKENS.sidebarTreeIndentStep,
+      "--ccxp-lite-radius-xs": TOKENS.radiusXs,
       "--ccxp-lite-radius-sm": TOKENS.radiusSm,
+      "--ccxp-lite-radius-input": TOKENS.radiusInput,
       "--ccxp-lite-radius-md": TOKENS.radiusMd,
       "--ccxp-lite-radius-lg": TOKENS.radiusLg,
-      "--ccxp-lite-radius-xs": TOKENS.radiusXs,
-      "--ccxp-lite-radius-input": TOKENS.radiusInput,
       "--ccxp-lite-radius-brand": TOKENS.radiusBrand,
       "--ccxp-lite-radius-full": TOKENS.radiusFull,
       "--ccxp-lite-font-sans": TOKENS.fontSans,
@@ -115,14 +133,44 @@
       "--ccxp-lite-font-size-display": TOKENS.fontSizeDisplay,
       "--ccxp-lite-font-size-section-title": TOKENS.fontSizeSectionTitle,
       "--ccxp-lite-font-size-chip": TOKENS.fontSizeChip,
-      "--ccxp-lite-landing-max-width": TOKENS.landingMaxWidth,
       "--ccxp-lite-sidebar-width": TOKENS.sidebarWidth,
+      "--ccxp-lite-landing-max-width": TOKENS.landingMaxWidth,
+      "--ccxp-lite-type-display":
+        "var(--ccxp-lite-font-weight-heavy) var(--ccxp-lite-font-size-display)/1.1 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-display-color": "var(--ccxp-lite-text)",
+      "--ccxp-lite-type-page-title":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-page-title)/1.2 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-page-title-color": "var(--ccxp-lite-text)",
+      "--ccxp-lite-type-primary-link": "var(--ccxp-lite-type-body-strong)",
+      "--ccxp-lite-type-primary-link-color": "var(--ccxp-lite-primary)",
+      "--ccxp-lite-type-info": "var(--ccxp-lite-type-body-strong)",
+      "--ccxp-lite-type-info-color": "var(--ccxp-lite-legacy-blue-text)",
+      "--ccxp-lite-type-danger": "var(--ccxp-lite-type-body-strong)",
+      "--ccxp-lite-type-danger-color": "var(--ccxp-lite-legacy-red-text)",
+      "--ccxp-lite-type-body-strong":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body-strong-color": "var(--ccxp-lite-text)",
+      "--ccxp-lite-type-body":
+        "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body-color": "var(--ccxp-lite-text)",
+      "--ccxp-lite-type-body-muted":
+        "var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-body)/1.55 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-body-muted-color": "var(--ccxp-lite-text-muted)",
+      "--ccxp-lite-type-utility":
+        "var(--ccxp-lite-font-weight-strong) var(--ccxp-lite-font-size-utility)/1.4 var(--ccxp-lite-font-sans)",
+      "--ccxp-lite-type-utility-color": "var(--ccxp-lite-primary)",
+      "--ccxp-lite-type-nav": "var(--ccxp-lite-type-utility)",
+      "--ccxp-lite-type-nav-color": "var(--ccxp-lite-primary)",
+      "--ccxp-lite-type-caption": "var(--ccxp-lite-type-utility)",
+      "--ccxp-lite-type-caption-color": "var(--ccxp-lite-text-muted)",
+      "--ccxp-lite-type-section-label": "var(--ccxp-lite-type-utility)",
+      "--ccxp-lite-type-section-label-color": "var(--ccxp-lite-primary)",
     };
   }
 
   function applyCssVariables(targetElement, variables) {
-    Object.entries(variables).forEach(([property, value]) => {
-      targetElement.style.setProperty(property, value);
+    Object.entries(variables).forEach(([name, value]) => {
+      targetElement.style.setProperty(name, value);
     });
   }
 
