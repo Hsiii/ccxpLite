@@ -445,7 +445,8 @@
   }
 
   function createCategoryBlock(targetDocument, navDocument, group, strings, rerender) {
-    const block = targetDocument.createDocumentFragment();
+    const block = targetDocument.createElement("div");
+    block.className = "ccxp-lite-category-block";
 
     if (group.label) {
       const title = targetDocument.createElement("h3");

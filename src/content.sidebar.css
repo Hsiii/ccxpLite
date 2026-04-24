@@ -630,13 +630,12 @@ html[data-ccxp-lite-scope="nav"] body {
   overflow-x: hidden;
 }
 
-.ccxp-lite-category-detail.is-waterfall-ready > .ccxp-lite-category-block-title,
-.ccxp-lite-category-detail.is-waterfall-ready > .ccxp-lite-detail-link-card,
 .ccxp-lite-category-detail.is-waterfall-ready > .ccxp-lite-category-block,
 .ccxp-lite-category-detail.is-waterfall-ready > .ccxp-lite-link-collection {
   position: absolute;
   top: 0;
   left: 0;
+  width: auto;
 }
 
 .ccxp-lite-category-block {
