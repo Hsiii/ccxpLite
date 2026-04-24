@@ -77,6 +77,7 @@
     sizeLandingBrandLogo: "32px",
     sizeLandingHeaderHeight: "64px",
     sizeFormControlWidth: "320px",
+    sizeLoginControlHeight: "48px",
     sizePasswordToggleOffset: "44px",
     sizeIconButtonSm: "24px",
     sizeIconButtonMd: "36px",

@@ -119,6 +119,7 @@
       "--ccxp-lite-size-landing-brand-logo": TOKENS.sizeLandingBrandLogo,
       "--ccxp-lite-size-landing-header-height": TOKENS.sizeLandingHeaderHeight,
       "--ccxp-lite-size-form-control-width": TOKENS.sizeFormControlWidth,
+      "--ccxp-lite-size-login-control-height": TOKENS.sizeLoginControlHeight,
       "--ccxp-lite-size-password-toggle-offset": TOKENS.sizePasswordToggleOffset,
       "--ccxp-lite-size-icon-button-sm": TOKENS.sizeIconButtonSm,
       "--ccxp-lite-size-icon-button-md": TOKENS.sizeIconButtonMd,

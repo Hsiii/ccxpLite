@@ -649,9 +649,10 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 
 .ccxp-lite-landing-login .inputtext {
   width: min(100%, var(--ccxp-lite-size-form-control-width)) !important;
+  height: var(--ccxp-lite-size-login-control-height);
   max-width: 100% !important;
   min-width: 0;
-  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-sm) !important;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm) !important;
   border: 1px solid var(--ccxp-lite-border) !important;
   border-radius: var(--ccxp-lite-radius-input);
   outline: none;
@@ -659,6 +660,7 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   color: var(--ccxp-lite-type-body-color);
   font: var(--ccxp-lite-type-body);
   font-size: var(--ccxp-lite-font-size-utility);
+  line-height: 1.2;
 }
 
 .ccxp-lite-landing-login .inputtext:focus {
@@ -675,6 +677,7 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   display: inline-flex;
   align-items: center;
   width: min(100%, var(--ccxp-lite-size-form-control-width));
+  height: var(--ccxp-lite-size-login-control-height);
   max-width: 100%;
   min-width: 0;
 }
@@ -709,8 +712,9 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 .ccxp-lite-landing-login .ccxp-lite-image-action-button,
 .ccxp-lite-landing-login .ccxp-lite-image-link-button {
   min-width: var(--ccxp-lite-size-control-min-width);
+  height: var(--ccxp-lite-size-login-control-height);
   max-width: 100%;
-  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-lg);
+  padding: 0 var(--ccxp-lite-spacing-inset-lg);
   border-radius: var(--ccxp-lite-radius-full);
   border: 1px solid var(--ccxp-lite-border);
   background: transparent;
@@ -728,7 +732,6 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: var(--ccxp-lite-size-control-height-sm);
   text-decoration: none;
 }
 
