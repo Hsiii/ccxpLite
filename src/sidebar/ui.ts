@@ -304,7 +304,106 @@
     }
 
     section.appendChild(body);
+    scheduleCategoryDetailWaterfall(targetDocument, body);
     return section;
+  }
+
+  function scheduleCategoryDetailWaterfall(targetDocument, body) {
+    const view = targetDocument.defaultView || window;
+    const supportsNativeWaterfall =
+      view.CSS &&
+      (view.CSS.supports("display", "grid-lanes") ||
+        view.CSS.supports("grid-template-rows", "masonry"));
+
+    if (supportsNativeWaterfall) {
+      return;
+    }
+
+    const detailItems = Array.from(body.children).filter(
+      (child) => !child.classList.contains("ccxp-lite-empty"),
+    );
+
+    if (detailItems.length === 0) {
+      return;
+    }
+
+    let frameId = 0;
+    const scheduleLayout = () => {
+      if (frameId) {
+        view.cancelAnimationFrame(frameId);
+      }
+
+      frameId = view.requestAnimationFrame(() => {
+        frameId = 0;
+        layoutCategoryDetailWaterfall(view, body, detailItems);
+      });
+    };
+
+    scheduleLayout();
+    view.requestAnimationFrame(scheduleLayout);
+
+    if (typeof view.ResizeObserver !== "function") {
+      view.addEventListener("resize", scheduleLayout, { once: true });
+      return;
+    }
+
+    const observer = new view.ResizeObserver(() => {
+      if (!body.isConnected) {
+        observer.disconnect();
+        return;
+      }
+
+      scheduleLayout();
+    });
+    observer.observe(body.parentElement || body);
+    detailItems.forEach((item) => observer.observe(item));
+  }
+
+  function layoutCategoryDetailWaterfall(view, body, detailItems) {
+    const isSingleColumn = view.matchMedia("(max-width: 900px)").matches;
+
+    resetCategoryDetailWaterfall(body, detailItems);
+
+    if (isSingleColumn || body.clientWidth <= 0) {
+      return;
+    }
+
+    const columnCount = 3;
+    const styles = view.getComputedStyle(body);
+    const fallbackGap = parseFloat(styles.getPropertyValue("--ccxp-lite-spacing-md") || "16");
+    const gap = parseFloat(styles.columnGap || styles.gap) || fallbackGap;
+    const columnWidth = (body.clientWidth - gap * (columnCount - 1)) / columnCount;
+    const columnHeights = Array.from({ length: columnCount }, () => 0);
+
+    body.classList.add("is-waterfall-ready");
+    detailItems.forEach((item) => {
+      item.style.width = `${columnWidth}px`;
+      const columnIndex = getShortestColumnIndex(columnHeights);
+      const x = columnIndex * (columnWidth + gap);
+      const y = columnHeights[columnIndex];
+
+      item.style.transform = `translate(${x}px, ${y}px)`;
+      columnHeights[columnIndex] += item.offsetHeight + gap;
+    });
+
+    body.style.height = `${Math.max(...columnHeights) - gap}px`;
+  }
+
+  function resetCategoryDetailWaterfall(body, detailItems) {
+    body.classList.remove("is-waterfall-ready");
+    body.style.height = "";
+    detailItems.forEach((item) => {
+      item.style.width = "";
+      item.style.transform = "";
+    });
+  }
+
+  function getShortestColumnIndex(columnHeights) {
+    return columnHeights.reduce(
+      (shortestIndex, height, index) =>
+        height < columnHeights[shortestIndex] ? index : shortestIndex,
+      0,
+    );
   }
 
   function createCategoryBlock(targetDocument, navDocument, group, strings, rerender) {
