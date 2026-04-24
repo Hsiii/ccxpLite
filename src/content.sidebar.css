@@ -641,11 +641,12 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-category-block-title {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   width: 100%;
   margin: 0;
-  min-height: var(--ccxp-lite-size-sidebar-section-card-min-height);
-  padding: var(--ccxp-lite-spacing-inset-sm);
+  height: 20px;
+  box-sizing: border-box;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm);
   border: 1px solid var(--ccxp-lite-transparent);
   border-radius: var(--ccxp-lite-radius-sm);
   color: var(--ccxp-lite-brand);
