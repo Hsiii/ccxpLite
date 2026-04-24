@@ -337,6 +337,17 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   vertical-align: top;
 }
 
+.ccxp-lite-landing-brand,
+.ccxp-lite-landing-brand *,
+.ccxp-lite-landing-brand button,
+.ccxp-lite-landing-brand button *,
+.ccxp-lite-landing-brand span {
+  font: var(--ccxp-lite-font-weight-regular) var(--ccxp-lite-font-size-sidebar-brand) / 1
+    var(--ccxp-lite-font-brand) !important;
+  letter-spacing: 0.01em !important;
+  font-synthesis: none;
+}
+
 .ccxp-lite-landing-login-label {
   margin: 0 0 var(--ccxp-lite-spacing-sm);
   padding-block: var(--ccxp-lite-spacing-sm);
