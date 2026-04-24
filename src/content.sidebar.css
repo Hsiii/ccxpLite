@@ -413,7 +413,7 @@ html[data-ccxp-lite-scope="nav"] body {
   grid-template-areas: "media body footer";
   align-items: center;
   column-gap: var(--ccxp-lite-spacing-sm);
-  min-height: 0;
+  height: var(--ccxp-lite-size-sidebar-category-card-min-height);
   width: 100%;
   max-width: none;
   padding: var(--ccxp-lite-spacing-inset-sm);
