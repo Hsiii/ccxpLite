@@ -258,6 +258,7 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-pane-all {
+  container-type: inline-size;
   flex: 2 1 0;
 }
 
@@ -332,6 +333,18 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-category-browser {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
+}
+
+@container (max-width: 1080px) {
+  .ccxp-lite-category-browser {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container (max-width: 680px) {
+  .ccxp-lite-category-browser {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ccxp-lite-category-card,
