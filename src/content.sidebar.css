@@ -143,14 +143,13 @@ html[data-ccxp-lite-scope="nav"] body {
   width: 100%;
   height: 1px;
   background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 140ms ease;
+  opacity: 0;
+  transition: opacity 140ms ease;
 }
 
 .ccxp-lite-sidebar-brand-partner-link:hover::after,
 .ccxp-lite-sidebar-brand-partner-link:focus-visible::after {
-  transform: scaleX(1);
+  opacity: 1;
 }
 
 .ccxp-lite-sidebar-brand-partner-link:focus-visible {
