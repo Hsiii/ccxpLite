@@ -663,7 +663,9 @@ html[data-ccxp-lite-scope="nav"] body {
   }
 
   .ccxp-lite-sidebar-search {
-    width: 100%;
+    width: min(100%, var(--ccxp-lite-size-sidebar-search-width));
+    max-width: 100%;
+    align-self: flex-end;
   }
 
   .ccxp-lite-dashboard {
