@@ -324,15 +324,14 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-category-browser {
   display: grid;
   flex: 1 1 auto;
-  gap: var(--ccxp-lite-spacing-sm);
+  gap: var(--ccxp-lite-spacing-md);
   min-height: 0;
   overflow-y: auto;
   align-content: start;
 }
 
 .ccxp-lite-category-browser.is-grid {
-  grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
-  justify-content: start;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .ccxp-lite-category-browser.is-list {
