@@ -527,22 +527,227 @@
       event.preventDefault();
       event.stopPropagation();
 
+      const applyFavoriteChange = () => {
+        const favoriteIds = getFavoriteIds();
+        const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
+        if (matchingIds.length > 0) {
+          matchingIds.forEach((favoriteId) => favoriteIds.delete(favoriteId));
+        } else {
+          favoriteIds.add(linkItem.id);
+        }
+
+        writeFavoriteIds(favoriteIds);
+
+        if (typeof onFavoritesChange === "function") {
+          onFavoritesChange();
+        }
+      };
+
       const favoriteIds = getFavoriteIds();
       const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
       if (matchingIds.length > 0) {
-        matchingIds.forEach((favoriteId) => favoriteIds.delete(favoriteId));
-      } else {
-        favoriteIds.add(linkItem.id);
+        showRemovePinnedDialog(targetDocument, linkItem.label, strings).then((shouldRemove) => {
+          if (!shouldRemove) {
+            return;
+          }
+
+          applyFavoriteChange();
+        });
+        return;
       }
 
-      writeFavoriteIds(favoriteIds);
-
-      if (typeof onFavoritesChange === "function") {
-        onFavoritesChange();
-      }
+      applyFavoriteChange();
     });
 
     return favoriteButton;
+  }
+
+  function showRemovePinnedDialog(targetDocument, itemName, strings) {
+    return new Promise((resolve) => {
+      const existingOverlay = targetDocument.querySelector("[data-ccxp-lite-remove-pinned-dialog]");
+      if (existingOverlay) {
+        resolve(false);
+        return;
+      }
+
+      const overlay = targetDocument.createElement("div");
+      overlay.dataset.ccxpLiteRemovePinnedDialog = "true";
+      overlay.setAttribute("role", "presentation");
+      Object.assign(overlay.style, {
+        position: "fixed",
+        inset: "0",
+        zIndex: "2147483647",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "24px",
+        background: "rgba(17, 24, 39, 0.36)",
+      });
+
+      const dialog = targetDocument.createElement("div");
+      dialog.setAttribute("role", "dialog");
+      dialog.setAttribute("aria-modal", "true");
+      dialog.tabIndex = -1;
+      Object.assign(dialog.style, {
+        width: "min(100%, 360px)",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+        padding: "24px",
+        border: "1px solid var(--ccxp-lite-border)",
+        borderRadius: "var(--ccxp-lite-radius-md)",
+        background: "var(--ccxp-lite-surface)",
+        boxShadow: "0 20px 48px rgba(17, 24, 39, 0.2)",
+      });
+
+      const titleId = `ccxp-lite-remove-pinned-title-${Date.now()}`;
+      const descriptionId = `ccxp-lite-remove-pinned-description-${Date.now()}`;
+      dialog.setAttribute("aria-labelledby", titleId);
+      dialog.setAttribute("aria-describedby", descriptionId);
+
+      const title = targetDocument.createElement("h3");
+      title.id = titleId;
+      title.textContent = `${strings.sidebarRemovePinnedDialogTitlePrefix}${itemName}${strings.sidebarRemovePinnedDialogTitleSuffix}`;
+      Object.assign(title.style, {
+        margin: "0",
+        color: "var(--ccxp-lite-text)",
+        font: "var(--ccxp-lite-type-body-strong)",
+      });
+
+      const description = targetDocument.createElement("p");
+      description.id = descriptionId;
+      description.textContent = strings.sidebarRemovePinnedDialogDescription;
+      Object.assign(description.style, {
+        margin: "0",
+        color: "var(--ccxp-lite-text-muted)",
+        font: "var(--ccxp-lite-type-body)",
+      });
+
+      const actions = targetDocument.createElement("div");
+      Object.assign(actions.style, {
+        display: "flex",
+        justifyContent: "flex-end",
+        gap: "12px",
+      });
+
+      const keepButton = createDialogActionButton(
+        targetDocument,
+        strings.sidebarRemovePinnedDialogCancel,
+        "secondary",
+      );
+      const confirmButton = createDialogActionButton(
+        targetDocument,
+        strings.sidebarRemovePinnedDialogConfirm,
+        "danger",
+      );
+
+      let settled = false;
+      const previousActiveElement = targetDocument.activeElement;
+
+      const cleanup = (confirmed) => {
+        if (settled) {
+          return;
+        }
+
+        settled = true;
+        overlay.remove();
+
+        if (
+          previousActiveElement &&
+          typeof previousActiveElement.focus === "function" &&
+          targetDocument.contains(previousActiveElement)
+        ) {
+          previousActiveElement.focus();
+        }
+
+        resolve(confirmed);
+      };
+
+      keepButton.addEventListener("click", () => cleanup(false));
+      confirmButton.addEventListener("click", () => cleanup(true));
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          cleanup(false);
+        }
+      });
+      dialog.addEventListener("click", (event) => event.stopPropagation());
+      overlay.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          event.preventDefault();
+          cleanup(false);
+        }
+      });
+
+      actions.appendChild(keepButton);
+      actions.appendChild(confirmButton);
+      dialog.appendChild(title);
+      dialog.appendChild(description);
+      dialog.appendChild(actions);
+      overlay.appendChild(dialog);
+      targetDocument.body.appendChild(overlay);
+
+      keepButton.focus();
+    });
+  }
+
+  function createDialogActionButton(targetDocument, label, variant) {
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+
+    const baseStyles = {
+      minWidth: "112px",
+      height: "40px",
+      padding: "0 16px",
+      borderRadius: "var(--ccxp-lite-radius-sm)",
+      border: "1px solid var(--ccxp-lite-border)",
+      font: "var(--ccxp-lite-type-utility)",
+      cursor: "pointer",
+      transition: "background-color 120ms ease, border-color 120ms ease, color 120ms ease",
+      outline: "none",
+    };
+
+    if (variant === "danger") {
+      Object.assign(button.style, baseStyles, {
+        borderColor: "var(--ccxp-lite-type-danger-color)",
+        background: "var(--ccxp-lite-type-danger-color)",
+        color: "var(--ccxp-lite-surface)",
+      });
+      button.addEventListener("mouseenter", () => {
+        button.style.filter = "brightness(0.96)";
+      });
+      button.addEventListener("mouseleave", () => {
+        button.style.filter = "";
+      });
+    } else {
+      Object.assign(button.style, baseStyles, {
+        background: "var(--ccxp-lite-surface)",
+        color: "var(--ccxp-lite-text)",
+      });
+      button.addEventListener("mouseenter", () => {
+        button.style.background = "var(--ccxp-lite-primary-hover-surface)";
+        button.style.borderColor = "var(--ccxp-lite-primary-focus-border)";
+      });
+      button.addEventListener("mouseleave", () => {
+        button.style.background = "var(--ccxp-lite-surface)";
+        button.style.borderColor = "var(--ccxp-lite-border)";
+      });
+    }
+
+    button.addEventListener("focus", () => {
+      if (!button.matches(":focus-visible")) {
+        return;
+      }
+
+      button.style.outline = "2px solid var(--ccxp-lite-primary-focus-border)";
+      button.style.outlineOffset = "2px";
+    });
+    button.addEventListener("blur", () => {
+      button.style.outline = "none";
+      button.style.outlineOffset = "0";
+    });
+
+    return button;
   }
 
   function createDestinationView(
