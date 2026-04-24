@@ -97,8 +97,20 @@ html[data-ccxp-lite-scope="nav"] body {
   justify-content: center;
 }
 
-.ccxp-lite-sidebar-brand-partner-link {
+.ccxp-lite-sidebar-brand-partner-link,
+.ccxp-lite-sidebar-brand-partner-link:link,
+.ccxp-lite-sidebar-brand-partner-link:visited,
+.ccxp-lite-sidebar-brand-partner-link:hover,
+.ccxp-lite-sidebar-brand-partner-link:active,
+.ccxp-lite-sidebar-brand-partner-link:focus-visible {
+  color: var(--ccxp-lite-type-display-color);
+  font-family: var(--ccxp-lite-font-brand);
+  font-size: var(--ccxp-lite-font-size-sidebar-brand);
+  font-weight: var(--ccxp-lite-font-weight-regular);
+  line-height: 1;
+  letter-spacing: 0.01em;
   text-decoration: none;
+  text-rendering: geometricPrecision;
   position: relative;
 }
 
