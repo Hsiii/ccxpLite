@@ -138,9 +138,30 @@
       ),
     );
 
+    const repoMark = targetDocument.createElement("span");
+    repoMark.className = "ccxp-lite-landing-brand-partner-mark";
+    repoMark.textContent = "x";
+    brandSection.appendChild(repoMark);
+
+    const repoLink = targetDocument.createElement("button");
+    repoLink.type = "button";
+    repoLink.className = "ccxp-lite-landing-brand-partner-link";
+    repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
+    repoLink.setAttribute("title", strings.sidebarGitHubLink);
+
+    const repoLabel = targetDocument.createElement("span");
+    repoLabel.className = "ccxp-lite-landing-brand-partner-label";
+    repoLabel.textContent = strings.sidebarGitHubLink;
+    repoLink.appendChild(repoLabel);
+    brandSection.appendChild(repoLink);
+
     if (languageLinks) {
       langSection.appendChild(languageLinks);
     }
+
+    repoLink.addEventListener("click", () => {
+      window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
+    });
 
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";
