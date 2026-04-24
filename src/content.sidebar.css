@@ -328,7 +328,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-link-card {
   width: 100%;
   padding: var(--ccxp-lite-spacing-inset-sm);
-  min-height: var(--ccxp-lite-size-sidebar-section-card-min-height);
+  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
   border-radius: var(--ccxp-lite-radius-sm);
   cursor: pointer;
   text-align: left;
@@ -433,11 +433,13 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-pinned-card,
 .ccxp-lite-detail-link-card {
   position: relative;
+  height: var(--ccxp-lite-size-sidebar-section-card-min-height);
 }
 
 .ccxp-lite-link-card {
   display: flex;
   align-items: center;
+  height: 100%;
   padding-right: calc(var(--ccxp-lite-size-icon-button-md) + var(--ccxp-lite-spacing-sm));
 }
 
