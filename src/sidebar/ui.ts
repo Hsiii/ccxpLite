@@ -671,7 +671,6 @@
 
     const timeoutId = window.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
     frame.addEventListener("load", settleSuccess, { once: true });
-    frame.addEventListener("error", settleError, { once: true });
     frameWrap.appendChild(loading);
     frameWrap.appendChild(error);
     frameWrap.appendChild(frame);

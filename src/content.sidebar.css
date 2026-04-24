@@ -529,6 +529,12 @@ html[data-ccxp-lite-scope="nav"] body {
   background: var(--ccxp-lite-surface);
 }
 
+.ccxp-lite-destination-loading[hidden],
+.ccxp-lite-destination-error[hidden],
+.ccxp-lite-destination-frame[hidden] {
+  display: none !important;
+}
+
 .ccxp-lite-empty {
   padding: var(--ccxp-lite-spacing-inset-sm);
   border: 1px dashed var(--ccxp-lite-border);
