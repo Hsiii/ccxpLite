@@ -295,10 +295,11 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-pane-detail:has(.ccxp-lite-destination-wrap) {
-  padding-inline: 0;
-  padding-bottom: 0;
+  padding: 0;
+  gap: 0;
   .ccxp-lite-pane-header-detail {
     padding-inline: var(--ccxp-lite-spacing-md);
+    margin-block: var(--ccxp-lite-spacing-md);
   }
   .ccxp-lite-destination-wrap {
     border-top: 1px solid var(--ccxp-lite-border);
