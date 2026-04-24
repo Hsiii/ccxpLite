@@ -211,7 +211,7 @@
     } else {
       categories.forEach((category) => {
         body.appendChild(
-          createCategoryCard(targetDocument, category, state.viewMode, () => {
+          createCategoryCard(targetDocument, category, state.viewMode, strings, () => {
             persistSidebarScroll(targetDocument, "root");
             state.currentCategoryId = category.id;
             state.activeLeaf = null;
@@ -384,35 +384,50 @@
     return controls;
   }
 
-  function createCategoryCard(targetDocument, category, viewMode, onOpen) {
+  function createCategoryCard(targetDocument, category, viewMode, strings, onOpen) {
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = `ccxp-lite-category-card is-${viewMode}`;
     button.setAttribute("title", category.label);
     button.addEventListener("click", onOpen);
 
+    const media = targetDocument.createElement("span");
+    media.className = "ccxp-lite-category-card-media";
+
     const iconWrap = targetDocument.createElement("span");
     iconWrap.className = "ccxp-lite-category-card-icon";
     iconWrap.appendChild(createCategoryIcon(targetDocument, category.icon));
-    button.appendChild(iconWrap);
+    media.appendChild(iconWrap);
+    button.appendChild(media);
 
-    const header = targetDocument.createElement("span");
-    header.className = "ccxp-lite-category-card-header";
+    const body = targetDocument.createElement("span");
+    body.className = "ccxp-lite-category-card-body";
 
     const title = targetDocument.createElement("span");
     title.className = "ccxp-lite-category-card-title";
     title.textContent = category.label;
-    header.appendChild(title);
-
-    header.appendChild(createForwardIcon(targetDocument));
-    button.appendChild(header);
+    body.appendChild(title);
 
     if (category.summary) {
       const summary = targetDocument.createElement("span");
       summary.className = "ccxp-lite-category-card-summary";
       summary.textContent = category.summary;
-      button.appendChild(summary);
+      body.appendChild(summary);
     }
+
+    button.appendChild(body);
+
+    const footer = targetDocument.createElement("span");
+    footer.className = "ccxp-lite-category-card-footer";
+
+    const footerLabel = targetDocument.createElement("span");
+    footerLabel.className = "ccxp-lite-category-card-action";
+    footerLabel.textContent = strings.sidebarOpenCategory;
+    footer.appendChild(footerLabel);
+
+    footer.appendChild(createForwardIcon(targetDocument));
+    button.appendChild(footer);
+
     return button;
   }
 
