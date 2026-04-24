@@ -198,6 +198,9 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 .ccxp-lite-landing-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  position: sticky;
+  top: 0;
+  z-index: 10;
   width: 100%;
   max-width: 100%;
   align-items: center;
@@ -209,8 +212,16 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
 }
 
 .ccxp-lite-landing-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-sm);
+  min-width: 0;
+}
+
+.ccxp-lite-landing-brand-lockup {
   grid-column: 1;
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--ccxp-lite-size-sidebar-brand-logo) minmax(0, 1fr);
   align-items: center;
   justify-content: flex-start;
   gap: var(--ccxp-lite-spacing-brand-inline);

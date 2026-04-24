@@ -116,20 +116,26 @@
 
     const topSection = createLandingSection(targetDocument, "ccxp-lite-landing-top");
     const headerSection = createLandingSection(targetDocument, "ccxp-lite-landing-header");
-    const brandSection = createLandingSection(targetDocument, "ccxp-lite-landing-brand");
+    const brandSection = createLandingSection(
+      targetDocument,
+      "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
+    );
     const langSection = createLandingSection(targetDocument, "ccxp-lite-landing-lang");
     const loginSection = createLandingSection(targetDocument, "ccxp-lite-landing-login");
     const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
     const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
 
-    brandSection.appendChild(
+    const brandLockup = targetDocument.createElement("div");
+    brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
+
+    brandLockup.appendChild(
       createBrandImage(
         targetDocument,
         "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
         ASSETS.sidebarBrandLogoPath,
       ),
     );
-    brandSection.appendChild(
+    brandLockup.appendChild(
       createBrandCopy(
         targetDocument,
         "ccxp-lite-landing-brand-copy ccxp-lite-sidebar-brand-copy",
@@ -137,6 +143,7 @@
         strings.sidebarTitle,
       ),
     );
+    brandSection.appendChild(brandLockup);
 
     const repoMark = targetDocument.createElement("span");
     repoMark.className = "ccxp-lite-landing-brand-partner-mark";
