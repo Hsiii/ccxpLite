@@ -331,7 +331,7 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-category-browser.is-grid {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
   justify-content: start;
 }
 
@@ -370,6 +370,7 @@ html[data-ccxp-lite-scope="nav"] body {
   align-items: center;
   gap: var(--ccxp-lite-spacing-sm);
   min-height: var(--ccxp-lite-size-sidebar-category-card-min-height);
+  width: min(100%, 320px);
   max-width: 320px;
   padding: var(--ccxp-lite-spacing-inset-md);
 }
