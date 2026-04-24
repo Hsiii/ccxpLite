@@ -15,8 +15,7 @@
     writeFavoriteIds,
     isFavoriteLink,
   } = sidebarFavorites;
-  const { filterFavoriteLinks, filterCategories, filterCategoryTree, countLinksInTree } =
-    sidebarData;
+  const { filterFavoriteLinks, filterCategories, filterCategoryTree } = sidebarData;
   const {
     DESTINATION_LOAD_TIMEOUT_MS,
     openLeafDestination,
@@ -139,19 +138,24 @@
     const layout = targetDocument.createElement("div");
     layout.className = "ccxp-lite-dashboard";
 
-    layout.appendChild(
+    const shell = targetDocument.createElement("section");
+    shell.className = "ccxp-lite-pane ccxp-lite-dashboard-shell";
+
+    shell.appendChild(
       createPinnedSection(targetDocument, navDocument, favorites, strings, rerender),
     );
-    layout.appendChild(
+    shell.appendChild(
       createAllSection(targetDocument, navDocument, categories, state, strings, rerender),
     );
+
+    layout.appendChild(shell);
 
     return layout;
   }
 
   function createPinnedSection(targetDocument, navDocument, favorites, strings, rerender) {
     const section = targetDocument.createElement("section");
-    section.className = "ccxp-lite-pane ccxp-lite-pane-pinned";
+    section.className = "ccxp-lite-dashboard-group ccxp-lite-pane-pinned";
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
@@ -185,7 +189,7 @@
 
   function createAllSection(targetDocument, navDocument, categories, state, strings, rerender) {
     const section = targetDocument.createElement("section");
-    section.className = "ccxp-lite-pane ccxp-lite-pane-all";
+    section.className = "ccxp-lite-dashboard-group ccxp-lite-pane-all";
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
@@ -394,11 +398,6 @@
     title.className = "ccxp-lite-category-card-title";
     title.textContent = category.label;
     body.appendChild(title);
-
-    const count = targetDocument.createElement("span");
-    count.className = "ccxp-lite-category-card-count";
-    count.textContent = String(countLinksInTree(category));
-    body.appendChild(count);
 
     button.appendChild(body);
     button.appendChild(createForwardIcon(targetDocument));
