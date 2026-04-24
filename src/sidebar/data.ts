@@ -52,15 +52,31 @@
           return null;
         }
 
+        const directLinkItems = categoryItems
+          .filter((item) => item.kind === "link")
+          .map((item) => item.linkItem);
+        const groupedSections = categoryItems.filter((item) => item.kind !== "link");
+        const sections =
+          directLinkItems.length === 0
+            ? groupedSections
+            : [
+                {
+                  id: `category-${category.id}-other`,
+                  label: strings.sidebarCategoryOtherSection || "其他",
+                  directLinks: directLinkItems,
+                  sections: [],
+                  kind: "group",
+                },
+                ...groupedSections,
+              ];
+
         return {
           id: `category-${category.id}`,
           label: strings[category.labelKey] || category.fallbackLabel || category.id,
           icon: category.icon,
           summary: (category.summaryLabels || []).join(" "),
-          directLinks: categoryItems
-            .filter((item) => item.kind === "link")
-            .map((item) => item.linkItem),
-          sections: categoryItems.filter((item) => item.kind !== "link"),
+          directLinks: [],
+          sections,
           emptyMessage: strings.emptyGroup,
           kind: "category",
         };
