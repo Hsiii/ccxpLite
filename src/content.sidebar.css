@@ -347,7 +347,7 @@ html[data-ccxp-lite-scope="nav"] body {
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
-  gap: var(--ccxp-lite-spacing-sm);
+  gap: var(--ccxp-lite-spacing-md);
   min-height: 0;
   overflow-y: auto;
 }
@@ -355,7 +355,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-skeleton-stack {
   display: flex;
   flex-direction: column;
-  gap: var(--ccxp-lite-spacing-sm);
+  gap: var(--ccxp-lite-spacing-md);
 }
 
 .ccxp-lite-category-browser {
@@ -646,7 +646,7 @@ html[data-ccxp-lite-scope="nav"] body {
     (var(--ccxp-lite-size-sidebar-section-card-min-height) - var(--ccxp-lite-spacing-md)) / 2
   );
   box-sizing: border-box;
-  padding: 0 var(--ccxp-lite-spacing-inset-sm);
+  padding: 0;
   border: 1px solid var(--ccxp-lite-transparent);
   border-radius: var(--ccxp-lite-radius-sm);
   color: var(--ccxp-lite-brand);
@@ -671,8 +671,8 @@ html[data-ccxp-lite-scope="nav"] body {
   min-height: 0;
   overflow: hidden;
   border: 0;
-  border-radius: 0;
-  background: transparent;
+  border-radius: var(--ccxp-lite-radius-md);
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-destination-frame {
@@ -682,7 +682,7 @@ html[data-ccxp-lite-scope="nav"] body {
   height: 100%;
   min-height: 0;
   border: 0;
-  background: var(--ccxp-lite-surface);
+  background: transparent;
 }
 
 .ccxp-lite-destination-loading[hidden],
