@@ -228,8 +228,8 @@ html[data-ccxp-lite-scope="nav"] body {
   display: flex;
   flex: 1 1 auto;
   align-items: stretch;
-  gap: var(--ccxp-lite-spacing-lg);
-  padding: var(--ccxp-lite-spacing-lg);
+  gap: var(--ccxp-lite-spacing-xl);
+  padding: var(--ccxp-lite-spacing-md) var(--ccxp-lite-spacing-lg);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-md);
   background: var(--ccxp-lite-surface);
