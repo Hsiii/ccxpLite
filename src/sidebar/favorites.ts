@@ -103,7 +103,13 @@
       return;
     }
 
-    scopeWindow.addEventListener("storage", (event) => {
+    const onStorage = (event) => {
+      const sharedDom = namespace.sharedDom;
+      if (sharedDom && !sharedDom.ensureContextValid()) {
+        scopeWindow.removeEventListener("storage", onStorage);
+        return;
+      }
+
       if (!event || event.key !== FAVORITES_STORAGE_KEY) {
         return;
       }
@@ -122,6 +128,11 @@
       );
       favoriteState.hasLoaded = true;
       notifyFavoriteSubscribers();
+    };
+
+    scopeWindow.addEventListener("storage", onStorage);
+    namespace.sharedDom?.addCleanupTask(() => {
+      scopeWindow.removeEventListener("storage", onStorage);
     });
 
     favoriteStorageSyncBound = true;
@@ -177,15 +188,16 @@
 
   function readLegacyFavoritesFromExtensionStorage() {
     return new Promise((resolve) => {
-      const storageApi =
-        typeof chrome !== "undefined" && chrome.storage ? chrome.storage.local : null;
+      const runtime = namespace.sharedDom?.getRuntimeSafely?.() || null;
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely?.() || null;
+
       if (!storageApi) {
         resolve(new Set());
         return;
       }
 
       storageApi.get(["ccxp-lite-sidebar-favorites"], (result) => {
-        if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.lastError) {
+        if (runtime && runtime.lastError) {
           resolve(new Set());
           return;
         }

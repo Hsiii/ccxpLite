@@ -386,7 +386,8 @@
     }
 
     const observer = new view.ResizeObserver(() => {
-      if (!body.isConnected) {
+      const sharedDom = namespace.sharedDom;
+      if (!body.isConnected || (sharedDom && !sharedDom.ensureContextValid())) {
         observer.disconnect();
         return;
       }
@@ -395,6 +396,10 @@
     });
     observer.observe(body.parentElement || body);
     detailItems.forEach((item) => observer.observe(item));
+
+    namespace.sharedDom?.addCleanupTask(() => {
+      observer.disconnect();
+    });
   }
 
   function layoutCategoryDetailWaterfall(view, body, detailItems) {

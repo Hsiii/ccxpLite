@@ -26,6 +26,10 @@
     captchaImage.addEventListener("load", triggerAutofill);
 
     const observer = new MutationObserver((mutations) => {
+      if (!namespace.sharedDom?.ensureContextValid()) {
+        observer.disconnect();
+        return;
+      }
       if (mutations.some((mutation) => mutation.attributeName === "src")) {
         triggerAutofill();
       }

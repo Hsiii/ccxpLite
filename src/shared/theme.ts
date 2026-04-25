@@ -14,10 +14,20 @@
 
     targetDocument.documentElement.dataset.ccxpLiteScope = scope;
 
+    const sharedDom = namespace.sharedDom;
+    if (sharedDom && !sharedDom.ensureContextValid()) {
+      return false;
+    }
+
     if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
+      const runtime = sharedDom?.getRuntimeSafely?.();
+      if (!runtime) {
+        return false;
+      }
+
       const link = targetDocument.createElement("link");
       link.rel = "stylesheet";
-      link.href = chrome.runtime.getURL(ASSETS.stylesheetPath);
+      link.href = runtime.getURL(ASSETS.stylesheetPath);
       link.dataset.ccxpLiteStylesheet = "true";
       targetDocument.head.appendChild(link);
     }

@@ -61,10 +61,107 @@
     }
   }
 
+  function hasRuntimeObject() {
+    try {
+      return typeof chrome !== "undefined" && !!chrome.runtime;
+    } catch (_error) {
+      return false;
+    }
+  }
+
+  function invalidateContext() {
+    if (namespace.isOrphan) {
+      return false;
+    }
+
+    namespace.isOrphan = true;
+    triggerCleanup();
+    return false;
+  }
+
+  function getRuntimeSafely() {
+    if (namespace.isOrphan) {
+      return null;
+    }
+
+    try {
+      const runtime = typeof chrome !== "undefined" ? chrome.runtime : null;
+      return runtime && runtime.id ? runtime : null;
+    } catch (_error) {
+      invalidateContext();
+      return null;
+    }
+  }
+
+  function isContextValid() {
+    return !!getRuntimeSafely();
+  }
+
+  function ensureContextValid() {
+    if (isContextValid()) {
+      return true;
+    }
+
+    if (hasRuntimeObject()) {
+      invalidateContext();
+    }
+
+    return false;
+  }
+
+  function getLocalStorageAreaSafely() {
+    const runtime = getRuntimeSafely();
+    if (!runtime) {
+      return null;
+    }
+
+    try {
+      return chrome.storage ? chrome.storage.local : null;
+    } catch (_error) {
+      invalidateContext();
+      return null;
+    }
+  }
+
+  function triggerCleanup() {
+    if (Array.isArray(namespace.cleanupTasks)) {
+      namespace.cleanupTasks.forEach((task) => {
+        try {
+          task();
+        } catch (_error) {
+          // Ignore cleanup errors
+        }
+      });
+      namespace.cleanupTasks = [];
+    }
+  }
+
+  function addCleanupTask(task) {
+    if (typeof task !== "function") {
+      return;
+    }
+
+    if (namespace.isOrphan) {
+      task();
+      return;
+    }
+
+    if (!Array.isArray(namespace.cleanupTasks)) {
+      namespace.cleanupTasks = [];
+    }
+    namespace.cleanupTasks.push(task);
+  }
+
   namespace.sharedDom = {
     moveChildNodes,
     removeNode,
     isDocumentComplete,
     cleanLegacyAttributes,
+    isContextValid,
+    ensureContextValid,
+    invalidateContext,
+    getRuntimeSafely,
+    getLocalStorageAreaSafely,
+    addCleanupTask,
   };
 })(window);

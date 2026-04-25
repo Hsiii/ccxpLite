@@ -20,6 +20,21 @@
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
 
+  shared.addCleanupTask(() => {
+    if (loadingState) {
+      loadingState.released = true;
+      releaseLoadingSprite(document);
+    }
+
+    // Clear frame markers so new version can re-attach
+    const frames = findFrames();
+    [frames.nav, frames.main, frames.top].forEach((frame) => {
+      if (frame) {
+        frame.removeAttribute("data-ccxp-lite-listener-attached");
+      }
+    });
+  });
+
   function attachAndApply() {
     if (isLandingPage(document)) {
       landing.preloadLandingCaptcha(document);
@@ -250,7 +265,7 @@
   }
 
   function retry() {
-    if (attempts >= RETRY_LIMIT) {
+    if (attempts >= RETRY_LIMIT || !shared.ensureContextValid()) {
       return;
     }
 

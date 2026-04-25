@@ -1,12 +1,14 @@
 // @ts-nocheck
 (function injectCcxpLitePe14dPageScript() {
+  const sharedDom = window.CCXP_LITE?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
   if (document.getElementById(pageScriptId)) {
     return;
   }
 
-  const runtimeApi =
-    typeof chrome !== "undefined" && chrome.runtime && typeof chrome.runtime.getURL === "function"
+  const runtimeApi = sharedDom?.getRuntimeSafely
+    ? sharedDom.getRuntimeSafely()
+    : typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.id
       ? chrome.runtime
       : null;
   if (!runtimeApi || !document.documentElement) {

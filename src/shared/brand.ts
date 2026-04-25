@@ -9,10 +9,15 @@
   const { getLocalizedStrings, resolveLocaleFromDocument } = sharedLocale;
 
   function createBrandImage(targetDocument, className, assetPath = ASSETS.brandLogoPath) {
+    const runtime = namespace.sharedDom?.getRuntimeSafely?.();
     const image = targetDocument.createElement("img");
     image.className = className;
     image.alt = getLocalizedStrings(resolveLocaleFromDocument(targetDocument)).sidebarTitle;
-    image.src = chrome.runtime.getURL(assetPath);
+
+    if (runtime) {
+      image.src = runtime.getURL(assetPath);
+    }
+
     return image;
   }
 
