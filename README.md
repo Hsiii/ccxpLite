@@ -7,7 +7,7 @@ A lightweight Chrome extension that enhances usability of the NTHU academic info
 - Restructured login page prioritizing login usability
 - Auto decaptcha for login page (99.95% accuracy)
 - Save favorite functions for quick access
-- Categorized sidebar menu for better navigation
+- Categorized full-screen menu for better navigation
 - Saturation and texture suppression for a cleaner look
 
 ## Download & Installation
