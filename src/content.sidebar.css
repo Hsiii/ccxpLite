@@ -838,18 +838,31 @@ html[data-ccxp-lite-scope="nav"] body {
 
   .ccxp-lite-dashboard-shell {
     flex-direction: column;
+    gap: var(--ccxp-lite-spacing-lg);
+    padding: var(--ccxp-lite-spacing-md);
   }
 
   .ccxp-lite-dashboard-group,
   .ccxp-lite-pane {
     flex: 0 0 auto;
+    min-height: 0;
     height: auto;
   }
 
   .ccxp-lite-pane-pinned {
-    width: auto;
+    width: 100%;
     max-width: none;
-    align-self: flex-start;
+    align-self: stretch;
+  }
+
+  .ccxp-lite-pane-pinned .ccxp-lite-pane-body,
+  .ccxp-lite-pane-pinned .ccxp-lite-pinned-list {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .ccxp-lite-pane-all {
+    width: 100%;
   }
 
   .ccxp-lite-category-browser,
