@@ -1275,7 +1275,7 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   }
 
   .ccxp-lite-landing-utility {
-    justify-self: center;
+    justify-self: start;
   }
 
   .ccxp-lite-landing-notices .ccxp-lite-announcement-table,
