@@ -1,0 +1,18 @@
+This repository distributes trained model weights produced using the following projects:
+
+---
+
+Project: ccxpDecaptcha (fork)
+Source: https://github.com/Hsiii/ccxpDecaptcha
+
+Upstream Project: nthu-ccxp-captcha
+Source: https://github.com/25349023/nthu-ccxp-captcha
+License: MIT License
+Copyright: (c) 25349023
+
+---
+
+Notes:
+- The ccxpDecaptcha project is a fork of nthu-ccxp-captcha.
+- This repository does NOT include any source code from the above projects.
+- Attribution is provided to acknowledge the origin of the training pipeline used to produce the model weights.
