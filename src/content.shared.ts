@@ -10,7 +10,18 @@
   const { ensureThemeDocument } = sharedTheme;
   const { getLocalizedStrings, normalizeLocale, resolveLocaleFromDocument } = sharedLocale;
   const { createBrandImage, createBrandCopy } = sharedBrand;
-  const { moveChildNodes, removeNode, isDocumentComplete, cleanLegacyAttributes } = sharedDom;
+  const {
+    moveChildNodes,
+    removeNode,
+    isDocumentComplete,
+    cleanLegacyAttributes,
+    isContextValid,
+    ensureContextValid,
+    invalidateContext,
+    getRuntimeSafely,
+    getLocalStorageAreaSafely,
+    addCleanupTask,
+  } = sharedDom;
 
   namespace.shared = {
     TOKENS,
@@ -28,5 +39,11 @@
     removeNode,
     isDocumentComplete,
     cleanLegacyAttributes,
+    isContextValid,
+    ensureContextValid,
+    invalidateContext,
+    getRuntimeSafely,
+    getLocalStorageAreaSafely,
+    addCleanupTask,
   };
 })(window);

@@ -15,12 +15,25 @@
     targetDocument.documentElement.dataset.ccxpLiteScope = scope;
 
     const sharedDom = namespace.sharedDom;
-    if (sharedDom && !sharedDom.ensureContextValid()) {
+    let isContextReady = true;
+    try {
+      isContextReady = !sharedDom || sharedDom.ensureContextValid();
+    } catch (_error) {
+      isContextReady = false;
+    }
+
+    if (!isContextReady) {
       return false;
     }
 
     if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
-      const runtime = sharedDom?.getRuntimeSafely?.();
+      let runtime = null;
+      try {
+        runtime = sharedDom?.getRuntimeSafely?.() || null;
+      } catch (_error) {
+        runtime = null;
+      }
+
       if (!runtime) {
         return false;
       }
