@@ -79,7 +79,7 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-brand-title {
   display: inline-flex;
   align-items: center;
-  gap: var(--ccxp-lite-sidebar-row-gap);
+  gap: var(--ccxp-lite-spacing-xl);
   color: var(--ccxp-lite-type-display-color);
   font-family: var(--ccxp-lite-font-brand);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
@@ -879,7 +879,7 @@ html[data-ccxp-lite-scope="nav"] body {
 
 @media (max-width: 600px) {
   .ccxp-lite-sidebar-header {
-    gap: var(--ccxp-lite-spacing-sm);
+    gap: var(--ccxp-lite-spacing-lg);
     padding-inline: var(--ccxp-lite-spacing-inset-md);
   }
 
