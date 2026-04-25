@@ -10,6 +10,7 @@ html[data-ccxp-lite-scope="nav"] body {
   box-sizing: border-box;
   height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -21,10 +22,12 @@ html[data-ccxp-lite-scope="nav"] body {
   flex: 1 1 auto;
   height: 100%;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .ccxp-lite-sidebar-header {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   align-items: center;
   gap: var(--ccxp-lite-spacing-md);
   padding: var(--ccxp-lite-spacing-inset-md) var(--ccxp-lite-spacing-inset-lg);
@@ -172,10 +175,12 @@ html[data-ccxp-lite-scope="nav"] body {
   position: relative;
   display: flex;
   align-items: center;
+  justify-self: end;
   min-width: 0;
   gap: var(--ccxp-lite-spacing-inline-sm);
-  width: min(100%, var(--ccxp-lite-size-sidebar-search-width));
-  margin-left: auto;
+  width: 100%;
+  max-width: var(--ccxp-lite-size-sidebar-search-width);
+  margin-left: 0;
   padding: 0 var(--ccxp-lite-spacing-inset-sm);
   min-height: var(--ccxp-lite-size-control-height-sm);
   border: 1px solid var(--ccxp-lite-sidebar-search-border);
@@ -826,21 +831,6 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 @media (max-width: 900px) {
-  .ccxp-lite-sidebar-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .ccxp-lite-sidebar-brand-group {
-    flex-wrap: wrap;
-  }
-
-  .ccxp-lite-sidebar-search {
-    width: min(100%, var(--ccxp-lite-size-sidebar-search-width));
-    max-width: 100%;
-    align-self: flex-start;
-  }
-
   .ccxp-lite-dashboard {
     min-height: auto;
     height: auto;
@@ -857,7 +847,9 @@ html[data-ccxp-lite-scope="nav"] body {
   }
 
   .ccxp-lite-pane-pinned {
+    width: auto;
     max-width: none;
+    align-self: flex-start;
   }
 
   .ccxp-lite-category-browser,
@@ -869,5 +861,16 @@ html[data-ccxp-lite-scope="nav"] body {
   .ccxp-lite-category-detail {
     display: flex;
     flex-direction: column;
+  }
+}
+
+@media (max-width: 600px) {
+  .ccxp-lite-sidebar-header {
+    gap: var(--ccxp-lite-spacing-sm);
+    padding-inline: var(--ccxp-lite-spacing-inset-md);
+  }
+
+  .ccxp-lite-sidebar-search {
+    max-width: 208px;
   }
 }
