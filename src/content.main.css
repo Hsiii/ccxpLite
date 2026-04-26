@@ -13,6 +13,24 @@ html[data-ccxp-lite-scope="main"] [bgcolor] {
   background-color: transparent !important;
 }
 
+html[data-ccxp-lite-scope="main"] body [style*="background" i],
+html[data-ccxp-lite-scope="main"] table,
+html[data-ccxp-lite-scope="main"] tbody,
+html[data-ccxp-lite-scope="main"] tr,
+html[data-ccxp-lite-scope="main"] td,
+html[data-ccxp-lite-scope="main"] th {
+  background-image: none !important;
+}
+
+html[data-ccxp-lite-scope="main"] table,
+html[data-ccxp-lite-scope="main"] tbody,
+html[data-ccxp-lite-scope="main"] tr,
+html[data-ccxp-lite-scope="main"] td,
+html[data-ccxp-lite-scope="main"] th,
+html[data-ccxp-lite-scope="main"] body [style*="background-color" i] {
+  background-color: transparent !important;
+}
+
 html[data-ccxp-lite-scope="main"] body,
 html[data-ccxp-lite-scope="main"] table,
 html[data-ccxp-lite-scope="main"] tbody,
@@ -82,18 +100,42 @@ html[data-ccxp-lite-scope="main"] .td_item {
 
 html[data-ccxp-lite-scope="main"] td[style*="color:navy" i],
 html[data-ccxp-lite-scope="main"] td[style*="color: navy" i],
+html[data-ccxp-lite-scope="main"] td[style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="main"] td[style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="main"] td[style*="color:#00f" i],
+html[data-ccxp-lite-scope="main"] td[style*="color: #00f" i],
+html[data-ccxp-lite-scope="main"] td[style*="color:blue" i],
+html[data-ccxp-lite-scope="main"] td[style*="color: blue" i],
 html[data-ccxp-lite-scope="main"] a[style*="color:#032274" i],
 html[data-ccxp-lite-scope="main"] a[style*="color: #032274" i],
+html[data-ccxp-lite-scope="main"] a[style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="main"] a[style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="main"] a[style*="color:#00f" i],
+html[data-ccxp-lite-scope="main"] a[style*="color: #00f" i],
 html[data-ccxp-lite-scope="main"] a[style*="color:navy" i],
 html[data-ccxp-lite-scope="main"] a[style*="color: navy" i],
+html[data-ccxp-lite-scope="main"] a[style*="color:blue" i],
+html[data-ccxp-lite-scope="main"] a[style*="color: blue" i],
 html[data-ccxp-lite-scope="main"] font[color="#032274" i],
+html[data-ccxp-lite-scope="main"] font[color="#0000ff" i],
+html[data-ccxp-lite-scope="main"] font[color="#00f" i],
 html[data-ccxp-lite-scope="main"] font[color="navy" i],
+html[data-ccxp-lite-scope="main"] font[color="blue" i],
 html[data-ccxp-lite-scope="main"] [color="#032274" i],
+html[data-ccxp-lite-scope="main"] [color="#0000ff" i],
+html[data-ccxp-lite-scope="main"] [color="#00f" i],
 html[data-ccxp-lite-scope="main"] [color="navy" i],
+html[data-ccxp-lite-scope="main"] [color="blue" i],
 html[data-ccxp-lite-scope="main"] [style*="color:#032274" i],
 html[data-ccxp-lite-scope="main"] [style*="color: #032274" i],
+html[data-ccxp-lite-scope="main"] [style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="main"] [style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="main"] [style*="color:#00f" i],
+html[data-ccxp-lite-scope="main"] [style*="color: #00f" i],
 html[data-ccxp-lite-scope="main"] [style*="color:navy" i],
-html[data-ccxp-lite-scope="main"] [style*="color: navy" i] {
+html[data-ccxp-lite-scope="main"] [style*="color: navy" i],
+html[data-ccxp-lite-scope="main"] [style*="color:blue" i],
+html[data-ccxp-lite-scope="main"] [style*="color: blue" i] {
   color: var(--ccxp-lite-type-info-color) !important;
   font-weight: var(--ccxp-lite-font-weight-strong) !important;
 }
@@ -104,22 +146,38 @@ html[data-ccxp-lite-scope="main"] td[style*="color:#ff4444" i],
 html[data-ccxp-lite-scope="main"] td[style*="color: #ff4444" i],
 html[data-ccxp-lite-scope="main"] td[style*="color:red" i],
 html[data-ccxp-lite-scope="main"] td[style*="color: red" i],
+html[data-ccxp-lite-scope="main"] td[style*="color:#900000" i],
+html[data-ccxp-lite-scope="main"] td[style*="color: #900000" i],
+html[data-ccxp-lite-scope="main"] td[style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="main"] td[style*="color: #dd0000" i],
 html[data-ccxp-lite-scope="main"] a[style*="color:#ff4444" i],
 html[data-ccxp-lite-scope="main"] a[style*="color: #ff4444" i],
 html[data-ccxp-lite-scope="main"] a[style*="color:#ff0000" i],
 html[data-ccxp-lite-scope="main"] a[style*="color: #ff0000" i],
+html[data-ccxp-lite-scope="main"] a[style*="color:#900000" i],
+html[data-ccxp-lite-scope="main"] a[style*="color: #900000" i],
+html[data-ccxp-lite-scope="main"] a[style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="main"] a[style*="color: #dd0000" i],
 html[data-ccxp-lite-scope="main"] a[style*="color:red" i],
 html[data-ccxp-lite-scope="main"] a[style*="color: red" i],
 html[data-ccxp-lite-scope="main"] font[color="#ff4444" i],
 html[data-ccxp-lite-scope="main"] font[color="#ff0000" i],
+html[data-ccxp-lite-scope="main"] font[color="#900000" i],
+html[data-ccxp-lite-scope="main"] font[color="#dd0000" i],
 html[data-ccxp-lite-scope="main"] font[color="red" i],
 html[data-ccxp-lite-scope="main"] [color="#ff4444" i],
 html[data-ccxp-lite-scope="main"] [color="#ff0000" i],
+html[data-ccxp-lite-scope="main"] [color="#900000" i],
+html[data-ccxp-lite-scope="main"] [color="#dd0000" i],
 html[data-ccxp-lite-scope="main"] [color="red" i],
 html[data-ccxp-lite-scope="main"] [style*="color:#ff4444" i],
 html[data-ccxp-lite-scope="main"] [style*="color: #ff4444" i],
 html[data-ccxp-lite-scope="main"] [style*="color:#ff0000" i],
 html[data-ccxp-lite-scope="main"] [style*="color: #ff0000" i],
+html[data-ccxp-lite-scope="main"] [style*="color:#900000" i],
+html[data-ccxp-lite-scope="main"] [style*="color: #900000" i],
+html[data-ccxp-lite-scope="main"] [style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="main"] [style*="color: #dd0000" i],
 html[data-ccxp-lite-scope="main"] [style*="color:red" i],
 html[data-ccxp-lite-scope="main"] [style*="color: red" i] {
   color: var(--ccxp-lite-type-danger-color) !important;

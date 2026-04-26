@@ -6,7 +6,7 @@
     return;
   }
 
-  const { removeNode } = shared;
+  const { TOKENS, removeNode, ensureThemeDocument, cleanLegacyAttributes } = shared;
   const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landing;
 
   const RETRY_LIMIT = 40;
@@ -60,12 +60,16 @@
       updateLoadingStateForNav(frames.nav);
       markMainReady();
     });
+    attachFrameListener(frames.main, () => {
+      simplifyMainFrame(frames.main);
+    });
 
     if (frames.top) {
       removeHeader(frames.top);
     }
 
     sidebar.simplifySidebar(frames.nav, retry);
+    simplifyMainFrame(frames.main);
     updateLoadingStateForNav(frames.nav);
     markMainReady();
   }
@@ -318,6 +322,19 @@
     topDocument.body.replaceChildren();
     topDocument.body.dataset.ccxpLiteHeaderRemoved = "true";
     topFrame.setAttribute("scrolling", "no");
+  }
+
+  function simplifyMainFrame(mainFrame) {
+    const mainDocument = mainFrame && mainFrame.contentDocument;
+    if (!mainDocument || !mainDocument.body || !mainDocument.head) {
+      return;
+    }
+
+    ensureThemeDocument(mainDocument, "main");
+    cleanLegacyAttributes(mainDocument);
+    mainDocument.body.classList.add(TOKENS.mainClass);
+    mainDocument.body.style.setProperty("background-image", "none", "important");
+    mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
   }
 
   attachAndApply();

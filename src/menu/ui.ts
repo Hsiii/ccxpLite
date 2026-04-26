@@ -5,7 +5,7 @@
     return;
   }
 
-  const { TOKENS, STRINGS } = shared;
+  const { TOKENS, STRINGS, ensureThemeDocument } = shared;
   const {
     getSidebarUiState,
     persistSidebarScroll,
@@ -74,10 +74,8 @@
     footer.replaceChildren();
     content.innerHTML = "";
     shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
-    footer.appendChild(
-      createSidebarVariantSwitch(hostDocument, state, strings, () =>
-        renderSidebar(hostDocument, navDocument, modelInput, strings),
-      ),
+    mountSidebarVariantSwitch(hostDocument, state, strings, () =>
+      renderSidebar(hostDocument, navDocument, modelInput, strings),
     );
 
     if (state.sidebarVariant === "classic") {
@@ -1029,13 +1027,17 @@
 
   function showRemovePinnedDialog(targetDocument, itemName, strings) {
     return new Promise((resolve) => {
-      const existingOverlay = targetDocument.querySelector("[data-ccxp-lite-remove-pinned-dialog]");
+      const overlayDocument = getTopScopeDocument(targetDocument);
+      ensureThemeDocument(overlayDocument, "nav");
+      const existingOverlay = overlayDocument.querySelector(
+        "[data-ccxp-lite-remove-pinned-dialog]",
+      );
       if (existingOverlay) {
         resolve(false);
         return;
       }
 
-      const overlay = targetDocument.createElement("div");
+      const overlay = overlayDocument.createElement("div");
       overlay.dataset.ccxpLiteRemovePinnedDialog = "true";
       overlay.setAttribute("role", "presentation");
       Object.assign(overlay.style, {
@@ -1049,7 +1051,7 @@
         background: "rgba(17, 24, 39, 0.36)",
       });
 
-      const dialog = targetDocument.createElement("div");
+      const dialog = overlayDocument.createElement("div");
       dialog.setAttribute("role", "dialog");
       dialog.setAttribute("aria-modal", "true");
       dialog.tabIndex = -1;
@@ -1070,7 +1072,7 @@
       dialog.setAttribute("aria-labelledby", titleId);
       dialog.setAttribute("aria-describedby", descriptionId);
 
-      const title = targetDocument.createElement("h3");
+      const title = overlayDocument.createElement("h3");
       title.id = titleId;
       title.textContent = `${strings.sidebarRemovePinnedDialogTitlePrefix}${itemName}${strings.sidebarRemovePinnedDialogTitleSuffix}`;
       Object.assign(title.style, {
@@ -1079,7 +1081,7 @@
         font: "var(--ccxp-lite-type-body-strong)",
       });
 
-      const description = targetDocument.createElement("p");
+      const description = overlayDocument.createElement("p");
       description.id = descriptionId;
       description.textContent = strings.sidebarRemovePinnedDialogDescription;
       Object.assign(description.style, {
@@ -1088,7 +1090,7 @@
         font: "var(--ccxp-lite-type-body)",
       });
 
-      const actions = targetDocument.createElement("div");
+      const actions = overlayDocument.createElement("div");
       Object.assign(actions.style, {
         display: "flex",
         justifyContent: "flex-end",
@@ -1097,18 +1099,18 @@
       });
 
       const keepButton = createDialogActionButton(
-        targetDocument,
+        overlayDocument,
         strings.sidebarRemovePinnedDialogCancel,
         "secondary",
       );
       const confirmButton = createDialogActionButton(
-        targetDocument,
+        overlayDocument,
         strings.sidebarRemovePinnedDialogConfirm,
         "danger",
       );
 
       let settled = false;
-      const previousActiveElement = targetDocument.activeElement;
+      const previousActiveElement = overlayDocument.activeElement;
 
       const cleanup = (confirmed) => {
         if (settled) {
@@ -1121,7 +1123,7 @@
         if (
           previousActiveElement &&
           typeof previousActiveElement.focus === "function" &&
-          targetDocument.contains(previousActiveElement)
+          overlayDocument.contains(previousActiveElement)
         ) {
           previousActiveElement.focus();
         }
@@ -1150,7 +1152,7 @@
       dialog.appendChild(description);
       dialog.appendChild(actions);
       overlay.appendChild(dialog);
-      targetDocument.body.appendChild(overlay);
+      getOverlayMountNode(overlayDocument).appendChild(overlay);
 
       keepButton.focus();
     });
@@ -1505,6 +1507,38 @@
     } catch (_error) {
       // Ignore cross-frame layout sync failures.
     }
+  }
+
+  function mountSidebarVariantSwitch(targetDocument, state, strings, rerender) {
+    const overlayDocument = getTopScopeDocument(targetDocument);
+    ensureThemeDocument(overlayDocument, "nav");
+
+    const existing = overlayDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
+    if (existing) {
+      existing.remove();
+    }
+
+    const button = createSidebarVariantSwitch(targetDocument, state, strings, rerender);
+    button.dataset.ccxpLiteSidebarLabSwitch = "true";
+    Object.assign(button.style, {
+      position: "fixed",
+      right: "16px",
+      bottom: "16px",
+      zIndex: "2147483646",
+    });
+    getOverlayMountNode(overlayDocument).appendChild(button);
+  }
+
+  function getTopScopeDocument(fallbackDocument) {
+    try {
+      return window.top?.document || fallbackDocument;
+    } catch (_error) {
+      return fallbackDocument;
+    }
+  }
+
+  function getOverlayMountNode(targetDocument) {
+    return targetDocument.body || targetDocument.documentElement;
   }
 
   function createBackIcon(targetDocument) {
