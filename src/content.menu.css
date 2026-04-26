@@ -886,6 +886,7 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-content {
   padding: 0 0 var(--ccxp-lite-spacing-inset-md);
+  overflow-x: hidden;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-list,
@@ -906,6 +907,8 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-link-list {
   position: relative;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
@@ -926,13 +929,15 @@ html[data-ccxp-lite-scope="nav"] body {
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-button {
+  box-sizing: border-box;
   position: relative;
   display: flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-brand-inline);
   width: 100%;
   min-width: 0;
-  padding: var(--ccxp-lite-sidebar-row-padding-y) var(--ccxp-lite-sidebar-row-padding-x);
+  max-width: 100%;
+  padding: var(--ccxp-lite-spacing-inline-sm) var(--ccxp-lite-sidebar-row-padding-x);
   padding-left: calc(
     var(--ccxp-lite-sidebar-row-padding-x) +
       (var(--ccxp-lite-row-depth, 0) * var(--ccxp-lite-sidebar-tree-indent-step))
@@ -953,6 +958,11 @@ html[data-ccxp-lite-scope="nav"] body {
   transition:
     background-color 120ms ease,
     color 120ms ease;
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-label-wrap,
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-label {
+  min-width: 0;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-button:hover {
