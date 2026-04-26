@@ -268,6 +268,30 @@
 
     frame.addEventListener("load", callback);
     frame.dataset.ccxpLiteListenerAttached = "true";
+
+    const poll = () => {
+      if (!shared.ensureContextValid()) {
+        return;
+      }
+
+      try {
+        const doc = frame.contentDocument;
+        if (doc && doc.documentElement && doc.head && doc.body) {
+          const isMain = (frame.getAttribute("name") || "").toLowerCase() === "main";
+          const expectedScope = isMain ? "main" : "nav";
+
+          if (doc.documentElement.dataset.ccxpLiteScope !== expectedScope) {
+            callback();
+          }
+        }
+      } catch (_error) {
+        // Ignore cross-origin frame access errors
+      }
+
+      window.requestAnimationFrame(poll);
+    };
+
+    window.requestAnimationFrame(poll);
   }
 
   function retry() {
@@ -294,11 +318,10 @@
 
   function readSidebarVariant() {
     try {
-      return window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY) === "classic"
-        ? "classic"
-        : "layered";
+      const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
+      return storedValue === "layered" ? "layered" : "classic";
     } catch (_error) {
-      return "layered";
+      return "classic";
     }
   }
 
