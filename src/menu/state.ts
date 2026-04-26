@@ -1,6 +1,8 @@
 (function registerCcxpLiteSidebarState(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap();
+  let persistedSidebarVariant = null;
 
   function getSidebarUiState(navDocument) {
     if (sidebarUiStateByDocument.has(navDocument)) {
@@ -11,6 +13,8 @@
       currentCategoryId: "",
       searchQuery: "",
       activeLeaf: null,
+      sidebarVariant: getPersistedSidebarVariant(),
+      classicExpandedItemIds: ["category-favorites"],
       scrollTopByView: {
         root: 0,
         category: 0,
@@ -39,9 +43,38 @@
     });
   }
 
+  function getPersistedSidebarVariant() {
+    if (persistedSidebarVariant === "classic" || persistedSidebarVariant === "layered") {
+      return persistedSidebarVariant;
+    }
+
+    try {
+      const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
+      persistedSidebarVariant = storedValue === "classic" ? "classic" : "layered";
+      return persistedSidebarVariant;
+    } catch (_error) {
+      persistedSidebarVariant = "layered";
+      return persistedSidebarVariant;
+    }
+  }
+
+  function setPersistedSidebarVariant(variant) {
+    persistedSidebarVariant = variant === "classic" ? "classic" : "layered";
+
+    try {
+      window.localStorage.setItem(SIDEBAR_VARIANT_STORAGE_KEY, persistedSidebarVariant);
+    } catch (_error) {
+      // Ignore storage write failures and keep the in-memory variant.
+    }
+
+    return persistedSidebarVariant;
+  }
+
   namespace.sidebarState = {
     getSidebarUiState,
     persistSidebarScroll,
     restoreSidebarScroll,
+    getPersistedSidebarVariant,
+    setPersistedSidebarVariant,
   };
 })(window);

@@ -165,6 +165,12 @@
       sidebarDestinationErrorBody: "Try reloading this page or open it in a new tab.",
       sidebarRetry: "Retry",
       sidebarOpenInNewTab: "Open in new tab",
+      sidebarExperimentLabel: "Lab",
+      sidebarExperimentCaption: "Experimental",
+      sidebarVariantClassic: "Classic",
+      sidebarVariantLayered: "Layered",
+      sidebarSwitchToClassic: "Switch to classic sidebar",
+      sidebarSwitchToLayered: "Switch to layered menu",
     },
     zh: {
       sidebarTitle: "校務資訊系統",
@@ -229,6 +235,12 @@
       sidebarDestinationErrorBody: "可以重新嘗試載入，或改用新分頁開啟。",
       sidebarRetry: "重試",
       sidebarOpenInNewTab: "新分頁開啟",
+      sidebarExperimentLabel: "Lab",
+      sidebarExperimentCaption: "實驗功能",
+      sidebarVariantClassic: "經典側欄",
+      sidebarVariantLayered: "分層選單",
+      sidebarSwitchToClassic: "切換為經典側欄",
+      sidebarSwitchToLayered: "切換為分層選單",
     },
   };
 

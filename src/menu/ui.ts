@@ -6,7 +6,12 @@
   }
 
   const { TOKENS, STRINGS } = shared;
-  const { getSidebarUiState, persistSidebarScroll, restoreSidebarScroll } = sidebarState;
+  const {
+    getSidebarUiState,
+    persistSidebarScroll,
+    restoreSidebarScroll,
+    setPersistedSidebarVariant,
+  } = sidebarState;
   const {
     favoriteState,
     getFavoriteIds,
@@ -68,6 +73,22 @@
 
     footer.replaceChildren();
     content.innerHTML = "";
+    shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
+    footer.appendChild(
+      createSidebarVariantSwitch(hostDocument, state, strings, () =>
+        renderSidebar(hostDocument, navDocument, modelInput, strings),
+      ),
+    );
+
+    if (state.sidebarVariant === "classic") {
+      content.appendChild(
+        createClassicSidebarView(hostDocument, navDocument, model, state, strings, () =>
+          renderSidebar(hostDocument, navDocument, modelInput, strings),
+        ),
+      );
+      restoreSidebarScroll(content, state.scrollTopByView.root);
+      return;
+    }
 
     if (state.activeLeaf) {
       const activeLeafCategory =
@@ -161,6 +182,330 @@
     search.appendChild(input);
 
     return search;
+  }
+
+  function createSidebarVariantSwitch(targetDocument, state, strings, rerender) {
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.className = "ccxp-lite-sidebar-experiment-switch";
+    button.setAttribute(
+      "aria-label",
+      state.sidebarVariant === "classic"
+        ? strings.sidebarSwitchToLayered
+        : strings.sidebarSwitchToClassic,
+    );
+    button.setAttribute(
+      "title",
+      state.sidebarVariant === "classic"
+        ? strings.sidebarSwitchToLayered
+        : strings.sidebarSwitchToClassic,
+    );
+
+    const iconWrap = targetDocument.createElement("span");
+    iconWrap.className = "ccxp-lite-sidebar-experiment-icon";
+    iconWrap.appendChild(createLabIcon(targetDocument));
+
+    const textWrap = targetDocument.createElement("span");
+    textWrap.className = "ccxp-lite-sidebar-experiment-copy";
+
+    const label = targetDocument.createElement("span");
+    label.className = "ccxp-lite-sidebar-experiment-label";
+    label.textContent = strings.sidebarExperimentCaption;
+
+    const value = targetDocument.createElement("span");
+    value.className = "ccxp-lite-sidebar-experiment-value";
+    value.textContent =
+      state.sidebarVariant === "classic"
+        ? strings.sidebarVariantClassic
+        : strings.sidebarVariantLayered;
+
+    textWrap.appendChild(label);
+    textWrap.appendChild(value);
+    button.appendChild(iconWrap);
+    button.appendChild(textWrap);
+
+    button.addEventListener("click", () => {
+      state.sidebarVariant = setPersistedSidebarVariant(
+        state.sidebarVariant === "classic" ? "layered" : "classic",
+      );
+      state.activeLeaf = null;
+      state.currentCategoryId = "";
+      persistSidebarScroll(targetDocument, "root");
+      rerender();
+    });
+
+    return button;
+  }
+
+  function createClassicSidebarView(targetDocument, navDocument, model, state, strings, rerender) {
+    const sidebarList = targetDocument.createElement("aside");
+    sidebarList.className = "ccxp-lite-sidebar-list";
+
+    const items = createClassicSidebarItems(model, state.searchQuery);
+    const hasFavoritesCategory = items.some((item) => item && item.id === "category-favorites");
+    const expandedItemIds = new Set(state.classicExpandedItemIds || []);
+
+    if (hasFavoritesCategory) {
+      expandedItemIds.add("category-favorites");
+    }
+
+    const searchQuery = normalizeClassicSearchText(state.searchQuery);
+    const searchExpansionIds = new Set();
+    if (searchQuery) {
+      items.forEach((item) => collectClassicExpandedIds(item, searchQuery, searchExpansionIds));
+      searchExpansionIds.forEach((itemId) => expandedItemIds.add(itemId));
+    }
+
+    if (items.length === 0) {
+      const empty = targetDocument.createElement("div");
+      empty.className = "ccxp-lite-empty";
+      empty.textContent = state.searchQuery ? strings.sidebarSearchEmptyBody : strings.emptyGroup;
+      sidebarList.appendChild(empty);
+      return sidebarList;
+    }
+
+    items.forEach((item) => {
+      sidebarList.appendChild(
+        createClassicSidebarNode(
+          targetDocument,
+          navDocument,
+          item,
+          expandedItemIds,
+          0,
+          strings,
+          state,
+          rerender,
+        ),
+      );
+    });
+
+    state.classicExpandedItemIds = Array.from(expandedItemIds);
+    return sidebarList;
+  }
+
+  function createClassicSidebarItems(model, query) {
+    const items = [];
+    if (model?.favorites) {
+      items.push(model.favorites);
+    }
+    items.push(...(model?.categories || []));
+
+    if (!query) {
+      return items.filter(Boolean);
+    }
+
+    return items.map((item) => filterClassicSidebarItem(item, query)).filter(Boolean);
+  }
+
+  function filterClassicSidebarItem(item, query) {
+    if (!item) {
+      return null;
+    }
+
+    const normalizedQuery = normalizeClassicSearchText(query);
+    const itemMatches = isClassicSearchMatch(item.label, normalizedQuery);
+    const directLinks = (item.directLinks || []).filter((linkItem) =>
+      isClassicSearchMatch(linkItem.label, normalizedQuery),
+    );
+    const sections = (item.sections || [])
+      .map((section) => filterClassicSidebarItem(section, normalizedQuery))
+      .filter(Boolean);
+
+    if (!itemMatches && directLinks.length === 0 && sections.length === 0) {
+      return null;
+    }
+
+    return {
+      ...item,
+      directLinks: itemMatches ? item.directLinks || [] : directLinks,
+      sections: itemMatches ? item.sections || [] : sections,
+    };
+  }
+
+  function createClassicSidebarNode(
+    targetDocument,
+    navDocument,
+    group,
+    expandedItemIds,
+    depth,
+    strings,
+    state,
+    rerender,
+  ) {
+    const isExpanded = expandedItemIds.has(group.id);
+    const linkList = targetDocument.createElement("div");
+    linkList.className = `ccxp-lite-sidebar-group${group.kind === "category" ? " ccxp-lite-category" : ""}`;
+
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.className = "ccxp-lite-row-button ccxp-lite-expandable";
+    button.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+    button.setAttribute("title", group.label);
+    button.style.setProperty(
+      "--ccxp-lite-row-depth",
+      String(getClassicSidebarIndentLevel(group.kind, depth)),
+    );
+
+    if (group.kind === "category") {
+      const leading = targetDocument.createElement("span");
+      leading.className = "ccxp-lite-row-leading";
+      leading.appendChild(createCategoryIcon(targetDocument, group.icon));
+      button.appendChild(leading);
+    } else if (depth > 0) {
+      button.appendChild(createClassicRowLeadingSpacer(targetDocument));
+    }
+
+    button.appendChild(createRowLabel(targetDocument, group.label, false));
+    button.appendChild(createClassicChevronIcon(targetDocument, isExpanded));
+    button.addEventListener("click", () => {
+      if (expandedItemIds.has(group.id)) {
+        expandedItemIds.delete(group.id);
+      } else {
+        expandedItemIds.add(group.id);
+      }
+      state.classicExpandedItemIds = Array.from(expandedItemIds);
+      rerender();
+    });
+    linkList.appendChild(button);
+
+    if (!isExpanded) {
+      return linkList;
+    }
+
+    const children = targetDocument.createElement("div");
+    children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
+    children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
+
+    (group.directLinks || []).forEach((linkItem) => {
+      children.appendChild(
+        createClassicLinkButton(
+          targetDocument,
+          navDocument,
+          linkItem,
+          depth + 1,
+          strings,
+          rerender,
+        ),
+      );
+    });
+
+    (group.sections || []).forEach((section) => {
+      children.appendChild(
+        createClassicSidebarNode(
+          targetDocument,
+          navDocument,
+          section,
+          expandedItemIds,
+          depth + 1,
+          strings,
+          state,
+          rerender,
+        ),
+      );
+    });
+
+    if (children.childElementCount > 0) {
+      linkList.appendChild(children);
+      return linkList;
+    }
+
+    const empty = targetDocument.createElement("div");
+    empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
+    empty.textContent = group.emptyMessage || strings.emptyGroup;
+    linkList.appendChild(empty);
+    return linkList;
+  }
+
+  function createClassicLinkButton(
+    targetDocument,
+    navDocument,
+    linkItem,
+    depth,
+    strings,
+    rerender,
+  ) {
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.className = "ccxp-lite-row-button ccxp-lite-item";
+    button.setAttribute("title", linkItem.label);
+    button.style.setProperty(
+      "--ccxp-lite-row-depth",
+      String(getClassicSidebarIndentLevel("link", depth)),
+    );
+
+    if (depth > 0) {
+      button.appendChild(createClassicRowLeadingSpacer(targetDocument));
+    }
+
+    button.appendChild(
+      createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
+    );
+    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    button.addEventListener("click", () => activateLegacyLink(linkItem, navDocument));
+
+    return button;
+  }
+
+  function normalizeClassicSearchText(text) {
+    return String(text || "")
+      .toLowerCase()
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function isClassicSearchMatch(text, normalizedQuery) {
+    return normalizeClassicSearchText(text).includes(normalizedQuery);
+  }
+
+  function collectClassicExpandedIds(item, normalizedQuery, expandedItemIds) {
+    if (!item) {
+      return false;
+    }
+
+    const itemMatches = isClassicSearchMatch(item.label, normalizedQuery);
+    let hasMatch = itemMatches;
+
+    (item.directLinks || []).forEach((linkItem) => {
+      if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
+        hasMatch = true;
+      }
+    });
+
+    (item.sections || []).forEach((section) => {
+      if (collectClassicExpandedIds(section, normalizedQuery, expandedItemIds)) {
+        hasMatch = true;
+      }
+    });
+
+    if (hasMatch && (item.sections || []).length > 0) {
+      expandedItemIds.add(item.id);
+    }
+
+    return hasMatch;
+  }
+
+  function getClassicSidebarIndentLevel(kind, depth) {
+    if (kind === "category") {
+      return 0;
+    }
+
+    return Math.max(0, depth - 1);
+  }
+
+  function createClassicRowLeadingSpacer(targetDocument) {
+    const spacer = targetDocument.createElement("span");
+    spacer.className = "ccxp-lite-row-leading";
+    spacer.setAttribute("aria-hidden", "true");
+    return spacer;
+  }
+
+  function createClassicChevronIcon(targetDocument, isExpanded) {
+    const icon = createForwardIcon(targetDocument);
+    icon.classList.add("ccxp-lite-chevron");
+    if (isExpanded) {
+      icon.classList.add("is-expanded");
+    }
+    return icon;
   }
 
   function createDashboardView(
@@ -624,9 +969,8 @@
   }
 
   function createFavoriteToggle(targetDocument, linkItem, strings, onFavoritesChange) {
-    const favoriteButton = targetDocument.createElement("span");
-    favoriteButton.setAttribute("role", "button");
-    favoriteButton.tabIndex = 0;
+    const favoriteButton = targetDocument.createElement("button");
+    favoriteButton.type = "button";
     favoriteButton.className = "ccxp-lite-favorite-toggle";
 
     const isFavorite = isFavoriteLink(linkItem, getFavoriteIds());
@@ -1118,6 +1462,32 @@
       "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z",
     );
     icon.appendChild(path);
+
+    return icon;
+  }
+
+  function createLabIcon(targetDocument) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("class", "ccxp-lite-inline-icon");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    [
+      "M10 2v7.31",
+      "M14 9.3V2",
+      "M8.5 2h7",
+      "M14 9.3 19.74 19a2 2 0 0 1-1.72 3H5.98a2 2 0 0 1-1.72-3L10 9.3",
+      "M6 16h12",
+    ].forEach((pathData) => {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      icon.appendChild(path);
+    });
 
     return icon;
   }
