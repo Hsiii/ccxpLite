@@ -228,6 +228,7 @@
       state.sidebarVariant = setPersistedSidebarVariant(
         state.sidebarVariant === "classic" ? "layered" : "classic",
       );
+      syncTopLevelFramesetLayout(state.sidebarVariant);
       state.activeLeaf = null;
       state.currentCategoryId = "";
       persistSidebarScroll(targetDocument, "root");
@@ -1490,6 +1491,20 @@
     });
 
     return icon;
+  }
+
+  function syncTopLevelFramesetLayout(variant) {
+    try {
+      const scopeDocument = window.top ? window.top.document : document;
+      const innerFrameset = scopeDocument.querySelector("frameset[cols]");
+      if (!innerFrameset) {
+        return;
+      }
+
+      innerFrameset.setAttribute("cols", variant === "classic" ? "288,*" : "*,0");
+    } catch (_error) {
+      // Ignore cross-frame layout sync failures.
+    }
   }
 
   function createBackIcon(targetDocument) {

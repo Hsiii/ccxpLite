@@ -11,11 +11,13 @@
 
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
-  const FRAMESET_COLUMNS = "*,0";
+  const LAYERED_FRAMESET_COLUMNS = "*,0";
+  const CLASSIC_FRAMESET_COLUMNS = "288,*";
   const FRAMESET_ROWS = "0,*";
   const LOADING_SPRITE_ID = "ccxp-lite-loading-sprite";
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
   const LOADING_SPRITE_TIMEOUT_MS = 8000;
+  const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
 
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
@@ -282,8 +284,22 @@
     }
 
     if (innerFrameset) {
-      innerFrameset.setAttribute("cols", FRAMESET_COLUMNS);
+      innerFrameset.setAttribute("cols", getFramesetColumnsForVariant(readSidebarVariant()));
     }
+  }
+
+  function readSidebarVariant() {
+    try {
+      return window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY) === "classic"
+        ? "classic"
+        : "layered";
+    } catch (_error) {
+      return "layered";
+    }
+  }
+
+  function getFramesetColumnsForVariant(variant) {
+    return variant === "classic" ? CLASSIC_FRAMESET_COLUMNS : LAYERED_FRAMESET_COLUMNS;
   }
 
   function removeHeader(topFrame) {
