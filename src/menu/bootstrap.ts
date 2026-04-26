@@ -29,7 +29,7 @@
     sidebarFavorites;
   const { buildSidebarModel, parseSidebarTree } = sidebarData;
   const { getSidebarUiState } = sidebarState;
-  const { renderSidebar, createSidebarSearch } = sidebarUi;
+  const { renderSidebar, createSidebarSearch, syncTopLevelFramesetLayout } = sidebarUi;
   const { captureInitialMainFrameUrl } = sidebarRuntime;
 
   function simplifySidebar(
@@ -62,7 +62,9 @@
     ensureThemeDocument(navDocument, "nav");
     ensureThemeDocument(hostDocument, "nav");
     const strings = getLocalizedStrings(resolveLocaleFromDocument(navDocument));
+    const state = getSidebarUiState(hostDocument);
     captureInitialMainFrameUrl();
+    syncTopLevelFramesetLayout(state.sidebarVariant);
 
     if (hostDocument.body.dataset.ccxpLiteSidebarApplied !== "true") {
       const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");

@@ -1494,7 +1494,7 @@
     return icon;
   }
 
-  function syncTopLevelFramesetLayout(variant) {
+  function syncTopLevelFramesetLayout(_variant) {
     try {
       const scopeDocument = window.top ? window.top.document : document;
       const innerFrameset = scopeDocument.querySelector("frameset[cols]");
@@ -1502,35 +1502,38 @@
         return;
       }
 
-      innerFrameset.setAttribute("cols", variant === "classic" ? "288,*" : "*,0");
+      innerFrameset.setAttribute("cols", "324,*");
     } catch (_error) {
       // Ignore cross-frame layout sync failures.
     }
   }
 
-  function mountSidebarVariantSwitch(targetDocument, state, strings, rerender, footer) {
-    const button = createSidebarVariantSwitch(targetDocument, state, strings, rerender);
+  function mountSidebarVariantSwitch(targetDocument, state, strings, rerender, _footer) {
+    const variant = state.sidebarVariant;
+    const mainFrame = sidebarRuntime.getLegacyMainFrame();
+    const mainDocument = mainFrame?.contentDocument;
+
+    // In classic mode, we want the button to stay at the bottom-right of the screen,
+    // which corresponds to the bottom-right of the main frame.
+    const isClassic = variant === "classic";
+    const mountDocument =
+      isClassic && mainDocument && mainDocument.body ? mainDocument : targetDocument;
+
+    const button = createSidebarVariantSwitch(mountDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
 
-    if (footer) {
-      footer.appendChild(button);
-    } else {
-      const overlayDocument = getTopScopeDocument(targetDocument);
-      ensureThemeDocument(overlayDocument, "nav");
-
-      const existing = overlayDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
-      if (existing) {
-        existing.remove();
-      }
-
-      Object.assign(button.style, {
-        position: "fixed",
-        right: "16px",
-        bottom: "16px",
-        zIndex: "2147483646",
-      });
-      getOverlayMountNode(overlayDocument).appendChild(button);
+    const existing = mountDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
+    if (existing) {
+      existing.remove();
     }
+
+    Object.assign(button.style, {
+      position: "fixed",
+      right: "16px",
+      bottom: "16px",
+      zIndex: "2147483646",
+    });
+    getOverlayMountNode(mountDocument).appendChild(button);
   }
 
   function getTopScopeDocument(fallbackDocument) {
@@ -1680,5 +1683,7 @@
   namespace.sidebarUi = {
     renderSidebar,
     createSidebarSearch,
+    mountSidebarVariantSwitch,
+    syncTopLevelFramesetLayout,
   };
 })(window);

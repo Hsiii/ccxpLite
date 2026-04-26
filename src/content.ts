@@ -12,7 +12,7 @@
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
   const LAYERED_FRAMESET_COLUMNS = "*,0";
-  const CLASSIC_FRAMESET_COLUMNS = "288,*";
+  const CLASSIC_FRAMESET_COLUMNS = "324,*";
   const FRAMESET_ROWS = "0,*";
   const LOADING_SPRITE_ID = "ccxp-lite-loading-sprite";
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
@@ -335,6 +335,30 @@
     mainDocument.body.classList.add(TOKENS.mainClass);
     mainDocument.body.style.setProperty("background-image", "none", "important");
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
+
+    // Mount lab button to main frame if in classic mode
+    const { sidebarState, sidebarUi, shared: sharedLib } = window.CCXP_LITE || {};
+    if (sidebarState && sidebarUi && sharedLib) {
+      const state = sidebarState.getSidebarUiState(mainDocument);
+      const strings = sharedLib.getLocalizedStrings(
+        sharedLib.resolveLocaleFromDocument(mainDocument),
+      );
+      if (state.sidebarVariant === "classic") {
+        sidebarUi.mountSidebarVariantSwitch(
+          mainDocument,
+          state,
+          strings,
+          () => {
+            try {
+              (window.top || window).location.reload();
+            } catch (_e) {
+              window.location.reload();
+            }
+          },
+          null,
+        );
+      }
+    }
   }
 
   attachAndApply();
