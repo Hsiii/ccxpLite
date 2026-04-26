@@ -75,7 +75,7 @@
     sizeSidebarHeaderDividerHeight: "1px",
     sizeSidebarSearchIcon: "20px",
     sizeLandingBrandLogo: "32px",
-    sizeLandingHeaderHeight: "64px",
+    sizeLandingHeaderHeight: "68px",
     sizeFormControlWidth: "320px",
     sizeLoginControlHeight: "48px",
     sizePasswordToggleOffset: "44px",

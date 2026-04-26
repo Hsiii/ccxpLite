@@ -215,7 +215,7 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   max-width: 100%;
   align-items: center;
   background: var(--ccxp-lite-sidebar-surface);
-  padding-inline: var(--ccxp-lite-spacing-inset-sm);
+  padding-inline: var(--ccxp-lite-spacing-inset-lg);
   height: var(--ccxp-lite-size-landing-header-height);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
   border-bottom: 1px solid var(--ccxp-lite-border);

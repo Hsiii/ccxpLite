@@ -30,7 +30,8 @@ html[data-ccxp-lite-scope="nav"] body {
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   align-items: center;
   gap: var(--ccxp-lite-spacing-md);
-  padding: var(--ccxp-lite-spacing-inset-md) var(--ccxp-lite-spacing-inset-lg);
+  padding-inline: var(--ccxp-lite-spacing-inset-lg);
+  height: var(--ccxp-lite-size-landing-header-height);
 }
 
 .ccxp-lite-sidebar-brand-group {
