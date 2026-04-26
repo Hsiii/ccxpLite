@@ -217,7 +217,6 @@
 
     const textWrap = targetDocument.createElement("span");
     textWrap.className = "ccxp-lite-sidebar-experiment-copy";
-    textWrap.style.cssText = "opacity:0;visibility:hidden;width:0;max-width:0;overflow:hidden";
     textWrap.textContent = `${strings.sidebarExperimentCaption}：${strings.sidebarVariantLayered}`;
 
     button.appendChild(iconWrap);
