@@ -141,6 +141,8 @@
 
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     const normalizedTarget = (linkItem.target || "main").toLowerCase();
+    const resolvedDestinationFrame =
+      normalizedTarget === "main" ? destinationFrame || getLegacyMainFrame() : destinationFrame;
 
     if (normalizedTarget === "_blank") {
       window.open(resolvedUrl, "_blank", "noopener");
@@ -152,8 +154,8 @@
       return;
     }
 
-    if (normalizedTarget === "main" && destinationFrame) {
-      destinationFrame.src = resolvedUrl;
+    if (normalizedTarget === "main" && resolvedDestinationFrame) {
+      resolvedDestinationFrame.src = resolvedUrl;
       return;
     }
 
