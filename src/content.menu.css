@@ -900,7 +900,6 @@ html[data-ccxp-lite-scope="nav"] body {
   padding: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-gutter: stable both-edges;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-link-list {
