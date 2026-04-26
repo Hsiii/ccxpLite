@@ -30,7 +30,7 @@ html[data-ccxp-lite-scope="nav"] body {
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   align-items: center;
   gap: var(--ccxp-lite-spacing-md);
-  padding-inline: var(--ccxp-lite-sidebar-row-padding-x);
+  padding-inline: var(--ccxp-lite-spacing-inset-lg);
   height: var(--ccxp-lite-size-landing-header-height);
   scrollbar-gutter: stable both-edges;
 }
@@ -1188,7 +1188,7 @@ html[data-ccxp-lite-scope="nav"] body {
 @media (max-width: 600px) {
   .ccxp-lite-sidebar-header {
     gap: var(--ccxp-lite-spacing-lg);
-    padding-inline: var(--ccxp-lite-sidebar-row-padding-x);
+    padding-inline: var(--ccxp-lite-spacing-inset-md);
   }
 
   .ccxp-lite-sidebar-search {
