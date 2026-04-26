@@ -812,7 +812,6 @@ html[data-ccxp-lite-scope="nav"] body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
-  padding-inline: var(--ccxp-lite-sidebar-row-padding-x);
   min-width: 0;
   gap: var(--ccxp-lite-spacing-sm);
 }
