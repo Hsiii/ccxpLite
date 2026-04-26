@@ -1023,10 +1023,17 @@
 
   function showRemovePinnedDialog(targetDocument, itemName, strings) {
     return new Promise((resolve) => {
-      // Keep the dialog inside the active sidebar document. Mounting to the
-      // top-level frameset can place the overlay behind frame content in
-      // classic sidebar mode, making the actions unreachable.
-      const overlayDocument = targetDocument;
+      // Mount the overlay in the top-level document so position:fixed covers the
+      // full screen rather than being confined to the sidebar frame viewport.
+      let overlayDocument: Document;
+      try {
+        overlayDocument =
+          window.top && window.top.document && window.top.document.body
+            ? window.top.document
+            : targetDocument;
+      } catch (_e) {
+        overlayDocument = targetDocument;
+      }
       ensureThemeDocument(overlayDocument, "nav");
       const existingOverlay = overlayDocument.querySelector(
         "[data-ccxp-lite-remove-pinned-dialog]",
@@ -1109,7 +1116,9 @@
       );
 
       let settled = false;
-      const previousActiveElement = overlayDocument.activeElement;
+      // Track the previously focused element in the nav frame (targetDocument),
+      // not in the top-level document where the overlay is mounted.
+      const previousActiveElement = targetDocument.activeElement;
 
       const cleanup = (confirmed) => {
         if (settled) {
@@ -1122,7 +1131,7 @@
         if (
           previousActiveElement &&
           typeof previousActiveElement.focus === "function" &&
-          overlayDocument.contains(previousActiveElement)
+          targetDocument.contains(previousActiveElement)
         ) {
           previousActiveElement.focus();
         }
