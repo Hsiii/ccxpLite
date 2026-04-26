@@ -30,13 +30,13 @@
       return;
     }
 
+    const state = getSidebarUiState(targetDocument);
     const legacyMainFrame = getLegacyMainFrame();
-    if (legacyMainFrame) {
+    if (state.sidebarVariant === "classic" && legacyMainFrame) {
       activateLegacyLink(linkItem, navDocument, legacyMainFrame);
       return;
     }
 
-    const state = getSidebarUiState(targetDocument);
     persistSidebarScroll(targetDocument, "category");
     state.activeLeaf = {
       id: linkItem.id,

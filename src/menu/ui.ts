@@ -1494,7 +1494,7 @@
     return icon;
   }
 
-  function syncTopLevelFramesetLayout(_variant) {
+  function syncTopLevelFramesetLayout(variant) {
     try {
       const scopeDocument = window.top ? window.top.document : document;
       const innerFrameset = scopeDocument.querySelector("frameset[cols]");
@@ -1502,7 +1502,7 @@
         return;
       }
 
-      innerFrameset.setAttribute("cols", "324,*");
+      innerFrameset.setAttribute("cols", variant === "classic" ? "324,*" : "*,0");
     } catch (_error) {
       // Ignore cross-frame layout sync failures.
     }
