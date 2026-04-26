@@ -42,8 +42,57 @@
     return copy;
   }
 
+  function createBrandPartnerIcon(targetDocument) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("class", "ccxp-lite-sidebar-brand-partner-icon");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      icon.appendChild(path);
+    });
+
+    return icon;
+  }
+
+  function createBrandPartnerLink(
+    targetDocument,
+    options: {
+      markClassName?: string;
+      linkClassName?: string;
+      labelClassName?: string;
+      label?: string;
+    } = {},
+  ) {
+    const mark = targetDocument.createElement("span");
+    mark.className = options.markClassName || "";
+    mark.appendChild(createBrandPartnerIcon(targetDocument));
+
+    const link = targetDocument.createElement("button");
+    link.type = "button";
+    link.className = options.linkClassName || "";
+    link.setAttribute("aria-label", options.label || "");
+    link.setAttribute("title", options.label || "");
+
+    const label = targetDocument.createElement("span");
+    label.className = options.labelClassName || "";
+    label.textContent = options.label || "";
+    link.appendChild(label);
+
+    return { mark, link };
+  }
+
   namespace.sharedBrand = {
     createBrandImage,
     createBrandCopy,
+    createBrandPartnerIcon,
+    createBrandPartnerLink,
   };
 })(window);

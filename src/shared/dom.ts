@@ -1,5 +1,6 @@
 (function registerCcxpLiteSharedDom(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
   function moveChildNodes(sourceNode, targetNode) {
     while (sourceNode.firstChild) {
@@ -153,6 +154,42 @@
   }
 
   namespace.sharedDom = {
+    moveChildNodes,
+    removeNode,
+    isDocumentComplete,
+    cleanLegacyAttributes,
+    isContextValid,
+    ensureContextValid,
+    invalidateContext,
+    getRuntimeSafely,
+    getLocalStorageAreaSafely,
+    addCleanupTask,
+  };
+
+  if (!sharedConstants || !sharedTheme || !sharedLocale || !sharedBrand) {
+    return;
+  }
+
+  const { TOKENS, LOCALIZED_STRINGS, SIDEBAR_CATEGORIES, ASSETS } = sharedConstants;
+  const { ensureThemeDocument } = sharedTheme;
+  const { getLocalizedStrings, normalizeLocale, resolveLocaleFromDocument } = sharedLocale;
+  const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
+    sharedBrand;
+
+  namespace.shared = {
+    TOKENS,
+    STRINGS: LOCALIZED_STRINGS.zh,
+    LOCALIZED_STRINGS,
+    SIDEBAR_CATEGORIES,
+    ASSETS,
+    ensureThemeDocument,
+    getLocalizedStrings,
+    normalizeLocale,
+    resolveLocaleFromDocument,
+    createBrandImage,
+    createBrandCopy,
+    createBrandPartnerIcon,
+    createBrandPartnerLink,
     moveChildNodes,
     removeNode,
     isDocumentComplete,

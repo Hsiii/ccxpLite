@@ -38,14 +38,12 @@
         "shared/locale.js",
         "shared/brand.js",
         "shared/dom.js",
-        "content.shared.js",
         "menu/state.js",
         "menu/favorites.js",
         "menu/data.js",
         "menu/runtime.js",
         "menu/ui.js",
         "menu/bootstrap.js",
-        "content.menu.js",
         "content.decaptcha.model.js",
         "content.decaptcha.js",
         "landing/locale.js",
@@ -55,7 +53,6 @@
         "landing/tabs.js",
         "landing/login.js",
         "landing/bootstrap.js",
-        "content.landing.js",
         "content.js"
       ]
     },

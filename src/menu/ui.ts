@@ -1078,26 +1078,6 @@
     return icon;
   }
 
-  function createBrandCloseIcon(targetDocument) {
-    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("class", "ccxp-lite-sidebar-brand-partner-icon");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("fill", "none");
-    icon.setAttribute("stroke", "currentColor");
-    icon.setAttribute("stroke-width", "2");
-    icon.setAttribute("stroke-linecap", "round");
-    icon.setAttribute("stroke-linejoin", "round");
-    icon.setAttribute("aria-hidden", "true");
-
-    ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
-      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", pathData);
-      icon.appendChild(path);
-    });
-
-    return icon;
-  }
-
   function createExternalLinkIcon(targetDocument) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-link-icon");
@@ -1278,6 +1258,5 @@
   namespace.sidebarUi = {
     renderSidebar,
     createSidebarSearch,
-    createBrandCloseIcon,
   };
 })(window);

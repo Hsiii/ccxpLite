@@ -22,6 +22,7 @@
     resolveLocaleFromDocument,
     createBrandImage,
     createBrandCopy,
+    createBrandPartnerLink,
     isDocumentComplete,
     cleanLegacyAttributes,
   } = shared;
@@ -29,7 +30,7 @@
     sidebarFavorites;
   const { buildSidebarModel, parseSidebarTree } = sidebarData;
   const { getSidebarUiState } = sidebarState;
-  const { renderSidebar, createSidebarSearch, createBrandCloseIcon } = sidebarUi;
+  const { renderSidebar, createSidebarSearch } = sidebarUi;
   const { captureInitialMainFrameUrl } = sidebarRuntime;
 
   function simplifySidebar(navFrame, retry, options = {}) {
@@ -88,20 +89,12 @@
         ),
       );
 
-      const repoMark = hostDocument.createElement("span");
-      repoMark.className = "ccxp-lite-sidebar-brand-partner-mark";
-      repoMark.appendChild(createBrandCloseIcon(hostDocument));
-
-      const repoLink = hostDocument.createElement("button");
-      repoLink.type = "button";
-      repoLink.className = "ccxp-lite-sidebar-brand-partner-link";
-      repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
-      repoLink.setAttribute("title", strings.sidebarGitHubLink);
-
-      const repoLabel = hostDocument.createElement("span");
-      repoLabel.className = "ccxp-lite-sidebar-brand-partner-label";
-      repoLabel.textContent = strings.sidebarGitHubLink;
-      repoLink.appendChild(repoLabel);
+      const { mark: repoMark, link: repoLink } = createBrandPartnerLink(hostDocument, {
+        markClassName: "ccxp-lite-sidebar-brand-partner-mark",
+        linkClassName: "ccxp-lite-sidebar-brand-partner-link",
+        labelClassName: "ccxp-lite-sidebar-brand-partner-label",
+        label: strings.sidebarGitHubLink,
+      });
 
       const search = createSidebarSearch(hostDocument, strings);
 
@@ -160,7 +153,7 @@
     rerender();
   }
 
-  namespace.sidebarBootstrap = {
+  namespace.sidebar = {
     simplifySidebar,
   };
 })(window);

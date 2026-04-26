@@ -29,6 +29,7 @@
     getLocalizedStrings,
     createBrandImage,
     createBrandCopy,
+    createBrandPartnerLink,
     moveChildNodes,
     removeNode,
     isDocumentComplete,
@@ -147,21 +148,13 @@
     );
     brandSection.appendChild(brandLockup);
 
-    const repoMark = targetDocument.createElement("span");
-    repoMark.className = "ccxp-lite-landing-brand-partner-mark";
-    repoMark.appendChild(createLandingBrandCloseIcon(targetDocument));
+    const { mark: repoMark, link: repoLink } = createBrandPartnerLink(targetDocument, {
+      markClassName: "ccxp-lite-landing-brand-partner-mark",
+      linkClassName: "ccxp-lite-landing-brand-partner-link",
+      labelClassName: "ccxp-lite-landing-brand-partner-label",
+      label: strings.sidebarGitHubLink,
+    });
     brandSection.appendChild(repoMark);
-
-    const repoLink = targetDocument.createElement("button");
-    repoLink.type = "button";
-    repoLink.className = "ccxp-lite-landing-brand-partner-link";
-    repoLink.setAttribute("aria-label", strings.sidebarGitHubLink);
-    repoLink.setAttribute("title", strings.sidebarGitHubLink);
-
-    const repoLabel = targetDocument.createElement("span");
-    repoLabel.className = "ccxp-lite-landing-brand-partner-label";
-    repoLabel.textContent = strings.sidebarGitHubLink;
-    repoLink.appendChild(repoLabel);
     brandSection.appendChild(repoLink);
 
     if (languageLinks) {
@@ -282,30 +275,10 @@
     onReady();
   }
 
-  namespace.landingBootstrap = {
+  namespace.landing = {
     isSupportedInquirePath,
     isLandingPage,
     preloadLandingCaptcha,
     simplifyLandingPage,
   };
-
-  function createLandingBrandCloseIcon(targetDocument) {
-    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
-    icon.setAttribute("class", "ccxp-lite-sidebar-brand-partner-icon");
-    icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("fill", "none");
-    icon.setAttribute("stroke", "currentColor");
-    icon.setAttribute("stroke-width", "2");
-    icon.setAttribute("stroke-linecap", "round");
-    icon.setAttribute("stroke-linejoin", "round");
-    icon.setAttribute("aria-hidden", "true");
-
-    ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
-      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("d", pathData);
-      icon.appendChild(path);
-    });
-
-    return icon;
-  }
 })(window);
