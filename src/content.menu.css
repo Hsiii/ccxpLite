@@ -218,7 +218,6 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-search:focus-within {
   border-color: var(--ccxp-lite-primary-focus-border);
-  box-shadow: 0 0 0 3px var(--ccxp-lite-primary-focus-ring);
 }
 
 .ccxp-lite-sidebar-content {
