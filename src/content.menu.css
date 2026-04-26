@@ -1021,6 +1021,15 @@ html[data-ccxp-lite-scope="nav"] body {
   transform: translateY(-50%) rotate(90deg);
 }
 
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-favorite-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--ccxp-lite-sidebar-row-padding-x);
+  width: var(--ccxp-lite-size-sidebar-control);
+  height: var(--ccxp-lite-size-sidebar-control);
+  transform: translateY(-50%);
+}
+
 .ccxp-lite-skeleton-card,
 .ccxp-lite-skeleton-frame-line,
 .ccxp-lite-skeleton-progress {
