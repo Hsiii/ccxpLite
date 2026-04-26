@@ -47,7 +47,7 @@
 
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
       searchInput.addEventListener("input", () => {
-        state.searchQuery = searchInput.value.trim();
+        state.searchQuery = searchInput.value;
         renderSidebar(hostDocument, navDocument, modelInput, strings);
       });
       searchInput.dataset.ccxpLiteSearchBound = "true";
@@ -64,7 +64,9 @@
     );
     const activeCategory =
       activeCategoryFromFiltered ||
-      model.categories.find((category) => category.id === state.currentCategoryId) ||
+      (state.searchQuery
+        ? null
+        : model.categories.find((category) => category.id === state.currentCategoryId)) ||
       null;
 
     if (state.currentCategoryId && !activeCategory) {
