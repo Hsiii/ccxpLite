@@ -13,7 +13,12 @@ html[data-ccxp-lite-scope="main"] [bgcolor] {
   background-color: transparent !important;
 }
 
-html[data-ccxp-lite-scope="main"] body [style*="background" i],
+html[data-ccxp-lite-scope="main"]
+  body
+  :not(
+    [data-ccxp-lite-remove-pinned-dialog],
+    [data-ccxp-lite-remove-pinned-dialog] *
+  )[style*="background" i],
 html[data-ccxp-lite-scope="main"] table,
 html[data-ccxp-lite-scope="main"] tbody,
 html[data-ccxp-lite-scope="main"] tr,
@@ -27,7 +32,12 @@ html[data-ccxp-lite-scope="main"] tbody,
 html[data-ccxp-lite-scope="main"] tr,
 html[data-ccxp-lite-scope="main"] td,
 html[data-ccxp-lite-scope="main"] th,
-html[data-ccxp-lite-scope="main"] body [style*="background-color" i] {
+html[data-ccxp-lite-scope="main"]
+  body
+  :not(
+    [data-ccxp-lite-remove-pinned-dialog],
+    [data-ccxp-lite-remove-pinned-dialog] *
+  )[style*="background-color" i] {
   background-color: transparent !important;
 }
 
