@@ -1022,16 +1022,18 @@
 
   function showRemovePinnedDialog(targetDocument, itemName, strings) {
     return new Promise((resolve) => {
-      // Mount the overlay in the top-level document so position:fixed covers the
-      // full screen rather than being confined to the sidebar frame viewport.
-      let overlayDocument: Document;
+      // In layered mode the nav frame is full-screen, so targetDocument works.
+      // In classic mode the nav frame is narrow (324px); mount the dialog in
+      // the main frame instead so it centers over the larger content area.
+      let overlayDocument: Document = targetDocument;
       try {
-        overlayDocument =
-          window.top && window.top.document && window.top.document.body
-            ? window.top.document
-            : targetDocument;
+        const mainFrame = getLegacyMainFrame();
+        const mainDoc = mainFrame?.contentDocument;
+        if (mainDoc?.body && mainDoc.body.clientWidth > 100) {
+          overlayDocument = mainDoc;
+        }
       } catch (_e) {
-        overlayDocument = targetDocument;
+        // Fall back to nav frame document.
       }
       ensureThemeDocument(overlayDocument, "nav");
       const existingOverlay = overlayDocument.querySelector(
