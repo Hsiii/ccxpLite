@@ -1027,7 +1027,10 @@
 
   function showRemovePinnedDialog(targetDocument, itemName, strings) {
     return new Promise((resolve) => {
-      const overlayDocument = getTopScopeDocument(targetDocument);
+      // Keep the dialog inside the active sidebar document. Mounting to the
+      // top-level frameset can place the overlay behind frame content in
+      // classic sidebar mode, making the actions unreachable.
+      const overlayDocument = targetDocument;
       ensureThemeDocument(overlayDocument, "nav");
       const existingOverlay = overlayDocument.querySelector(
         "[data-ccxp-lite-remove-pinned-dialog]",
@@ -1544,14 +1547,6 @@
         node.remove();
       });
     });
-  }
-
-  function getTopScopeDocument(fallbackDocument) {
-    try {
-      return window.top?.document || fallbackDocument;
-    } catch (_error) {
-      return fallbackDocument;
-    }
   }
 
   function getOverlayMountNode(targetDocument) {
