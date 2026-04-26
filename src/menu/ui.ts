@@ -206,24 +206,20 @@
 
     const iconWrap = targetDocument.createElement("span");
     iconWrap.className = "ccxp-lite-sidebar-experiment-icon";
+    Object.assign(iconWrap.style, {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "20px",
+      height: "20px",
+    });
     iconWrap.appendChild(createLabIcon(targetDocument));
 
     const textWrap = targetDocument.createElement("span");
     textWrap.className = "ccxp-lite-sidebar-experiment-copy";
+    textWrap.style.cssText = "opacity:0;visibility:hidden;width:0;max-width:0;overflow:hidden";
+    textWrap.textContent = `${strings.sidebarExperimentCaption}：${strings.sidebarVariantLayered}`;
 
-    const label = targetDocument.createElement("span");
-    label.className = "ccxp-lite-sidebar-experiment-label";
-    label.textContent = strings.sidebarExperimentLabel;
-
-    const value = targetDocument.createElement("span");
-    value.className = "ccxp-lite-sidebar-experiment-value";
-    value.textContent =
-      state.sidebarVariant === "classic"
-        ? strings.sidebarVariantClassic
-        : strings.sidebarVariantLayered;
-
-    textWrap.appendChild(label);
-    textWrap.appendChild(value);
     button.appendChild(iconWrap);
     button.appendChild(textWrap);
 
@@ -1476,6 +1472,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-inline-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1530,8 +1528,8 @@
 
     Object.assign(button.style, {
       position: "fixed",
-      right: "16px",
-      bottom: "16px",
+      right: "24px",
+      bottom: "24px",
       zIndex: "2147483646",
     });
     getOverlayMountNode(mountDocument).appendChild(button);
