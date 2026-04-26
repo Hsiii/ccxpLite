@@ -236,7 +236,7 @@
       sidebarRetry: "重試",
       sidebarOpenInNewTab: "新分頁開啟",
       sidebarExperimentLabel: "Lab",
-      sidebarExperimentCaption: "實驗功能",
+      sidebarExperimentCaption: "實驗性功能",
       sidebarVariantClassic: "經典側欄",
       sidebarVariantLayered: "分層選單",
       sidebarSwitchToClassic: "切換為經典側欄",
