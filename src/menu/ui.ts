@@ -190,6 +190,7 @@
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = "ccxp-lite-sidebar-experiment-switch";
+    button.dataset.ccxpLiteSidebarVariantMode = state.sidebarVariant;
     button.setAttribute(
       "aria-label",
       state.sidebarVariant === "classic"
@@ -212,7 +213,7 @@
 
     const label = targetDocument.createElement("span");
     label.className = "ccxp-lite-sidebar-experiment-label";
-    label.textContent = strings.sidebarExperimentCaption;
+    label.textContent = strings.sidebarExperimentLabel;
 
     const value = targetDocument.createElement("span");
     value.className = "ccxp-lite-sidebar-experiment-value";
@@ -1522,10 +1523,7 @@
     const button = createSidebarVariantSwitch(mountDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
 
-    const existing = mountDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
-    if (existing) {
-      existing.remove();
-    }
+    removeExistingSidebarVariantSwitches([targetDocument, mainDocument, mountDocument]);
 
     Object.assign(button.style, {
       position: "fixed",
@@ -1534,6 +1532,18 @@
       zIndex: "2147483646",
     });
     getOverlayMountNode(mountDocument).appendChild(button);
+  }
+
+  function removeExistingSidebarVariantSwitches(documents) {
+    documents.forEach((scopeDocument) => {
+      if (!scopeDocument || typeof scopeDocument.querySelectorAll !== "function") {
+        return;
+      }
+
+      scopeDocument.querySelectorAll("[data-ccxp-lite-sidebar-lab-switch]").forEach((node) => {
+        node.remove();
+      });
+    });
   }
 
   function getTopScopeDocument(fallbackDocument) {
