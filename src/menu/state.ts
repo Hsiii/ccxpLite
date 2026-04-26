@@ -50,10 +50,10 @@
 
     try {
       const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
-      persistedSidebarVariant = storedValue === "classic" ? "classic" : "layered";
+      persistedSidebarVariant = storedValue === "layered" ? "layered" : "classic";
       return persistedSidebarVariant;
     } catch (_error) {
-      persistedSidebarVariant = "layered";
+      persistedSidebarVariant = "classic";
       return persistedSidebarVariant;
     }
   }
