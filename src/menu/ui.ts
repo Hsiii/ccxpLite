@@ -74,8 +74,12 @@
     footer.replaceChildren();
     content.innerHTML = "";
     shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
-    mountSidebarVariantSwitch(hostDocument, state, strings, () =>
-      renderSidebar(hostDocument, navDocument, modelInput, strings),
+    mountSidebarVariantSwitch(
+      hostDocument,
+      state,
+      strings,
+      () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+      footer,
     );
 
     if (state.sidebarVariant === "classic") {
@@ -1504,24 +1508,29 @@
     }
   }
 
-  function mountSidebarVariantSwitch(targetDocument, state, strings, rerender) {
-    const overlayDocument = getTopScopeDocument(targetDocument);
-    ensureThemeDocument(overlayDocument, "nav");
-
-    const existing = overlayDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
-    if (existing) {
-      existing.remove();
-    }
-
+  function mountSidebarVariantSwitch(targetDocument, state, strings, rerender, footer) {
     const button = createSidebarVariantSwitch(targetDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
-    Object.assign(button.style, {
-      position: "fixed",
-      right: "16px",
-      bottom: "16px",
-      zIndex: "2147483646",
-    });
-    getOverlayMountNode(overlayDocument).appendChild(button);
+
+    if (footer) {
+      footer.appendChild(button);
+    } else {
+      const overlayDocument = getTopScopeDocument(targetDocument);
+      ensureThemeDocument(overlayDocument, "nav");
+
+      const existing = overlayDocument.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
+      if (existing) {
+        existing.remove();
+      }
+
+      Object.assign(button.style, {
+        position: "fixed",
+        right: "16px",
+        bottom: "16px",
+        zIndex: "2147483646",
+      });
+      getOverlayMountNode(overlayDocument).appendChild(button);
+    }
   }
 
   function getTopScopeDocument(fallbackDocument) {
