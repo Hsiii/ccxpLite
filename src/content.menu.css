@@ -212,6 +212,10 @@ html[data-ccxp-lite-scope="nav"] body {
   color: var(--ccxp-lite-sidebar-search-placeholder);
 }
 
+.ccxp-lite-sidebar-search-input::-webkit-search-cancel-button {
+  display: none;
+}
+
 .ccxp-lite-sidebar-search:focus-within {
   border-color: var(--ccxp-lite-primary-focus-border);
   box-shadow: 0 0 0 3px var(--ccxp-lite-primary-focus-ring);
