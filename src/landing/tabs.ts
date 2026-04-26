@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingTabs(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
@@ -8,16 +7,16 @@
 
   const { getLocalizedStrings } = shared;
 
-  function createLandingSection(targetDocument, className) {
+  function createLandingSection(targetDocument: Document, className: string) {
     const section = targetDocument.createElement("section");
     section.className = `ccxp-lite-landing-section ${className}`;
     return section;
   }
 
   function wireLandingTabs(
-    targetDocument,
-    tabNavigation,
-    tabContents,
+    targetDocument: Document,
+    tabNavigation: HTMLElement,
+    tabContents: HTMLElement[],
     strings = getLocalizedStrings("zh"),
   ) {
     if (!tabNavigation || !Array.isArray(tabContents) || tabContents.length === 0) {
@@ -26,7 +25,7 @@
 
     const tabButtons = Array.from(
       tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']"),
-    );
+    ) as HTMLElement[];
     if (tabButtons.length === 0) {
       return;
     }
@@ -38,7 +37,7 @@
       return panel;
     });
 
-    const resolvePanelByLegacyTarget = (button) => {
+    const resolvePanelByLegacyTarget = (button: HTMLElement) => {
       const directControl = button.getAttribute("aria-controls");
       if (directControl) {
         return tabPanels.find((panel) => panel.id === directControl) || null;
@@ -61,12 +60,14 @@
       return tabPanels.find((panel) => panel.id === legacyTarget) || null;
     };
 
-    const buttonPanelMap = tabButtons
+    const buttonPanelMap: Array<{ button: HTMLElement; panel: HTMLElement }> = tabButtons
       .map((button, index) => {
         const panel = resolvePanelByLegacyTarget(button) || tabPanels[index] || null;
         return { button, panel };
       })
-      .filter((entry) => Boolean(entry.panel));
+      .filter((entry): entry is { button: HTMLElement; panel: HTMLElement } =>
+        Boolean(entry.panel),
+      );
 
     if (buttonPanelMap.length === 0) {
       return;
@@ -88,7 +89,7 @@
       button.setAttribute("aria-controls", panel.id);
       button.setAttribute("aria-selected", "false");
       button.setAttribute("tabindex", "-1");
-      if (button.tagName === "BUTTON") {
+      if (button instanceof HTMLButtonElement) {
         button.type = "button";
       }
 
@@ -120,7 +121,7 @@
       return 0;
     };
 
-    const activateTabAt = (targetIndex, options = {}) => {
+    const activateTabAt = (targetIndex: number, options: { focusButton?: boolean } = {}) => {
       const safeIndex = Math.max(0, Math.min(targetIndex, buttonPanelMap.length - 1));
 
       buttonPanelMap.forEach((entry, index) => {
@@ -167,7 +168,11 @@
     activateTabAt(getActiveIndex());
   }
 
-  function structureLandingTabNavigation(targetDocument, tabNavigation, buttonPanelMap) {
+  function structureLandingTabNavigation(
+    targetDocument: Document,
+    tabNavigation: HTMLElement,
+    buttonPanelMap: Array<{ button: HTMLElement }>,
+  ) {
     if (
       !targetDocument ||
       !tabNavigation ||
@@ -197,7 +202,7 @@
     tabNavigation.replaceChildren(fragment);
   }
 
-  function applyTabPanelSemanticClass(button, panel) {
+  function applyTabPanelSemanticClass(button: HTMLElement, panel: HTMLElement) {
     if (!button || !panel) {
       return;
     }
@@ -211,7 +216,7 @@
     }
   }
 
-  function extractLegacyTabTarget(button) {
+  function extractLegacyTabTarget(button: HTMLElement) {
     const onclickValue = String(button.getAttribute("onclick") || "");
     const targetMatch = onclickValue.match(/['"]([^'"]+)['"]/);
     return targetMatch ? targetMatch[1] : "";

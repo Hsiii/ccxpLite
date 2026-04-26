@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarFavorites(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
 
@@ -6,20 +5,24 @@
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
   const INITIAL_MAIN_URL_STORAGE_KEY = `ccxp-lite-sidebar-initial-main-url::${FAVORITES_STORAGE_SCOPE_PATH}`;
 
-  const favoriteState = {
-    ids: new Set(),
+  const favoriteState: {
+    ids: Set<string>;
+    hasLoaded: boolean;
+    pendingLoad: Promise<void> | null;
+  } = {
+    ids: new Set<string>(),
     hasLoaded: false,
     pendingLoad: null,
   };
 
-  const favoriteSubscribers = new Set();
+  const favoriteSubscribers = new Set<() => void>();
   let favoriteStorageSyncBound = false;
 
-  function getFavoriteIds() {
+  function getFavoriteIds(): Set<string> {
     return new Set(favoriteState.ids);
   }
 
-  function ensureFavoriteIdsLoaded(onReady) {
+  function ensureFavoriteIdsLoaded(onReady?: () => void) {
     if (favoriteState.hasLoaded) {
       if (typeof onReady === "function") {
         onReady();
@@ -52,7 +55,7 @@
     }
   }
 
-  function writeFavoriteIds(favoriteIds) {
+  function writeFavoriteIds(favoriteIds: Iterable<string>) {
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
@@ -69,7 +72,7 @@
     }
   }
 
-  function readFavoritesFromStorage() {
+  function readFavoritesFromStorage(): Promise<Set<string>> {
     return new Promise((resolve) => {
       const storage = getScopedFavoriteStorage();
       if (storage) {
@@ -103,7 +106,7 @@
       return;
     }
 
-    const onStorage = (event) => {
+    const onStorage = (event: StorageEvent) => {
       const sharedDom = namespace.sharedDom;
       if (sharedDom && !sharedDom.ensureContextValid()) {
         scopeWindow.removeEventListener("storage", onStorage);
@@ -186,7 +189,7 @@
     }
   }
 
-  function readLegacyFavoritesFromExtensionStorage() {
+  function readLegacyFavoritesFromExtensionStorage(): Promise<Set<string>> {
     return new Promise((resolve) => {
       const runtime = namespace.sharedDom?.getRuntimeSafely?.() || null;
       const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely?.() || null;
@@ -214,7 +217,11 @@
     });
   }
 
-  function collectFavoriteLinks(item, favoriteIds, favoriteLinks) {
+  function collectFavoriteLinks(
+    item: CcxpLiteSidebarTreeNode | null,
+    favoriteIds: Set<string>,
+    favoriteLinks: CcxpLiteSidebarLinkItem[],
+  ) {
     if (!item) {
       return;
     }
@@ -237,7 +244,7 @@
     );
   }
 
-  function dedupeLinkItems(linkItems) {
+  function dedupeLinkItems(linkItems: CcxpLiteSidebarLinkItem[]) {
     const seen = new Set();
 
     return linkItems.filter((linkItem) => {
@@ -250,7 +257,7 @@
     });
   }
 
-  function createLinkId(linkItem) {
+  function createLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const pathSignature = Array.isArray(linkItem.pathSegments)
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
@@ -267,7 +274,7 @@
     ].join("||");
   }
 
-  function createLegacyLinkId(linkItem) {
+  function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const clickSignature = linkItem.clickLinkArgs
       ? `${String(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
@@ -280,7 +287,7 @@
     ].join("||");
   }
 
-  function normalizeFavoriteStorageValue(value) {
+  function normalizeFavoriteStorageValue(value: unknown) {
     if (typeof value !== "string") {
       return "";
     }
@@ -307,14 +314,14 @@
     });
   }
 
-  function parseFavoritePathSignature(signature) {
+  function parseFavoritePathSignature(signature: unknown) {
     return String(signature || "")
       .split(">")
       .map(normalizeFavoriteText)
       .filter(Boolean);
   }
 
-  function parseFavoriteClickSignature(signature) {
+  function parseFavoriteClickSignature(signature: unknown): CcxpLiteClickLinkArgs | null {
     const normalizedSignature = String(signature || "").trim();
     if (!normalizedSignature) {
       return null;
@@ -334,13 +341,17 @@
     };
   }
 
-  function normalizeFavoriteText(value) {
+  function normalizeFavoriteText(value: unknown) {
     return String(value || "")
       .replace(/\s+/g, " ")
       .trim();
   }
 
-  function buildFavoritePathSegments(parentPathSegments, label, fallbackSegment) {
+  function buildFavoritePathSegments(
+    parentPathSegments: string[] | undefined,
+    label: unknown,
+    fallbackSegment?: string,
+  ) {
     const normalizedParentSegments = Array.isArray(parentPathSegments)
       ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
       : [];
@@ -357,11 +368,14 @@
     return normalizedParentSegments;
   }
 
-  function isFavoriteLink(linkItem, favoriteIds) {
+  function isFavoriteLink(linkItem: CcxpLiteSidebarLinkItem | null, favoriteIds: Set<string>) {
     return getMatchingFavoriteIds(linkItem, favoriteIds).length > 0;
   }
 
-  function getMatchingFavoriteIds(linkItem, favoriteIds) {
+  function getMatchingFavoriteIds(
+    linkItem: CcxpLiteSidebarLinkItem | null,
+    favoriteIds: Set<string>,
+  ) {
     if (!linkItem || !favoriteIds) {
       return [];
     }

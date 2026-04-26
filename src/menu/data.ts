@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarData(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, sidebarFavorites } = namespace;
@@ -16,17 +15,27 @@
     createLegacyLinkId,
   } = sidebarFavorites;
 
-  function buildSidebarModel(root, navDocument, strings) {
-    const normalizedItems = (root.children || [])
+  function buildSidebarModel(
+    root: CcxpLiteLegacySidebarFolderNode,
+    navDocument: Document,
+    strings,
+  ): CcxpLiteSidebarModel {
+    const normalizedItems = ((root.children || []) as any[])
       .map((entry, index) => normalizeRootEntry(entry, index, navDocument))
-      .filter(Boolean);
+      .filter(Boolean) as any[];
     const favoriteIds = getFavoriteIds();
     return buildCategorizedSidebarItems(normalizedItems, favoriteIds, strings);
   }
 
-  function buildCategorizedSidebarItems(items, favoriteIds, strings = STRINGS) {
-    const buckets = new Map(SIDEBAR_CATEGORIES.map((category) => [category.id, []]));
-    const favoriteLinks = [];
+  function buildCategorizedSidebarItems(
+    items: any[],
+    favoriteIds: Set<string>,
+    strings = STRINGS,
+  ): CcxpLiteSidebarModel {
+    const buckets = new Map<string, CcxpLiteSidebarTreeNode[]>(
+      SIDEBAR_CATEGORIES.map((category) => [category.id, []]),
+    );
+    const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
 
     items.forEach((item) => {
       collectFavoriteLinks(item, favoriteIds, favoriteLinks);
@@ -80,11 +89,11 @@
           emptyMessage: strings.emptyGroup,
           kind: "category",
         };
-      }).filter(Boolean),
+      }).filter(Boolean) as CcxpLiteSidebarCategoryNode[],
     };
   }
 
-  function findCategoryForItem(item) {
+  function findCategoryForItem(item: any) {
     const candidateLabels = collectSidebarLabels(item);
 
     return (
@@ -108,25 +117,25 @@
       .trim();
   }
 
-  function collectSidebarLabels(item) {
+  function collectSidebarLabels(item: any) {
     if (!item) {
       return [];
     }
 
-    const labels = [];
+    const labels: string[] = [];
     const itemLabel = normalizeSidebarLabel(item.label);
     if (itemLabel) {
       labels.push(itemLabel);
     }
 
-    (item.directLinks || []).forEach((linkItem) => {
+    ((item.directLinks || []) as any[]).forEach((linkItem) => {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel) {
         labels.push(linkLabel);
       }
     });
 
-    (item.sections || []).forEach((section) => {
+    ((item.sections || []) as any[]).forEach((section) => {
       labels.push(...collectSidebarLabels(section));
     });
 
@@ -145,13 +154,17 @@
     );
   }
 
-  function normalizeRootEntry(entryNode, index, navDocument) {
+  function normalizeRootEntry(entryNode: any, index: number, navDocument: Document) {
     if (!entryNode) {
       return null;
     }
 
     if (entryNode.children) {
-      return normalizeTopLevelGroup(entryNode, index, navDocument);
+      return normalizeTopLevelGroup(
+        entryNode as CcxpLiteLegacySidebarFolderNode,
+        index,
+        navDocument,
+      );
     }
 
     const linkItem = normalizeLinkItem(entryNode, navDocument, []);
@@ -167,12 +180,16 @@
     };
   }
 
-  function normalizeTopLevelGroup(folderNode, index, navDocument) {
-    const directLinks = [];
+  function normalizeTopLevelGroup(
+    folderNode: CcxpLiteLegacySidebarFolderNode,
+    index: number,
+    navDocument: Document,
+  ) {
+    const directLinks: CcxpLiteSidebarLinkItem[] = [];
     const groupLabel = toPlainText(folderNode.desc, navDocument);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
 
-    (folderNode.children || []).forEach((childNode) => {
+    ((folderNode.children || []) as any[]).forEach((childNode) => {
       if (childNode && childNode.children) {
         collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, directLinks);
         return;
@@ -193,8 +210,13 @@
     };
   }
 
-  function collectNestedLinksIntoGroup(folderNode, navDocument, parentPathSegments, directLinks) {
-    (folderNode.children || []).forEach((childNode) => {
+  function collectNestedLinksIntoGroup(
+    folderNode: CcxpLiteLegacySidebarFolderNode,
+    navDocument: Document,
+    parentPathSegments: string[],
+    directLinks: CcxpLiteSidebarLinkItem[],
+  ) {
+    ((folderNode.children || []) as any[]).forEach((childNode) => {
       if (childNode && childNode.children) {
         collectNestedLinksIntoGroup(childNode, navDocument, parentPathSegments, directLinks);
         return;
@@ -207,7 +229,11 @@
     });
   }
 
-  function normalizeLinkItem(itemNode, navDocument, parentPathSegments) {
+  function normalizeLinkItem(
+    itemNode: CcxpLiteLegacySidebarDocNode | null | undefined,
+    navDocument: Document,
+    parentPathSegments: string[],
+  ): CcxpLiteSidebarLinkItem | null {
     if (!itemNode || typeof itemNode.link !== "string") {
       return null;
     }
@@ -266,7 +292,7 @@
     };
   }
 
-  function toPlainText(rawHtml, navDocument) {
+  function toPlainText(rawHtml: unknown, navDocument: Document) {
     if (!rawHtml) {
       return "";
     }
@@ -301,7 +327,7 @@
       .trim();
   }
 
-  function filterFavoriteLinks(linkItems, query) {
+  function filterFavoriteLinks(linkItems: CcxpLiteSidebarLinkItem[], query: string) {
     if (!query) {
       return linkItems;
     }
@@ -309,7 +335,7 @@
     return linkItems.filter((linkItem) => isSearchMatch(linkItem.label, query));
   }
 
-  function filterCategories(categories, query) {
+  function filterCategories(categories: CcxpLiteSidebarCategoryNode[], query: string) {
     if (!query) {
       return categories;
     }
@@ -317,7 +343,7 @@
     return categories.map((category) => filterCategoryTree(category, query)).filter(Boolean);
   }
 
-  function filterCategoryTree(category, query) {
+  function filterCategoryTree(category: CcxpLiteSidebarCategoryNode | null, query: string) {
     if (!category) {
       return null;
     }
@@ -329,7 +355,7 @@
     const directLinks = (category.directLinks || []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (category.sections || [])
+    const sections = ((category.sections || []) as any[])
       .map((section) => filterSectionTree(section, query))
       .filter(Boolean);
 
@@ -344,7 +370,7 @@
     };
   }
 
-  function filterSectionTree(section, query) {
+  function filterSectionTree(section: CcxpLiteSidebarSectionNode | null, query: string) {
     if (!section) {
       return null;
     }
@@ -356,7 +382,7 @@
     const directLinks = (section.directLinks || []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (section.sections || [])
+    const sections = ((section.sections || []) as any[])
       .map((childSection) => filterSectionTree(childSection, query))
       .filter(Boolean);
 
@@ -382,18 +408,21 @@
       .trim();
   }
 
-  function countLinksInTree(item) {
+  function countLinksInTree(item: CcxpLiteSidebarGroup | null) {
     if (!item) {
       return 0;
     }
 
     return (
       (item.directLinks || []).length +
-      (item.sections || []).reduce((total, section) => total + countLinksInTree(section), 0)
+      ((item.sections || []) as any[]).reduce(
+        (total, section) => total + countLinksInTree(section),
+        0,
+      )
     );
   }
 
-  function parseSidebarTree(navDocument) {
+  function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | null {
     const statements = Array.from(navDocument.scripts)
       .map((script) => script.textContent || "")
       .join("\n")
@@ -401,8 +430,8 @@
       .map((statement) => statement.trim())
       .filter(Boolean);
 
-    const nodes = new Map();
-    const root = { desc: "", children: [] };
+    const nodes = new Map<string, CcxpLiteLegacySidebarFolderNode>();
+    const root: CcxpLiteLegacySidebarFolderNode = { desc: "", children: [] };
     nodes.set("foldersTree", root);
 
     const stringPattern = "\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'";

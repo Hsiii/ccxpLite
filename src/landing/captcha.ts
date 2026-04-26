@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingCaptcha(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { decaptcha, landingLocale } = namespace;
@@ -10,7 +9,11 @@
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap();
 
-  function enableLoginCaptchaAutofill(targetDocument, rootNode, existingState) {
+  function enableLoginCaptchaAutofill(
+    targetDocument: Document,
+    rootNode: ParentNode,
+    existingState?: CcxpLiteCaptchaAutofillState | null,
+  ) {
     const form = getLoginForm(targetDocument);
     const state = existingState || getOrCreateCaptchaAutofillState(targetDocument, rootNode);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
@@ -46,7 +49,10 @@
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
 
-  function getOrCreateCaptchaAutofillState(targetDocument, rootNode) {
+  function getOrCreateCaptchaAutofillState(
+    targetDocument: Document,
+    rootNode: ParentNode,
+  ): CcxpLiteCaptchaAutofillState | null {
     const existingState = captchaAutofillStateByDocument.get(targetDocument);
     if (existingState) {
       syncCaptchaAutofillState(targetDocument, existingState, rootNode);
@@ -74,7 +80,11 @@
     return state;
   }
 
-  function syncCaptchaAutofillState(targetDocument, state, rootNode) {
+  function syncCaptchaAutofillState(
+    targetDocument: Document,
+    state: CcxpLiteCaptchaAutofillState,
+    rootNode: ParentNode,
+  ) {
     const latestField = resolveCaptchaField(rootNode);
     if (!latestField) {
       return state;
@@ -86,7 +96,7 @@
     return state;
   }
 
-  function resolveCaptchaField(rootNode) {
+  function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | null {
     const input = rootNode.querySelector("input[name='passwd2']");
     if (!input) {
       return null;
@@ -109,10 +119,15 @@
       return null;
     }
 
-    return { input, image, mediaRow, scope };
+    return {
+      input: input as HTMLInputElement,
+      image: image as HTMLImageElement,
+      mediaRow: mediaRow as HTMLElement,
+      scope,
+    };
   }
 
-  function setCaptchaLoadingState(state, isLoading) {
+  function setCaptchaLoadingState(state: CcxpLiteCaptchaAutofillState | null, isLoading: boolean) {
     if (!state) {
       return;
     }
@@ -125,7 +140,7 @@
     }
   }
 
-  function clearCaptchaTimeoutFlash(state) {
+  function clearCaptchaTimeoutFlash(state: CcxpLiteCaptchaAutofillState | null) {
     if (!state?.input) {
       return;
     }
@@ -138,7 +153,7 @@
     state.input.removeAttribute("data-timeout-flash");
   }
 
-  function flashCaptchaTimeout(state) {
+  function flashCaptchaTimeout(state: CcxpLiteCaptchaAutofillState | null) {
     if (!state?.input) {
       return;
     }
@@ -156,7 +171,12 @@
     }, 1600);
   }
 
-  function autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state) {
+  function autofillCaptchaInput(
+    targetDocument: Document,
+    captchaImage: HTMLImageElement,
+    captchaInput: HTMLInputElement,
+    state: CcxpLiteCaptchaAutofillState,
+  ) {
     const captchaSrc = getCaptchaRequestSource(captchaImage, targetDocument);
     if (!captchaSrc || state.lastRequestedSrc === captchaSrc || state.failedSrc === captchaSrc) {
       return;
@@ -188,7 +208,10 @@
       });
   }
 
-  function primeCaptchaAutofill(targetDocument, state) {
+  function primeCaptchaAutofill(
+    targetDocument: Document,
+    state: CcxpLiteCaptchaAutofillState | null,
+  ) {
     if (!state || !state.image) {
       return;
     }
@@ -208,7 +231,11 @@
     );
   }
 
-  function fallbackToManualCaptchaEntry(state, captchaSrc, options = {}) {
+  function fallbackToManualCaptchaEntry(
+    state: CcxpLiteCaptchaAutofillState | null,
+    captchaSrc: string,
+    options: { didTimeout?: boolean } = {},
+  ) {
     if (!state) {
       return;
     }
@@ -227,7 +254,12 @@
     }
   }
 
-  function requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc) {
+  function requestCaptchaAnswerForCurrentImage(
+    targetDocument: Document,
+    captchaImage: HTMLImageElement,
+    state: CcxpLiteCaptchaAutofillState,
+    captchaSrc: string,
+  ) {
     if (state.cachedSrc === captchaSrc && state.cachedAnswer) {
       return Promise.resolve(state.cachedAnswer);
     }
@@ -258,7 +290,10 @@
     return request;
   }
 
-  function getCaptchaRequestSource(captchaImage, targetDocument) {
+  function getCaptchaRequestSource(
+    captchaImage: HTMLImageElement | null,
+    targetDocument: Document,
+  ) {
     const rawSource = String(captchaImage?.getAttribute("src") || "").trim();
     if (!rawSource) {
       return "";
@@ -281,7 +316,7 @@
     }
   }
 
-  function downloadCaptchaImageBytes(targetDocument, captchaSrc) {
+  function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
     const captchaUrl = new URL(
       captchaSrc,
       targetDocument.location && targetDocument.location.href
@@ -302,22 +337,27 @@
     });
   }
 
-  function requestCaptchaAnswer(_captchaSrc, imageBytes) {
+  function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
     return Promise.resolve(decaptcha.predictDigits(imageBytes)).then((answer) =>
       String(answer || "").trim(),
     );
   }
 
-  function isCaptchaTimeoutError(error) {
+  function isCaptchaTimeoutError(error: unknown) {
+    const typedError = error as Error | null;
     return Boolean(
-      error &&
-      (error.name === "AbortError" ||
-        error.name === "TimeoutError" ||
-        error.code === "CAPTCHA_TIMEOUT"),
+      typedError &&
+      (typedError.name === "AbortError" ||
+        typedError.name === "TimeoutError" ||
+        typedError.code === "CAPTCHA_TIMEOUT"),
     );
   }
 
-  function fetchWithTimeout(resource, options = {}, timeoutMs = CAPTCHA_AUTOFILL_TIMEOUT_MS) {
+  function fetchWithTimeout(
+    resource: RequestInfo | URL,
+    options: RequestInit = {},
+    timeoutMs = CAPTCHA_AUTOFILL_TIMEOUT_MS,
+  ) {
     const controller = new AbortController();
     let didTimeout = false;
     const timerId = window.setTimeout(() => {

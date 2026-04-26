@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingLogin(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, landingLocale, landingSupport } = namespace;
@@ -10,12 +9,12 @@
   const { resolveLandingLocale, getLoginForm } = landingLocale;
   const { findLoginSourceCell } = landingSupport;
 
-  function enhancePasswordVisibilityToggle(targetDocument, rootNode) {
+  function enhancePasswordVisibilityToggle(targetDocument: Document, rootNode: ParentNode) {
     const passwordFields = Array.from(
       rootNode.querySelectorAll(
         "input[name='passwd'], input[type='password']:not([name='passwd2'])",
       ),
-    );
+    ) as HTMLInputElement[];
     const seen = new Set();
     const strings = getLandingStrings(targetDocument);
 
@@ -59,7 +58,7 @@
     });
   }
 
-  function removeRedundantPasswordLabelEyeIcon(passwordField) {
+  function removeRedundantPasswordLabelEyeIcon(passwordField: HTMLInputElement) {
     if (!passwordField) {
       return;
     }
@@ -135,8 +134,8 @@
     row.dataset.ccxpLitePasswordLabelCleaned = "true";
   }
 
-  function normalizeLoginFormLayout(rootNode) {
-    const forms = Array.from(rootNode.querySelectorAll("form"));
+  function normalizeLoginFormLayout(rootNode: ParentNode) {
+    const forms = Array.from(rootNode.querySelectorAll<HTMLFormElement>("form"));
 
     forms.forEach((formNode) => {
       if (formNode.dataset.ccxpLiteFormStructured !== "true") {
@@ -150,15 +149,15 @@
     });
   }
 
-  function structureLoginFormRows(targetDocument, formNode) {
-    const rows = Array.from(formNode.querySelectorAll("tr"));
+  function structureLoginFormRows(targetDocument: Document, formNode: HTMLFormElement) {
+    const rows = Array.from(formNode.querySelectorAll<HTMLTableRowElement>("tr"));
 
     rows.forEach((rowNode, rowIndex) => {
       if (!rowNode || rowNode.dataset.ccxpLiteLoginRow === "true") {
         return;
       }
 
-      const cells = Array.from(rowNode.querySelectorAll(":scope > th, :scope > td"));
+      const cells = Array.from(rowNode.querySelectorAll<HTMLElement>(":scope > th, :scope > td"));
       if (cells.length === 0) {
         return;
       }
@@ -169,7 +168,7 @@
       }
 
       const replacementRows = fieldPairs.map((fieldPair, pairIndex) => {
-        const fieldId = ensureFieldId(fieldPair.fieldNode, rowIndex, pairIndex);
+        const fieldId = ensureFieldId(fieldPair.fieldNode as HTMLElement, rowIndex, pairIndex);
         return buildLoginFieldRow(targetDocument, fieldPair, fieldId, Math.max(1, cells.length));
       });
 
@@ -185,8 +184,12 @@
     });
   }
 
-  function rebuildFlatLoginFormLabels(targetDocument, formNode) {
-    const fields = Array.from(formNode.querySelectorAll("input, select, textarea"));
+  function rebuildFlatLoginFormLabels(targetDocument: Document, formNode: HTMLFormElement) {
+    const fields = Array.from(
+      formNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        "input, select, textarea",
+      ),
+    );
 
     fields.forEach((fieldNode, fieldIndex) => {
       const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
@@ -222,7 +225,12 @@
     });
   }
 
-  function buildLoginFieldRow(targetDocument, fieldPair, fieldId, columnCount) {
+  function buildLoginFieldRow(
+    targetDocument: Document,
+    fieldPair: { fieldNode: Element; fieldCell: ParentNode & Node; labelText: string },
+    fieldId: string,
+    columnCount: number,
+  ) {
     const row = targetDocument.createElement("tr");
     row.className = "ccxp-lite-login-field-row";
 
@@ -251,12 +259,14 @@
     return row;
   }
 
-  function groupLoginFieldRows(targetDocument, formNode) {
+  function groupLoginFieldRows(targetDocument: Document, formNode: HTMLFormElement) {
     if (!formNode || formNode.dataset.ccxpLiteFieldRowsGrouped === "true") {
       return;
     }
 
-    const fieldRows = Array.from(formNode.querySelectorAll("tr.ccxp-lite-login-field-row"));
+    const fieldRows = Array.from(
+      formNode.querySelectorAll<HTMLTableRowElement>("tr.ccxp-lite-login-field-row"),
+    );
     if (fieldRows.length === 0) {
       return;
     }
@@ -280,20 +290,20 @@
       removeNode(rowNode);
     });
 
-    Array.from(formNode.querySelectorAll("table.ccxp-lite-login-form-table")).forEach(
-      (tableNode) => {
-        if (!tableNode.querySelector("tr")) {
-          removeNode(tableNode);
-        }
-      },
-    );
+    Array.from(
+      formNode.querySelectorAll<HTMLTableElement>("table.ccxp-lite-login-form-table"),
+    ).forEach((tableNode) => {
+      if (!tableNode.querySelector("tr")) {
+        removeNode(tableNode);
+      }
+    });
 
     formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
 
-  function collectLoginFieldPairs(rowNode, cells) {
-    const pairs = [];
-    const usedFieldCells = new Set();
+  function collectLoginFieldPairs(rowNode: ParentNode, cells: HTMLElement[]) {
+    const pairs: Array<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> = [];
+    const usedFieldCells = new Set<HTMLElement>();
 
     cells.forEach((cellNode, cellIndex) => {
       const fieldNode = findPrimaryFieldControl(cellNode);
@@ -301,7 +311,7 @@
         return;
       }
 
-      const fieldCell = fieldNode.closest("th, td") || cellNode;
+      const fieldCell = (fieldNode.closest("th, td") as HTMLElement | null) || cellNode;
       if (usedFieldCells.has(fieldCell)) {
         return;
       }
@@ -331,7 +341,8 @@
       return pairs;
     }
 
-    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells[cells.length - 1];
+    const fallbackFieldCell =
+      (fallbackFieldNode.closest("th, td") as HTMLElement | null) || cells[cells.length - 1];
     const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
 
     pairs.push({
@@ -347,7 +358,7 @@
     return pairs;
   }
 
-  function resolveLabelCellForField(cells, fieldCellIndex) {
+  function resolveLabelCellForField(cells: HTMLElement[], fieldCellIndex: number) {
     for (let index = fieldCellIndex - 1; index >= 0; index -= 1) {
       const candidate = cells[index];
       if (!candidate) {
@@ -368,13 +379,13 @@
     return cells[0] || null;
   }
 
-  function getNodeText(node) {
+  function getNodeText(node: Node | null) {
     return String((node && node.textContent) || "")
       .replace(/\s+/g, " ")
       .trim();
   }
 
-  function findLegacyInlineLabelNode(fieldNode, boundaryNode) {
+  function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
     let currentNode = fieldNode.previousSibling;
 
     while (currentNode && currentNode !== boundaryNode) {
@@ -384,7 +395,7 @@
       }
 
       if (currentNode.nodeType === Node.ELEMENT_NODE) {
-        const tagName = currentNode.tagName.toLowerCase();
+        const tagName = (currentNode as Element).tagName.toLowerCase();
 
         if (tagName === "br") {
           currentNode = currentNode.previousSibling;
@@ -396,7 +407,10 @@
           continue;
         }
 
-        if (tagName === "label" && currentNode.classList.contains("ccxp-lite-login-field-label")) {
+        if (
+          tagName === "label" &&
+          (currentNode as Element).classList.contains("ccxp-lite-login-field-label")
+        ) {
           return null;
         }
       }
@@ -407,7 +421,11 @@
     return null;
   }
 
-  function getPreferredLoginLabelText(labelCell, fieldCell, fieldNode) {
+  function getPreferredLoginLabelText(
+    labelCell: Node | null,
+    fieldCell: Node | null,
+    fieldNode: Element,
+  ) {
     const explicitLabel = getNodeText(labelCell);
     if (explicitLabel) {
       return explicitLabel;
@@ -416,7 +434,10 @@
     return getInlineLoginLabelText(fieldCell, fieldNode);
   }
 
-  function resolveLoginFieldLabel(fieldPair, targetDocument) {
+  function resolveLoginFieldLabel(
+    fieldPair: { fieldNode: Element; labelText: string } | null,
+    targetDocument: Document,
+  ) {
     const explicitLabel = String((fieldPair && fieldPair.labelText) || "").trim();
     if (explicitLabel) {
       return explicitLabel;
@@ -448,7 +469,7 @@
     return fieldName || strings.fieldGeneric;
   }
 
-  function getInlineLoginLabelText(fieldCell, fieldNode) {
+  function getInlineLoginLabelText(fieldCell: Node | null, fieldNode: Node | null) {
     if (!fieldCell || !fieldNode) {
       return "";
     }
@@ -461,26 +482,26 @@
       .trim();
   }
 
-  function removeInlineLoginLabelNodes(fieldCell, fieldNode) {
+  function removeInlineLoginLabelNodes(fieldCell: Node | null, fieldNode: Node | null) {
     collectLeadingNodesBeforeField(fieldCell, fieldNode).forEach((node) => {
       removeNode(node);
     });
   }
 
-  function collectLeadingNodesBeforeField(fieldCell, fieldNode) {
+  function collectLeadingNodesBeforeField(fieldCell: Node | null, fieldNode: Node | null) {
     if (!fieldCell || !fieldNode || fieldNode.parentNode !== fieldCell) {
       return [];
     }
 
-    const leadingNodes = [];
-    let currentNode = fieldCell.firstChild;
+    const leadingNodes: Node[] = [];
+    let currentNode = (fieldCell as ParentNode).firstChild;
     while (currentNode && currentNode !== fieldNode) {
       const nextNode = currentNode.nextSibling;
       const textContent = getNodeText(currentNode);
       const isBreak =
         currentNode.nodeType === Node.ELEMENT_NODE &&
-        currentNode.tagName &&
-        currentNode.tagName.toLowerCase() === "br";
+        (currentNode as Element).tagName &&
+        (currentNode as Element).tagName.toLowerCase() === "br";
 
       if (textContent || isBreak) {
         leadingNodes.push(currentNode);
@@ -492,8 +513,12 @@
     return leadingNodes;
   }
 
-  function findPrimaryFieldControl(scopeNode) {
-    const candidates = Array.from(scopeNode.querySelectorAll("input, select, textarea"));
+  function findPrimaryFieldControl(scopeNode: ParentNode) {
+    const candidates = Array.from(
+      scopeNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+        "input, select, textarea",
+      ),
+    );
 
     return (
       candidates.find((field) => {
@@ -505,7 +530,7 @@
     );
   }
 
-  function ensureFieldId(fieldNode, rowIndex, pairIndex = 0) {
+  function ensureFieldId(fieldNode: HTMLElement, rowIndex: number, pairIndex = 0) {
     if (fieldNode.id) {
       return fieldNode.id;
     }
@@ -521,7 +546,7 @@
     return generatedId;
   }
 
-  function removeLoginResetControls(rootNode) {
+  function removeLoginResetControls(rootNode: ParentNode) {
     const resetControls = Array.from(
       rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
     );
@@ -531,9 +556,9 @@
     });
   }
 
-  function forceCaptchaLabelDisplay(rootNode) {
+  function forceCaptchaLabelDisplay(rootNode: ParentNode) {
     const captchaLabelPattern = /(驗證碼|captcha)/i;
-    const spans = Array.from(rootNode.querySelectorAll("span"));
+    const spans = Array.from(rootNode.querySelectorAll<HTMLSpanElement>("span"));
 
     spans.forEach((spanNode) => {
       const labelText = String(spanNode.textContent || "")
@@ -547,8 +572,10 @@
     });
   }
 
-  function replaceLoginFormImageButtons(targetDocument, rootNode) {
-    const imageSubmitInputs = Array.from(rootNode.querySelectorAll("form input[type='image']"));
+  function replaceLoginFormImageButtons(targetDocument: Document, rootNode: ParentNode) {
+    const imageSubmitInputs = Array.from(
+      rootNode.querySelectorAll<HTMLInputElement>("form input[type='image']"),
+    );
 
     imageSubmitInputs.forEach((inputNode) => {
       if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
@@ -623,7 +650,9 @@
       button.dataset.ccxpLiteImageButtonReplaced = "true";
     });
 
-    const imageAnchors = Array.from(rootNode.querySelectorAll("form a > img[alt]"));
+    const imageAnchors = Array.from(
+      rootNode.querySelectorAll<HTMLImageElement>("form a > img[alt]"),
+    );
     imageAnchors.forEach((imageNode) => {
       const anchor = imageNode.closest("a");
       if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
@@ -663,20 +692,22 @@
     });
   }
 
-  function wrapPrimaryLoginButtons(targetDocument, rootNode) {
-    const forms = Array.from(rootNode.querySelectorAll("form"));
+  function wrapPrimaryLoginButtons(targetDocument: Document, rootNode: ParentNode) {
+    const forms = Array.from(rootNode.querySelectorAll<HTMLFormElement>("form"));
 
     forms.forEach((formNode) => {
       normalizeNativeLoginSubmitControls(targetDocument, formNode);
 
       const allActionButtons = Array.from(
-        formNode.querySelectorAll(".ccxp-lite-image-action-button, .ccxp-lite-image-link-button"),
+        formNode.querySelectorAll<HTMLElement>(
+          ".ccxp-lite-image-action-button, .ccxp-lite-image-link-button",
+        ),
       );
       if (allActionButtons.length === 0) {
         return;
       }
 
-      let actionGroup = formNode.querySelector(".ccxp-lite-login-action-group");
+      let actionGroup = formNode.querySelector<HTMLElement>(".ccxp-lite-login-action-group");
       if (!actionGroup) {
         actionGroup = targetDocument.createElement("div");
         actionGroup.className = "ccxp-lite-login-action-group";
@@ -708,8 +739,10 @@
     });
   }
 
-  function normalizeNativeLoginSubmitControls(targetDocument, formNode) {
-    const nativeSubmitInputs = Array.from(formNode.querySelectorAll("input[type='submit']"));
+  function normalizeNativeLoginSubmitControls(targetDocument: Document, formNode: HTMLFormElement) {
+    const nativeSubmitInputs = Array.from(
+      formNode.querySelectorAll<HTMLInputElement>("input[type='submit']"),
+    );
 
     nativeSubmitInputs.forEach((inputNode) => {
       if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
@@ -755,7 +788,7 @@
     });
 
     const nativeSubmitButtons = Array.from(
-      formNode.querySelectorAll("button[type='submit'], button:not([type])"),
+      formNode.querySelectorAll<HTMLButtonElement>("button[type='submit'], button:not([type])"),
     );
     nativeSubmitButtons.forEach((buttonNode) => {
       if (
@@ -782,7 +815,7 @@
     return /(登入|登录|login|signin|logon|送出|確定|确定|submit)/i.test(normalizedLabel);
   }
 
-  function removeLoginSpacingArtifacts(targetDocument, rootNode) {
+  function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
     Array.from(rootNode.querySelectorAll("br")).forEach((node) => removeNode(node));
 
     const textNodes = [];
@@ -805,8 +838,10 @@
     });
   }
 
-  function alignCaptchaMediaRow(targetDocument, rootNode) {
-    const captchaImages = Array.from(rootNode.querySelectorAll("img[src*='auth_img.php']"));
+  function alignCaptchaMediaRow(targetDocument: Document, rootNode: ParentNode) {
+    const captchaImages = Array.from(
+      rootNode.querySelectorAll<HTMLImageElement>("img[src*='auth_img.php']"),
+    );
 
     captchaImages.forEach((captchaImage) => {
       const host = captchaImage.parentElement;
@@ -843,7 +878,7 @@
     });
   }
 
-  function resolveLegacyImageButtonLabel(node) {
+  function resolveLegacyImageButtonLabel(node: Element | HTMLInputElement | null) {
     if (!node) {
       return "";
     }
@@ -853,7 +888,7 @@
       return explicitAlt;
     }
 
-    if (node.tagName && node.tagName.toLowerCase() === "input") {
+    if (node instanceof HTMLInputElement && node.tagName.toLowerCase() === "input") {
       const parentForm = node.form;
       const pairedImage = parentForm
         ? parentForm.querySelector(`img[alt][src='${cssEscape(node.getAttribute("src") || "")}]`)
@@ -878,7 +913,7 @@
       .trim();
   }
 
-  function shouldKeepLegacyLoginImageSubmit(inputNode) {
+  function shouldKeepLegacyLoginImageSubmit(inputNode: HTMLInputElement) {
     if (!inputNode || !inputNode.form) {
       return false;
     }
@@ -915,7 +950,7 @@
     );
   }
 
-  function isVerificationAudioControl(node) {
+  function isVerificationAudioControl(node: Element | null) {
     if (!node) {
       return false;
     }
@@ -937,7 +972,7 @@
     return /(voice|audio|sound|speak|listen|語音|朗讀|播放)/.test(hintText);
   }
 
-  function isAdjacentLoginClearControl(node) {
+  function isAdjacentLoginClearControl(node: Element | null) {
     if (!node) {
       return false;
     }
@@ -971,7 +1006,7 @@
     return isTwoImagePair;
   }
 
-  function collectLegacyActionControls(row) {
+  function collectLegacyActionControls(row: Element) {
     return Array.from(
       row.querySelectorAll(
         "input[type='image'], input[type='submit'], input[type='reset'], button, a > img",
@@ -990,7 +1025,7 @@
     });
   }
 
-  function isImageActionControl(node) {
+  function isImageActionControl(node: Element | null) {
     if (!node) {
       return false;
     }
@@ -1002,12 +1037,12 @@
     return String(node.getAttribute("type") || "").toLowerCase() === "image";
   }
 
-  function isLoginLikeControl(node) {
+  function isLoginLikeControl(node: Element) {
     const hints = extractControlHints(node);
     return /(登入|login|sign\s*-?\s*in|submit)/i.test(hints);
   }
 
-  function isClearLikeControl(node) {
+  function isClearLikeControl(node: Element) {
     const type = String(node.getAttribute("type") || "").toLowerCase();
     if (type === "reset") {
       return true;
@@ -1017,7 +1052,7 @@
     return /(清除|重填|clear|reset)/i.test(hints);
   }
 
-  function extractControlHints(node) {
+  function extractControlHints(node: Element) {
     const anchor = node.matches("a > img") ? node.closest("a") : null;
 
     return [
@@ -1038,7 +1073,10 @@
       .toLowerCase();
   }
 
-  function createAudioIconButtonFromImageInput(targetDocument, inputNode) {
+  function createAudioIconButtonFromImageInput(
+    targetDocument: Document,
+    inputNode: HTMLInputElement,
+  ) {
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = "ccxp-lite-audio-icon-button";
@@ -1072,7 +1110,7 @@
     return button;
   }
 
-  function getLandingStrings(targetDocument) {
+  function getLandingStrings(targetDocument: Document) {
     return getLocalizedStrings(
       resolveLandingLocale(
         targetDocument,
@@ -1083,7 +1121,7 @@
     );
   }
 
-  function createAudioIcon(targetDocument) {
+  function createAudioIcon(targetDocument: Document) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
     icon.setAttribute("fill", "none");
@@ -1104,13 +1142,13 @@
     return icon;
   }
 
-  function cssEscape(value) {
+  function cssEscape(value: unknown) {
     return String(value || "")
       .replace(/\\/g, "\\\\")
       .replace(/'/g, "\\'");
   }
 
-  function createPasswordVisibilityIcon(targetDocument, visible) {
+  function createPasswordVisibilityIcon(targetDocument: Document, visible: boolean) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
     icon.setAttribute("fill", "none");

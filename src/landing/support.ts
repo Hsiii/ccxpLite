@@ -1,46 +1,49 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingSupport(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
   const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared || {};
 
-  function findLoginSourceCell(targetDocument, loginForm) {
+  function findLoginSourceCell(targetDocument: Document, loginForm: Element | null) {
     if (loginForm) {
       return loginForm.closest("td, table, section, article") || loginForm;
     }
 
-    return Array.from(targetDocument.querySelectorAll("td, table, div, section, article")).find(
-      (cell) => cell.querySelector("form"),
-    );
+    return Array.from(
+      targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article"),
+    ).find((cell) => cell.querySelector("form"));
   }
 
-  function findCalendarTable(targetNode) {
+  function findCalendarTable(targetNode: ParentNode) {
     const calendarFrame = targetNode.querySelector("iframe[src*='calendar/cal.php']");
     if (!calendarFrame) {
       return null;
     }
 
-    return Array.from(targetNode.querySelectorAll("table")).find(
+    return Array.from(targetNode.querySelectorAll<HTMLTableElement>("table")).find(
       (table) =>
         table.contains(calendarFrame) &&
         ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
     );
   }
 
-  function findAnnouncementTable(targetDocument) {
-    const rightPanel = Array.from(targetDocument.querySelectorAll("td")).find((cell) => {
-      const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
-      if (widthText !== "35%" && widthText !== "35") {
-        return false;
-      }
+  function findAnnouncementTable(targetDocument: Document) {
+    const rightPanel = Array.from(targetDocument.querySelectorAll<HTMLTableCellElement>("td")).find(
+      (cell) => {
+        const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
+        if (widthText !== "35%" && widthText !== "35") {
+          return false;
+        }
 
-      return Boolean(cell.querySelector(".board_item, .board_subject"));
-    });
+        return Boolean(cell.querySelector(".board_item, .board_subject"));
+      },
+    );
 
-    const panelTables = rightPanel ? Array.from(rightPanel.querySelectorAll("table")) : [];
-    const fallbackTables = Array.from(targetDocument.querySelectorAll("table"));
+    const panelTables = rightPanel
+      ? Array.from(rightPanel.querySelectorAll<HTMLTableElement>("table"))
+      : [];
+    const fallbackTables = Array.from(targetDocument.querySelectorAll<HTMLTableElement>("table"));
 
-    const isAnnouncementTable = (table) => {
+    const isAnnouncementTable = (table: HTMLTableElement) => {
       const rows = Array.from(table.rows || []);
       if (rows.length === 0) {
         return false;
@@ -123,7 +126,10 @@
       .toLowerCase();
   }
 
-  function prepareAnnouncementTable(table, strings = getLocalizedStrings("zh")) {
+  function prepareAnnouncementTable(
+    table: HTMLTableElement | null,
+    strings = getLocalizedStrings("zh"),
+  ) {
     if (!table || table.dataset.ccxpLiteAnnouncementPrepared === "true") {
       return;
     }
@@ -185,7 +191,7 @@
       removeNode(headerRow);
     }
 
-    const entries = [];
+    const entries: Array<{ date: string; topicContent: HTMLElement }> = [];
     rows.forEach((row) => {
       const cells = Array.from(row.cells || []);
       if (cells.length < 2) {
@@ -200,7 +206,7 @@
       }
 
       const topicCell = cells[1];
-      const topicContent = topicCell.cloneNode(true);
+      const topicContent = topicCell.cloneNode(true) as HTMLElement;
       if (typeof cleanLegacyAttributes === "function") {
         cleanLegacyAttributes(topicContent);
       }
@@ -259,20 +265,20 @@
     table.dataset.ccxpLiteAnnouncementPrepared = "true";
   }
 
-  function findUtilityLinksTable(targetDocument) {
+  function findUtilityLinksTable(targetDocument: Document) {
     const anchor = targetDocument.querySelector(
       "a[href*='ccc.site.nthu.edu.tw'], a[href*='aisccc.site.nthu.edu.tw'], a[href*='nthu-en.site.nthu.edu.tw']",
     );
     return anchor ? anchor.closest("table") : null;
   }
 
-  function findServiceLink(targetDocument) {
+  function findServiceLink(targetDocument: Document) {
     const anchor = targetDocument.querySelector("a[href*='inquire_cpr.html']");
     return anchor ? anchor.closest("div") || anchor : null;
   }
 
-  function findCannotLoginLink(targetDocument, utilityLinksTable) {
-    const isCannotLoginAnchor = (anchor) => {
+  function findCannotLoginLink(targetDocument: Document, utilityLinksTable: Element | null) {
+    const isCannotLoginAnchor = (anchor: HTMLAnchorElement | null) => {
       if (!anchor) {
         return false;
       }
@@ -286,19 +292,19 @@
     };
 
     if (!utilityLinksTable) {
-      const fallbackAnchor = targetDocument.querySelector(
+      const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
         "a[href*='forget.php'], a[href*='inquire_cpr.html']",
       );
       return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
     }
 
-    const anchors = Array.from(utilityLinksTable.querySelectorAll("a[href]"));
+    const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"));
     const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor));
     if (fromUtility) {
       return fromUtility;
     }
 
-    const fallbackAnchor = targetDocument.querySelector(
+    const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
       "a[href*='forget.php'], a[href*='inquire_cpr.html']",
     );
     return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
@@ -319,8 +325,8 @@
   }
 
   function buildServicePhoneLink(
-    targetDocument,
-    serviceLinkNode,
+    targetDocument: Document,
+    serviceLinkNode: Element | null,
     strings = getLocalizedStrings("zh"),
   ) {
     if (!serviceLinkNode) {
@@ -328,13 +334,17 @@
     }
 
     const sourceAnchor = serviceLinkNode.matches("a[href]")
-      ? serviceLinkNode
-      : serviceLinkNode.querySelector("a[href]");
+      ? (serviceLinkNode as HTMLAnchorElement)
+      : serviceLinkNode.querySelector<HTMLAnchorElement>("a[href]");
 
     return buildLandingSupportLink(targetDocument, sourceAnchor, strings.servicePhone);
   }
 
-  function buildCannotLoginLink(targetDocument, sourceAnchor, strings = getLocalizedStrings("zh")) {
+  function buildCannotLoginLink(
+    targetDocument: Document,
+    sourceAnchor: HTMLAnchorElement | null,
+    strings = getLocalizedStrings("zh"),
+  ) {
     if (!sourceAnchor) {
       return null;
     }
@@ -346,7 +356,11 @@
     return buildLandingSupportLink(targetDocument, sourceAnchor, labelText);
   }
 
-  function buildLandingSupportLink(targetDocument, sourceAnchor, labelText) {
+  function buildLandingSupportLink(
+    targetDocument: Document,
+    sourceAnchor: HTMLAnchorElement | null,
+    labelText: string,
+  ) {
     if (!sourceAnchor) {
       return null;
     }
@@ -367,9 +381,9 @@
   }
 
   function buildLandingSupportLinks(
-    targetDocument,
-    serviceLinkNode,
-    cannotLoginAnchor,
+    targetDocument: Document,
+    serviceLinkNode: Element | null,
+    cannotLoginAnchor: HTMLAnchorElement | null,
     strings = getLocalizedStrings("zh"),
   ) {
     const servicePhoneLink = buildServicePhoneLink(targetDocument, serviceLinkNode, strings);
@@ -393,7 +407,7 @@
     return wrap;
   }
 
-  function collapseLegacyServiceRow(serviceLinkNode) {
+  function collapseLegacyServiceRow(serviceLinkNode: Element | null) {
     if (!serviceLinkNode) {
       return;
     }
@@ -426,7 +440,7 @@
     }
   }
 
-  function collapseLegacyCannotLoginLink(cannotLoginAnchor) {
+  function collapseLegacyCannotLoginLink(cannotLoginAnchor: Element | null) {
     if (!cannotLoginAnchor) {
       return;
     }
@@ -444,7 +458,7 @@
     removeNode(sourceAnchor);
   }
 
-  function removeAdjacentLegacyBreak(node, direction) {
+  function removeAdjacentLegacyBreak(node: Node, direction: "previous" | "next") {
     const sibling = direction === "previous" ? node.previousSibling : node.nextSibling;
 
     if (!sibling) {
@@ -461,15 +475,15 @@
       return;
     }
 
-    if (sibling.nodeType === Node.ELEMENT_NODE && sibling.tagName === "BR") {
+    if (sibling.nodeType === Node.ELEMENT_NODE && (sibling as Element).tagName === "BR") {
       removeNode(sibling);
     }
   }
 
   function buildHeaderUtilityLinks(
-    targetDocument,
-    utilityLinksTable,
-    excludedAnchor,
+    targetDocument: Document,
+    utilityLinksTable: Element | null,
+    excludedAnchor: HTMLAnchorElement | null,
     strings = getLocalizedStrings("zh"),
   ) {
     if (!utilityLinksTable) {
@@ -478,7 +492,7 @@
 
     const excludedHref = excludedAnchor ? String(excludedAnchor.getAttribute("href") || "") : "";
 
-    const anchors = Array.from(utilityLinksTable.querySelectorAll("a[href]"))
+    const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"))
       .filter((anchor) => anchor !== excludedAnchor)
       .filter((anchor) => {
         const href = String(anchor.getAttribute("href") || "");
@@ -517,7 +531,10 @@
     return nav;
   }
 
-  function copyLegacyAnchorHandlers(sourceAnchor, targetAnchor) {
+  function copyLegacyAnchorHandlers(
+    sourceAnchor: HTMLAnchorElement | null,
+    targetAnchor: HTMLAnchorElement | null,
+  ) {
     if (!sourceAnchor || !targetAnchor) {
       return;
     }
@@ -540,7 +557,7 @@
     });
   }
 
-  function createLandingExternalLinkIcon(targetDocument) {
+  function createLandingExternalLinkIcon(targetDocument: Document) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-landing-link-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
@@ -564,7 +581,7 @@
     return icon;
   }
 
-  function collapseLegacyUtilityRow(utilityLinksTable) {
+  function collapseLegacyUtilityRow(utilityLinksTable: Element | null) {
     if (!utilityLinksTable) {
       return;
     }
@@ -581,26 +598,32 @@
 
     removeNode(sourceCell);
 
-    const rowCells = Array.from(sourceRow.children).filter((node) => node.tagName === "TD");
+    const rowCells = Array.from(sourceRow.children).filter(
+      (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
+    );
     rowCells.forEach((cell) => {
       if (isLegacySpacerCell(cell)) {
         removeNode(cell);
       }
     });
 
-    const remainingCells = Array.from(sourceRow.children).filter((node) => node.tagName === "TD");
+    const remainingCells = Array.from(sourceRow.children).filter(
+      (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
+    );
     if (remainingCells.length === 1) {
       remainingCells[0].setAttribute("width", "100%");
       remainingCells[0].style.width = "100%";
     }
   }
 
-  function isLikelySpacerRow(row) {
+  function isLikelySpacerRow(row: Element | null) {
     if (!row || row.tagName !== "TR") {
       return false;
     }
 
-    const cells = Array.from(row.children).filter((node) => node.tagName === "TD");
+    const cells = Array.from(row.children).filter(
+      (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
+    );
     if (cells.length === 0) {
       return false;
     }
@@ -630,7 +653,7 @@
     return rowHeight.length > 0 || cellHasHeight;
   }
 
-  function isLegacySpacerCell(cell) {
+  function isLegacySpacerCell(cell: HTMLTableCellElement | null) {
     if (!cell) {
       return false;
     }
@@ -652,19 +675,21 @@
     );
   }
 
-  function collapseLegacyThreeColumnRows(rootNode) {
+  function collapseLegacyThreeColumnRows(rootNode: ParentNode | null) {
     if (!rootNode) {
       return;
     }
 
-    const rows = Array.from(rootNode.querySelectorAll("tr"));
+    const rows = Array.from(rootNode.querySelectorAll<HTMLTableRowElement>("tr"));
 
     rows.forEach((row) => {
       if (shouldSkipLegacyRowCollapse(row)) {
         return;
       }
 
-      const cells = Array.from(row.children).filter((node) => node.tagName === "TD");
+      const cells = Array.from(row.children).filter(
+        (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
+      );
       if (cells.length < 2) {
         return;
       }
@@ -695,7 +720,7 @@
       rightCell.colSpan = Math.max(1, Number(rightCell.colSpan || 1));
 
       Array.from(row.children)
-        .filter((node) => node.tagName === "TD")
+        .filter((node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement)
         .forEach((cell) => {
           if (cell !== rightCell) {
             cell.removeAttribute("width");
@@ -704,7 +729,7 @@
     });
   }
 
-  function isLegacyWideLeftCell(cell) {
+  function isLegacyWideLeftCell(cell: HTMLTableCellElement | null) {
     if (!cell) {
       return false;
     }
@@ -714,7 +739,7 @@
     return widthText === "60%" && styleText.includes("min-width") && styleText.includes("30em");
   }
 
-  function isLegacyRightPanelCell(cell) {
+  function isLegacyRightPanelCell(cell: HTMLTableCellElement | null) {
     if (!cell) {
       return false;
     }
@@ -723,7 +748,7 @@
     return widthText === "35%";
   }
 
-  function isLikelyEmptyCell(cell) {
+  function isLikelyEmptyCell(cell: HTMLTableCellElement | null) {
     if (!cell) {
       return false;
     }
@@ -744,7 +769,7 @@
     );
   }
 
-  function shouldSkipLegacyRowCollapse(row) {
+  function shouldSkipLegacyRowCollapse(row: HTMLTableRowElement | null) {
     if (!row) {
       return true;
     }

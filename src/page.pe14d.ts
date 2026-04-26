@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLitePe14dPatch(globalScope) {
   const PAGE_FLAG = "__ccxpLitePe14dPatchInstalled";
   const TRANSPORT_FRAME_ID = "ccxp-lite-pe14d-transport";
@@ -63,11 +62,16 @@
     installAttempt();
   }
 
-  function shouldInterceptSubmission(form, actionName) {
+  function shouldInterceptSubmission(form: HTMLFormElement | null, actionName: string) {
     return Boolean(form && INTERCEPTED_ACTIONS.has(String(actionName || "")));
   }
 
-  function submitThroughTransport(originalToSubmit, form, actionName, actionValue) {
+  function submitThroughTransport(
+    originalToSubmit: CcxpLiteWrappedSubmit,
+    form: HTMLFormElement,
+    actionName: string,
+    actionValue?: string,
+  ) {
     if (pendingSubmission) {
       return false;
     }
@@ -124,12 +128,12 @@
   }
 
   function ensureTransportFrame() {
-    let frame = globalScope.document.getElementById(TRANSPORT_FRAME_ID);
+    let frame = globalScope.document.getElementById(TRANSPORT_FRAME_ID) as HTMLIFrameElement | null;
     if (frame instanceof HTMLIFrameElement) {
       return frame;
     }
 
-    frame = globalScope.document.createElement("iframe");
+    frame = globalScope.document.createElement("iframe") as HTMLIFrameElement;
     frame.id = TRANSPORT_FRAME_ID;
     frame.name = TRANSPORT_FRAME_NAME;
     frame.setAttribute("aria-hidden", "true");
@@ -149,7 +153,7 @@
     return frame;
   }
 
-  function captureSnapshot(form, actionName) {
+  function captureSnapshot(form: HTMLFormElement, actionName: string): CcxpLitePe14dSnapshot {
     const activeElement = globalScope.document.activeElement;
     return {
       actionName,
@@ -158,7 +162,10 @@
       scrollX: globalScope.scrollX,
       scrollY: globalScope.scrollY,
       activeName:
-        activeElement instanceof HTMLElement && "name" in activeElement
+        activeElement instanceof HTMLInputElement ||
+        activeElement instanceof HTMLButtonElement ||
+        activeElement instanceof HTMLSelectElement ||
+        activeElement instanceof HTMLTextAreaElement
           ? activeElement.name || ""
           : "",
       activeId: activeElement instanceof HTMLElement ? activeElement.id || "" : "",
@@ -169,7 +176,7 @@
     };
   }
 
-  function persistSnapshot(snapshot) {
+  function persistSnapshot(snapshot: CcxpLitePe14dSnapshot) {
     try {
       globalScope.sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(snapshot));
     } catch (_error) {

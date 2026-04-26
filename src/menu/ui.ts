@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarUi(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, sidebarState, sidebarFavorites, sidebarData, sidebarRuntime } = namespace;
@@ -357,7 +356,7 @@
       return;
     }
 
-    const detailItems = Array.from(body.children).filter(
+    const detailItems = Array.from(body.children as HTMLCollectionOf<HTMLElement>).filter(
       (child) => !child.classList.contains("ccxp-lite-empty"),
     );
 

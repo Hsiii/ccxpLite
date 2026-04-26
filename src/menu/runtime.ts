@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarRuntime(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, sidebarState, sidebarFavorites } = namespace;

@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarState(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const sidebarUiStateByDocument = new WeakMap();

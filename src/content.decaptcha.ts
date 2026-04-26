@@ -1,5 +1,9 @@
-// @ts-nocheck
-(function bootstrapCcxpLiteDecaptcha(globalScope, factory) {
+(function bootstrapCcxpLiteDecaptcha(
+  globalScope: typeof globalThis,
+  factory: (globalScope: typeof globalThis) => {
+    predictDigits(imageBytes: unknown): Promise<string>;
+  },
+) {
   const api = factory(globalScope);
   const runtimeScope = /** @type {{ CCXP_LITE?: any }} */ globalScope;
   const namespace = runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {});
@@ -10,8 +14,13 @@
   }
 })(
   typeof globalThis !== "undefined" ? globalThis : this,
-  function createCcxpLiteDecaptcha(globalScope) {
-    const runtimeScope = /** @type {{ CCXP_LITE?: any, document?: Document }} */ globalScope;
+  function createCcxpLiteDecaptcha(globalScope: typeof globalThis) {
+    const runtimeScope = globalScope as typeof globalThis & {
+      CCXP_LITE?: {
+        decaptchaModel?: CcxpLiteDecaptchaModel;
+      };
+      document?: Document;
+    };
     const DIGITS = 6;
     const EPS = 1e-5;
 
@@ -19,7 +28,7 @@
       return runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {});
     }
 
-    function getPreparedModel() {
+    function getPreparedModel(): CcxpLitePreparedModel {
       const namespace = getNamespace();
       const model = namespace.decaptchaModel;
 
@@ -28,11 +37,15 @@
       }
 
       if (!model.preparedTensors) {
-        const preparedTensors = {};
+        const preparedTensors: Record<string, CcxpLitePreparedTensor> = {};
         Object.entries(model.tensors || {}).forEach(([name, tensor]) => {
+          const sourceTensor = tensor as CcxpLiteTensorSource;
           preparedTensors[name] = {
-            shape: Array.isArray(tensor.shape) ? tensor.shape.slice() : [],
-            data: tensor.data instanceof Float32Array ? tensor.data : new Float32Array(tensor.data),
+            shape: Array.isArray(sourceTensor.shape) ? sourceTensor.shape.slice() : [],
+            data:
+              sourceTensor.data instanceof Float32Array
+                ? sourceTensor.data
+                : new Float32Array(Array.from(sourceTensor.data || [])),
           };
         });
         model.preparedTensors = preparedTensors;
@@ -46,7 +59,7 @@
       };
     }
 
-    function toUint8Array(imageBytes) {
+    function toUint8Array(imageBytes: unknown) {
       if (imageBytes instanceof Uint8Array) {
         return imageBytes;
       }
@@ -62,7 +75,7 @@
       throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
     }
 
-    function loadImage(objectUrl) {
+    function loadImage(objectUrl: string): Promise<HTMLImageElement> {
       return new Promise((resolve, reject) => {
         const image = new Image();
         image.onload = () => resolve(image);
@@ -71,9 +84,9 @@
       });
     }
 
-    async function decodeImageData(imageBytes) {
+    async function decodeImageData(imageBytes: unknown) {
       const bytes = toUint8Array(imageBytes);
-      const blobBytes = /** @type {BlobPart} */ bytes;
+      const blobBytes = new Uint8Array(bytes);
 
       if (typeof Blob === "undefined") {
         throw new Error("Blob is not available for captcha decoding.");
@@ -127,14 +140,17 @@
       }
     }
 
-    function createTensor(shape, data) {
+    function createTensor(
+      shape: number[],
+      data: Float32Array | ArrayLike<number>,
+    ): CcxpLitePreparedTensor {
       return {
         shape: shape.slice(),
         data: data instanceof Float32Array ? data : new Float32Array(data),
       };
     }
 
-    function tensorGet(tensor, indices) {
+    function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
       let flatIndex = 0;
       let stride = 1;
 
@@ -146,7 +162,12 @@
       return tensor.data[flatIndex];
     }
 
-    function extractImageTensorFromRgba(width, height, rgba, options = {}) {
+    function extractImageTensorFromRgba(
+      width: number,
+      height: number,
+      rgba: Uint8ClampedArray,
+      options: { cropRight?: number } = {},
+    ) {
       const cropRight = Math.max(0, Math.trunc(options.cropRight || 0));
       const usableWidth = width - cropRight;
 
@@ -170,7 +191,12 @@
       return createTensor([3, height, usableWidth], tensorData);
     }
 
-    function conv2d(inputTensor, weight, bias = null, options = {}) {
+    function conv2d(
+      inputTensor: CcxpLitePreparedTensor,
+      weight: CcxpLitePreparedTensor,
+      bias: CcxpLitePreparedTensor | null = null,
+      options: { stride?: number; padding?: number; groups?: number } = {},
+    ) {
       const stride = options.stride || 1;
       const padding = options.padding || 0;
       const groups = options.groups || 1;
@@ -314,7 +340,12 @@
       return bestIndex;
     }
 
-    function applyDepthwiseSeparableBlock(inputTensor, tensors, prefix, options = {}) {
+    function applyDepthwiseSeparableBlock(
+      inputTensor: CcxpLitePreparedTensor,
+      tensors: Record<string, CcxpLitePreparedTensor>,
+      prefix: string,
+      options: { stride?: number } = {},
+    ) {
       const stride = options.stride || 1;
       const inputChannels = inputTensor.shape[0];
       let output = conv2d(inputTensor, tensors[`${prefix}.0.weight`], null, {

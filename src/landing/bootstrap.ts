@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingBootstrap(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const {
@@ -66,7 +65,7 @@
     enhancePasswordVisibilityToggle,
   } = landingLogin;
 
-  function preloadLandingCaptcha(targetDocument) {
+  function preloadLandingCaptcha(targetDocument: Document) {
     if (!isLandingPage(targetDocument)) {
       return;
     }
@@ -74,7 +73,13 @@
     getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
   }
 
-  function simplifyLandingPage(targetDocument, options = {}) {
+  function simplifyLandingPage(
+    targetDocument: Document,
+    options: {
+      retry?: () => void;
+      onReady?: () => void;
+    } = {},
+  ) {
     const retryFn = typeof options.retry === "function" ? options.retry : () => {};
     const onReady = typeof options.onReady === "function" ? options.onReady : () => {};
 

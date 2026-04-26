@@ -1,8 +1,7 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingLocale(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
 
-  function isSupportedInquirePath(targetDocument) {
+  function isSupportedInquirePath(targetDocument: Document) {
     const pathName = (
       (targetDocument.location && targetDocument.location.pathname) ||
       ""
@@ -10,7 +9,7 @@
     return /\/ccxp\/inquire\/(?:index\.php)?\/?$/.test(pathName);
   }
 
-  function isLandingPage(targetDocument) {
+  function isLandingPage(targetDocument: Document) {
     if (!isSupportedInquirePath(targetDocument)) {
       return false;
     }
@@ -18,11 +17,16 @@
     return Boolean(getLoginForm(targetDocument) || hasLandingTabContent(targetDocument));
   }
 
-  function hasLandingTabContent(targetDocument) {
+  function hasLandingTabContent(targetDocument: Document) {
     return Boolean(targetDocument.querySelector(".tab, .tabcontent"));
   }
 
-  function resolveLandingLocale(targetDocument, languageLinks, loginSourceCell, loginForm) {
+  function resolveLandingLocale(
+    targetDocument: Document,
+    languageLinks: ParentNode | null,
+    loginSourceCell: ParentNode | null,
+    loginForm: HTMLFormElement | null,
+  ): CcxpLiteLocale {
     const htmlLang = (
       (targetDocument.documentElement && targetDocument.documentElement.lang) ||
       ""
@@ -117,7 +121,7 @@
     return /[\u3400-\u9fff]/.test(sampleText) ? "zh" : "en";
   }
 
-  function getLoginForm(targetDocument) {
+  function getLoginForm(targetDocument: Document): HTMLFormElement | null {
     const forms = Array.from(targetDocument.querySelectorAll("form"));
 
     const candidates = forms.filter((form) => {
@@ -142,13 +146,13 @@
 
     const visibleCandidates = candidates.filter((form) => isLikelyVisibleForm(form));
     if (visibleCandidates.length > 0) {
-      return visibleCandidates[0];
+      return visibleCandidates[0] as HTMLFormElement;
     }
 
-    return candidates[0];
+    return candidates[0] as HTMLFormElement;
   }
 
-  function isLikelyVisibleForm(formNode) {
+  function isLikelyVisibleForm(formNode: HTMLFormElement) {
     if (!formNode) {
       return false;
     }
@@ -157,7 +161,7 @@
       return false;
     }
 
-    let node = formNode;
+    let node: HTMLElement | null = formNode;
     while (node && node !== document.body) {
       if (node.nodeType !== Node.ELEMENT_NODE) {
         node = node.parentElement;

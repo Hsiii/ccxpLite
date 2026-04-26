@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteLandingValidation(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { landingLocale } = namespace;

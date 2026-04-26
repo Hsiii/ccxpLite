@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function registerCcxpLiteSidebarBootstrap(globalScope) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, sidebarFavorites, sidebarData, sidebarState, sidebarUi, sidebarRuntime } =
@@ -33,7 +32,11 @@
   const { renderSidebar, createSidebarSearch } = sidebarUi;
   const { captureInitialMainFrameUrl } = sidebarRuntime;
 
-  function simplifySidebar(navFrame, retry, options = {}) {
+  function simplifySidebar(
+    navFrame: HTMLFrameElement,
+    retry: () => void,
+    options: { hostDocument?: Document } = {},
+  ) {
     const navDocument = navFrame.contentDocument;
     const hostDocument = options.hostDocument || navDocument;
 
@@ -62,7 +65,7 @@
     captureInitialMainFrameUrl();
 
     if (hostDocument.body.dataset.ccxpLiteSidebarApplied !== "true") {
-      const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
+      const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
       const shell = hostDocument.createElement("div");
       shell.className = `${TOKENS.sidebarClass} ccxp-lite-app-shell`;
 

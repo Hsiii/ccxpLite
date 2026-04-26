@@ -1,4 +1,3 @@
-// @ts-nocheck
 (function injectCcxpLitePe14dPageScript() {
   const sharedDom = window.CCXP_LITE?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
