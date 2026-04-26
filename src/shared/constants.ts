@@ -66,7 +66,7 @@
     fontSizeSidebarBrand: "20px",
     sizeSidebarBrandLogo: "30px",
     sizeSidebarCategoryLeading: "1.5em",
-    sizeSidebarControl: "20px",
+    sizeSidebarControl: "24px",
     sizeSidebarGuideLine: "2px",
     sizeSidebarSearchSpacer: "14px",
     sizeSidebarSearchWidth: "232px",
