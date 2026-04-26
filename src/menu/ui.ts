@@ -1057,7 +1057,7 @@
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        background: "rgba(17, 24, 39, 0.36)",
+        backgroundColor: "rgba(17, 24, 39, 0.36)",
       });
 
       const dialog = overlayDocument.createElement("div");
@@ -1072,7 +1072,7 @@
         padding: "36px",
         border: "1px solid var(--ccxp-lite-border)",
         borderRadius: "var(--ccxp-lite-radius-md)",
-        background: "var(--ccxp-lite-surface)",
+        backgroundColor: "var(--ccxp-lite-surface)",
         boxShadow: "0 20px 48px rgba(17, 24, 39, 0.2)",
       });
 
@@ -1189,7 +1189,7 @@
     if (variant === "danger") {
       Object.assign(button.style, baseStyles, {
         borderColor: "var(--ccxp-lite-type-danger-color)",
-        background: "var(--ccxp-lite-type-danger-color)",
+        backgroundColor: "var(--ccxp-lite-type-danger-color)",
         color: "var(--ccxp-lite-surface)",
       });
       button.addEventListener("mouseenter", () => {
@@ -1200,15 +1200,15 @@
       });
     } else {
       Object.assign(button.style, baseStyles, {
-        background: "var(--ccxp-lite-surface)",
+        backgroundColor: "var(--ccxp-lite-surface)",
         color: "var(--ccxp-lite-text)",
       });
       button.addEventListener("mouseenter", () => {
-        button.style.background = "var(--ccxp-lite-primary-hover-surface)";
+        button.style.backgroundColor = "var(--ccxp-lite-primary-hover-surface)";
         button.style.borderColor = "var(--ccxp-lite-primary-focus-border)";
       });
       button.addEventListener("mouseleave", () => {
-        button.style.background = "var(--ccxp-lite-surface)";
+        button.style.backgroundColor = "var(--ccxp-lite-surface)";
         button.style.borderColor = "var(--ccxp-lite-border)";
       });
     }
