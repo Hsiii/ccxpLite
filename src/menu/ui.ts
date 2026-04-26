@@ -241,12 +241,7 @@
     sidebarList.className = "ccxp-lite-sidebar-list";
 
     const items = createClassicSidebarItems(model, state.searchQuery);
-    const hasFavoritesCategory = items.some((item) => item && item.id === "category-favorites");
     const expandedItemIds = new Set(state.classicExpandedItemIds || []);
-
-    if (hasFavoritesCategory) {
-      expandedItemIds.add("category-favorites");
-    }
 
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set();
