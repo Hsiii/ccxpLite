@@ -26,7 +26,6 @@ export default defineConfig(
     rules: {
       "@typescript-eslint/no-deprecated": "off",
       "@typescript-eslint/no-misused-promises": "off",
-      "@typescript-eslint/no-shadow": "off",
 
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
