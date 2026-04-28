@@ -39,7 +39,6 @@ export default defineConfig(
       "@typescript-eslint/promise-function-async": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/strict-void-return": "off",
-      "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
       "array-callback-return": "off",
       "func-name-matching": "off",
       "complete/complete-sentences-line-comments": "off",

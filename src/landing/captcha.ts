@@ -199,7 +199,7 @@
         state.failedSrc = "";
         setCaptchaLoadingState(state, false);
       })
-      .catch((error) => {
+      .catch((error: unknown) => {
         if (requestToken === state.requestToken) {
           fallbackToManualCaptchaEntry(state, captchaSrc, {
             didTimeout: isCaptchaTimeoutError(error),
@@ -223,7 +223,7 @@
 
     setCaptchaLoadingState(state, true);
     requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(
-      (error) => {
+      (error: unknown) => {
         fallbackToManualCaptchaEntry(state, captchaSrc, {
           didTimeout: isCaptchaTimeoutError(error),
         });
