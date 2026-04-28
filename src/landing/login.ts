@@ -92,9 +92,7 @@
       return;
     }
 
-    const labelText = String(labelCell.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    const labelText = (labelCell.textContent || "").replace(/\s+/g, " ").trim();
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
@@ -103,9 +101,7 @@
       });
 
       Array.from(labelCell.querySelectorAll("a, button, span, i")).forEach((node) => {
-        const text = String(node.textContent || "")
-          .replace(/\s+/g, " ")
-          .trim();
+        const text = (node.textContent || "").replace(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
 
         if (!text && hasOnlyIconChild) {
@@ -126,7 +122,7 @@
         node.getAttribute("src"),
         node.textContent,
       ]
-        .map((value) => String(value || "").toLowerCase())
+        .map((value) => (value || "").toLowerCase())
         .join(" ");
 
       if (hints.includes("👁") || eyePattern.test(hints)) {
@@ -382,9 +378,7 @@
   }
 
   function getNodeText(node: Node | null) {
-    return String((node && node.textContent) || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return ((node && node.textContent) || "").replace(/\s+/g, " ").trim();
   }
 
   function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
@@ -440,13 +434,14 @@
     fieldPair: { fieldNode: Element; labelText: string } | null,
     targetDocument: Document,
   ) {
-    const explicitLabel = String((fieldPair && fieldPair.labelText) || "").trim();
+    const explicitLabel = ((fieldPair && fieldPair.labelText) || "").trim();
     if (explicitLabel) {
       return explicitLabel;
     }
 
-    const fieldName = String(
-      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) || "",
+    const fieldName = (
+      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) ||
+      ""
     )
       .trim()
       .toLowerCase();
@@ -538,7 +533,7 @@
     }
 
     const baseName =
-      String(fieldNode.getAttribute("name") || "field")
+      (fieldNode.getAttribute("name") || "field")
         .trim()
         .replace(/[^a-zA-Z0-9_-]+/g, "-")
         .replace(/^-+|-+$/g, "") || "field";
@@ -563,9 +558,7 @@
     const spans = Array.from(rootNode.querySelectorAll<HTMLSpanElement>("span"));
 
     spans.forEach((spanNode) => {
-      const labelText = String(spanNode.textContent || "")
-        .replace(/\s+/g, " ")
-        .trim();
+      const labelText = (spanNode.textContent || "").replace(/\s+/g, " ").trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
         return;
       }
@@ -751,8 +744,11 @@
         return;
       }
 
-      const label = String(
-        inputNode.value || inputNode.getAttribute("value") || inputNode.textContent || "",
+      const label = (
+        inputNode.value ||
+        inputNode.getAttribute("value") ||
+        inputNode.textContent ||
+        ""
       )
         .replace(/\s+/g, " ")
         .trim();
@@ -805,10 +801,7 @@
   }
 
   function isPrimaryLoginActionLabel(rawLabel) {
-    const normalizedLabel = String(rawLabel || "")
-      .replace(/\s+/g, "")
-      .trim()
-      .toLowerCase();
+    const normalizedLabel = (rawLabel || "").replace(/\s+/g, "").trim().toLowerCase();
 
     if (!normalizedLabel) {
       return false;
@@ -832,7 +825,7 @@
     }
 
     textNodes.forEach((textNode) => {
-      const normalized = String(textNode.textContent || "").replace(/\u00a0|&nbsp;|&npsp;/gi, " ");
+      const normalized = (textNode.textContent || "").replace(/\u00a0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim()) {
         textNode.textContent = normalized;
         return;
@@ -912,9 +905,7 @@
   }
 
   function normalizeLegacyButtonLabel(rawLabel) {
-    return String(rawLabel || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return (rawLabel || "").replace(/\s+/g, " ").trim();
   }
 
   function shouldKeepLegacyLoginImageSubmit(inputNode: HTMLInputElement) {
@@ -922,7 +913,7 @@
       return false;
     }
 
-    const action = String(inputNode.form.getAttribute("action") || "").toLowerCase();
+    const action = (inputNode.form.getAttribute("action") || "").toLowerCase();
     const isLoginFlowForm =
       action.includes("pre_select_entry.php") || action.includes("select_entry.php");
     if (!isLoginFlowForm) {
@@ -942,9 +933,7 @@
   }
 
   function isClearActionLabel(label) {
-    const normalized = String(label || "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
+    const normalized = (label || "").replace(/\s+/g, "").toLowerCase();
 
     return (
       normalized.includes("清除") ||
@@ -970,7 +959,7 @@
       node.getAttribute("src"),
       node.getAttribute("onclick"),
     ]
-      .map((value) => String(value || "").toLowerCase())
+      .map((value) => (value || "").toLowerCase())
       .join(" ");
 
     return /(voice|audio|sound|speak|listen|語音|朗讀|播放)/.test(hintText);
@@ -1020,7 +1009,7 @@
         return true;
       }
 
-      const type = String(node.getAttribute("type") || "").toLowerCase();
+      const type = (node.getAttribute("type") || "").toLowerCase();
       if (node.tagName === "BUTTON" && !type) {
         return true;
       }
@@ -1038,7 +1027,7 @@
       return true;
     }
 
-    return String(node.getAttribute("type") || "").toLowerCase() === "image";
+    return (node.getAttribute("type") || "").toLowerCase() === "image";
   }
 
   function isLoginLikeControl(node: Element) {
@@ -1047,7 +1036,7 @@
   }
 
   function isClearLikeControl(node: Element) {
-    const type = String(node.getAttribute("type") || "").toLowerCase();
+    const type = (node.getAttribute("type") || "").toLowerCase();
     if (type === "reset") {
       return true;
     }
@@ -1072,7 +1061,7 @@
       anchor && anchor.getAttribute("onclick"),
       anchor && anchor.textContent,
     ]
-      .map((value) => String(value || ""))
+      .map((value) => value || "")
       .join(" ")
       .toLowerCase();
   }
