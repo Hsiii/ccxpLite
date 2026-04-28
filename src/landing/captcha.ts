@@ -264,7 +264,7 @@
       return Promise.resolve(state.cachedAnswer);
     }
 
-    if (state.pendingSrc === captchaSrc && state.pendingRequest) {
+    if (state.pendingSrc === captchaSrc && state.pendingRequest !== null) {
       return state.pendingRequest;
     }
 

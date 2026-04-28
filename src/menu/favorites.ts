@@ -30,7 +30,7 @@
       return;
     }
 
-    if (favoriteState.pendingLoad) {
+    if (favoriteState.pendingLoad !== null) {
       if (typeof onReady === "function") {
         void favoriteState.pendingLoad.then(onReady, () => undefined);
       }
