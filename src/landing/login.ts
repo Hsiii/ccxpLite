@@ -1148,9 +1148,12 @@
   }
 
   function cssEscape(value: unknown) {
-    return String(value || "")
-      .replace(/\\/g, "\\\\")
-      .replace(/'/g, "\\'");
+    const normalizedValue =
+      typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+        ? String(value)
+        : "";
+
+    return normalizedValue.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
   }
 
   function createPasswordVisibilityIcon(targetDocument: Document, visible: boolean) {

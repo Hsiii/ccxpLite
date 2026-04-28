@@ -327,7 +327,7 @@
     }
 
     const scratch = navDocument.createElement("div");
-    scratch.innerHTML = String(rawHtml)
+    scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
       .replace(/onClick='[^']*'/gi, "")
       .replace(/\\"/g, "&quot;")
       .replace(/\\'/g, "&#39;")

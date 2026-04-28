@@ -318,14 +318,11 @@
   }
 
   function parseFavoritePathSignature(signature: unknown) {
-    return String(signature || "")
-      .split(">")
-      .map(normalizeFavoriteText)
-      .filter(Boolean);
+    return normalizeFavoriteText(signature).split(">").map(normalizeFavoriteText).filter(Boolean);
   }
 
   function parseFavoriteClickSignature(signature: unknown): CcxpLiteClickLinkArgs | null {
-    const normalizedSignature = String(signature || "").trim();
+    const normalizedSignature = normalizeFavoriteText(signature);
     if (!normalizedSignature) {
       return null;
     }
@@ -345,9 +342,12 @@
   }
 
   function normalizeFavoriteText(value: unknown) {
-    return String(value || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    const normalizedValue =
+      typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+        ? String(value)
+        : "";
+
+    return normalizedValue.replace(/\s+/g, " ").trim();
   }
 
   function buildFavoritePathSegments(
