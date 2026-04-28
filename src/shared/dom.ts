@@ -51,7 +51,9 @@
       if (doc.documentElement) {
         cleanElement(doc.documentElement);
         const legacyNodes = doc.documentElement.querySelectorAll(selector);
-        legacyNodes.forEach((el) => cleanElement(el));
+        legacyNodes.forEach((el) => {
+          cleanElement(el);
+        });
       }
       if (doc.body) {
         cleanElement(doc.body);
@@ -60,7 +62,9 @@
       const el = node as Element;
       cleanElement(el);
       const legacyNodes = el.querySelectorAll(selector);
-      legacyNodes.forEach((item) => cleanElement(item));
+      legacyNodes.forEach((item) => {
+        cleanElement(item);
+      });
     }
   }
 

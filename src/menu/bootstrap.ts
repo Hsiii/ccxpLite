@@ -149,13 +149,14 @@
       hostDocument.body.dataset.ccxpLiteSidebarApplied = "true";
     }
 
-    const rerender = () =>
+    const rerender = () => {
       renderSidebar(
         hostDocument,
         navDocument,
         () => buildSidebarModel(rawTree, navDocument, strings),
         strings,
       );
+    };
     ensureFavoriteStorageSync();
     favoriteSubscribers.add(rerender);
     ensureFavoriteIdsLoaded(rerender);

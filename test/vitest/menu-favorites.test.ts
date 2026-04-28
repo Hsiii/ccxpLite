@@ -13,7 +13,9 @@ describe("sidebar favorites", () => {
       JSON.stringify(["legacy|Academic>Grades|Semester Grades|main|"]),
     );
 
-    await new Promise<void>((resolve) => api.ensureFavoriteIdsLoaded(resolve));
+    await new Promise<void>((resolve) => {
+      api.ensureFavoriteIdsLoaded(resolve);
+    });
     const loadedIds = api.getFavoriteIds();
 
     expect(loadedIds.size).toBe(1);
@@ -50,7 +52,9 @@ describe("sidebar favorites", () => {
     };
 
     api.favoriteState.hasLoaded = false;
-    await new Promise<void>((resolve) => api.ensureFavoriteIdsLoaded(resolve));
+    await new Promise<void>((resolve) => {
+      api.ensureFavoriteIdsLoaded(resolve);
+    });
 
     expect(api.getFavoriteIds().size).toBe(1);
 

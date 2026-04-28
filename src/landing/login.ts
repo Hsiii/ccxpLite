@@ -98,7 +98,9 @@
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
-      Array.from(labelCell.querySelectorAll("svg")).forEach((node) => node.remove());
+      Array.from(labelCell.querySelectorAll("svg")).forEach((node) => {
+        node.remove();
+      });
 
       Array.from(labelCell.querySelectorAll("a, button, span, i")).forEach((node) => {
         const text = String(node.textContent || "")
@@ -817,7 +819,9 @@
   }
 
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
-    Array.from(rootNode.querySelectorAll("br")).forEach((node) => removeNode(node));
+    Array.from(rootNode.querySelectorAll("br")).forEach((node) => {
+      removeNode(node);
+    });
 
     const textNodes: Node[] = [];
     const walker = targetDocument.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);

@@ -242,9 +242,9 @@
       }
     });
 
-    (item.sections || []).forEach((section) =>
-      collectFavoriteLinks(section, favoriteIds, favoriteLinks),
-    );
+    (item.sections || []).forEach((section) => {
+      collectFavoriteLinks(section, favoriteIds, favoriteLinks);
+    });
   }
 
   function dedupeLinkItems(linkItems: CcxpLiteSidebarLinkItem[]) {
@@ -398,7 +398,9 @@
     try {
       const url = new URL(value, "https://www.ccxp.nthu.edu.tw/");
       const volatileParams = ["acixstore", "sid", "session", "phpsessid", "token", "_", "t"];
-      volatileParams.forEach((key) => url.searchParams.delete(key));
+      volatileParams.forEach((key) => {
+        url.searchParams.delete(key);
+      });
 
       const sortedEntries = Array.from(url.searchParams.entries()).sort(
         ([leftKey, leftValue], [rightKey, rightValue]) => {
@@ -410,7 +412,9 @@
       );
 
       url.search = "";
-      sortedEntries.forEach(([key, entryValue]) => url.searchParams.append(key, entryValue));
+      sortedEntries.forEach(([key, entryValue]) => {
+        url.searchParams.append(key, entryValue);
+      });
 
       const normalizedPath = url.pathname.replace(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();

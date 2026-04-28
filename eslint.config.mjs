@@ -24,12 +24,11 @@ export default defineConfig(
 
   {
     rules: {
-      "@typescript-eslint/method-signature-style": "off",
       "@typescript-eslint/no-deprecated": "off",
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/no-shadow": "off",
       "@typescript-eslint/no-base-to-string": "off",
-      "@typescript-eslint/no-confusing-void-expression": "off",
+
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-floating-promises": "off",
       "@typescript-eslint/no-invalid-this": "off",

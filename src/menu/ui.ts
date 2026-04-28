@@ -89,15 +89,17 @@
       hostDocument,
       state,
       strings,
-      () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+      () => {
+        renderSidebar(hostDocument, navDocument, modelInput, strings);
+      },
       footer,
     );
 
     if (state.sidebarVariant === "classic") {
       content.appendChild(
-        createClassicSidebarView(hostDocument, navDocument, model, state, strings, () =>
-          renderSidebar(hostDocument, navDocument, modelInput, strings),
-        ),
+        createClassicSidebarView(hostDocument, navDocument, model, state, strings, () => {
+          renderSidebar(hostDocument, navDocument, modelInput, strings);
+        }),
       );
       restoreSidebarScroll(content, state.scrollTopByView.root);
       return;
@@ -113,7 +115,9 @@
           activeLeafCategory as CcxpLiteSidebarCategoryNode,
           state.activeLeaf as CcxpLiteSidebarLinkItem,
           strings,
-          () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+          () => {
+            renderSidebar(hostDocument, navDocument, modelInput, strings);
+          },
         ),
       );
       restoreSidebarScroll(content, state.scrollTopByView.destination);
@@ -128,7 +132,9 @@
           activeCategory as CcxpLiteSidebarCategoryNode,
           state,
           strings,
-          () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+          () => {
+            renderSidebar(hostDocument, navDocument, modelInput, strings);
+          },
         ),
       );
       restoreSidebarScroll(content, state.scrollTopByView.category);
@@ -143,7 +149,9 @@
         filteredCategories as CcxpLiteSidebarCategoryNode[],
         state,
         strings,
-        () => renderSidebar(hostDocument, navDocument, modelInput, strings),
+        () => {
+          renderSidebar(hostDocument, navDocument, modelInput, strings);
+        },
       ),
     );
     restoreSidebarScroll(content, state.scrollTopByView.root);
@@ -500,7 +508,9 @@
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
-    button.addEventListener("click", () => activateLegacyLink(linkItem, navDocument));
+    button.addEventListener("click", () => {
+      activateLegacyLink(linkItem, navDocument);
+    });
 
     return button;
   }
@@ -818,7 +828,9 @@
       scheduleLayout();
     });
     observer.observe(body.parentElement || body);
-    detailItems.forEach((item) => observer.observe(item));
+    detailItems.forEach((item) => {
+      observer.observe(item);
+    });
 
     namespace.sharedDom?.addCleanupTask(() => {
       observer.disconnect();
@@ -1003,9 +1015,9 @@
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
-    button.addEventListener("click", () =>
-      openLeafDestination(targetDocument, navDocument, linkItem, rerender),
-    );
+    button.addEventListener("click", () => {
+      openLeafDestination(targetDocument, navDocument, linkItem, rerender);
+    });
 
     return button;
   }
@@ -1025,9 +1037,9 @@
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
     button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
-    button.addEventListener("click", () =>
-      openLeafDestination(targetDocument, navDocument, linkItem, rerender),
-    );
+    button.addEventListener("click", () => {
+      openLeafDestination(targetDocument, navDocument, linkItem, rerender);
+    });
 
     return button;
   }
@@ -1275,14 +1287,20 @@
         resolve(confirmed);
       };
 
-      keepButton.addEventListener("click", () => cleanup(false));
-      confirmButton.addEventListener("click", () => cleanup(true));
+      keepButton.addEventListener("click", () => {
+        cleanup(false);
+      });
+      confirmButton.addEventListener("click", () => {
+        cleanup(true);
+      });
       overlay.addEventListener("click", (event) => {
         if (event.target === overlay) {
           cleanup(false);
         }
       });
-      dialog.addEventListener("click", (event) => event.stopPropagation());
+      dialog.addEventListener("click", (event) => {
+        event.stopPropagation();
+      });
       overlay.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
           event.preventDefault();
@@ -1439,7 +1457,9 @@
     openButton.type = "button";
     openButton.className = "ccxp-lite-destination-action";
     openButton.textContent = strings.sidebarOpenInNewTab;
-    openButton.addEventListener("click", () => openLeafInNewTab(activeLeaf, navDocument));
+    openButton.addEventListener("click", () => {
+      openLeafInNewTab(activeLeaf, navDocument);
+    });
 
     actions.appendChild(retryButton);
     actions.appendChild(openButton);
@@ -1767,7 +1787,9 @@
       const tagName = typeof shape === "string" ? "path" : shape.tag || "path";
       const attributes = typeof shape === "string" ? { d: shape } : shape.attributes;
       const element = targetDocument.createElementNS("http://www.w3.org/2000/svg", tagName);
-      Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
+      Object.entries(attributes).forEach(([name, value]) => {
+        element.setAttribute(name, value);
+      });
       icon.appendChild(element);
     });
 

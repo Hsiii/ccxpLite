@@ -46,8 +46,9 @@ export function createTestWindow(
     },
     storage: {
       local: {
-        get: (_keys: string[] | null, callback: (result: Record<string, unknown>) => void) =>
-          callback({}),
+        get: (_keys: string[] | null, callback: (result: Record<string, unknown>) => void) => {
+          callback({});
+        },
       },
     },
   };
