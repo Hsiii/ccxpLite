@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
   const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
-  const { decaptcha, landingLocale } = namespace;
+  const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
   }
@@ -187,7 +187,7 @@
     const requestToken = state.requestToken;
     setCaptchaLoadingState(state, true);
 
-    requestCaptchaAnswerForCurrentImage(targetDocument, captchaImage, state, captchaSrc)
+    requestCaptchaAnswerForCurrentImage(targetDocument, state, captchaSrc)
       .then((answer) => {
         if (requestToken !== state.requestToken || !answer) {
           return;
@@ -256,7 +256,6 @@
 
   function requestCaptchaAnswerForCurrentImage(
     targetDocument: Document,
-    captchaImage: HTMLImageElement,
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
   ) {
@@ -309,7 +308,7 @@
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
       const fileName = pathSegments[pathSegments.length - 1] || "";
       return `${fileName}${parsed.search}`;
-    } catch (_error) {
+    } catch {
       const trimmedSource = rawSource.replace(/^https?:\/\/[^/]+\//i, "");
       const sourceSegments = trimmedSource.split("/").filter(Boolean);
       return sourceSegments[sourceSegments.length - 1] || "";

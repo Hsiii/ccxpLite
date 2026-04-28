@@ -145,7 +145,7 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        sidebarData.filterFavoriteLinks(model.favorites.directLinks || [], state.searchQuery),
+        filterFavoriteLinks(model.favorites.directLinks || [], state.searchQuery),
         filteredCategories as CcxpLiteSidebarCategoryNode[],
         state,
         strings,
@@ -606,9 +606,7 @@
     shell.appendChild(
       createPinnedSection(targetDocument, navDocument, favorites, strings, rerender),
     );
-    shell.appendChild(
-      createAllSection(targetDocument, navDocument, categories, state, strings, rerender),
-    );
+    shell.appendChild(createAllSection(targetDocument, categories, state, strings, rerender));
 
     layout.appendChild(shell);
 
@@ -657,7 +655,6 @@
 
   function createAllSection(
     targetDocument: Document,
-    navDocument: Document,
     categories: CcxpLiteSidebarCategoryNode[],
     state: CcxpLiteSidebarState,
     strings: Record<string, string>,
@@ -1188,7 +1185,7 @@
         if (mainDoc?.body && mainDoc.body.clientWidth > 100) {
           overlayDocument = mainDoc;
         }
-      } catch (_e) {
+      } catch {
         // Fall back to nav frame document.
       }
       ensureThemeDocument(overlayDocument, "nav");
@@ -1517,7 +1514,7 @@
           frame.src = legacyHref;
           return;
         }
-      } catch (_error) {
+      } catch {
         // Ignore cross-frame location reads and rely on the destination frame event.
       }
 
@@ -1687,7 +1684,7 @@
       }
 
       innerFrameset.setAttribute("cols", variant === "classic" ? "324,*" : "*,0");
-    } catch (_error) {
+    } catch {
       // Ignore cross-frame layout sync failures.
     }
   }

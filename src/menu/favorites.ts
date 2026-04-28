@@ -67,7 +67,7 @@
 
     try {
       storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favoriteIds)));
-    } catch (_error) {
+    } catch {
       // Ignore storage write failures; in-memory state still updates for the current page.
     }
   }
@@ -86,7 +86,7 @@
             ),
           );
           return;
-        } catch (_error) {
+        } catch {
           // Fall through to migration fallback.
         }
       }
@@ -125,7 +125,7 @@
       const nextValue = (() => {
         try {
           return JSON.parse(event.newValue || "[]") as any[];
-        } catch (_error) {
+        } catch {
           return [];
         }
       })();
@@ -151,7 +151,7 @@
     favoriteSubscribers.forEach((callback) => {
       try {
         callback();
-      } catch (_error) {
+      } catch {
         // Ignore stale subscribers from replaced frame documents.
       }
     });
@@ -165,7 +165,7 @@
 
     try {
       return scopeWindow.localStorage || null;
-    } catch (_error) {
+    } catch {
       return null;
     }
   }
@@ -178,7 +178,7 @@
 
     try {
       return scopeWindow.sessionStorage || null;
-    } catch (_error) {
+    } catch {
       return null;
     }
   }
@@ -190,7 +190,7 @@
 
     try {
       return window.top || window;
-    } catch (_error) {
+    } catch {
       return window;
     }
   }
@@ -427,7 +427,7 @@
       const normalizedHash = url.hash || "";
 
       return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
-    } catch (_error) {
+    } catch {
       return value
         .replace(/([?&])(ACIXSTORE|sid|session|PHPSESSID|token|_|t)=[^&#]*/gi, "$1")
         .replace(/[?&]+$/, "")

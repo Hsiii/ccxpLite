@@ -291,7 +291,7 @@
             callback();
           }
         }
-      } catch (_error) {
+      } catch {
         // Ignore cross-origin frame access errors
       }
 
@@ -327,7 +327,7 @@
     try {
       const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
       return storedValue === "layered" ? "layered" : "classic";
-    } catch (_error) {
+    } catch {
       return "classic";
     }
   }
@@ -381,7 +381,7 @@
           () => {
             try {
               (window.top || window).location.reload();
-            } catch (_e) {
+            } catch {
               window.location.reload();
             }
           },

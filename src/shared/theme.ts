@@ -18,7 +18,7 @@
     const isContextReady = (() => {
       try {
         return !sharedDom || sharedDom.ensureContextValid();
-      } catch (_error) {
+      } catch {
         return false;
       }
     })();
@@ -31,7 +31,7 @@
       const runtime = (() => {
         try {
           return sharedDom?.getRuntimeSafely?.() || null;
-        } catch (_error) {
+        } catch {
           return null;
         }
       })();

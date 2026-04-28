@@ -112,7 +112,7 @@
 
     try {
       originalToSubmit.call(globalScope, form, actionName, actionValue);
-    } catch (_error) {
+    } catch {
       cleanupPendingSubmission();
       if (originalTarget) {
         form.setAttribute("target", originalTarget);
@@ -189,7 +189,7 @@
   function persistSnapshot(snapshot: CcxpLitePe14dSnapshot) {
     try {
       globalScope.sessionStorage.setItem(STATE_STORAGE_KEY, JSON.stringify(snapshot));
-    } catch (_error) {
+    } catch {
       // Ignore storage failures on legacy browsers.
     }
   }
@@ -250,7 +250,7 @@
       }
 
       return snapshot as CcxpLitePe14dSnapshot;
-    } catch (_error) {
+    } catch {
       return null;
     }
   }
@@ -258,7 +258,7 @@
   function clearStoredSnapshot() {
     try {
       globalScope.sessionStorage.removeItem(STATE_STORAGE_KEY);
-    } catch (_error) {
+    } catch {
       // Ignore storage failures on legacy browsers.
     }
   }
@@ -279,7 +279,7 @@
       syncDocumentTitle(responseDocument);
       restoreAfterPatchedUpdate(pendingSubmission.snapshot);
       clearStoredSnapshot();
-    } catch (_error) {
+    } catch {
       fallbackToHardReload();
       return;
     }

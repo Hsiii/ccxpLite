@@ -39,7 +39,6 @@ export default defineConfig(
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
       "@typescript-eslint/no-unnecessary-type-conversion": "off",
       "@typescript-eslint/no-useless-default-assignment": "off",
-      "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/prefer-destructuring": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/promise-function-async": "off",

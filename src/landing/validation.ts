@@ -103,7 +103,7 @@
           : window.location.href,
       );
       return parsed.searchParams.get("pwdstr") || "";
-    } catch (_error) {
+    } catch {
       const match = rawSrc.match(/[?&]pwdstr=([^&]+)/i);
       return match ? decodeURIComponent(match[1] || "") : "";
     }

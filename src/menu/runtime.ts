@@ -80,7 +80,7 @@
       if (storage.getItem(INITIAL_MAIN_URL_STORAGE_KEY)) {
         return;
       }
-    } catch (_error) {
+    } catch {
       return;
     }
 
@@ -91,7 +91,7 @@
 
     try {
       storage.setItem(INITIAL_MAIN_URL_STORAGE_KEY, currentUrl);
-    } catch (_error) {
+    } catch {
       // Ignore session storage failures.
     }
   }
@@ -111,7 +111,7 @@
       const scopeDocument = window.top ? window.top.document : document;
       const src = frame.getAttribute("src") || "";
       return src ? new URL(src, scopeDocument.location.href).toString() : "";
-    } catch (_error) {
+    } catch {
       return "";
     }
   }
@@ -124,7 +124,7 @@
         scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']") ||
         null
       );
-    } catch (_error) {
+    } catch {
       return null;
     }
   }
@@ -199,7 +199,7 @@
     try {
       const url = new URL(resolvedUrl);
       return EXTERNAL_LINK_PATH_PREFIXES.some((pathPrefix) => url.pathname.startsWith(pathPrefix));
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

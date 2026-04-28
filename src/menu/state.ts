@@ -53,7 +53,7 @@
       const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
       persistedSidebarVariant = storedValue === "layered" ? "layered" : "classic";
       return persistedSidebarVariant;
-    } catch (_error) {
+    } catch {
       persistedSidebarVariant = "classic";
       return persistedSidebarVariant;
     }
@@ -64,7 +64,7 @@
 
     try {
       window.localStorage.setItem(SIDEBAR_VARIANT_STORAGE_KEY, persistedSidebarVariant);
-    } catch (_error) {
+    } catch {
       // Ignore storage write failures and keep the in-memory variant.
     }
 

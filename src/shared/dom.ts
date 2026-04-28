@@ -71,7 +71,7 @@
   function hasRuntimeObject() {
     try {
       return typeof chrome !== "undefined" && Boolean(chrome.runtime);
-    } catch (_error) {
+    } catch {
       return false;
     }
   }
@@ -94,7 +94,7 @@
     try {
       const runtime = typeof chrome !== "undefined" ? chrome.runtime : null;
       return runtime && runtime.id ? runtime : null;
-    } catch (_error) {
+    } catch {
       invalidateContext();
       return null;
     }
@@ -124,7 +124,7 @@
 
     try {
       return chrome.storage ? chrome.storage.local : null;
-    } catch (_error) {
+    } catch {
       invalidateContext();
       return null;
     }
@@ -135,7 +135,7 @@
       namespace.cleanupTasks.forEach((task) => {
         try {
           task();
-        } catch (_error) {
+        } catch {
           // Ignore cleanup errors
         }
       });
