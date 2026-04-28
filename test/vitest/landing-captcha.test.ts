@@ -15,7 +15,9 @@ const landingCaptchaModulePaths = [
 ];
 
 function flushPromises() {
-  return new Promise((resolve) => setTimeout(resolve, 0));
+  return new Promise<void>((resolve) => {
+    setTimeout(resolve, 0);
+  });
 }
 
 describe("landing captcha", () => {
