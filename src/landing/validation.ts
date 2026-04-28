@@ -7,7 +7,7 @@
 
   const { getLoginForm } = landingLocale;
 
-  function captureLoginValidationState(targetDocument) {
+  function captureLoginValidationState(targetDocument: Document) {
     const fnstrField = targetDocument.querySelector("input[name='fnstr']");
     const rawFnstr = fnstrField ? fnstrField.value : "";
     const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
@@ -26,7 +26,7 @@
     };
   }
 
-  function restoreLoginValidationGuards(targetDocument, state) {
+  function restoreLoginValidationGuards(targetDocument: Document, state: any) {
     const fields = ["account", "passwd", "passwd2"]
       .map((name) => targetDocument.querySelector(`input[name='${name}']`))
       .filter(Boolean);
@@ -60,7 +60,7 @@
     form.dataset.ccxpLiteValidationBound = "true";
   }
 
-  function ensureLoginSubmissionPayload(form, targetDocument) {
+  function ensureLoginSubmissionPayload(form: HTMLFormElement | null, targetDocument: Document) {
     if (!form) {
       return;
     }
@@ -81,7 +81,7 @@
     }
   }
 
-  function extractPwdstrFromImage(imageNode, targetDocument) {
+  function extractPwdstrFromImage(imageNode: HTMLImageElement | null, targetDocument: Document) {
     if (!imageNode) {
       return "";
     }
@@ -98,7 +98,7 @@
       return parsed.searchParams.get("pwdstr") || "";
     } catch (_error) {
       const match = rawSrc.match(/[?&]pwdstr=([^&]+)/i);
-      return match ? decodeURIComponent(match[1]) : "";
+      return match ? decodeURIComponent(match[1] || "") : "";
     }
   }
 

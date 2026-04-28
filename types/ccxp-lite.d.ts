@@ -124,27 +124,39 @@ declare global {
     __ccxpLiteOriginal?: CcxpLiteWrappedSubmit;
   }
 
+  interface CcxpLiteLandingLocale {
+    isSupportedInquirePath: (targetDocument: Document) => boolean;
+    isLandingPage: (targetDocument: Document) => boolean;
+    resolveLandingLocale: (
+      targetDocument: Document,
+      languageLinks: ParentNode | null,
+      loginSourceCell: ParentNode | null,
+      loginForm: HTMLFormElement | null,
+    ) => CcxpLiteLocale;
+    getLoginForm: (targetDocument: Document) => HTMLFormElement | null;
+  }
+
   interface CcxpLiteNamespace {
-    shared?: unknown;
-    sharedConstants?: unknown;
-    sharedLocale?: unknown;
-    sharedDom?: unknown;
-    sharedTheme?: unknown;
-    landing?: unknown;
-    landingLocale?: unknown;
-    landingSupport?: unknown;
-    landingCaptcha?: unknown;
-    landingTabs?: unknown;
-    landingValidation?: unknown;
-    landingLogin?: unknown;
-    sidebar?: unknown;
-    menuData?: unknown;
-    menuFavorites?: unknown;
-    menuRuntime?: unknown;
-    menuState?: unknown;
-    menuUi?: unknown;
+    shared?: any;
+    sharedConstants?: any;
+    sharedLocale?: any;
+    sharedDom?: any;
+    sharedTheme?: any;
+    landing?: any;
+    landingLocale?: CcxpLiteLandingLocale;
+    landingSupport?: any;
+    landingCaptcha?: any;
+    landingTabs?: any;
+    landingValidation?: any;
+    landingLogin?: any;
+    sidebar?: any;
+    menuData?: any;
+    menuFavorites?: any;
+    menuRuntime?: any;
+    menuState?: any;
+    menuUi?: any;
     decaptchaModel?: CcxpLiteDecaptchaModel;
-    [key: string]: unknown;
+    [key: string]: any;
   }
 
   interface Window {
