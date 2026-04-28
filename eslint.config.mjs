@@ -51,7 +51,6 @@ export default defineConfig(
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/strict-void-return": "off",
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
-      "@typescript-eslint/no-var-requires": "off",
       "array-callback-return": "off",
       "func-name-matching": "off",
       "complete/complete-sentences-line-comments": "off",
