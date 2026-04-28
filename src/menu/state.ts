@@ -1,15 +1,16 @@
 (function registerCcxpLiteSidebarState(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
-  const sidebarUiStateByDocument = new WeakMap();
-  let persistedSidebarVariant = null;
+  const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
+  let persistedSidebarVariant: "classic" | "layered" | null = null;
 
-  function getSidebarUiState(navDocument) {
+  function getSidebarUiState(navDocument: Document): CcxpLiteSidebarState {
     if (sidebarUiStateByDocument.has(navDocument)) {
       return sidebarUiStateByDocument.get(navDocument);
     }
 
-    const state = {
+    const state: CcxpLiteSidebarState = {
+      hasLoaded: true,
       currentCategoryId: "",
       searchQuery: "",
       activeLeaf: null,
@@ -26,7 +27,7 @@
     return state;
   }
 
-  function persistSidebarScroll(targetDocument, viewKey) {
+  function persistSidebarScroll(targetDocument: Document, viewKey: string) {
     const content = targetDocument.querySelector(".ccxp-lite-sidebar-content");
     if (!content) {
       return;
@@ -36,7 +37,7 @@
     state.scrollTopByView[viewKey] = content.scrollTop;
   }
 
-  function restoreSidebarScroll(contentNode, scrollTop) {
+  function restoreSidebarScroll(contentNode: Element, scrollTop: number) {
     const resolvedScrollTop = Number.isFinite(scrollTop) ? scrollTop : 0;
     window.requestAnimationFrame(() => {
       contentNode.scrollTop = resolvedScrollTop;
@@ -58,7 +59,7 @@
     }
   }
 
-  function setPersistedSidebarVariant(variant) {
+  function setPersistedSidebarVariant(variant: "classic" | "layered"): "classic" | "layered" {
     persistedSidebarVariant = variant === "classic" ? "classic" : "layered";
 
     try {

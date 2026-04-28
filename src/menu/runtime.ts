@@ -11,7 +11,7 @@
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
   const EXTERNAL_LINK_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"];
 
-  function shouldOpenLeafInDestination(linkItem, navDocument) {
+  function shouldOpenLeafInDestination(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
     if ((linkItem?.target || "main").toLowerCase() !== "main") {
       return false;
     }
@@ -24,7 +24,12 @@
     return !isExternalLinkOnlyRoute(resolvedUrl);
   }
 
-  function openLeafDestination(targetDocument, navDocument, linkItem, rerender) {
+  function openLeafDestination(
+    targetDocument: Document,
+    navDocument: Document,
+    linkItem: CcxpLiteSidebarLinkItem,
+    rerender: () => void,
+  ) {
     if (!shouldOpenLeafInDestination(linkItem, navDocument)) {
       openLeafInNewTab(linkItem, navDocument);
       return;
@@ -50,7 +55,7 @@
     rerender();
   }
 
-  function simplifyEmbeddedFrame(frame) {
+  function simplifyEmbeddedFrame(frame: HTMLIFrameElement | HTMLFrameElement) {
     const frameDocument = frame.contentDocument;
     if (!frameDocument || !frameDocument.body || !frameDocument.head) {
       return;
@@ -58,7 +63,7 @@
 
     ensureThemeDocument(frameDocument, "main");
     cleanLegacyAttributes(frameDocument);
-    frameDocument.body.classList.add(TOKENS.mainClass);
+    frameDocument.body.classList.add(TOKENS.mainClass as string);
 
     // Force style override as a last resort
     frameDocument.body.style.setProperty("background-image", "none", "important");
@@ -91,7 +96,7 @@
     }
   }
 
-  function openLeafInNewTab(activeLeaf, navDocument) {
+  function openLeafInNewTab(activeLeaf: CcxpLiteSidebarLinkItem, navDocument: Document) {
     const resolvedUrl = resolveLeafUrl(activeLeaf, navDocument);
     window.open(resolvedUrl, "_blank", "noopener");
   }
@@ -124,7 +129,11 @@
     }
   }
 
-  function activateLegacyLink(linkItem, navDocument, destinationFrame = null) {
+  function activateLegacyLink(
+    linkItem: CcxpLiteSidebarLinkItem,
+    navDocument: Document,
+    destinationFrame: HTMLIFrameElement | HTMLFrameElement | null = null,
+  ) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
       const helperUrl = new URL("JH/JH01.php", navDocument.location.href);
@@ -162,7 +171,7 @@
     window.location.href = resolvedUrl;
   }
 
-  function isExternalLinkTarget(linkItem, navDocument) {
+  function isExternalLinkTarget(linkItem: CcxpLiteSidebarLinkItem | string, navDocument: Document) {
     const normalizedTarget =
       typeof linkItem === "string"
         ? linkItem.toLowerCase()
@@ -179,11 +188,11 @@
     return isExternalLinkOnlyRoute(resolvedUrl);
   }
 
-  function resolveLeafUrl(linkItem, navDocument) {
+  function resolveLeafUrl(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
     return new URL(linkItem.href, navDocument.location.href).toString();
   }
 
-  function isExternalLinkOnlyRoute(resolvedUrl) {
+  function isExternalLinkOnlyRoute(resolvedUrl: string) {
     try {
       const url = new URL(resolvedUrl);
       return EXTERNAL_LINK_PATH_PREFIXES.some((pathPrefix) => url.pathname.startsWith(pathPrefix));
@@ -192,7 +201,7 @@
     }
   }
 
-  function readAcixstore(locationHref) {
+  function readAcixstore(locationHref: string) {
     const url = new URL(locationHref);
     return url.searchParams.get("ACIXSTORE") || "";
   }

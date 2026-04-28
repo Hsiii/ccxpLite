@@ -1,5 +1,5 @@
 (function registerCcxpLiteSidebarBootstrap(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { shared, sidebarFavorites, sidebarData, sidebarState, sidebarUi, sidebarRuntime } =
     namespace;
   if (
@@ -83,7 +83,11 @@
       brand.setAttribute("aria-label", strings.sidebarResetHome);
       brand.setAttribute("title", strings.sidebarResetHome);
       brand.appendChild(
-        createBrandImage(hostDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
+        createBrandImage(
+          hostDocument,
+          "ccxp-lite-sidebar-brand-logo",
+          ASSETS.sidebarBrandLogoPath as string,
+        ),
       );
       brand.appendChild(
         createBrandCopy(
