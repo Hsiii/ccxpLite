@@ -79,7 +79,7 @@ export default defineConfig(
       "import-x/no-unassigned-import": [
         "error",
         {
-          allow: ["**/*.css", "../src/content.decaptcha.model.js"],
+          allow: ["**/*.css"],
         },
       ],
       "jsdoc/reject-any-type": "off",
