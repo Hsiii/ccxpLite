@@ -80,8 +80,8 @@
       onReady?: () => void;
     } = {},
   ) {
-    const retryFn = typeof options.retry === "function" ? options.retry : () => {};
-    const onReady = typeof options.onReady === "function" ? options.onReady : () => {};
+    const retryFn = typeof options.retry === "function" ? options.retry : () => undefined;
+    const onReady = typeof options.onReady === "function" ? options.onReady : () => undefined;
 
     if (!targetDocument.body || !targetDocument.head) {
       retryFn();

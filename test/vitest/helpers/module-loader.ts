@@ -56,7 +56,7 @@ export function createTestWindow(
     callback(0);
     return 1;
   }) as typeof testWindow.requestAnimationFrame;
-  testWindow.cancelAnimationFrame = (() => {}) as typeof testWindow.cancelAnimationFrame;
+  testWindow.cancelAnimationFrame = (() => undefined) as typeof testWindow.cancelAnimationFrame;
 
   Object.defineProperty(testWindow.document, "readyState", {
     configurable: true,

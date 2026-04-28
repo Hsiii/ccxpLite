@@ -27,7 +27,6 @@ export default defineConfig(
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/method-signature-style": "off",
       "@typescript-eslint/no-deprecated": "off",
-      "@typescript-eslint/no-empty-function": "off",
       "@typescript-eslint/no-misused-promises": "off",
       "@typescript-eslint/no-shadow": "off",
       "@typescript-eslint/no-base-to-string": "off",
