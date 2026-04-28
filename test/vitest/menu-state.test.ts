@@ -52,16 +52,17 @@ describe("sidebar state", () => {
     const { window } = createTestWindow(
       "<!doctype html><html><body><div class='ccxp-lite-sidebar-content'></div></body></html>",
     );
+    const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const content = window.document.querySelector(".ccxp-lite-sidebar-content") as HTMLElement;
+    const content = document.querySelector(".ccxp-lite-sidebar-content") as HTMLElement;
     content.scrollTop = 48;
 
     const { getSidebarUiState, persistSidebarScroll, restoreSidebarScroll } =
       window.CCXP_LITE.sidebarState;
 
-    persistSidebarScroll(window.document, "category");
-    expect(getSidebarUiState(window.document).scrollTopByView.category).toBe(48);
+    persistSidebarScroll(document, "category");
+    expect(getSidebarUiState(document).scrollTopByView.category).toBe(48);
 
     restoreSidebarScroll(content, 96);
     expect(content.scrollTop).toBe(96);

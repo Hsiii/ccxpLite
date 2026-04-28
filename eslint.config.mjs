@@ -71,12 +71,7 @@ export default defineConfig(
       "complete/strict-array-methods": "off",
       "import-x/no-default-export": "off",
       "import-x/no-commonjs": "off",
-      "import-x/no-unassigned-import": [
-        "error",
-        {
-          allow: ["**/*.css"],
-        },
-      ],
+      "import-x/no-unassigned-import": "error",
       "jsdoc/reject-any-type": "off",
       "jsdoc/type-formatting": "off",
       "logical-assignment-operators": "off",
