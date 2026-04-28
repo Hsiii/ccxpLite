@@ -1,0 +1,93 @@
+import { describe, expect, test, vi } from "vitest";
+
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
+import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures";
+
+describe("sidebar destination states", () => {
+  test("shows loading first and settles into success on iframe load", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    loadModules(window, menuModulePaths);
+
+    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    state.sidebarVariant = "layered";
+    state.currentCategoryId = "category-courses";
+    state.activeLeaf = createSidebarModel().categories[0].sections[0].directLinks[0];
+
+    window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
+    window.CCXP_LITE.sidebarUi.renderSidebar(
+      window.document,
+      window.document,
+      createSidebarModel(),
+    );
+
+    const loading = window.document.querySelector(".ccxp-lite-destination-loading") as HTMLElement;
+    const frame = window.document.querySelector(
+      ".ccxp-lite-destination-frame",
+    ) as HTMLIFrameElement;
+    const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
+
+    expect(loading.hidden).toBe(false);
+    frame.dispatchEvent(new window.Event("load"));
+    expect(loading.hidden).toBe(true);
+    expect(frame.hidden).toBe(false);
+    expect(error.hidden).toBe(true);
+  });
+
+  test("shows error on timeout and retry refreshes the active leaf nonce", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    loadModules(window, menuModulePaths);
+
+    const rerenderModel = createSidebarModel();
+    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    state.sidebarVariant = "layered";
+    state.currentCategoryId = "category-courses";
+    state.activeLeaf = {
+      ...rerenderModel.categories[0].sections[0].directLinks[0],
+      nonce: 1,
+    };
+
+    window.setTimeout = ((callback: TimerHandler) => {
+      if (typeof callback === "function") {
+        callback();
+      }
+      return 1;
+    }) as typeof window.setTimeout;
+
+    window.CCXP_LITE.sidebarUi.renderSidebar(window.document, window.document, rerenderModel);
+
+    const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
+    expect(error.hidden).toBe(false);
+
+    const retryButton = Array.from(window.document.querySelectorAll("button")).find(
+      (button) => button.textContent === "重試",
+    ) as HTMLButtonElement;
+    retryButton.click();
+    expect(state.activeLeaf?.nonce).not.toBe(1);
+  });
+
+  test("open in new tab delegates to window.open", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    loadModules(window, menuModulePaths);
+
+    const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
+    const model = createSidebarModel();
+    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    state.sidebarVariant = "layered";
+    state.currentCategoryId = "category-courses";
+    state.activeLeaf = model.categories[0].sections[0].directLinks[0];
+    window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
+
+    window.CCXP_LITE.sidebarUi.renderSidebar(window.document, window.document, model);
+
+    const openButton = Array.from(window.document.querySelectorAll("button")).find(
+      (button) => button.textContent === "新分頁開啟",
+    ) as HTMLButtonElement;
+    openButton.click();
+
+    expect(openSpy).toHaveBeenCalledWith(
+      "https://www.ccxp.nthu.edu.tw/grades",
+      "_blank",
+      "noopener",
+    );
+  });
+});
