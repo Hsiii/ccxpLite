@@ -1147,13 +1147,16 @@
       const favoriteIds = getFavoriteIds();
       const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
       if (matchingIds.length > 0) {
-        showRemovePinnedDialog(targetDocument, linkItem.label, strings).then((shouldRemove) => {
-          if (!shouldRemove) {
-            return;
-          }
+        void showRemovePinnedDialog(targetDocument, linkItem.label, strings).then(
+          (shouldRemove) => {
+            if (!shouldRemove) {
+              return;
+            }
 
-          applyFavoriteChange();
-        });
+            applyFavoriteChange();
+          },
+          () => undefined,
+        );
         return;
       }
 

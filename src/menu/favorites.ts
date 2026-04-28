@@ -32,7 +32,7 @@
 
     if (favoriteState.pendingLoad) {
       if (typeof onReady === "function") {
-        favoriteState.pendingLoad.then(onReady);
+        void favoriteState.pendingLoad.then(onReady, () => undefined);
       }
       return;
     }
@@ -51,7 +51,7 @@
       });
 
     if (typeof onReady === "function") {
-      favoriteState.pendingLoad.then(onReady);
+      void favoriteState.pendingLoad.then(onReady, () => undefined);
     }
   }
 
@@ -91,12 +91,17 @@
         }
       }
 
-      readLegacyFavoritesFromExtensionStorage().then((favoriteIds) => {
-        if (favoriteIds.size > 0) {
-          writeFavoriteIds(favoriteIds);
-        }
-        resolve(favoriteIds);
-      });
+      void readLegacyFavoritesFromExtensionStorage().then(
+        (favoriteIds) => {
+          if (favoriteIds.size > 0) {
+            writeFavoriteIds(favoriteIds);
+          }
+          resolve(favoriteIds);
+        },
+        () => {
+          resolve(new Set());
+        },
+      );
     });
   }
 
