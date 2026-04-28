@@ -42,6 +42,7 @@ interface DecaptchaTest {
 const decaptchaModel = decaptchaModelModule as unknown;
 const decaptcha = decaptchaModule as unknown as DecaptchaTest;
 
+// eslint-disable-next-line no-void
 void decaptchaModel;
 
 describe("decaptcha preprocessing", () => {

@@ -74,6 +74,7 @@
 
       legacyInlineToggles.forEach((node) => {
         const relation = node.compareDocumentPosition(passwordField);
+        // eslint-disable-next-line no-bitwise
         const isBeforeField = Boolean(relation & Node.DOCUMENT_POSITION_FOLLOWING);
 
         if (isBeforeField) {
@@ -825,7 +826,7 @@
     }
 
     textNodes.forEach((textNode) => {
-      const normalized = (textNode.textContent || "").replace(/\u00a0|&nbsp;|&npsp;/gi, " ");
+      const normalized = (textNode.textContent || "").replace(/\u00A0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim()) {
         textNode.textContent = normalized;
         return;

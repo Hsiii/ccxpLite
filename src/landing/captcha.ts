@@ -159,7 +159,9 @@
     }
 
     clearCaptchaTimeoutFlash(state);
-    void state.input.offsetWidth;
+    // Trigger reflow
+     
+    const _reflow = state.input.offsetWidth;
     state.input.setAttribute("data-timeout-flash", "true");
     state.timeoutFlashTimer = globalThis.setTimeout(() => {
       if (!state.input) {

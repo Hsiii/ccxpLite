@@ -32,7 +32,7 @@
 
     if (favoriteState.pendingLoad !== null) {
       if (typeof onReady === "function") {
-        void favoriteState.pendingLoad.then(onReady, () => undefined);
+        favoriteState.pendingLoad.then(onReady, () => undefined);
       }
       return;
     }
@@ -51,7 +51,7 @@
       });
 
     if (typeof onReady === "function") {
-      void favoriteState.pendingLoad.then(onReady, () => undefined);
+      favoriteState.pendingLoad.then(onReady, () => undefined);
     }
   }
 
@@ -91,7 +91,7 @@
         }
       }
 
-      void readLegacyFavoritesFromExtensionStorage().then(
+      readLegacyFavoritesFromExtensionStorage().then(
         (favoriteIds) => {
           if (favoriteIds.size > 0) {
             writeFavoriteIds(favoriteIds);

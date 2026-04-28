@@ -119,7 +119,7 @@
     }
 
     const sampleText = ((loginSourceCell && loginSourceCell.textContent) || "").trim();
-    return /[\u3400-\u9fff]/.test(sampleText) ? "zh" : "en";
+    return /[\u3400-\u9FFF]/.test(sampleText) ? "zh" : "en";
   }
 
   function getLoginForm(targetDocument: Document): HTMLFormElement | null {

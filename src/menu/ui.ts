@@ -1136,7 +1136,7 @@
       const favoriteIds = getFavoriteIds();
       const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
       if (matchingIds.length > 0) {
-        void showRemovePinnedDialog(targetDocument, linkItem.label, strings).then(
+        showRemovePinnedDialog(targetDocument, linkItem.label, strings).then(
           (shouldRemove) => {
             if (!shouldRemove) {
               return;

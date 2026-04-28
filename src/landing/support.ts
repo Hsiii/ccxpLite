@@ -449,7 +449,7 @@
     }
 
     if (sibling.nodeType === Node.TEXT_NODE) {
-      const normalizedText = (sibling.textContent || "").replace(/\u00a0/g, " ").trim();
+      const normalizedText = (sibling.textContent || "").replace(/\u00A0/g, " ").trim();
       if (normalizedText.length === 0) {
         removeNode(sibling);
       }
@@ -617,7 +617,7 @@
     }
 
     const text = cells
-      .map((cell) => (cell.textContent || "").replace(/\u00a0/g, " "))
+      .map((cell) => (cell.textContent || "").replace(/\u00A0/g, " "))
       .join(" ")
       .replace(/\s+/g, " ")
       .trim();
@@ -640,7 +640,7 @@
     }
 
     const widthText = (cell.getAttribute("width") || "").trim().toLowerCase();
-    const normalizedText = (cell.textContent || "").replace(/\u00a0/g, " ").trim();
+    const normalizedText = (cell.textContent || "").replace(/\u00A0/g, " ").trim();
 
     if ((widthText === "3%" || widthText === "3") && normalizedText.length === 0) {
       return true;
@@ -731,7 +731,7 @@
     }
 
     const normalizedText = (cell.textContent || "")
-      .replace(/\u00a0/g, " ")
+      .replace(/\u00A0/g, " ")
       .replace(/\s+/g, " ")
       .trim();
 
