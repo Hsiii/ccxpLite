@@ -297,8 +297,12 @@
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set();
     if (searchQuery) {
-      items.forEach((item) => collectClassicExpandedIds(item, searchQuery, searchExpansionIds));
-      searchExpansionIds.forEach((itemId) => expandedItemIds.add(itemId));
+      items.forEach((item) => {
+        collectClassicExpandedIds(item, searchQuery, searchExpansionIds);
+      });
+      searchExpansionIds.forEach((itemId) => {
+        expandedItemIds.add(itemId);
+      });
     }
 
     if (items.length === 0) {
@@ -1132,7 +1136,9 @@
         const favoriteIds = getFavoriteIds();
         const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
         if (matchingIds.length > 0) {
-          matchingIds.forEach((favoriteId) => favoriteIds.delete(favoriteId));
+          matchingIds.forEach((favoriteId) => {
+            favoriteIds.delete(favoriteId);
+          });
         } else {
           favoriteIds.add(linkItem.id);
         }
