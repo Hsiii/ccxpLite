@@ -24,7 +24,6 @@ export default defineConfig(
 
   {
     rules: {
-      "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/method-signature-style": "off",
       "@typescript-eslint/no-deprecated": "off",
