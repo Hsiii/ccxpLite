@@ -63,8 +63,6 @@ export default defineConfig(
           allow: ["**/*.css"],
         },
       ],
-      "jsdoc/reject-any-type": "off",
-      "jsdoc/type-formatting": "off",
       "n/file-extension-in-import": "off",
       "no-param-reassign": "off",
       "perfectionist/sort-array-includes": "off",
