@@ -88,16 +88,12 @@
           return false;
         }
 
-        const rawDate = String(firstCell.textContent || "")
-          .replace(/\s+/g, "")
-          .trim();
+        const rawDate = (firstCell.textContent || "").replace(/\s+/g, "").trim();
         if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
           return false;
         }
 
-        const topicText = String(secondCell.textContent || "")
-          .replace(/\s+/g, " ")
-          .trim();
+        const topicText = (secondCell.textContent || "").replace(/\s+/g, " ").trim();
         return topicText.length > 8;
       });
 
@@ -120,10 +116,7 @@
   }
 
   function normalizeAnnouncementHeading(rawText) {
-    return String(rawText || "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .toLowerCase();
+    return (rawText || "").replace(/\s+/g, " ").trim().toLowerCase();
   }
 
   function prepareAnnouncementTable(
@@ -144,17 +137,13 @@
       }
 
       const hasOnlyDecorativeCells = cells.every((cell) => {
-        const hasBgColor = String(cell.getAttribute("bgcolor") || "").trim().length > 0;
-        const text = String(cell.textContent || "")
-          .replace(/\s+/g, "")
-          .trim();
+        const hasBgColor = (cell.getAttribute("bgcolor") || "").trim().length > 0;
+        const text = (cell.textContent || "").replace(/\s+/g, "").trim();
         return hasBgColor && text.length === 0;
       });
 
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
-        const text = String(cell.textContent || "")
-          .replace(/\s+/g, "")
-          .trim();
+        const text = (cell.textContent || "").replace(/\s+/g, "").trim();
         if (text.length > 0) {
           return false;
         }
@@ -163,8 +152,8 @@
       });
 
       const hasLegacySpacerHeight =
-        String(row.getAttribute("height") || "").trim().length > 0 ||
-        cells.some((cell) => String(cell.getAttribute("height") || "").trim().length > 0);
+        (row.getAttribute("height") || "").trim().length > 0 ||
+        cells.some((cell) => (cell.getAttribute("height") || "").trim().length > 0);
 
       if (hasOnlyDecorativeCells) {
         removeNode(row);
@@ -179,9 +168,7 @@
     const headerCell = rows
       .flatMap((row) => Array.from(row.cells || []))
       .find((cell) => cell.classList.contains("board_item"));
-    const titleText = String(headerCell ? headerCell.textContent : "")
-      .replace(/\s+/g, " ")
-      .trim();
+    const titleText = (headerCell ? headerCell.textContent : "").replace(/\s+/g, " ").trim();
 
     const headerRow = rows.find((row) => {
       const cells = Array.from(row.cells || []);
@@ -198,9 +185,7 @@
         return;
       }
 
-      const rawDate = String(cells[0].textContent || "")
-        .replace(/\s+/g, "")
-        .trim();
+      const rawDate = (cells[0].textContent || "").replace(/\s+/g, "").trim();
       if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
         return;
       }
@@ -283,7 +268,7 @@
         return false;
       }
 
-      const href = String(anchor.getAttribute("href") || "").toLowerCase();
+      const href = (anchor.getAttribute("href") || "").toLowerCase();
       if (href.includes("inquire_cpr.html") || href.includes("forget.php")) {
         return true;
       }
@@ -311,9 +296,7 @@
   }
 
   function isCannotLoginLabel(label) {
-    const normalized = String(label || "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
+    const normalized = (label || "").replace(/\s+/g, "").toLowerCase();
 
     return (
       normalized.includes("無法登入") ||
@@ -349,7 +332,7 @@
       return null;
     }
 
-    const sourceLabel = String(sourceAnchor.textContent || "").trim();
+    const sourceLabel = (sourceAnchor.textContent || "").trim();
     const labelText = isCannotLoginLabel(sourceLabel)
       ? strings.cannotLogin
       : sourceLabel || strings.cannotLogin;
@@ -466,9 +449,7 @@
     }
 
     if (sibling.nodeType === Node.TEXT_NODE) {
-      const normalizedText = String(sibling.textContent || "")
-        .replace(/\u00a0/g, " ")
-        .trim();
+      const normalizedText = (sibling.textContent || "").replace(/\u00a0/g, " ").trim();
       if (normalizedText.length === 0) {
         removeNode(sibling);
       }
@@ -490,12 +471,12 @@
       return null;
     }
 
-    const excludedHref = excludedAnchor ? String(excludedAnchor.getAttribute("href") || "") : "";
+    const excludedHref = excludedAnchor ? excludedAnchor.getAttribute("href") || "" : "";
 
     const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"))
       .filter((anchor) => anchor !== excludedAnchor)
       .filter((anchor) => {
-        const href = String(anchor.getAttribute("href") || "");
+        const href = anchor.getAttribute("href") || "";
         return href && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html");
       })
       .filter((anchor) => anchor.textContent && anchor.textContent.trim().length > 0)
@@ -636,7 +617,7 @@
     }
 
     const text = cells
-      .map((cell) => String(cell.textContent || "").replace(/\u00a0/g, " "))
+      .map((cell) => (cell.textContent || "").replace(/\u00a0/g, " "))
       .join(" ")
       .replace(/\s+/g, " ")
       .trim();
@@ -645,9 +626,9 @@
       return false;
     }
 
-    const rowHeight = String(row.getAttribute("height") || "").trim();
+    const rowHeight = (row.getAttribute("height") || "").trim();
     const cellHasHeight = cells.some(
-      (cell) => String(cell.getAttribute("height") || "").trim().length > 0,
+      (cell) => (cell.getAttribute("height") || "").trim().length > 0,
     );
 
     return rowHeight.length > 0 || cellHasHeight;
@@ -658,12 +639,8 @@
       return false;
     }
 
-    const widthText = String(cell.getAttribute("width") || "")
-      .trim()
-      .toLowerCase();
-    const normalizedText = String(cell.textContent || "")
-      .replace(/\u00a0/g, " ")
-      .trim();
+    const widthText = (cell.getAttribute("width") || "").trim().toLowerCase();
+    const normalizedText = (cell.textContent || "").replace(/\u00a0/g, " ").trim();
 
     if ((widthText === "3%" || widthText === "3") && normalizedText.length === 0) {
       return true;
@@ -717,7 +694,7 @@
       rightCell.removeAttribute("width");
       rightCell.style.width = "100%";
       rightCell.style.minWidth = "0";
-      rightCell.colSpan = Math.max(1, Number(rightCell.colSpan || 1));
+      rightCell.colSpan = Math.max(1, rightCell.colSpan || 1);
 
       Array.from(row.children)
         .filter((node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement)
@@ -735,7 +712,7 @@
     }
 
     const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
-    const styleText = String(cell.getAttribute("style") || "").toLowerCase();
+    const styleText = (cell.getAttribute("style") || "").toLowerCase();
     return widthText === "60%" && styleText.includes("min-width") && styleText.includes("30em");
   }
 
@@ -753,7 +730,7 @@
       return false;
     }
 
-    const normalizedText = String(cell.textContent || "")
+    const normalizedText = (cell.textContent || "")
       .replace(/\u00a0/g, " ")
       .replace(/\s+/g, " ")
       .trim();
@@ -791,9 +768,7 @@
   }
 
   function normalizeLegacyWidth(rawValue) {
-    return String(rawValue || "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
+    return (rawValue || "").replace(/\s+/g, "").toLowerCase();
   }
 
   namespace.landingSupport = {

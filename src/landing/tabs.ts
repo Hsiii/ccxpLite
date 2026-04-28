@@ -43,7 +43,7 @@
         return tabPanels.find((panel) => panel.id === directControl) || null;
       }
 
-      const href = String(button.getAttribute("href") || "").trim();
+      const href = (button.getAttribute("href") || "").trim();
       if (href.startsWith("#")) {
         const hashId = href.slice(1);
         const fromHash = tabPanels.find((panel) => panel.id === hashId);
@@ -207,17 +207,14 @@
       return;
     }
 
-    const label = String(button.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim()
-      .toLowerCase();
+    const label = (button.textContent || "").replace(/\s+/g, " ").trim().toLowerCase();
     if (/(學生|校友|student|alumni)/i.test(label)) {
       panel.classList.add("ccxp-lite-student-alumni-panel");
     }
   }
 
   function extractLegacyTabTarget(button: HTMLElement) {
-    const onclickValue = String(button.getAttribute("onclick") || "");
+    const onclickValue = button.getAttribute("onclick") || "";
     const targetMatch = onclickValue.match(/['"]([^'"]+)['"]/);
     return targetMatch ? targetMatch[1] : "";
   }

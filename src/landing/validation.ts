@@ -43,7 +43,7 @@
       return;
     }
 
-    const startedAt = Number(state && state.startedAt) || Date.now();
+    const startedAt = (state && state.startedAt) || Date.now();
     const onFieldActivity = () => {
       if (Date.now() - startedAt > 30 * 60 * 1000) {
         targetDocument.location.reload();
