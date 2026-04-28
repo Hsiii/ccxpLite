@@ -197,8 +197,8 @@
 
   function readLegacyFavoritesFromExtensionStorage(): Promise<Set<string>> {
     return new Promise((resolve) => {
-      const runtime = namespace.sharedDom?.getRuntimeSafely?.() || null;
-      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely?.() || null;
+      const runtime = namespace.sharedDom?.getRuntimeSafely() || null;
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() || null;
 
       if (!storageApi) {
         resolve(new Set());
@@ -395,7 +395,7 @@
   }
 
   function normalizeFavoriteUrl(rawValue) {
-    const value = String(rawValue || "").trim();
+    const value = (rawValue || "").trim();
     if (!value) {
       return "";
     }

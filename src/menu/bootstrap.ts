@@ -33,7 +33,7 @@
   const { captureInitialMainFrameUrl } = sidebarRuntime;
 
   function simplifySidebar(
-    navFrame: HTMLFrameElement,
+    navFrame: HTMLIFrameElement,
     retry: () => void,
     options: { hostDocument?: Document } = {},
   ) {

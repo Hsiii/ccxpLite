@@ -8,7 +8,7 @@
   const { TOKENS, ASSETS } = sharedConstants;
 
   function ensureThemeDocument(targetDocument: Document, scope: string) {
-    if (!targetDocument || !targetDocument.head || !targetDocument.documentElement) {
+    if (!targetDocument.head || !targetDocument.documentElement) {
       return false;
     }
 
@@ -30,7 +30,7 @@
     if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
       const runtime = (() => {
         try {
-          return sharedDom?.getRuntimeSafely?.() || null;
+          return sharedDom?.getRuntimeSafely() || null;
         } catch {
           return null;
         }

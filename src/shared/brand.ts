@@ -13,7 +13,7 @@
     className: string,
     assetPath = ASSETS.brandLogoPath,
   ) {
-    const runtime = namespace.sharedDom?.getRuntimeSafely?.();
+    const runtime = namespace.sharedDom?.getRuntimeSafely();
     const image = targetDocument.createElement("img");
     image.className = className;
     image.alt = getLocalizedStrings(resolveLocaleFromDocument(targetDocument)).sidebarTitle;
