@@ -25,7 +25,11 @@
     const EPS = 1e-5;
 
     function getNamespace() {
-      return (runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+      if (!runtimeScope.CCXP_LITE) {
+        runtimeScope.CCXP_LITE = {};
+      }
+
+      return runtimeScope.CCXP_LITE as CcxpLiteNamespace;
     }
 
     function getPreparedModel(): CcxpLitePreparedModel {

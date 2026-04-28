@@ -86,7 +86,6 @@ export default defineConfig(
       "no-nested-ternary": "off",
       "no-param-reassign": "off",
       "no-promise-executor-return": "off",
-      "no-return-assign": "off",
       "no-void": "off",
       "no-useless-assignment": "off",
       "perfectionist/sort-array-includes": "off",
