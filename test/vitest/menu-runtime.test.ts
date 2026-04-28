@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
 
 describe("sidebar runtime", () => {
   test("detects external-only routes and opens them in a new tab", () => {

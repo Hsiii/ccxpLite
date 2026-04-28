@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
-import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures";
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
 
 describe("sidebar ui", () => {
   test("renders dashboard root state and keeps search input synchronized", () => {

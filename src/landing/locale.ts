@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingLocale(globalScope) {
+(function registerCcxpLiteLandingLocale(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
 
   function isSupportedInquirePath(targetDocument: Document) {

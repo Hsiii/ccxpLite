@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
-import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures";
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
 
 describe("sidebar destination states", () => {
   test("shows loading first and settles into success on iframe load", () => {

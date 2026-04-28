@@ -1,4 +1,4 @@
-(function registerCcxpLiteSharedDom(globalScope) {
+(function registerCcxpLiteSharedDom(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 

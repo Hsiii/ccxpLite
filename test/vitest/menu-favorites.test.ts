@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
 
 describe("sidebar favorites", () => {
   test("loads favorites from scoped localStorage and writes normalized updates", async () => {

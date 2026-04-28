@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingCaptcha(globalScope) {
+(function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { decaptcha, landingLocale } = namespace;
   if (!landingLocale) {

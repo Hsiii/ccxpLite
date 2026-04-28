@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader";
+import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader.js";
 
 describe("shared locale", () => {
   test("normalizes locale families and defaults to zh", () => {

@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingSupport(globalScope) {
+(function registerCcxpLiteLandingSupport(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
   const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared || {};

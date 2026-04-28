@@ -1,4 +1,4 @@
-(function registerCcxpLiteSidebarFavorites(globalScope) {
+(function registerCcxpLiteSidebarFavorites(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
 
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader";
+import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
 
 function createSidebarTreeDocument() {
   return `

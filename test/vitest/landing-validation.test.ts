@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures";
+import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader.js";
+import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 describe("landing validation", () => {
   test("captures parsed fnstr state and falls back to startedAt for malformed values", () => {

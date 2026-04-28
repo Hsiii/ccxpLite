@@ -1,4 +1,4 @@
-(function registerCcxpLiteSidebarState(globalScope) {
+(function registerCcxpLiteSidebarState(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap();

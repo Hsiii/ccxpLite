@@ -1,4 +1,4 @@
-(function registerCcxpLiteSidebarData(globalScope) {
+(function registerCcxpLiteSidebarData(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared, sidebarFavorites } = namespace;
   if (!shared || !sidebarFavorites) {

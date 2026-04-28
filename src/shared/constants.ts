@@ -1,4 +1,4 @@
-(function registerCcxpLiteSharedConstants(globalScope) {
+(function registerCcxpLiteSharedConstants(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
 
   const TOKENS = {

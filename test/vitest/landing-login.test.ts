@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
-import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures";
+import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader.js";
+import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 describe("landing login ui", () => {
   test("wraps the password field once and toggles visibility with localized labels", () => {

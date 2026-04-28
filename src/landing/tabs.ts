@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingTabs(globalScope) {
+(function registerCcxpLiteLandingTabs(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { shared } = namespace;
   if (!shared) {

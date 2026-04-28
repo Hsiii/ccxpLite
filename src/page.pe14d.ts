@@ -1,4 +1,4 @@
-(function registerCcxpLitePe14dPatch(globalScope) {
+(function registerCcxpLitePe14dPatch(globalScope: Window & typeof globalThis) {
   const PAGE_FLAG = "__ccxpLitePe14dPatchInstalled";
   const TRANSPORT_FRAME_ID = "ccxp-lite-pe14d-transport";
   const TRANSPORT_FRAME_NAME = "ccxp-lite-pe14d-transport";

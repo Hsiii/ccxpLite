@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures";
+import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader.js";
+import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 const landingCaptchaModulePaths = [
   ...sharedModulePaths,

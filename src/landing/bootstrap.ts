@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingBootstrap(globalScope) {
+(function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const {
     shared,

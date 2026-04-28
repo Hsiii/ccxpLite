@@ -4,7 +4,7 @@
     predictDigits(imageBytes: unknown): Promise<string>;
   },
 ) {
-  const api = factory(globalScope);
+  const api = factory(globalScope as Window & typeof globalThis);
   const runtimeScope = /** @type {{ CCXP_LITE?: any }} */ globalScope;
   const namespace = runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {});
   namespace.decaptcha = api;

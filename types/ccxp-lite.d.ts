@@ -124,11 +124,31 @@ declare global {
     __ccxpLiteOriginal?: CcxpLiteWrappedSubmit;
   }
 
+  interface CcxpLiteNamespace {
+    shared?: unknown;
+    sharedConstants?: unknown;
+    sharedLocale?: unknown;
+    sharedDom?: unknown;
+    sharedTheme?: unknown;
+    landing?: unknown;
+    landingLocale?: unknown;
+    landingSupport?: unknown;
+    landingCaptcha?: unknown;
+    landingTabs?: unknown;
+    landingValidation?: unknown;
+    landingLogin?: unknown;
+    sidebar?: unknown;
+    menuData?: unknown;
+    menuFavorites?: unknown;
+    menuRuntime?: unknown;
+    menuState?: unknown;
+    menuUi?: unknown;
+    decaptchaModel?: CcxpLiteDecaptchaModel;
+    [key: string]: unknown;
+  }
+
   interface Window {
-    CCXP_LITE?: {
-      decaptchaModel?: CcxpLiteDecaptchaModel;
-      [key: string]: any;
-    };
+    CCXP_LITE?: CcxpLiteNamespace;
     main?: Window;
     toSubmit?: CcxpLiteWrappedSubmit;
   }
@@ -137,7 +157,7 @@ declare global {
     code?: string;
   }
 
-  var CCXP_LITE: any;
+  var CCXP_LITE: CcxpLiteNamespace;
   var module:
     | {
         exports?: unknown;
