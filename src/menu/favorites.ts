@@ -270,7 +270,7 @@
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
     const clickSignature = linkItem.clickLinkArgs
-      ? `${String(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
 
     return [
@@ -284,7 +284,7 @@
 
   function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const clickSignature = linkItem.clickLinkArgs
-      ? `${String(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
 
     return [
