@@ -24,9 +24,16 @@ export default defineConfig(
 
   {
     rules: {
+      "@stylistic/quotes": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/no-deprecated": "off",
 
       "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/no-unnecessary-type-assertion": "off",
@@ -36,9 +43,9 @@ export default defineConfig(
       "@typescript-eslint/prefer-destructuring": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/promise-function-async": "off",
+      "@typescript-eslint/restrict-plus-operands": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/strict-void-return": "off",
-      "func-name-matching": "off",
       "complete/complete-sentences-line-comments": "off",
       "complete/format-line-comments": "off",
       "complete/no-let-any": "off",
@@ -65,6 +72,7 @@ export default defineConfig(
       "jsdoc/reject-any-type": "off",
       "jsdoc/type-formatting": "off",
       "logical-assignment-operators": "off",
+      "n/file-extension-in-import": "off",
       "n/no-callback-literal": "off",
       "no-bitwise": "off",
       "no-implicit-coercion": "off",

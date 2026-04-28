@@ -12,7 +12,6 @@
 
   globalScope[PAGE_FLAG] = true;
 
-  let wrappedToSubmit: CcxpLiteWrappedSubmit | null = null;
   let pendingSubmission: {
     actionName: string;
     snapshot: CcxpLitePe14dSnapshot;
@@ -44,13 +43,13 @@
         return;
       }
 
-      if (currentToSubmit === wrappedToSubmit || currentToSubmit.__ccxpLiteWrapped === true) {
+      if (currentToSubmit.__ccxpLiteWrapped === true) {
         return;
       }
 
       const originalToSubmit = currentToSubmit;
 
-      wrappedToSubmit = function ccxpLiteWrappedToSubmit(
+      const wrappedToSubmit = function wrappedToSubmit(
         this: unknown,
         form: HTMLFormElement,
         actionName?: string,
