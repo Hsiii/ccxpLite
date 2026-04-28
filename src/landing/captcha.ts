@@ -7,7 +7,7 @@
 
   const { getLoginForm } = landingLocale;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
-  const captchaAutofillStateByDocument = new WeakMap();
+  const captchaAutofillStateByDocument = new WeakMap<Document, CcxpLiteCaptchaAutofillState>();
 
   function enableLoginCaptchaAutofill(
     targetDocument: Document,
@@ -338,7 +338,10 @@
   }
 
   function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
-    return Promise.resolve(decaptcha.predictDigits(imageBytes)).then((answer) =>
+    if (!namespace.decaptcha) {
+      return Promise.resolve("");
+    }
+    return Promise.resolve(namespace.decaptcha.predictDigits(imageBytes)).then((answer) =>
       String(answer || "").trim(),
     );
   }

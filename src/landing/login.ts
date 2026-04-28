@@ -1,6 +1,7 @@
 (function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
-  const { shared, landingLocale, landingSupport } = namespace;
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+  const shared = namespace.shared as CcxpLiteShared;
+  const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
     return;
   }
@@ -818,12 +819,12 @@
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
     Array.from(rootNode.querySelectorAll("br")).forEach((node) => removeNode(node));
 
-    const textNodes = [];
+    const textNodes: Node[] = [];
     const walker = targetDocument.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);
     let currentNode = walker.nextNode();
 
     while (currentNode) {
-      textNodes.push(currentNode);
+      textNodes.push(currentNode as Node);
       currentNode = walker.nextNode();
     }
 
@@ -1115,7 +1116,7 @@
       resolveLandingLocale(
         targetDocument,
         targetDocument.querySelector("ul.links"),
-        findLoginSourceCell(targetDocument, getLoginForm(targetDocument)),
+        findLoginSourceCell(targetDocument, getLoginForm(targetDocument)) as ParentNode | null,
         getLoginForm(targetDocument),
       ),
     );

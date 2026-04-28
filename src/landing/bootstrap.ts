@@ -1,7 +1,7 @@
 (function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+  const shared = namespace.shared as CcxpLiteShared;
   const {
-    shared,
     landingLocale,
     landingValidation,
     landingCaptcha,
@@ -107,7 +107,12 @@
     const utilityLinks = findUtilityLinksTable(targetDocument);
     const cannotLoginLink = findCannotLoginLink(targetDocument, utilityLinks);
     const serviceLink = findServiceLink(targetDocument);
-    const locale = resolveLandingLocale(targetDocument, languageLinks, loginSourceCell, loginForm);
+    const locale = resolveLandingLocale(
+      targetDocument,
+      languageLinks as ParentNode | null,
+      loginSourceCell as ParentNode | null,
+      loginForm,
+    );
     const strings = getLocalizedStrings(locale);
 
     if (!loginSourceCell) {
@@ -140,7 +145,7 @@
       createBrandImage(
         targetDocument,
         "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
-        ASSETS.sidebarBrandLogoPath,
+        ASSETS.sidebarBrandLogoPath as string,
       ),
     );
     brandLockup.appendChild(
@@ -178,7 +183,7 @@
     if (loginForm) {
       loginSection.appendChild(loginForm);
     } else {
-      moveChildNodes(loginSourceCell, loginSection);
+      moveChildNodes(loginSourceCell as Node, loginSection);
     }
 
     normalizeLoginFormLayout(loginSection);
@@ -189,10 +194,13 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    const captchaAutofillState = getOrCreateCaptchaAutofillState(targetDocument, loginSection);
+    const captchaAutofillState = getOrCreateCaptchaAutofillState(
+      targetDocument,
+      loginSection as ParentNode,
+    );
 
     removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") || null);
 
     collapseLegacyThreeColumnRows(targetDocument.body);
 
@@ -217,7 +225,7 @@
 
     if (utilityLinks) {
       collapseLegacyUtilityRow(utilityLinks);
-      removeNode(utilityLinks);
+      removeNode(utilityLinks as Node);
     }
 
     topSection.appendChild(headerSection);
@@ -274,7 +282,7 @@
     // Force style override on body as a last resort
     targetDocument.body.style.setProperty("background-image", "none", "important");
     targetDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
-    enableLoginCaptchaAutofill(targetDocument, loginSection, captchaAutofillState);
+    enableLoginCaptchaAutofill(targetDocument, loginSection as ParentNode, captchaAutofillState);
     restoreLoginValidationGuards(targetDocument, loginValidationState);
     targetDocument.body.dataset.ccxpLiteLandingApplied = "true";
     onReady();

@@ -1,5 +1,5 @@
 (function registerCcxpLiteLandingValidation(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
