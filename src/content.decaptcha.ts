@@ -10,7 +10,9 @@
   const namespace = runtimeScope.CCXP_LITE;
   namespace.decaptcha = api;
 
+  // eslint-disable-next-line import-x/no-commonjs
   if (typeof module === "object" && module.exports) {
+    // eslint-disable-next-line import-x/no-commonjs
     module.exports = api;
   }
 })(globalThis, (globalScope: typeof globalThis) => {

@@ -55,8 +55,6 @@ export default defineConfig(
       "complete/require-capital-read-only": "off",
       "complete/require-variadic-function-argument": "off",
       "complete/strict-array-methods": "off",
-      "import-x/no-default-export": "off",
-      "import-x/no-commonjs": "off",
       "import-x/no-unassigned-import": [
         "error",
         {
