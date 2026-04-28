@@ -293,7 +293,7 @@
     captchaImage: HTMLImageElement | null,
     targetDocument: Document,
   ) {
-    const rawSource = String(captchaImage?.getAttribute("src") || "").trim();
+    const rawSource = (captchaImage?.getAttribute("src") || "").trim();
     if (!rawSource) {
       return "";
     }
@@ -341,9 +341,7 @@
     if (!dc) {
       return Promise.resolve("");
     }
-    return Promise.resolve(dc.predictDigits(imageBytes)).then((answer) =>
-      String(answer || "").trim(),
-    );
+    return Promise.resolve(dc.predictDigits(imageBytes)).then((answer) => (answer || "").trim());
   }
 
   interface CcxpLiteCaptchaError extends Error {
