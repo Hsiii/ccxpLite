@@ -171,7 +171,7 @@
       return;
     }
 
-    window.location.href = resolvedUrl;
+    globalThis.location.href = resolvedUrl;
   }
 
   function isExternalLinkTarget(linkItem: CcxpLiteSidebarLinkItem | string, navDocument: Document) {
@@ -220,4 +220,4 @@
     activateLegacyLink,
     isExternalLinkTarget,
   };
-})(window);
+})(globalThis);

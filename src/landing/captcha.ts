@@ -43,8 +43,8 @@
     });
 
     triggerAutofill();
-    window.requestAnimationFrame(triggerAutofill);
-    window.setTimeout(triggerAutofill, 0);
+    globalThis.requestAnimationFrame(triggerAutofill);
+    globalThis.setTimeout(triggerAutofill, 0);
 
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
@@ -146,7 +146,7 @@
     }
 
     if (state.timeoutFlashTimer) {
-      window.clearTimeout(state.timeoutFlashTimer);
+      globalThis.clearTimeout(state.timeoutFlashTimer);
       state.timeoutFlashTimer = null;
     }
 
@@ -161,7 +161,7 @@
     clearCaptchaTimeoutFlash(state);
     void state.input.offsetWidth;
     state.input.setAttribute("data-timeout-flash", "true");
-    state.timeoutFlashTimer = window.setTimeout(() => {
+    state.timeoutFlashTimer = globalThis.setTimeout(() => {
       if (!state.input) {
         return;
       }
@@ -303,7 +303,7 @@
         rawSource,
         targetDocument.location && targetDocument.location.href
           ? targetDocument.location.href
-          : window.location.href,
+          : globalThis.location.href,
       );
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
       const fileName = pathSegments[pathSegments.length - 1] || "";
@@ -320,7 +320,7 @@
       captchaSrc,
       targetDocument.location && targetDocument.location.href
         ? targetDocument.location.href
-        : window.location.href,
+        : globalThis.location.href,
     );
 
     return fetchWithTimeout(
@@ -367,7 +367,7 @@
   ) {
     const controller = new AbortController();
     let didTimeout = false;
-    const timerId = window.setTimeout(() => {
+    const timerId = globalThis.setTimeout(() => {
       didTimeout = true;
       controller.abort();
     }, timeoutMs);
@@ -387,7 +387,7 @@
         throw error;
       })
       .finally(() => {
-        window.clearTimeout(timerId);
+        globalThis.clearTimeout(timerId);
       });
   }
 
@@ -397,4 +397,4 @@
     getOrCreateCaptchaAutofillState,
     primeCaptchaAutofill,
   };
-})(window);
+})(globalThis);

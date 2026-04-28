@@ -100,7 +100,7 @@
         rawSrc,
         targetDocument.location && targetDocument.location.href
           ? targetDocument.location.href
-          : window.location.href,
+          : globalThis.location.href,
       );
       return parsed.searchParams.get("pwdstr") || "";
     } catch {
@@ -115,4 +115,4 @@
     ensureLoginSubmissionPayload,
     extractPwdstrFromImage,
   };
-})(window);
+})(globalThis);

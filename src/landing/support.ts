@@ -811,4 +811,4 @@
     findCalendarTable,
     prepareAnnouncementTable,
   };
-})(window);
+})(globalThis);

@@ -336,4 +336,4 @@
       .replace(/\\/g, "\\\\")
       .replace(/"/g, '\\"');
   }
-})(window);
+})(globalThis);

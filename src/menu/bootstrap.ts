@@ -166,4 +166,4 @@
   namespace.sidebar = {
     simplifySidebar,
   };
-})(window);
+})(globalThis);

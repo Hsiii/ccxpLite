@@ -781,7 +781,7 @@
   }
 
   function scheduleCategoryDetailWaterfall(targetDocument: Document, body: HTMLElement) {
-    const view = targetDocument.defaultView || window;
+    const view = targetDocument.defaultView || globalThis;
     const supportsNativeWaterfall =
       view.CSS &&
       (view.CSS.supports("display", "grid-lanes") ||
@@ -1486,7 +1486,7 @@
         return;
       }
       hasSettled = true;
-      window.clearTimeout(timeoutId);
+      globalThis.clearTimeout(timeoutId);
       loading.hidden = true;
       error.hidden = true;
       frame.hidden = false;
@@ -1524,7 +1524,7 @@
       }
     };
 
-    const timeoutId = window.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
+    const timeoutId = globalThis.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
     frame.addEventListener("load", () => {
       simplifyEmbeddedFrame(frame);
       settleSuccess();
@@ -1885,4 +1885,4 @@
     mountSidebarVariantSwitch,
     syncTopLevelFramesetLayout,
   };
-})(window);
+})(globalThis);

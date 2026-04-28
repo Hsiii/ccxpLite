@@ -184,14 +184,14 @@
   }
 
   function getFavoriteScopeWindow() {
-    if (typeof window === "undefined") {
+    if (globalThis.window === undefined) {
       return null;
     }
 
     try {
-      return window.top || window;
+      return window.top || globalThis;
     } catch {
-      return window;
+      return globalThis;
     }
   }
 
@@ -455,4 +455,4 @@
     getMatchingFavoriteIds,
     getScopedSessionStorage,
   };
-})(window);
+})(globalThis);

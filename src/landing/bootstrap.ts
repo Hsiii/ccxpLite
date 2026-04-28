@@ -294,4 +294,4 @@
     preloadLandingCaptcha,
     simplifyLandingPage,
   };
-})(window);
+})(globalThis);

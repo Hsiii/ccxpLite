@@ -169,7 +169,7 @@
         continue;
       }
 
-      const style = window.getComputedStyle(node);
+      const style = globalThis.getComputedStyle(node);
       if (style.display === "none" || style.visibility === "hidden") {
         return false;
       }
@@ -187,4 +187,4 @@
     resolveLandingLocale,
     getLoginForm,
   };
-})(window);
+})(globalThis);

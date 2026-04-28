@@ -1205,4 +1205,4 @@
     removeLoginSpacingArtifacts,
     alignCaptchaMediaRow,
   };
-})(window);
+})(globalThis);

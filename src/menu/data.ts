@@ -538,4 +538,4 @@
     filterCategoryTree,
     countLinksInTree,
   };
-})(window);
+})(globalThis);

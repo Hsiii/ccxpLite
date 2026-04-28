@@ -379,4 +379,4 @@
     SIDEBAR_CATEGORIES,
     ASSETS,
   };
-})(window);
+})(globalThis);

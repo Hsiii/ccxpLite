@@ -1,5 +1,5 @@
 (function bootstrapCcxpLite() {
-  const namespace = (window.CCXP_LITE || {}) as CcxpLiteNamespace;
+  const namespace = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
   const shared = namespace.shared as CcxpLiteShared;
   const sidebar = namespace.sidebar;
   const landing = namespace.landing;
@@ -95,7 +95,7 @@
       released: false,
     };
 
-    state.timerId = window.setTimeout(() => {
+    state.timerId = globalThis.setTimeout(() => {
       releaseLoadingSprite(targetDocument);
       state.released = true;
     }, LOADING_SPRITE_TIMEOUT_MS);
@@ -180,7 +180,7 @@
       sprite.style.opacity = "0";
     }
 
-    window.setTimeout(() => {
+    globalThis.setTimeout(() => {
       removeNode(sprite);
       removeNode(styleNode);
     }, 180);
@@ -232,7 +232,7 @@
     }
 
     if (loadingState.timerId !== null) {
-      window.clearTimeout(loadingState.timerId);
+      globalThis.clearTimeout(loadingState.timerId);
     }
 
     loadingState.released = true;
@@ -295,10 +295,10 @@
         // Ignore cross-origin frame access errors
       }
 
-      window.requestAnimationFrame(poll);
+      globalThis.requestAnimationFrame(poll);
     };
 
-    window.requestAnimationFrame(poll);
+    globalThis.requestAnimationFrame(poll);
   }
 
   function retry() {
@@ -307,7 +307,7 @@
     }
 
     attempts += 1;
-    window.setTimeout(attachAndApply, RETRY_DELAY_MS);
+    globalThis.setTimeout(attachAndApply, RETRY_DELAY_MS);
   }
 
   function applyFramesetLayout() {
@@ -325,7 +325,7 @@
 
   function readSidebarVariant() {
     try {
-      const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
+      const storedValue = globalThis.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
       return storedValue === "layered" ? "layered" : "classic";
     } catch {
       return "classic";
@@ -367,7 +367,7 @@
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
 
     // Mount lab button to main frame if in classic mode
-    const { sidebarState, sidebarUi, shared: sharedLib } = window.CCXP_LITE || {};
+    const { sidebarState, sidebarUi, shared: sharedLib } = globalThis.CCXP_LITE || {};
     if (sidebarState && sidebarUi && sharedLib) {
       const state = sidebarState.getSidebarUiState(mainDocument as Document);
       const strings = sharedLib.getLocalizedStrings(
@@ -380,9 +380,9 @@
           strings,
           () => {
             try {
-              (window.top || window).location.reload();
+              (window.top || globalThis).location.reload();
             } catch {
-              window.location.reload();
+              globalThis.location.reload();
             }
           },
           null,

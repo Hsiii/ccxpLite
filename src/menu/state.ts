@@ -39,7 +39,7 @@
 
   function restoreSidebarScroll(contentNode: Element, scrollTop: number) {
     const resolvedScrollTop = Number.isFinite(scrollTop) ? scrollTop : 0;
-    window.requestAnimationFrame(() => {
+    globalThis.requestAnimationFrame(() => {
       contentNode.scrollTop = resolvedScrollTop;
     });
   }
@@ -50,7 +50,7 @@
     }
 
     try {
-      const storedValue = window.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
+      const storedValue = globalThis.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
       persistedSidebarVariant = storedValue === "layered" ? "layered" : "classic";
       return persistedSidebarVariant;
     } catch {
@@ -63,7 +63,7 @@
     persistedSidebarVariant = variant === "classic" ? "classic" : "layered";
 
     try {
-      window.localStorage.setItem(SIDEBAR_VARIANT_STORAGE_KEY, persistedSidebarVariant);
+      globalThis.localStorage.setItem(SIDEBAR_VARIANT_STORAGE_KEY, persistedSidebarVariant);
     } catch {
       // Ignore storage write failures and keep the in-memory variant.
     }
@@ -78,4 +78,4 @@
     getPersistedSidebarVariant,
     setPersistedSidebarVariant,
   };
-})(window);
+})(globalThis);

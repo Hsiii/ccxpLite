@@ -207,4 +207,4 @@
     getLocalStorageAreaSafely,
     addCleanupTask,
   };
-})(window);
+})(globalThis);

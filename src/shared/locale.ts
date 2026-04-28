@@ -38,4 +38,4 @@
     resolveLocaleFromDocument,
     getLocalizedStrings,
   };
-})(window);
+})(globalThis);

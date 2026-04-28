@@ -226,4 +226,4 @@
     createLandingSection,
     wireLandingTabs,
   };
-})(window);
+})(globalThis);

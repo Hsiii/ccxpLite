@@ -205,4 +205,4 @@
   namespace.sharedTheme = {
     ensureThemeDocument,
   };
-})(window);
+})(globalThis);
