@@ -2,23 +2,23 @@
   const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
-  function moveChildNodes(sourceNode, targetNode) {
+  function moveChildNodes(sourceNode: Node, targetNode: Node) {
     while (sourceNode.firstChild) {
       targetNode.appendChild(sourceNode.firstChild);
     }
   }
 
-  function removeNode(node) {
+  function removeNode(node: Node | null) {
     if (node && node.parentNode) {
       node.parentNode.removeChild(node);
     }
   }
 
-  function isDocumentComplete(targetDocument) {
+  function isDocumentComplete(targetDocument: Document) {
     return targetDocument.readyState === "complete";
   }
 
-  function cleanLegacyAttributes(node) {
+  function cleanLegacyAttributes(node: Node | null) {
     if (!node) {
       return;
     }
@@ -26,7 +26,7 @@
     const legacyAttrs = ["background", "bgcolor", "text", "link", "vlink", "alink"];
     const selector = legacyAttrs.map((attr) => `[${attr}]`).join(", ");
 
-    const cleanElement = (el) => {
+    const cleanElement = (el: Element) => {
       if (el.nodeType !== Node.ELEMENT_NODE) {
         return;
       }
@@ -37,7 +37,7 @@
       });
 
       const style = el.getAttribute("style");
-      if (style && /background(-image)?\s*:/i.test(style)) {
+      if (style && /background(-image)?\s*:/i.test(String(style))) {
         el.style.backgroundImage = "none";
         // If it's the body and we want to be very sure:
         if (el.tagName === "BODY") {
@@ -47,18 +47,20 @@
     };
 
     if (node.nodeType === Node.DOCUMENT_NODE) {
-      if (node.documentElement) {
-        cleanElement(node.documentElement);
-        const legacyNodes = node.documentElement.querySelectorAll(selector);
-        legacyNodes.forEach(cleanElement);
+      const doc = node as Document;
+      if (doc.documentElement) {
+        cleanElement(doc.documentElement);
+        const legacyNodes = doc.documentElement.querySelectorAll(selector);
+        legacyNodes.forEach((el) => cleanElement(el));
       }
-      if (node.body) {
-        cleanElement(node.body);
+      if (doc.body) {
+        cleanElement(doc.body);
       }
     } else if (node.nodeType === Node.ELEMENT_NODE) {
-      cleanElement(node);
-      const legacyNodes = node.querySelectorAll(selector);
-      legacyNodes.forEach(cleanElement);
+      const el = node as Element;
+      cleanElement(el);
+      const legacyNodes = el.querySelectorAll(selector);
+      legacyNodes.forEach((item) => cleanElement(item));
     }
   }
 

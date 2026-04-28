@@ -7,7 +7,7 @@
 
   const { TOKENS, ASSETS } = sharedConstants;
 
-  function ensureThemeDocument(targetDocument, scope) {
+  function ensureThemeDocument(targetDocument: Document, scope: string) {
     if (!targetDocument || !targetDocument.head || !targetDocument.documentElement) {
       return false;
     }
@@ -194,7 +194,7 @@
     };
   }
 
-  function applyCssVariables(targetElement, variables) {
+  function applyCssVariables(targetElement: HTMLElement, variables: Record<string, string>) {
     Object.entries(variables).forEach(([name, value]) => {
       targetElement.style.setProperty(name, value);
     });

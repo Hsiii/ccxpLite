@@ -13,7 +13,13 @@
   globalScope[PAGE_FLAG] = true;
 
   let wrappedToSubmit = null;
-  let pendingSubmission = null;
+  let pendingSubmission: {
+    actionName: string;
+    snapshot: CcxpLitePe14dSnapshot;
+    originalTarget: string;
+    frame: HTMLIFrameElement;
+    cleanedUp: boolean;
+  } | null = null;
 
   function isSupportedPage() {
     return /^\/ccxp\/INQUIRE\/PE\/1\/14D\/.+/i.test(globalScope.location.pathname);
@@ -44,12 +50,16 @@
 
       const originalToSubmit = currentToSubmit;
 
-      wrappedToSubmit = function ccxpLiteWrappedToSubmit(form, actionName, actionValue) {
-        if (!shouldInterceptSubmission(form, actionName)) {
+      wrappedToSubmit = function ccxpLiteWrappedToSubmit(
+        form: HTMLFormElement,
+        actionName?: string,
+        actionValue?: string,
+      ) {
+        if (!shouldInterceptSubmission(form, actionName as string)) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
 
-        return submitThroughTransport(originalToSubmit, form, actionName, actionValue);
+        return submitThroughTransport(originalToSubmit, form, actionName as string, actionValue);
       };
 
       wrappedToSubmit.__ccxpLiteWrapped = true;
@@ -193,16 +203,17 @@
     clearStoredSnapshot();
 
     const applyRestore = () => {
-      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
-
+      globalScope.scrollTo(
+        (snapshot.scrollX || 0) as number,
+        (snapshot.scrollY || snapshot.bodyScrollTop || 0) as number,
+      );
       const focusTarget =
         (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
+            `[name="${escapeAttributeValue(snapshot.activeName as string)}"]`,
           )) ||
         null;
-
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
@@ -229,7 +240,7 @@
         return null;
       }
 
-      const snapshot = JSON.parse(rawValue);
+      const snapshot = JSON.parse(rawValue) as CcxpLitePe14dSnapshot;
       if (
         !snapshot ||
         snapshot.pathname !== globalScope.location.pathname ||
@@ -238,7 +249,7 @@
         return null;
       }
 
-      return snapshot;
+      return snapshot as CcxpLitePe14dSnapshot;
     } catch (_error) {
       return null;
     }
@@ -276,29 +287,30 @@
     cleanupPendingSubmission();
   }
 
-  function replaceVisibleBody(sourceDocument) {
+  function replaceVisibleBody(sourceDocument: Document) {
     const nextBody = globalScope.document.importNode(sourceDocument.body, true);
-    globalScope.document.body.replaceWith(nextBody);
+    globalScope.document.body.replaceWith(nextBody as Node);
   }
 
-  function syncDocumentTitle(sourceDocument) {
+  function syncDocumentTitle(sourceDocument: Document) {
     if (sourceDocument.title) {
       globalScope.document.title = sourceDocument.title;
     }
   }
 
-  function restoreAfterPatchedUpdate(snapshot) {
+  function restoreAfterPatchedUpdate(snapshot: CcxpLitePe14dSnapshot) {
     globalScope.requestAnimationFrame(() => {
-      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
-
+      globalScope.scrollTo(
+        (snapshot.scrollX || 0) as number,
+        (snapshot.scrollY || snapshot.bodyScrollTop || 0) as number,
+      );
       const focusTarget =
         (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
+            `[name="${escapeAttributeValue(snapshot.activeName as string)}"]`,
           )) ||
         null;
-
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
