@@ -4,6 +4,9 @@ fixtures/ccxp-snapshot/
 dist/
 .build/
 .husky/_/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .eslintcache
 coverage/
 *.tsbuildinfo

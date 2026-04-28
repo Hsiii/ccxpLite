@@ -1,8 +1,10 @@
 const { describe, test, expect } = require("bun:test");
 
 globalThis.CCXP_LITE = {};
-require("../src/content.decaptcha.model.js");
+const decaptchaModel = require("../src/content.decaptcha.model.js");
 const decaptcha = require("../src/content.decaptcha.js");
+
+void decaptchaModel;
 
 describe("decaptcha preprocessing", () => {
   test("converts a cropped captcha image into CHW float data", () => {
