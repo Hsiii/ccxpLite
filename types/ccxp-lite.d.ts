@@ -1,6 +1,13 @@
 export {};
 
 declare global {
+  let CCXP_LITE: CcxpLiteNamespace;
+  let module:
+    | {
+        exports?: unknown;
+      }
+    | undefined;
+
   type CcxpLiteLocale = "en" | "zh";
 
   interface CcxpLiteTensorSource {
@@ -516,11 +523,4 @@ declare global {
   interface Error {
     code?: string;
   }
-
-  var CCXP_LITE: CcxpLiteNamespace;
-  var module:
-    | {
-        exports?: unknown;
-      }
-    | undefined;
 }

@@ -108,7 +108,6 @@ export default defineConfig(
       "unicorn/prefer-switch": "off",
       "unicorn/prefer-type-error": "off",
       "unicorn/require-module-specifiers": "off",
-      "vars-on-top": "off",
     },
   },
 );
