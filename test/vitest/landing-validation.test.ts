@@ -1,6 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  landingModulePaths,
+  loadModules,
+  requireValue,
+} from "./helpers/module-loader.js";
 import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 describe("landing validation", () => {
@@ -9,7 +14,7 @@ describe("landing validation", () => {
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
 
-    const validation = window.CCXP_LITE.landingValidation!;
+    const validation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
     expect(validation.captureLoginValidationState(document)).toMatchObject({
       fnstrDate: "20260428",
       fnstrSeed: "777",
@@ -23,7 +28,7 @@ describe("landing validation", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
-    const landingValidation = window.CCXP_LITE.landingValidation!;
+    const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
 
     const reloadSpy = vi.fn();
     Object.defineProperty(document, "location", {
@@ -44,10 +49,10 @@ describe("landing validation", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
-    const landingLocale = window.CCXP_LITE.landingLocale!;
-    const landingValidation = window.CCXP_LITE.landingValidation!;
+    const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
+    const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
 
-    const form = landingLocale.getLoginForm(document)!;
+    const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
     const image = form.querySelector("img") as HTMLImageElement;
     image.setAttribute("src", "auth_img.php?pwdstr=20260501-123");
 

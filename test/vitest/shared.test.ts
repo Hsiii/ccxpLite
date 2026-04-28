@@ -1,6 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  requireValue,
+  sharedModulePaths,
+} from "./helpers/module-loader.js";
 
 describe("shared locale", () => {
   test("normalizes locale families and defaults to zh", () => {
@@ -8,8 +13,10 @@ describe("shared locale", () => {
     const document = window.document as Document;
     loadModules(window, sharedModulePaths);
 
-    const { normalizeLocale, resolveLocaleFromDocument, getLocalizedStrings } =
-      window.CCXP_LITE.sharedLocale!;
+    const { normalizeLocale, resolveLocaleFromDocument, getLocalizedStrings } = requireValue(
+      window.CCXP_LITE.sharedLocale,
+      "sharedLocale",
+    );
 
     expect(normalizeLocale("en-US")).toBe("en");
     expect(normalizeLocale("ch")).toBe("zh");
@@ -27,7 +34,7 @@ describe("shared theme", () => {
     const document = window.document as Document;
     loadModules(window, sharedModulePaths);
 
-    const { ensureThemeDocument } = window.CCXP_LITE.sharedTheme!;
+    const { ensureThemeDocument } = requireValue(window.CCXP_LITE.sharedTheme, "sharedTheme");
 
     expect(ensureThemeDocument(document, "nav")).toBe(true);
     expect(ensureThemeDocument(document, "nav")).toBe(true);
@@ -44,8 +51,8 @@ describe("shared theme", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;
     loadModules(window, sharedModulePaths);
-    const sharedDom = window.CCXP_LITE.sharedDom!;
-    const sharedTheme = window.CCXP_LITE.sharedTheme!;
+    const sharedDom = requireValue(window.CCXP_LITE.sharedDom, "sharedDom");
+    const sharedTheme = requireValue(window.CCXP_LITE.sharedTheme, "sharedTheme");
 
     const getRuntimeSafely = vi.spyOn(sharedDom, "getRuntimeSafely").mockReturnValue(null);
 

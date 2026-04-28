@@ -1,6 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  menuModulePaths,
+  requireValue,
+} from "./helpers/module-loader.js";
 import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
 
 describe("sidebar destination states", () => {
@@ -9,13 +14,19 @@ describe("sidebar destination states", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
+    const state = requireValue(window.CCXP_LITE.sidebarState, "sidebarState").getSidebarUiState(
+      document,
+    );
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = createSidebarModel().categories[0].sections[0].directLinks[0];
 
     window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
-    window.CCXP_LITE.sidebarUi!.renderSidebar(window.document, document, createSidebarModel());
+    requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(
+      window.document,
+      document,
+      createSidebarModel(),
+    );
 
     const loading = document.querySelector(".ccxp-lite-destination-loading") as HTMLElement;
     const frame = document.querySelector(".ccxp-lite-destination-frame") as HTMLIFrameElement;
@@ -34,7 +45,9 @@ describe("sidebar destination states", () => {
     loadModules(window, menuModulePaths);
 
     const rerenderModel = createSidebarModel();
-    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
+    const state = requireValue(window.CCXP_LITE.sidebarState, "sidebarState").getSidebarUiState(
+      document,
+    );
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = {
@@ -68,7 +81,9 @@ describe("sidebar destination states", () => {
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     const model = createSidebarModel();
-    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
+    const state = requireValue(window.CCXP_LITE.sidebarState, "sidebarState").getSidebarUiState(
+      document,
+    );
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = model.categories[0].sections[0].directLinks[0];

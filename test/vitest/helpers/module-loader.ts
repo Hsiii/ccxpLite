@@ -84,6 +84,14 @@ export function loadModules(window: TestWindow, modulePaths: string[]): void {
   });
 }
 
+export function requireValue<T>(value: T | null | undefined, message = "Expected value"): T {
+  if (value === null || value === undefined) {
+    throw new Error(message);
+  }
+
+  return value;
+}
+
 export const sharedModulePaths = [
   "src/shared/constants.ts",
   "src/shared/locale.ts",

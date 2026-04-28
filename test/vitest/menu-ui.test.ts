@@ -1,6 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  menuModulePaths,
+  requireValue,
+} from "./helpers/module-loader.js";
 import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
 
 describe("sidebar ui", () => {
@@ -9,13 +14,16 @@ describe("sidebar ui", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
+    const state = requireValue(window.CCXP_LITE.sidebarState, "sidebarState").getSidebarUiState(
+      document,
+    );
     state.sidebarVariant = "layered";
     state.searchQuery = "Semester";
-    window.CCXP_LITE.sidebarFavorites!.favoriteState.hasLoaded = true;
+    requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites").favoriteState.hasLoaded =
+      true;
     const model = createSidebarModel();
 
-    window.CCXP_LITE.sidebarUi!.renderSidebar(document, document, model);
+    requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(document, document, model);
 
     const searchInput = document.querySelector(
       ".ccxp-lite-sidebar-search-input",
@@ -53,10 +61,10 @@ describe("sidebar ui", () => {
     state.currentCategoryId = "category-courses";
     state.activeLeaf = { id: "grades" };
 
-    window.CCXP_LITE.sidebarUi!.mountSidebarVariantSwitch(
+    requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").mountSidebarVariantSwitch(
       document,
       state,
-      window.CCXP_LITE.shared!.LOCALIZED_STRINGS.zh,
+      requireValue(window.CCXP_LITE.shared, "shared").LOCALIZED_STRINGS.zh,
       vi.fn(),
     );
 

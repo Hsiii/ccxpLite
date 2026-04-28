@@ -142,7 +142,10 @@
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
 
       if (helperFrame && (helperFrame as HTMLIFrameElement).contentWindow) {
-        (helperFrame as HTMLIFrameElement).contentWindow!.location.replace(helperUrl.toString());
+        const helperWindow = (helperFrame as HTMLIFrameElement).contentWindow;
+        if (helperWindow) {
+          helperWindow.location.replace(helperUrl.toString());
+        }
       } else if (helperFrame) {
         helperFrame.setAttribute("src", helperUrl.toString());
       }

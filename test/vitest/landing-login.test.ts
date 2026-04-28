@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 
-import { createTestWindow, loadModules, landingModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  landingModulePaths,
+  loadModules,
+  requireValue,
+} from "./helpers/module-loader.js";
 import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 describe("landing login ui", () => {
@@ -8,7 +13,7 @@ describe("landing login ui", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
-    const landingLogin = window.CCXP_LITE.landingLogin!;
+    const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
 
     landingLogin.enhancePasswordVisibilityToggle(document, document);
     landingLogin.enhancePasswordVisibilityToggle(document, document);
@@ -28,10 +33,10 @@ describe("landing login ui", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
-    const landingLocale = window.CCXP_LITE.landingLocale!;
-    const landingLogin = window.CCXP_LITE.landingLogin!;
+    const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
+    const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
 
-    const form = landingLocale.getLoginForm(document)!;
+    const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
     landingLogin.normalizeLoginFormLayout(document);
     landingLogin.normalizeLoginFormLayout(document);
 

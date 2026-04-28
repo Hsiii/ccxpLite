@@ -1,6 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
 
-import { createTestWindow, loadModules, sharedModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  requireValue,
+  sharedModulePaths,
+} from "./helpers/module-loader.js";
 import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 
 const landingCaptchaModulePaths = [
@@ -20,7 +25,7 @@ describe("landing captcha", () => {
     const predictDigits = vi.fn().mockResolvedValue("654321");
     window.CCXP_LITE.decaptcha = { predictDigits };
     loadModules(window, landingCaptchaModulePaths);
-    const landingCaptcha = window.CCXP_LITE.landingCaptcha!;
+    const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
     let resolveFetch: ((value: Response) => void) | null = null;
     window.fetch = vi.fn(
@@ -63,7 +68,7 @@ describe("landing captcha", () => {
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = { predictDigits: vi.fn() };
     loadModules(window, landingCaptchaModulePaths);
-    const landingCaptcha = window.CCXP_LITE.landingCaptcha!;
+    const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
     window.fetch = vi.fn(() => {
       const error = new Error("captcha-timeout");
