@@ -9,7 +9,7 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 
 export type TestWindow = Window &
   typeof globalThis & {
-    CCXP_LITE: Record<string, any>;
+    CCXP_LITE: CcxpLiteNamespace;
     chrome?: {
       runtime?: {
         id?: string;
@@ -36,7 +36,7 @@ export function createTestWindow(
   window.document.write(html);
   const testWindow = window as unknown as TestWindow;
 
-  testWindow.CCXP_LITE = {};
+  testWindow.CCXP_LITE = {} as CcxpLiteNamespace;
   testWindow.chrome = {
     runtime: {
       id: "ccxp-lite-test",

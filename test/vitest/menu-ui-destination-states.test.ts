@@ -27,7 +27,7 @@ describe("sidebar destination states", () => {
     const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
 
     expect(loading.hidden).toBe(false);
-    frame.dispatchEvent(new window.Event("load"));
+    frame.dispatchEvent(new (window as any).Event("load") as Event);
     expect(loading.hidden).toBe(true);
     expect(frame.hidden).toBe(false);
     expect(error.hidden).toBe(true);
@@ -58,9 +58,9 @@ describe("sidebar destination states", () => {
     const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
     expect(error.hidden).toBe(false);
 
-    const retryButton = Array.from(window.document.querySelectorAll("button")).find(
-      (button) => button.textContent === "重試",
-    ) as HTMLButtonElement;
+    const retryButton = Array.from(
+      window.document.querySelectorAll("button") as unknown as Iterable<HTMLButtonElement>,
+    ).find((button) => button.textContent === "重試") as HTMLButtonElement;
     retryButton.click();
     expect(state.activeLeaf?.nonce).not.toBe(1);
   });
@@ -79,9 +79,9 @@ describe("sidebar destination states", () => {
 
     window.CCXP_LITE.sidebarUi.renderSidebar(window.document, window.document, model);
 
-    const openButton = Array.from(window.document.querySelectorAll("button")).find(
-      (button) => button.textContent === "新分頁開啟",
-    ) as HTMLButtonElement;
+    const openButton = Array.from(
+      window.document.querySelectorAll("button") as unknown as Iterable<HTMLButtonElement>,
+    ).find((button) => button.textContent === "新分頁開啟") as HTMLButtonElement;
     openButton.click();
 
     expect(openSpy).toHaveBeenCalledWith(

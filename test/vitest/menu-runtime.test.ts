@@ -75,7 +75,7 @@ describe("sidebar runtime", () => {
         target: "main",
       },
       window.document,
-      destinationFrame,
+      destinationFrame as HTMLIFrameElement,
     );
 
     expect(destinationFrame.src).toBe("https://www.ccxp.nthu.edu.tw/grades");

@@ -33,7 +33,7 @@ describe("landing validation", () => {
     });
 
     const account = window.document.querySelector("input[name='account']") as HTMLInputElement;
-    account.dispatchEvent(new window.Event("click"));
+    account.dispatchEvent(new (window as any).Event("click") as Event);
     expect(reloadSpy).toHaveBeenCalled();
   });
 
