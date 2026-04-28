@@ -78,7 +78,6 @@ export default defineConfig(
       "no-param-reassign": "off",
       "no-void": "off",
       "perfectionist/sort-array-includes": "off",
-      "prefer-arrow-callback": "off",
       "unicorn/better-regex": "off",
       "unicorn/catch-error-name": "off",
       "unicorn/consistent-existence-index-check": "off",

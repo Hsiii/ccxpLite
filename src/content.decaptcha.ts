@@ -12,7 +12,7 @@
   if (typeof module === "object" && module.exports) {
     module.exports = api;
   }
-})(globalThis, function createCcxpLiteDecaptcha(globalScope: typeof globalThis) {
+})(globalThis, (globalScope: typeof globalThis) => {
   const runtimeScope = globalScope as typeof globalThis & {
     CCXP_LITE?: {
       decaptchaModel?: CcxpLiteDecaptchaModel;
