@@ -194,7 +194,7 @@
     fields.forEach((fieldNode, fieldIndex) => {
       const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
       if (
-        ["hidden", "submit", "button", "image", "reset", "checkbox", "radio", "file"].includes(
+        ["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].includes(
           inputType,
         )
       ) {
@@ -399,7 +399,7 @@
           continue;
         }
 
-        if (["svg", "img", "a", "button"].includes(tagName)) {
+        if (["a", "button", "img", "svg"].includes(tagName)) {
           currentNode = currentNode.previousSibling;
           continue;
         }
@@ -521,7 +521,7 @@
     return (
       candidates.find((field) => {
         const inputType = (field.getAttribute("type") || "text").toLowerCase();
-        return !["hidden", "submit", "button", "image", "checkbox", "radio", "file"].includes(
+        return !["button", "checkbox", "file", "hidden", "image", "radio", "submit"].includes(
           inputType,
         );
       }) || null
@@ -1015,7 +1015,7 @@
         return true;
       }
 
-      return ["image", "submit", "reset", "button"].includes(type);
+      return ["button", "image", "reset", "submit"].includes(type);
     });
   }
 

@@ -63,7 +63,6 @@ export default defineConfig(
       ],
       "n/file-extension-in-import": "off",
       "no-param-reassign": "off",
-      "perfectionist/sort-array-includes": "off",
       "unicorn/better-regex": "off",
       "unicorn/catch-error-name": "off",
       "unicorn/consistent-existence-index-check": "off",
