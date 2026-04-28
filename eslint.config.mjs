@@ -66,7 +66,6 @@ export default defineConfig(
       "jsdoc/reject-any-type": "off",
       "jsdoc/type-formatting": "off",
       "n/file-extension-in-import": "off",
-      "n/no-callback-literal": "off",
       "no-param-reassign": "off",
       "perfectionist/sort-array-includes": "off",
       "unicorn/better-regex": "off",
