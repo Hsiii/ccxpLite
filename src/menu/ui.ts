@@ -323,10 +323,10 @@
     navDocument,
     group,
     expandedItemIds,
-    depth,
-    strings,
-    state,
-    rerender,
+    depth: number,
+    strings: any,
+    state: any,
+    rerender: () => void,
   ) {
     const isExpanded = expandedItemIds.has(group.id);
     const linkList = targetDocument.createElement("div");
@@ -759,7 +759,7 @@
     const columnHeights = Array.from({ length: columnCount }, () => 0);
 
     body.classList.add("is-waterfall-ready");
-    detailItems.forEach((item) => {
+    detailItems.forEach((item: HTMLElement) => {
       item.style.width = `${columnWidth}px`;
       const columnIndex = getShortestColumnIndex(columnHeights);
       const x = columnIndex * (columnWidth + gap);

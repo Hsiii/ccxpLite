@@ -249,7 +249,14 @@
       return createTensor([outChannels, outHeight, outWidth], out);
     }
 
-    function batchnorm2d(inputTensor, gamma, beta, runningMean, runningVar, eps = EPS) {
+    function batchnorm2d(
+      inputTensor: CcxpLitePreparedTensor,
+      gamma: CcxpLitePreparedTensor,
+      beta: CcxpLitePreparedTensor,
+      runningMean: CcxpLitePreparedTensor,
+      runningVar: CcxpLitePreparedTensor,
+      eps = EPS,
+    ) {
       const [channels, height, width] = inputTensor.shape;
       const out = new Float32Array(inputTensor.data.length);
       let index = 0;
@@ -310,7 +317,11 @@
       return createTensor([channels, outHeight, outWidth], out);
     }
 
-    function linear(inputVector, weight, bias) {
+    function linear(
+      inputVector: Float32Array | number[],
+      weight: CcxpLitePreparedTensor,
+      bias: CcxpLitePreparedTensor,
+    ) {
       const [outFeatures, inFeatures] = weight.shape;
       const out = new Float32Array(outFeatures);
 

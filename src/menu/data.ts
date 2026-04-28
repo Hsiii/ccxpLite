@@ -408,15 +408,15 @@
       .trim();
   }
 
-  function countLinksInTree(item: CcxpLiteSidebarGroup | null) {
+  function countLinksInTree(item: CcxpLiteSidebarGroup | null): number {
     if (!item) {
       return 0;
     }
 
     return (
       (item.directLinks || []).length +
-      ((item.sections || []) as any[]).reduce(
-        (total, section) => total + countLinksInTree(section),
+      ((item.sections || []) as CcxpLiteSidebarGroup[]).reduce(
+        (total: number, section: CcxpLiteSidebarGroup) => total + countLinksInTree(section),
         0,
       )
     );
