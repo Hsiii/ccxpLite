@@ -29,7 +29,6 @@ export default defineConfig(
       "@typescript-eslint/no-shadow": "off",
 
       "@typescript-eslint/no-explicit-any": "off",
-      "@typescript-eslint/no-invalid-this": "off",
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",

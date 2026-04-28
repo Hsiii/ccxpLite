@@ -51,6 +51,7 @@
       const originalToSubmit = currentToSubmit;
 
       wrappedToSubmit = function ccxpLiteWrappedToSubmit(
+        this: unknown,
         form: HTMLFormElement,
         actionName?: string,
         actionValue?: string,
