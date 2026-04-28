@@ -1,5 +1,5 @@
 (function registerCcxpLiteSharedDom(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
   function moveChildNodes(sourceNode: Node, targetNode: Node) {

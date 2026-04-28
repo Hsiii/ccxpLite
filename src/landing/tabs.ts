@@ -1,5 +1,5 @@
 (function registerCcxpLiteLandingTabs(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   if (!shared) {
     return;
@@ -31,7 +31,7 @@
     }
 
     const tabPanels = tabContents.map((panel, index) => {
-      panel.id = panel.id || `ccxp-lite-tabpanel-${index + 1}`;
+      panel.id ||= `ccxp-lite-tabpanel-${index + 1}`;
       panel.setAttribute("role", "tabpanel");
       panel.setAttribute("tabindex", "0");
       return panel;

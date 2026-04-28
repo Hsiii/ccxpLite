@@ -70,7 +70,6 @@ export default defineConfig(
       ],
       "jsdoc/reject-any-type": "off",
       "jsdoc/type-formatting": "off",
-      "logical-assignment-operators": "off",
       "n/file-extension-in-import": "off",
       "n/no-callback-literal": "off",
       "no-bitwise": "off",

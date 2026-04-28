@@ -1,5 +1,5 @@
 (function registerCcxpLiteSharedTheme(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
+  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;
