@@ -44,7 +44,7 @@ describe("landing captcha", () => {
 
     resolveFetch?.({
       ok: true,
-      arrayBuffer: async () => new ArrayBuffer(8),
+      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
     } as Response);
     await flushPromises();
     await flushPromises();
@@ -65,10 +65,10 @@ describe("landing captcha", () => {
     loadModules(window, landingCaptchaModulePaths);
     const landingCaptcha = window.CCXP_LITE.landingCaptcha!;
 
-    window.fetch = vi.fn(async () => {
+    window.fetch = vi.fn(() => {
       const error = new Error("captcha-timeout");
       error.name = "TimeoutError";
-      throw error;
+      return Promise.reject(error);
     }) as typeof window.fetch;
 
     const input = document.querySelector("input[name='passwd2']") as HTMLInputElement;

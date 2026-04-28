@@ -46,7 +46,6 @@ export default defineConfig(
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/promise-function-async": "off",
       "@typescript-eslint/prefer-includes": "off",
-      "@typescript-eslint/require-await": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "@typescript-eslint/strict-void-return": "off",
       "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
