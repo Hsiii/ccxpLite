@@ -46,7 +46,7 @@
     const langMatch = search.match(/[?&]lang=([^&]+)/);
     if (langMatch) {
       const langValue = decodeURIComponent(langMatch[1]);
-      if (/en/.test(langValue)) {
+      if (langValue.includes("en")) {
         return "en";
       }
       if (/(zh|cht|chs|tw|cn)/.test(langValue)) {
@@ -60,7 +60,7 @@
       );
       if (currentLangNode) {
         const currentLangText = (currentLangNode.textContent || "").toLowerCase();
-        if (/english/.test(currentLangText)) {
+        if (currentLangText.includes("english")) {
           return "en";
         }
         if (/中文|chinese/.test(currentLangText)) {
