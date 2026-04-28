@@ -186,7 +186,7 @@
     }, 180);
   }
 
-  function updateLoadingStateForNav(navFrame: HTMLFrameElement | HTMLIFrameElement | null) {
+  function updateLoadingStateForNav(navFrame: HTMLIFrameElement | null) {
     if (!loadingState || loadingState.released) {
       return;
     }
@@ -240,7 +240,7 @@
   }
 
   function findFrames() {
-    const frameCandidates = Array.from(document.querySelectorAll("frame"));
+    const frameCandidates = Array.from(document.querySelectorAll<HTMLIFrameElement>("frame"));
     const top = frameCandidates.find((frame) => {
       const src = (frame.getAttribute("src") || "").toLowerCase();
       const name = (frame.getAttribute("name") || "").toLowerCase();
@@ -268,7 +268,7 @@
     return { top, nav, main };
   }
 
-  function attachFrameListener(frame: HTMLFrameElement | HTMLIFrameElement, callback: () => void) {
+  function attachFrameListener(frame: HTMLIFrameElement, callback: () => void) {
     if (frame.dataset.ccxpLiteListenerAttached === "true") {
       return;
     }
@@ -336,7 +336,7 @@
     return variant === "classic" ? CLASSIC_FRAMESET_COLUMNS : LAYERED_FRAMESET_COLUMNS;
   }
 
-  function removeHeader(topFrame: HTMLFrameElement | HTMLIFrameElement) {
+  function removeHeader(topFrame: HTMLIFrameElement) {
     const topDocument = topFrame.contentDocument;
 
     if (!topDocument || !topDocument.body || !topDocument.head) {
@@ -354,7 +354,7 @@
     topFrame.setAttribute("scrolling", "no");
   }
 
-  function simplifyMainFrame(mainFrame: HTMLFrameElement | HTMLIFrameElement | null) {
+  function simplifyMainFrame(mainFrame: HTMLIFrameElement | null) {
     const mainDocument = mainFrame && mainFrame.contentDocument;
     if (!mainDocument || !mainDocument.body || !mainDocument.head) {
       return;

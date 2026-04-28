@@ -1708,7 +1708,7 @@
 
   function removeExistingSidebarVariantSwitches(documents: Array<Document | null | undefined>) {
     documents.forEach((scopeDocument) => {
-      if (!scopeDocument || typeof scopeDocument.querySelectorAll !== "function") {
+      if (!scopeDocument || !("querySelectorAll" in scopeDocument)) {
         return;
       }
 

@@ -55,7 +55,7 @@
     rerender();
   }
 
-  function simplifyEmbeddedFrame(frame: HTMLIFrameElement | HTMLFrameElement) {
+  function simplifyEmbeddedFrame(frame: HTMLIFrameElement) {
     const frameDocument = frame.contentDocument;
     if (!frameDocument || !frameDocument.body || !frameDocument.head) {
       return;
@@ -132,7 +132,7 @@
   function activateLegacyLink(
     linkItem: CcxpLiteSidebarLinkItem,
     navDocument: Document,
-    destinationFrame: HTMLIFrameElement | HTMLFrameElement | null = null,
+    destinationFrame: HTMLIFrameElement | null = null,
   ) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");

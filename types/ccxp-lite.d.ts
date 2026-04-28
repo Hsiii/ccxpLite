@@ -456,14 +456,14 @@ declare global {
       linkItem: CcxpLiteSidebarLinkItem,
       rerender: () => void,
     ) => void;
-    simplifyEmbeddedFrame: (frame: HTMLIFrameElement | HTMLFrameElement) => void;
-    getLegacyMainFrame: () => HTMLFrameElement | null;
+    simplifyEmbeddedFrame: (frame: HTMLIFrameElement) => void;
+    getLegacyMainFrame: () => HTMLIFrameElement | null;
     captureInitialMainFrameUrl: () => void;
     openLeafInNewTab: (activeLeaf: CcxpLiteSidebarLinkItem, navDocument: Document) => void;
     activateLegacyLink: (
       linkItem: CcxpLiteSidebarLinkItem,
       navDocument: Document,
-      destinationFrame?: HTMLIFrameElement | HTMLFrameElement | null,
+      destinationFrame?: HTMLIFrameElement | null,
     ) => void;
     isExternalLinkTarget: (
       linkItem: CcxpLiteSidebarLinkItem | string,
