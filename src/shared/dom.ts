@@ -37,7 +37,7 @@
       });
 
       const style = el.getAttribute("style");
-      if (style && /background(-image)?\s*:/i.test(String(style))) {
+      if (style && /background(-image)?\s*:/i.test(style)) {
         (el as HTMLElement).style.backgroundImage = "none";
         // If it's the body and we want to be very sure:
         if (el.tagName === "BODY") {

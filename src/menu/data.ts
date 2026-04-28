@@ -109,7 +109,7 @@
   }
 
   function normalizeSidebarLabel(label: string | null | undefined): string {
-    return String(label || "")
+    return (label || "")
       .replace(/[()（）]/g, " ")
       .replace(/[,&]/g, " ")
       .replace(/\s*\/\s*/g, " ")
@@ -267,7 +267,7 @@
       return null;
     }
 
-    const rawHtml = String(itemNode.desc || "");
+    const rawHtml = itemNode.desc || "";
     const label = toPlainText(rawHtml, navDocument);
     const clickLinkArgs = parseClickLinkArgs(rawHtml);
     const pathSegments = buildFavoritePathSegments(parentPathSegments, label);
@@ -341,11 +341,7 @@
         .replace(/<br\s*\/?>/gi, "\n")
         .matchAll(/>([^<>]+)/g),
     ]
-      .map((match) =>
-        String(match[1] || "")
-          .replace(/\s+/g, " ")
-          .trim(),
-      )
+      .map((match) => (match[1] || "").replace(/\s+/g, " ").trim())
       .filter(Boolean)
       .join(" ")
       .trim();
@@ -429,10 +425,7 @@
   }
 
   function normalizeSearchText(text: string | null | undefined) {
-    return String(text || "")
-      .toLowerCase()
-      .replace(/\s+/g, " ")
-      .trim();
+    return (text || "").toLowerCase().replace(/\s+/g, " ").trim();
   }
 
   function countLinksInTree(item: CcxpLiteSidebarGroup | null): number {

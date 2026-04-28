@@ -73,7 +73,7 @@
   }
 
   function shouldInterceptSubmission(form: HTMLFormElement | null, actionName: string) {
-    return Boolean(form && INTERCEPTED_ACTIONS.has(String(actionName || "")));
+    return Boolean(form && INTERCEPTED_ACTIONS.has(actionName || ""));
   }
 
   function submitThroughTransport(
@@ -241,7 +241,7 @@
       if (
         !snapshot ||
         snapshot.pathname !== globalScope.location.pathname ||
-        Date.now() - Number(snapshot.createdAt || 0) > RESTORE_TTL_MS
+        Date.now() - (snapshot.createdAt || 0) > RESTORE_TTL_MS
       ) {
         return null;
       }
@@ -326,8 +326,6 @@
   }
 
   function escapeAttributeValue(value: string | null | undefined): string {
-    return String(value || "")
-      .replace(/\\/g, "\\\\")
-      .replace(/"/g, '\\"');
+    return (value || "").replace(/\\/g, "\\\\").replace(/"/g, '\\"');
   }
 })(globalThis);

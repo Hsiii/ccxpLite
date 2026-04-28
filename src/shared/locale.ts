@@ -8,7 +8,7 @@
   const { LOCALIZED_STRINGS } = sharedConstants;
 
   function normalizeLocale(locale: string | null | undefined): string {
-    const normalized = String(locale || "").toLowerCase();
+    const normalized = (locale || "").toLowerCase();
 
     if (normalized.startsWith("en")) {
       return "en";
