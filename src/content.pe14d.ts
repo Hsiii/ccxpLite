@@ -5,11 +5,17 @@
     return;
   }
 
-  const runtimeApi = sharedDom?.getRuntimeSafely
-    ? sharedDom.getRuntimeSafely()
-    : typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.id
-      ? (chrome.runtime as unknown as CcxpLiteRuntime)
-      : null;
+  const getRuntimeApi = (): CcxpLiteRuntime | null => {
+    if (sharedDom?.getRuntimeSafely) {
+      return sharedDom.getRuntimeSafely();
+    }
+    if (typeof chrome !== "undefined" && chrome.runtime?.id) {
+      return chrome.runtime as unknown as CcxpLiteRuntime;
+    }
+    return null;
+  };
+
+  const runtimeApi = getRuntimeApi();
   if (!runtimeApi || !document.documentElement) {
     return;
   }
