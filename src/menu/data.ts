@@ -28,7 +28,7 @@
   }
 
   function buildCategorizedSidebarItems(
-    items: any[],
+    items: CcxpLiteSidebarTreeNode[],
     favoriteIds: Set<string>,
     strings = STRINGS,
   ): CcxpLiteSidebarModel {
