@@ -64,9 +64,10 @@ describe("sidebar runtime", () => {
       "<!doctype html><html><body><frame name='main' src='/start'></frame></body></html>",
       "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php?ACIXSTORE=ABC123",
     );
+    const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const destinationFrame = window.document.createElement("iframe");
+    const destinationFrame = document.createElement("iframe") as HTMLIFrameElement;
     window.CCXP_LITE.sidebarRuntime.activateLegacyLink(
       {
         id: "grades",
@@ -74,8 +75,8 @@ describe("sidebar runtime", () => {
         href: "/grades",
         target: "main",
       },
-      window.document,
-      destinationFrame as HTMLIFrameElement,
+      document,
+      destinationFrame,
     );
 
     expect(destinationFrame.src).toBe("https://www.ccxp.nthu.edu.tw/grades");

@@ -167,12 +167,11 @@
       return null;
     }
 
-    if (entryNode.children) {
-      return normalizeTopLevelGroup(
-        entryNode as CcxpLiteLegacySidebarFolderNode,
-        index,
-        navDocument,
-      );
+    if ("children" in entryNode) {
+      const folderNode = entryNode as CcxpLiteLegacySidebarFolderNode;
+      if (folderNode.children) {
+        return normalizeTopLevelGroup(folderNode, index, navDocument);
+      }
     }
 
     const linkItem = normalizeLinkItem(entryNode as CcxpLiteLegacySidebarDocNode, navDocument, []);
@@ -295,9 +294,9 @@
     };
   }
 
-  function parseLegacyLink(rawLink) {
-    const hrefMatch = rawLink.match(/^'([^']+)'/);
-    const targetMatch = rawLink.match(/target="?([^"\s]+)"?/i);
+  function parseLegacyLink(rawLink: string): { href: string; target: string } {
+    const hrefMatch = rawLink.match(/^'([^']+)'/) as RegExpMatchArray | null;
+    const targetMatch = rawLink.match(/target="?([^"\s]+)"?/i) as RegExpMatchArray | null;
 
     return {
       href: hrefMatch ? hrefMatch[1] : "",
@@ -305,8 +304,8 @@
     };
   }
 
-  function parseClickLinkArgs(rawHtml) {
-    const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/);
+  function parseClickLinkArgs(rawHtml: string): { name: string; url: string } | null {
+    const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/) as RegExpMatchArray | null;
     if (!match) {
       return null;
     }
@@ -395,7 +394,10 @@
     };
   }
 
-  function filterSectionTree(section: CcxpLiteSidebarSectionNode | null, query: string) {
+  function filterSectionTree(
+    section: CcxpLiteSidebarSectionNode | null,
+    query: string,
+  ): CcxpLiteSidebarSectionNode | null {
     if (!section) {
       return null;
     }
@@ -422,11 +424,11 @@
     };
   }
 
-  function isSearchMatch(text, query) {
+  function isSearchMatch(text: string | null | undefined, query: string) {
     return normalizeSearchText(text).includes(normalizeSearchText(query));
   }
 
-  function normalizeSearchText(text) {
+  function normalizeSearchText(text: string | null | undefined) {
     return String(text || "")
       .toLowerCase()
       .replace(/\s+/g, " ")
@@ -507,12 +509,12 @@
     return root.children.length > 0 ? root : null;
   }
 
-  function parseJsStringLiteral(literal: string) {
+  function parseJsStringLiteral(literal: string): string {
     const quote = literal[0];
     const inner = literal.slice(1, -1);
 
     if (quote === '"') {
-      return JSON.parse(literal);
+      return JSON.parse(literal) as string;
     }
 
     return inner

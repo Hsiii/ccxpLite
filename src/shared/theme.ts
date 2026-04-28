@@ -1,5 +1,5 @@
 (function registerCcxpLiteSharedTheme(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;
@@ -27,7 +27,7 @@
     }
 
     if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
-      let runtime = null;
+      let runtime: CcxpLiteRuntime | null = null;
       try {
         runtime = sharedDom?.getRuntimeSafely?.() || null;
       } catch (_error) {

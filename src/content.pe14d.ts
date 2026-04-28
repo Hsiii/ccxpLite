@@ -1,5 +1,5 @@
 (function injectCcxpLitePe14dPageScript() {
-  const sharedDom = window.CCXP_LITE?.sharedDom;
+  const sharedDom = (window.CCXP_LITE as CcxpLiteNamespace)?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
   if (document.getElementById(pageScriptId)) {
     return;
@@ -8,7 +8,7 @@
   const runtimeApi = sharedDom?.getRuntimeSafely
     ? sharedDom.getRuntimeSafely()
     : typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.id
-      ? chrome.runtime
+      ? (chrome.runtime as unknown as CcxpLiteRuntime)
       : null;
   if (!runtimeApi || !document.documentElement) {
     return;

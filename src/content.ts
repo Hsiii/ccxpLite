@@ -1,8 +1,8 @@
 (function bootstrapCcxpLite() {
   const namespace = (window.CCXP_LITE || {}) as CcxpLiteNamespace;
   const shared = namespace.shared as CcxpLiteShared;
-  const sidebar: CcxpLiteSidebar = namespace.sidebar as any;
-  const landing: CcxpLiteLanding = namespace.landing as any;
+  const sidebar = namespace.sidebar;
+  const landing = namespace.landing;
 
   if (!shared || !sidebar || !landing) {
     return;
@@ -103,7 +103,7 @@
     return state;
   }
 
-  function ensureLoadingSprite(targetDocument) {
+  function ensureLoadingSprite(targetDocument: Document) {
     if (!targetDocument || !targetDocument.documentElement) {
       return;
     }
@@ -164,7 +164,7 @@
     }
   }
 
-  function releaseLoadingSprite(targetDocument) {
+  function releaseLoadingSprite(targetDocument: Document) {
     const sprite = targetDocument.getElementById(LOADING_SPRITE_ID) as HTMLElement | null;
     const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID) as HTMLElement | null;
 
@@ -186,7 +186,7 @@
     }, 180);
   }
 
-  function updateLoadingStateForNav(navFrame) {
+  function updateLoadingStateForNav(navFrame: HTMLFrameElement | HTMLIFrameElement | null) {
     if (!loadingState || loadingState.released) {
       return;
     }
@@ -268,7 +268,7 @@
     return { top, nav, main };
   }
 
-  function attachFrameListener(frame, callback) {
+  function attachFrameListener(frame: HTMLFrameElement | HTMLIFrameElement, callback: () => void) {
     if (frame.dataset.ccxpLiteListenerAttached === "true") {
       return;
     }
@@ -332,12 +332,12 @@
     }
   }
 
-  function getFramesetColumnsForVariant(variant) {
+  function getFramesetColumnsForVariant(variant: string) {
     return variant === "classic" ? CLASSIC_FRAMESET_COLUMNS : LAYERED_FRAMESET_COLUMNS;
   }
 
-  function removeHeader(topFrame) {
-    const topDocument = topFrame.contentDocument;
+  function removeHeader(topFrame: HTMLFrameElement | HTMLIFrameElement) {
+    const topDocument = topFrame.contentDocument as Document | null;
 
     if (!topDocument || !topDocument.body || !topDocument.head) {
       retry();
@@ -354,8 +354,8 @@
     topFrame.setAttribute("scrolling", "no");
   }
 
-  function simplifyMainFrame(mainFrame) {
-    const mainDocument = mainFrame && mainFrame.contentDocument;
+  function simplifyMainFrame(mainFrame: HTMLFrameElement | HTMLIFrameElement | null) {
+    const mainDocument = (mainFrame && mainFrame.contentDocument) as Document | null;
     if (!mainDocument || !mainDocument.body || !mainDocument.head) {
       return;
     }

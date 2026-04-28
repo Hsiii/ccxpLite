@@ -6,15 +6,17 @@ import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
 describe("landing login ui", () => {
   test("wraps the password field once and toggles visibility with localized labels", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
+    const document = window.document as Document;
     loadModules(window, landingModulePaths);
+    const landingLogin = window.CCXP_LITE.landingLogin!;
 
-    window.CCXP_LITE.landingLogin.enhancePasswordVisibilityToggle(window.document, window.document);
-    window.CCXP_LITE.landingLogin.enhancePasswordVisibilityToggle(window.document, window.document);
+    landingLogin.enhancePasswordVisibilityToggle(document, document);
+    landingLogin.enhancePasswordVisibilityToggle(document, document);
 
-    const passwordField = window.document.querySelector("input[name='passwd']") as HTMLInputElement;
-    const toggle = window.document.querySelector(".ccxp-lite-password-toggle") as HTMLButtonElement;
+    const passwordField = document.querySelector("input[name='passwd']") as HTMLInputElement;
+    const toggle = document.querySelector(".ccxp-lite-password-toggle") as HTMLButtonElement;
 
-    expect(window.document.querySelectorAll(".ccxp-lite-password-field")).toHaveLength(1);
+    expect(document.querySelectorAll(".ccxp-lite-password-field")).toHaveLength(1);
     expect(toggle.getAttribute("aria-label")).toBe("顯示密碼");
 
     toggle.click();
@@ -24,14 +26,17 @@ describe("landing login ui", () => {
 
   test("marks the login form as structured without duplicating work", () => {
     const { window } = createTestWindow(createLandingLoginHtml());
+    const document = window.document as Document;
     loadModules(window, landingModulePaths);
+    const landingLocale = window.CCXP_LITE.landingLocale!;
+    const landingLogin = window.CCXP_LITE.landingLogin!;
 
-    const form = window.CCXP_LITE.landingLocale.getLoginForm(window.document);
-    window.CCXP_LITE.landingLogin.normalizeLoginFormLayout(window.document);
-    window.CCXP_LITE.landingLogin.normalizeLoginFormLayout(window.document);
+    const form = landingLocale.getLoginForm(document)!;
+    landingLogin.normalizeLoginFormLayout(document);
+    landingLogin.normalizeLoginFormLayout(document);
 
     expect(form.classList.contains("ccxp-lite-login-form")).toBe(true);
     expect(form.dataset.ccxpLiteFormStructured).toBe("true");
-    expect(window.document.querySelectorAll(".ccxp-lite-login-form").length).toBe(1);
+    expect(document.querySelectorAll(".ccxp-lite-login-form")).toHaveLength(1);
   });
 });

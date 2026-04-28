@@ -1,5 +1,5 @@
 (function registerCcxpLiteSidebarFavorites(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
 
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
@@ -77,7 +77,7 @@
       const storage = getScopedFavoriteStorage();
       if (storage) {
         try {
-          const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+          const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) || "[]") as unknown;
           resolve(
             new Set(
               Array.isArray(storedValue)
@@ -117,9 +117,9 @@
         return;
       }
 
-      let nextValue = [];
+      let nextValue: any[] = [];
       try {
-        nextValue = JSON.parse(event.newValue || "[]");
+        nextValue = JSON.parse(event.newValue || "[]") as any[];
       } catch (_error) {
         nextValue = [];
       }
@@ -199,21 +199,24 @@
         return;
       }
 
-      storageApi.get(["ccxp-lite-sidebar-favorites"], (result) => {
-        if (runtime && runtime.lastError) {
-          resolve(new Set());
-          return;
-        }
+      (storageApi as { get: (keys: string[], cb: (res: Record<string, any>) => void) => void }).get(
+        ["ccxp-lite-sidebar-favorites"],
+        (result: Record<string, any>) => {
+          if (runtime && runtime.lastError) {
+            resolve(new Set());
+            return;
+          }
 
-        const storedValue = result ? result["ccxp-lite-sidebar-favorites"] : [];
-        resolve(
-          new Set(
-            Array.isArray(storedValue)
-              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-              : [],
-          ),
-        );
-      });
+          const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
+          resolve(
+            new Set(
+              Array.isArray(storedValue)
+                ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+                : [],
+            ),
+          );
+        },
+      );
     });
   }
 

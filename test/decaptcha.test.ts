@@ -1,8 +1,29 @@
-const { describe, test, expect } = require("bun:test");
+/* eslint-disable @typescript-eslint/no-restricted-imports */
+import { describe, test, expect } from "bun:test";
 
-globalThis.CCXP_LITE = {};
-const decaptchaModel = require("../src/content.decaptcha.model.js");
-const decaptcha = require("../src/content.decaptcha.js");
+import * as decaptchaModelModule from "../src/content.decaptcha.model.js";
+import * as decaptchaModule from "../src/content.decaptcha.js";
+
+globalThis.CCXP_LITE = {} as CcxpLiteNamespace;
+
+interface DecaptchaTest {
+  __test: {
+    createTensor: (s: number[], d: number[]) => CcxpLitePreparedTensor;
+    extractImageTensorFromRgba: (w: number, h: number, r: any, o: any) => CcxpLitePreparedTensor;
+    conv2d: (i: any, w: any, b: any, o?: any) => CcxpLitePreparedTensor;
+    batchnorm2d: (i: any, w: any, b: any, m: any, v: any, e: number) => CcxpLitePreparedTensor;
+    relu: (i: any) => CcxpLitePreparedTensor;
+    adaptiveAvgPool2d: (i: any, s: number[]) => CcxpLitePreparedTensor;
+    linear: (i: any, w: any, b: any) => CcxpLitePreparedTensor;
+    argmax: (i: any) => number;
+    predictDigitsFromTensor: (t: any, m: any) => string;
+    getPreparedModel: () => CcxpLitePreparedModel;
+  };
+  predictDigits: (imageBytes: any) => Promise<string>;
+}
+
+const decaptchaModel = decaptchaModelModule as unknown;
+const decaptcha = decaptchaModule as unknown as DecaptchaTest;
 
 void decaptchaModel;
 

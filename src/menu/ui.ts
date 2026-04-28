@@ -36,18 +36,20 @@
     modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel),
     strings = STRINGS,
   ) {
-    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`);
+    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`) as HTMLElement | null;
     if (!shell) {
       return;
     }
 
-    const content = shell.querySelector(".ccxp-lite-sidebar-content");
-    const footer = shell.querySelector(".ccxp-lite-sidebar-footer");
+    const content = shell.querySelector(".ccxp-lite-sidebar-content") as HTMLElement | null;
+    const footer = shell.querySelector(".ccxp-lite-sidebar-footer") as HTMLElement | null;
     if (!content || !footer) {
       return;
     }
 
-    const searchInput = shell.querySelector(".ccxp-lite-sidebar-search-input");
+    const searchInput = shell.querySelector(
+      ".ccxp-lite-sidebar-search-input",
+    ) as HTMLInputElement | null;
     const state = getSidebarUiState(hostDocument);
 
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
@@ -302,14 +304,7 @@
     items.forEach((item) => {
       if (item.kind === "link") {
         sidebarList.appendChild(
-          createClassicSidebarLinkNode(
-            targetDocument,
-            navDocument,
-            item.linkItem,
-            0,
-            state,
-            rerender,
-          ),
+          createClassicLinkButton(targetDocument, navDocument, item.linkItem, 0, strings, rerender),
         );
       } else {
         sidebarList.appendChild(
@@ -380,7 +375,7 @@
     return {
       ...item,
       directLinks: itemMatches ? item.directLinks || [] : directLinks,
-      sections: itemMatches ? (item.sections as any[]) || [] : (sections as any[]),
+      sections: itemMatches ? item.sections || [] : sections,
     } as CcxpLiteSidebarTreeNode;
   }
 
@@ -475,7 +470,7 @@
 
     const empty = targetDocument.createElement("div");
     empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
-    empty.textContent = group.emptyMessage || strings.emptyGroup;
+    empty.textContent = (group as CcxpLiteSidebarGroup).emptyMessage || strings.emptyGroup;
     linkList.appendChild(empty);
     return linkList;
   }
@@ -1274,7 +1269,7 @@
           typeof previousActiveElement.focus === "function" &&
           targetDocument.contains(previousActiveElement)
         ) {
-          previousActiveElement.focus();
+          (previousActiveElement as HTMLElement).focus();
         }
 
         resolve(confirmed);
@@ -1764,10 +1759,13 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    (getCategoryIconShapes(iconName) as any[]).forEach((shape) => {
-      const tagName = typeof shape === "string" ? "path" : (shape.tag as string);
-      const attributes =
-        typeof shape === "string" ? { d: shape } : (shape.attributes as Record<string, string>);
+    (
+      getCategoryIconShapes(iconName) as Array<
+        string | { tag?: string; attributes: Record<string, string> }
+      >
+    ).forEach((shape) => {
+      const tagName = typeof shape === "string" ? "path" : shape.tag || "path";
+      const attributes = typeof shape === "string" ? { d: shape } : shape.attributes;
       const element = targetDocument.createElementNS("http://www.w3.org/2000/svg", tagName);
       Object.entries(attributes).forEach(([name, value]) => element.setAttribute(name, value));
       icon.appendChild(element);
@@ -1779,7 +1777,10 @@
   function getCategoryIconShapes(
     iconName: string,
   ): Array<string | { tag: string; attributes: Record<string, string> }> {
-    const iconShapeMap = {
+    const iconShapeMap: Record<
+      string,
+      Array<string | { tag: string; attributes: Record<string, string> }>
+    > = {
       "circle-user-round": [
         "M17.925 20.056a6 6 0 0 0-11.851.001",
         { tag: "circle", attributes: { cx: "12", cy: "11", r: "4" } },

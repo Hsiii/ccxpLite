@@ -1,5 +1,5 @@
 (function registerCcxpLiteSharedBrand(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { sharedConstants, sharedLocale } = namespace;
   if (!sharedConstants || !sharedLocale) {
     return;
@@ -8,7 +8,11 @@
   const { ASSETS } = sharedConstants;
   const { getLocalizedStrings, resolveLocaleFromDocument } = sharedLocale;
 
-  function createBrandImage(targetDocument, className, assetPath = ASSETS.brandLogoPath) {
+  function createBrandImage(
+    targetDocument: Document,
+    className: string,
+    assetPath = ASSETS.brandLogoPath,
+  ) {
     const runtime = namespace.sharedDom?.getRuntimeSafely?.();
     const image = targetDocument.createElement("img");
     image.className = className;
@@ -21,7 +25,12 @@
     return image;
   }
 
-  function createBrandCopy(targetDocument, containerClassName, titleClassName, title) {
+  function createBrandCopy(
+    targetDocument: Document,
+    containerClassName: string,
+    titleClassName: string,
+    title: string,
+  ) {
     const copy = targetDocument.createElement("div");
     copy.className = containerClassName;
 
@@ -42,7 +51,7 @@
     return copy;
   }
 
-  function createBrandPartnerIcon(targetDocument) {
+  function createBrandPartnerIcon(targetDocument: Document) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-sidebar-brand-partner-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
@@ -63,7 +72,7 @@
   }
 
   function createBrandPartnerLink(
-    targetDocument,
+    targetDocument: Document,
     options: {
       markClassName?: string;
       linkClassName?: string;

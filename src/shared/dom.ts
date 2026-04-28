@@ -1,5 +1,5 @@
 (function registerCcxpLiteSharedDom(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
   function moveChildNodes(sourceNode: Node, targetNode: Node) {
@@ -38,10 +38,10 @@
 
       const style = el.getAttribute("style");
       if (style && /background(-image)?\s*:/i.test(String(style))) {
-        el.style.backgroundImage = "none";
+        (el as HTMLElement).style.backgroundImage = "none";
         // If it's the body and we want to be very sure:
         if (el.tagName === "BODY") {
-          el.style.background = "var(--ccxp-lite-bg)";
+          (el as HTMLElement).style.background = "var(--ccxp-lite-bg)";
         }
       }
     };
@@ -139,7 +139,7 @@
     }
   }
 
-  function addCleanupTask(task) {
+  function addCleanupTask(task: () => void) {
     if (typeof task !== "function") {
       return;
     }

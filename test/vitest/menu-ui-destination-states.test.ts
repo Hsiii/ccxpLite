@@ -6,28 +6,23 @@ import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtu
 describe("sidebar destination states", () => {
   test("shows loading first and settles into success on iframe load", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = createSidebarModel().categories[0].sections[0].directLinks[0];
 
     window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
-    window.CCXP_LITE.sidebarUi.renderSidebar(
-      window.document,
-      window.document,
-      createSidebarModel(),
-    );
+    window.CCXP_LITE.sidebarUi!.renderSidebar(window.document, document, createSidebarModel());
 
-    const loading = window.document.querySelector(".ccxp-lite-destination-loading") as HTMLElement;
-    const frame = window.document.querySelector(
-      ".ccxp-lite-destination-frame",
-    ) as HTMLIFrameElement;
-    const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
+    const loading = document.querySelector(".ccxp-lite-destination-loading") as HTMLElement;
+    const frame = document.querySelector(".ccxp-lite-destination-frame") as HTMLIFrameElement;
+    const error = document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
 
     expect(loading.hidden).toBe(false);
-    frame.dispatchEvent(new (window as any).Event("load") as Event);
+    frame.dispatchEvent(new Event("load"));
     expect(loading.hidden).toBe(true);
     expect(frame.hidden).toBe(false);
     expect(error.hidden).toBe(true);
@@ -35,10 +30,11 @@ describe("sidebar destination states", () => {
 
   test("shows error on timeout and retry refreshes the active leaf nonce", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
     const rerenderModel = createSidebarModel();
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = {
@@ -48,40 +44,41 @@ describe("sidebar destination states", () => {
 
     window.setTimeout = ((callback: TimerHandler) => {
       if (typeof callback === "function") {
-        callback();
+        (callback as () => void)();
       }
       return 1;
     }) as typeof window.setTimeout;
 
-    window.CCXP_LITE.sidebarUi.renderSidebar(window.document, window.document, rerenderModel);
+    window.CCXP_LITE.sidebarUi.renderSidebar(document, document, rerenderModel);
 
-    const error = window.document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
+    const error = document.querySelector(".ccxp-lite-destination-error") as HTMLElement;
     expect(error.hidden).toBe(false);
 
-    const retryButton = Array.from(
-      window.document.querySelectorAll("button") as unknown as Iterable<HTMLButtonElement>,
-    ).find((button) => button.textContent === "重試") as HTMLButtonElement;
+    const retryButton = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+      (button) => button.textContent === "重試",
+    ) as HTMLButtonElement;
     retryButton.click();
     expect(state.activeLeaf?.nonce).not.toBe(1);
   });
 
   test("open in new tab delegates to window.open", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
     const openSpy = vi.spyOn(window, "open").mockImplementation(() => null);
     const model = createSidebarModel();
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    const state = window.CCXP_LITE.sidebarState!.getSidebarUiState(document);
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = model.categories[0].sections[0].directLinks[0];
     window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
 
-    window.CCXP_LITE.sidebarUi.renderSidebar(window.document, window.document, model);
+    window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
 
-    const openButton = Array.from(
-      window.document.querySelectorAll("button") as unknown as Iterable<HTMLButtonElement>,
-    ).find((button) => button.textContent === "新分頁開啟") as HTMLButtonElement;
+    const openButton = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+      (button) => button.textContent === "新分頁開啟",
+    ) as HTMLButtonElement;
     openButton.click();
 
     expect(openSpy).toHaveBeenCalledWith(

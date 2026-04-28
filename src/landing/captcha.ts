@@ -1,5 +1,5 @@
 (function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { decaptcha, landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -338,16 +338,21 @@
   }
 
   function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
-    if (!namespace.decaptcha) {
+    const dc = namespace.decaptcha;
+    if (!dc) {
       return Promise.resolve("");
     }
-    return Promise.resolve(namespace.decaptcha.predictDigits(imageBytes)).then((answer) =>
+    return Promise.resolve(dc.predictDigits(imageBytes)).then((answer) =>
       String(answer || "").trim(),
     );
   }
 
+  interface CcxpLiteCaptchaError extends Error {
+    code?: string;
+  }
+
   function isCaptchaTimeoutError(error: unknown) {
-    const typedError = error as Error | null;
+    const typedError = error as CcxpLiteCaptchaError | null;
     return Boolean(
       typedError &&
       (typedError.name === "AbortError" ||
@@ -372,9 +377,9 @@
       ...options,
       signal: controller.signal,
     })
-      .catch((error) => {
-        if (didTimeout && error?.name === "AbortError") {
-          const timeoutError = new Error("captcha-timeout");
+      .catch((error: unknown) => {
+        if (didTimeout && error instanceof Error && error.name === "AbortError") {
+          const timeoutError = new Error("captcha-timeout") as CcxpLiteCaptchaError;
           timeoutError.name = "TimeoutError";
           timeoutError.code = "CAPTCHA_TIMEOUT";
           throw timeoutError;

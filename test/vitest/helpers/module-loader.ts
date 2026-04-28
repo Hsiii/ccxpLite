@@ -10,15 +10,16 @@ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), ".."
 export type TestWindow = Window &
   typeof globalThis & {
     CCXP_LITE: CcxpLiteNamespace;
-    chrome?: {
-      runtime?: {
-        id?: string;
+    document: Document;
+    chrome: {
+      runtime: {
+        id: string;
         getURL: (assetPath: string) => string;
-        lastError?: unknown;
+        lastError: unknown;
       };
-      storage?: {
-        local?: {
-          get: (keys: string[], callback: (result: Record<string, unknown>) => void) => void;
+      storage: {
+        local: {
+          get: (keys: string[] | null, callback: (result: Record<string, unknown>) => void) => void;
         };
       };
     };
@@ -27,7 +28,7 @@ export type TestWindow = Window &
 export function createTestWindow(
   html = "<!doctype html><html lang='zh'><head></head><body></body></html>",
   url = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php",
-) {
+): { window: TestWindow } {
   const window = new Window({
     url,
     width: 1280,
@@ -45,7 +46,8 @@ export function createTestWindow(
     },
     storage: {
       local: {
-        get: (_keys, callback) => callback({}),
+        get: (_keys: string[] | null, callback: (result: Record<string, unknown>) => void) =>
+          callback({}),
       },
     },
   };

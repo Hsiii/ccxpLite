@@ -16,7 +16,7 @@ export function createSidebarShellHtml() {
   `;
 }
 
-export function createSidebarModel() {
+export function createSidebarModel(): CcxpLiteSidebarModel {
   const gradesLink = {
     id: "grades",
     legacyId: "legacy-grades",

@@ -1,5 +1,5 @@
 (function registerCcxpLiteSidebarRuntime(globalScope: Window & typeof globalThis) {
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+  const namespace = (globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {})) as CcxpLiteNamespace;
   const { shared, sidebarState, sidebarFavorites } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites) {
     return;
@@ -141,8 +141,8 @@
       helperUrl.searchParams.set("name", linkItem.clickLinkArgs.name);
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
 
-      if (helperFrame && helperFrame.contentWindow) {
-        helperFrame.contentWindow.location.replace(helperUrl.toString());
+      if (helperFrame && (helperFrame as HTMLIFrameElement).contentWindow) {
+        (helperFrame as HTMLIFrameElement).contentWindow!.location.replace(helperUrl.toString());
       } else if (helperFrame) {
         helperFrame.setAttribute("src", helperUrl.toString());
       }

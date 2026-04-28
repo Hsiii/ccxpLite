@@ -7,10 +7,12 @@
 
   const { getLoginForm } = landingLocale;
 
-  function captureLoginValidationState(targetDocument: Document) {
-    const fnstrField = targetDocument.querySelector("input[name='fnstr']");
+  function captureLoginValidationState(targetDocument: Document): CcxpLiteLandingValidationState {
+    const fnstrField = targetDocument.querySelector(
+      "input[name='fnstr']",
+    ) as HTMLInputElement | null;
     const rawFnstr = fnstrField ? fnstrField.value : "";
-    const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
+    const match = rawFnstr.match(/^(\d{8})-(\d+)$/) as RegExpMatchArray | null;
 
     if (!match) {
       return { startedAt: Date.now() };
@@ -26,7 +28,10 @@
     };
   }
 
-  function restoreLoginValidationGuards(targetDocument: Document, state: any) {
+  function restoreLoginValidationGuards(
+    targetDocument: Document,
+    state: CcxpLiteLandingValidationState,
+  ) {
     const fields = ["account", "passwd", "passwd2"]
       .map((name) => targetDocument.querySelector(`input[name='${name}']`))
       .filter(Boolean);
@@ -65,12 +70,14 @@
       return;
     }
 
-    const authImage = form.querySelector("img[src*='auth_img.php?pwdstr=']");
+    const authImage = form.querySelector(
+      "img[src*='auth_img.php?pwdstr=']",
+    ) as HTMLImageElement | null;
     const tokenFromImage = extractPwdstrFromImage(authImage, targetDocument);
-    let fnstrField = form.querySelector("input[name='fnstr']");
+    let fnstrField = form.querySelector("input[name='fnstr']") as HTMLInputElement | null;
 
     if (!fnstrField && tokenFromImage) {
-      fnstrField = targetDocument.createElement("input");
+      fnstrField = targetDocument.createElement("input") as HTMLInputElement;
       fnstrField.type = "hidden";
       fnstrField.name = "fnstr";
       form.appendChild(fnstrField);

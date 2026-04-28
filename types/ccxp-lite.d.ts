@@ -26,6 +26,7 @@ declare global {
     cropRight?: number;
     tensors?: Record<string, CcxpLiteTensorSource>;
     preparedTensors?: Record<string, CcxpLitePreparedTensor>;
+    predictDigits: (imageBytes: ArrayBuffer) => string;
   }
 
   interface CcxpLiteClickLinkArgs {
@@ -136,6 +137,63 @@ declare global {
     getLoginForm: (targetDocument: Document) => HTMLFormElement | null;
   }
 
+  interface CcxpLiteSidebarCategoryDefinition {
+    id: string;
+    labelKey: string;
+    fallbackLabel?: string;
+    icon: string;
+    summaryLabels?: string[];
+    itemLabels: string[];
+  }
+
+  interface CcxpLiteSharedConstants {
+    TOKENS: Record<string, string>;
+    ASSETS: Record<string, string>;
+    LOCALIZED_STRINGS: Record<string, Record<string, string>>;
+    SIDEBAR_CATEGORIES: CcxpLiteSidebarCategoryDefinition[];
+    [key: string]: any;
+  }
+
+  interface CcxpLiteSharedLocale {
+    getLocalizedStrings: (locale: string) => Record<string, string>;
+    normalizeLocale: (locale: string) => string;
+    resolveLocaleFromDocument: (targetDocument: Document) => string;
+  }
+
+  interface CcxpLiteSharedBrand {
+    createBrandImage: (targetDocument: Document, assetPath: string) => HTMLImageElement;
+    createBrandCopy: (targetDocument: Document, text: string) => HTMLElement;
+    createBrandPartnerIcon: (targetDocument: Document, assetPath: string) => HTMLImageElement;
+    createBrandPartnerLink: (
+      targetDocument: Document,
+      href: string,
+      content: Node,
+    ) => HTMLAnchorElement;
+  }
+
+  interface CcxpLiteRuntime {
+    getURL: (path: string) => string;
+    id: string;
+    lastError?: { message?: string };
+  }
+
+  interface CcxpLiteSharedDom {
+    moveChildNodes: (sourceNode: Node, targetNode: Node) => void;
+    removeNode: (node: Node | null) => void;
+    isDocumentComplete: (targetDocument: Document) => boolean;
+    cleanLegacyAttributes: (node: Node | null) => void;
+    isContextValid: () => boolean;
+    ensureContextValid: () => boolean;
+    invalidateContext: () => boolean;
+    getRuntimeSafely: () => CcxpLiteRuntime | null;
+    getLocalStorageAreaSafely: () => unknown;
+    addCleanupTask: (task: () => void) => void;
+  }
+
+  interface CcxpLiteSharedTheme {
+    ensureThemeDocument: (targetDocument: Document, scope: string) => boolean;
+  }
+
   interface CcxpLiteShared {
     TOKENS: Record<string, string>;
     STRINGS: Record<string, string>;
@@ -176,7 +234,7 @@ declare global {
     isContextValid: () => boolean;
     ensureContextValid: () => boolean;
     invalidateContext: () => void;
-    getRuntimeSafely: () => any;
+    getRuntimeSafely: () => CcxpLiteRuntime | null;
     getLocalStorageAreaSafely: () => any;
     addCleanupTask: (task: () => void) => void;
   }
@@ -186,9 +244,23 @@ declare global {
     preloadLandingCaptcha: (targetDocument: Document) => void;
   }
 
+  interface CcxpLiteLandingValidationState {
+    startedAt: number;
+    fnstrDate?: string;
+    fnstrSeed?: string;
+  }
+
   interface CcxpLiteLandingValidation {
-    captureLoginValidationState: (targetDocument: Document) => any;
-    restoreLoginValidationGuards: (targetDocument: Document, state: any) => void;
+    captureLoginValidationState: (targetDocument: Document) => CcxpLiteLandingValidationState;
+    restoreLoginValidationGuards: (
+      targetDocument: Document,
+      state: CcxpLiteLandingValidationState,
+    ) => void;
+    ensureLoginSubmissionPayload: (form: HTMLFormElement | null, targetDocument: Document) => void;
+    extractPwdstrFromImage: (
+      imageNode: Pick<HTMLImageElement, "getAttribute"> | null,
+      targetDocument: Pick<Document, "location">,
+    ) => string;
   }
 
   interface CcxpLiteLandingCaptcha {
@@ -253,14 +325,14 @@ declare global {
   }
 
   interface CcxpLiteLandingLogin {
-    normalizeLoginFormLayout: (loginSection: HTMLElement) => void;
-    removeLoginResetControls: (loginSection: HTMLElement) => void;
-    forceCaptchaLabelDisplay: (loginSection: HTMLElement) => void;
-    replaceLoginFormImageButtons: (targetDocument: Document, loginSection: HTMLElement) => void;
-    wrapPrimaryLoginButtons: (targetDocument: Document, loginSection: HTMLElement) => void;
-    removeLoginSpacingArtifacts: (targetDocument: Document, loginSection: HTMLElement) => void;
-    alignCaptchaMediaRow: (targetDocument: Document, loginSection: HTMLElement) => void;
-    enhancePasswordVisibilityToggle: (targetDocument: Document, loginSection: HTMLElement) => void;
+    normalizeLoginFormLayout: (rootNode: ParentNode) => void;
+    removeLoginResetControls: (rootNode: ParentNode) => void;
+    forceCaptchaLabelDisplay: (rootNode: ParentNode) => void;
+    replaceLoginFormImageButtons: (targetDocument: Document, rootNode: ParentNode) => void;
+    wrapPrimaryLoginButtons: (targetDocument: Document, rootNode: ParentNode) => void;
+    removeLoginSpacingArtifacts: (targetDocument: Document, rootNode: ParentNode) => void;
+    alignCaptchaMediaRow: (targetDocument: Document, rootNode: ParentNode) => void;
+    enhancePasswordVisibilityToggle: (targetDocument: Document, rootNode: ParentNode) => void;
     preloadLandingCaptcha: (targetDocument: Document) => void;
   }
 
@@ -392,12 +464,25 @@ declare global {
     ) => boolean;
   }
 
+  interface CcxpLiteSidebarFavorites {
+    favoriteState: {
+      ids: Set<string>;
+      hasLoaded: boolean;
+      pendingLoad: Promise<void> | null;
+    };
+    getFavoriteIds: () => Set<string>;
+    getMatchingFavoriteIds: (category: CcxpLiteSidebarCategoryDefinition) => Set<string>;
+    writeFavoriteIds: (ids: Iterable<string>) => void;
+    isFavoriteLink: (linkItem: CcxpLiteSidebarLinkItem) => boolean;
+  }
+
   interface CcxpLiteNamespace {
     shared?: CcxpLiteShared;
-    sharedConstants?: any;
-    sharedLocale?: any;
-    sharedDom?: any;
-    sharedTheme?: any;
+    sharedConstants?: CcxpLiteSharedConstants;
+    sharedLocale?: CcxpLiteSharedLocale;
+    sharedDom?: CcxpLiteSharedDom;
+    sharedTheme?: CcxpLiteSharedTheme;
+    sharedBrand?: CcxpLiteSharedBrand;
     landing: CcxpLiteLanding;
     landingLocale?: CcxpLiteLandingLocale;
     landingSupport?: CcxpLiteLandingSupport;
@@ -418,7 +503,8 @@ declare global {
     menuUi?: any;
     decaptcha?: CcxpLiteDecaptchaModel;
     decaptchaModel?: CcxpLiteDecaptchaModel;
-    [key: string]: any;
+    isOrphan?: boolean;
+    cleanupTasks?: Array<() => void>;
   }
 
   interface Window {

@@ -12,7 +12,7 @@
 
   globalScope[PAGE_FLAG] = true;
 
-  let wrappedToSubmit = null;
+  let wrappedToSubmit: CcxpLiteWrappedSubmit | null = null;
   let pendingSubmission: {
     actionName: string;
     snapshot: CcxpLitePe14dSnapshot;
@@ -81,7 +81,7 @@
     form: HTMLFormElement,
     actionName: string,
     actionValue?: string,
-  ) {
+  ): unknown {
     if (pendingSubmission) {
       return false;
     }
@@ -331,7 +331,7 @@
     pendingSubmission = null;
   }
 
-  function escapeAttributeValue(value) {
+  function escapeAttributeValue(value: string | null | undefined): string {
     return String(value || "")
       .replace(/\\/g, "\\\\")
       .replace(/"/g, '\\"');
