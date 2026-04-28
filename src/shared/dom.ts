@@ -70,7 +70,7 @@
 
   function hasRuntimeObject() {
     try {
-      return typeof chrome !== "undefined" && !!chrome.runtime;
+      return typeof chrome !== "undefined" && Boolean(chrome.runtime);
     } catch (_error) {
       return false;
     }
@@ -101,7 +101,7 @@
   }
 
   function isContextValid() {
-    return !!getRuntimeSafely();
+    return Boolean(getRuntimeSafely());
   }
 
   function ensureContextValid() {

@@ -122,12 +122,13 @@
         return;
       }
 
-      let nextValue: any[] = [];
-      try {
-        nextValue = JSON.parse(event.newValue || "[]") as any[];
-      } catch (_error) {
-        nextValue = [];
-      }
+      const nextValue = (() => {
+        try {
+          return JSON.parse(event.newValue || "[]") as any[];
+        } catch (_error) {
+          return [];
+        }
+      })();
 
       favoriteState.ids = new Set(
         Array.isArray(nextValue)
