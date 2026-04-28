@@ -1,8 +1,8 @@
 (function bootstrapCcxpLite() {
   const namespace = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
-  const shared = namespace.shared;
-  const sidebar = namespace.sidebar;
-  const landing = namespace.landing;
+  const { shared } = namespace;
+  const { sidebar } = namespace;
+  const { landing } = namespace;
 
   if (!shared || !sidebar || !landing) {
     return;

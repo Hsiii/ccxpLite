@@ -112,7 +112,7 @@
     }
 
     const onStorage = (event: StorageEvent) => {
-      const sharedDom = namespace.sharedDom;
+      const { sharedDom } = namespace;
       if (sharedDom && !sharedDom.ensureContextValid()) {
         scopeWindow.removeEventListener("storage", onStorage);
         return;

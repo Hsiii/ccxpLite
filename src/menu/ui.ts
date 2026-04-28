@@ -806,7 +806,7 @@
     }
 
     const observer = new view.ResizeObserver(() => {
-      const sharedDom = namespace.sharedDom;
+      const { sharedDom } = namespace;
       if (!body.isConnected || (sharedDom && !sharedDom.ensureContextValid())) {
         observer.disconnect();
         return;

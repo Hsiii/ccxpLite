@@ -14,7 +14,7 @@
 
     targetDocument.documentElement.dataset.ccxpLiteScope = scope;
 
-    const sharedDom = namespace.sharedDom;
+    const { sharedDom } = namespace;
     const isContextReady = (() => {
       try {
         return !sharedDom || sharedDom.ensureContextValid();

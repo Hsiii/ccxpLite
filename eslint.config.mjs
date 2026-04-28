@@ -35,7 +35,6 @@ export default defineConfig(
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
       "@typescript-eslint/no-useless-default-assignment": "off",
-      "@typescript-eslint/prefer-destructuring": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/promise-function-async": "off",
       "@typescript-eslint/restrict-plus-operands": "off",

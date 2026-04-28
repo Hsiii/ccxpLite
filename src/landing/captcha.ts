@@ -184,7 +184,7 @@
 
     state.lastRequestedSrc = captchaSrc;
     state.requestToken += 1;
-    const requestToken = state.requestToken;
+    const { requestToken } = state;
     setCaptchaLoadingState(state, true);
 
     requestCaptchaAnswerForCurrentImage(targetDocument, state, captchaSrc)

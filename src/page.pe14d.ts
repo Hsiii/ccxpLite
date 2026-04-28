@@ -99,7 +99,7 @@
       frame: transportFrame,
       cleanedUp: false,
     };
-    const originalTarget = pendingSubmission.originalTarget;
+    const { originalTarget } = pendingSubmission;
 
     persistSnapshot(snapshot);
 
@@ -164,7 +164,7 @@
   }
 
   function captureSnapshot(form: HTMLFormElement, actionName: string): CcxpLitePe14dSnapshot {
-    const activeElement = globalScope.document.activeElement;
+    const { activeElement } = globalScope.document;
     return {
       actionName,
       createdAt: Date.now(),

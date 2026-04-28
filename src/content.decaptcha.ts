@@ -413,7 +413,7 @@
 
   function predictDigitsFromTensor(imageTensor: CcxpLitePreparedTensor) {
     const model = getPreparedModel();
-    const tensors = model.tensors;
+    const { tensors } = model;
 
     let features = conv2d(imageTensor, tensors["features.0.weight"], null, {
       stride: 2,

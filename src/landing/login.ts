@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
   const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
-  const shared = namespace.shared;
+  const { shared } = namespace;
   const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
     return;
