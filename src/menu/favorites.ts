@@ -124,7 +124,7 @@
 
       const nextValue = (() => {
         try {
-          return JSON.parse(event.newValue || "[]") as any[];
+          return JSON.parse(event.newValue || "[]") as unknown[];
         } catch {
           return [];
         }
@@ -205,24 +205,23 @@
         return;
       }
 
-      (storageApi as { get: (keys: string[], cb: (res: Record<string, any>) => void) => void }).get(
-        ["ccxp-lite-sidebar-favorites"],
-        (result: Record<string, any>) => {
-          if (runtime && runtime.lastError) {
-            resolve(new Set());
-            return;
-          }
+      (
+        storageApi as { get: (keys: string[], cb: (res: Record<string, unknown>) => void) => void }
+      ).get(["ccxp-lite-sidebar-favorites"], (result: Record<string, unknown>) => {
+        if (runtime && runtime.lastError) {
+          resolve(new Set());
+          return;
+        }
 
-          const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
-          resolve(
-            new Set(
-              Array.isArray(storedValue)
-                ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-                : [],
-            ),
-          );
-        },
-      );
+        const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
+        resolve(
+          new Set(
+            Array.isArray(storedValue)
+              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+              : [],
+          ),
+        );
+      });
     });
   }
 

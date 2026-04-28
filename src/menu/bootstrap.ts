@@ -83,11 +83,7 @@
       brand.setAttribute("aria-label", strings.sidebarResetHome);
       brand.setAttribute("title", strings.sidebarResetHome);
       brand.appendChild(
-        createBrandImage(
-          hostDocument,
-          "ccxp-lite-sidebar-brand-logo",
-          ASSETS.sidebarBrandLogoPath as string,
-        ),
+        createBrandImage(hostDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
       );
       brand.appendChild(
         createBrandCopy(

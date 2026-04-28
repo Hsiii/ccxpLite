@@ -25,7 +25,7 @@
 
     const tabButtons = Array.from(
       tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']"),
-    ) as HTMLElement[];
+    );
     if (tabButtons.length === 0) {
       return;
     }

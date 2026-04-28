@@ -25,9 +25,7 @@ describe("sidebar ui", () => {
 
     requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(document, document, model);
 
-    const searchInput = document.querySelector(
-      ".ccxp-lite-sidebar-search-input",
-    ) as HTMLInputElement;
+    const searchInput = document.querySelector(".ccxp-lite-sidebar-search-input");
     expect(searchInput.value).toBe("Semester");
     expect(document.querySelector(".ccxp-lite-dashboard")).not.toBeNull();
     expect(document.querySelector(".ccxp-lite-pane-pinned .ccxp-lite-link-card")).not.toBeNull();
@@ -46,9 +44,7 @@ describe("sidebar ui", () => {
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, createSidebarModel());
 
     expect(state.currentCategoryId).toBe("");
-    expect(
-      (document.querySelector(".ccxp-lite-empty-title") as HTMLElement | null)?.textContent,
-    ).toBe("找不到符合項目");
+    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe("找不到符合項目");
   });
 
   test("switching the sidebar variant resets navigation state", () => {
@@ -68,9 +64,7 @@ describe("sidebar ui", () => {
       vi.fn(),
     );
 
-    const switcherNode = document.querySelector(
-      "[data-ccxp-lite-sidebar-lab-switch]",
-    ) as HTMLButtonElement;
+    const switcherNode = document.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
     switcherNode.click();
 
     expect(state.sidebarVariant).toBe("layered");
@@ -92,14 +86,10 @@ describe("sidebar ui", () => {
     model.favorites.directLinks = [];
 
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
-    expect(
-      (document.querySelector(".ccxp-lite-empty") as HTMLElement | null)?.textContent,
-    ).toContain("試試其他關鍵字");
+    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain("試試其他關鍵字");
 
     state.searchQuery = "";
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
-    expect(
-      (document.querySelector(".ccxp-lite-empty") as HTMLElement | null)?.textContent,
-    ).toContain("No favorites yet");
+    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain("No favorites yet");
   });
 });

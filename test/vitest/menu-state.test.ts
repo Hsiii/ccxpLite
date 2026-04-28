@@ -55,7 +55,7 @@ describe("sidebar state", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const content = document.querySelector(".ccxp-lite-sidebar-content") as HTMLElement;
+    const content = document.querySelector(".ccxp-lite-sidebar-content");
     content.scrollTop = 48;
 
     const { getSidebarUiState, persistSidebarScroll, restoreSidebarScroll } =

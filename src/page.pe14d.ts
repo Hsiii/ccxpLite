@@ -43,7 +43,7 @@
         return;
       }
 
-      if (currentToSubmit.__ccxpLiteWrapped === true) {
+      if (currentToSubmit.__ccxpLiteWrapped) {
         return;
       }
 
@@ -55,11 +55,11 @@
         actionName?: string,
         actionValue?: string,
       ) {
-        if (!shouldInterceptSubmission(form, actionName as string)) {
+        if (!shouldInterceptSubmission(form, actionName)) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
 
-        return submitThroughTransport(originalToSubmit, form, actionName as string, actionValue);
+        return submitThroughTransport(originalToSubmit, form, actionName, actionValue);
       };
 
       wrappedToSubmit.__ccxpLiteWrapped = true;
@@ -143,7 +143,7 @@
       return frame;
     }
 
-    frame = globalScope.document.createElement("iframe") as HTMLIFrameElement;
+    frame = globalScope.document.createElement("iframe");
     frame.id = TRANSPORT_FRAME_ID;
     frame.name = TRANSPORT_FRAME_NAME;
     frame.setAttribute("aria-hidden", "true");
@@ -203,15 +203,12 @@
     clearStoredSnapshot();
 
     const applyRestore = () => {
-      globalScope.scrollTo(
-        (snapshot.scrollX || 0) as number,
-        (snapshot.scrollY || snapshot.bodyScrollTop || 0) as number,
-      );
+      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
       const focusTarget =
         (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName as string)}"]`,
+            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
           )) ||
         null;
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
@@ -249,7 +246,7 @@
         return null;
       }
 
-      return snapshot as CcxpLitePe14dSnapshot;
+      return snapshot;
     } catch {
       return null;
     }
@@ -300,15 +297,12 @@
 
   function restoreAfterPatchedUpdate(snapshot: CcxpLitePe14dSnapshot) {
     globalScope.requestAnimationFrame(() => {
-      globalScope.scrollTo(
-        (snapshot.scrollX || 0) as number,
-        (snapshot.scrollY || snapshot.bodyScrollTop || 0) as number,
-      );
+      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
       const focusTarget =
         (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName as string)}"]`,
+            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
           )) ||
         null;
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {

@@ -8,11 +8,9 @@
   const { getLoginForm } = landingLocale;
 
   function captureLoginValidationState(targetDocument: Document): CcxpLiteLandingValidationState {
-    const fnstrField = targetDocument.querySelector(
-      "input[name='fnstr']",
-    ) as HTMLInputElement | null;
+    const fnstrField = targetDocument.querySelector("input[name='fnstr']");
     const rawFnstr = fnstrField ? fnstrField.value : "";
-    const match = rawFnstr.match(/^(\d{8})-(\d+)$/) as RegExpMatchArray | null;
+    const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
 
     if (!match) {
       return { startedAt: Date.now() };
@@ -70,14 +68,12 @@
       return;
     }
 
-    const authImage = form.querySelector(
-      "img[src*='auth_img.php?pwdstr=']",
-    ) as HTMLImageElement | null;
+    const authImage = form.querySelector("img[src*='auth_img.php?pwdstr=']");
     const tokenFromImage = extractPwdstrFromImage(authImage, targetDocument);
-    let fnstrField = form.querySelector("input[name='fnstr']") as HTMLInputElement | null;
+    let fnstrField = form.querySelector("input[name='fnstr']");
 
     if (!fnstrField && tokenFromImage) {
-      fnstrField = targetDocument.createElement("input") as HTMLInputElement;
+      fnstrField = targetDocument.createElement("input");
       fnstrField.type = "hidden";
       fnstrField.name = "fnstr";
       form.appendChild(fnstrField);

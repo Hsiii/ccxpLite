@@ -18,8 +18,8 @@ describe("landing login ui", () => {
     landingLogin.enhancePasswordVisibilityToggle(document, document);
     landingLogin.enhancePasswordVisibilityToggle(document, document);
 
-    const passwordField = document.querySelector("input[name='passwd']") as HTMLInputElement;
-    const toggle = document.querySelector(".ccxp-lite-password-toggle") as HTMLButtonElement;
+    const passwordField = document.querySelector("input[name='passwd']");
+    const toggle = document.querySelector(".ccxp-lite-password-toggle");
 
     expect(document.querySelectorAll(".ccxp-lite-password-field")).toHaveLength(1);
     expect(toggle.getAttribute("aria-label")).toBe("顯示密碼");

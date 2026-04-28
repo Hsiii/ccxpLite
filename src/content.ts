@@ -1,6 +1,6 @@
 (function bootstrapCcxpLite() {
   const namespace = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
-  const shared = namespace.shared as CcxpLiteShared;
+  const shared = namespace.shared;
   const sidebar = namespace.sidebar;
   const landing = namespace.landing;
 
@@ -165,8 +165,8 @@
   }
 
   function releaseLoadingSprite(targetDocument: Document) {
-    const sprite = targetDocument.getElementById(LOADING_SPRITE_ID) as HTMLElement | null;
-    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID) as HTMLElement | null;
+    const sprite = targetDocument.getElementById(LOADING_SPRITE_ID);
+    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID);
 
     if (targetDocument.documentElement) {
       targetDocument.documentElement.dataset.ccxpLiteLoadingReady = "true";
@@ -337,7 +337,7 @@
   }
 
   function removeHeader(topFrame: HTMLFrameElement | HTMLIFrameElement) {
-    const topDocument = topFrame.contentDocument as Document | null;
+    const topDocument = topFrame.contentDocument;
 
     if (!topDocument || !topDocument.body || !topDocument.head) {
       retry();
@@ -355,13 +355,13 @@
   }
 
   function simplifyMainFrame(mainFrame: HTMLFrameElement | HTMLIFrameElement | null) {
-    const mainDocument = (mainFrame && mainFrame.contentDocument) as Document | null;
+    const mainDocument = mainFrame && mainFrame.contentDocument;
     if (!mainDocument || !mainDocument.body || !mainDocument.head) {
       return;
     }
 
-    ensureThemeDocument(mainDocument as Document, "main");
-    cleanLegacyAttributes(mainDocument as Document);
+    ensureThemeDocument(mainDocument, "main");
+    cleanLegacyAttributes(mainDocument);
     mainDocument.body.classList.add(TOKENS.mainClass);
     mainDocument.body.style.setProperty("background-image", "none", "important");
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
@@ -369,13 +369,13 @@
     // Mount lab button to main frame if in classic mode
     const { sidebarState, sidebarUi, shared: sharedLib } = globalThis.CCXP_LITE || {};
     if (sidebarState && sidebarUi && sharedLib) {
-      const state = sidebarState.getSidebarUiState(mainDocument as Document);
+      const state = sidebarState.getSidebarUiState(mainDocument);
       const strings = sharedLib.getLocalizedStrings(
-        sharedLib.resolveLocaleFromDocument(mainDocument as Document),
+        sharedLib.resolveLocaleFromDocument(mainDocument),
       );
       if (state.sidebarVariant === "classic") {
         sidebarUi.mountSidebarVariantSwitch(
-          mainDocument as Document,
+          mainDocument,
           state,
           strings,
           () => {

@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
   const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
-  const shared = namespace.shared as CcxpLiteShared;
+  const shared = namespace.shared;
   const {
     landingLocale,
     landingValidation,
@@ -145,7 +145,7 @@
       createBrandImage(
         targetDocument,
         "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
-        ASSETS.sidebarBrandLogoPath as string,
+        ASSETS.sidebarBrandLogoPath,
       ),
     );
     brandLockup.appendChild(

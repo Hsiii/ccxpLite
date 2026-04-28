@@ -147,10 +147,10 @@
 
     const visibleCandidates = candidates.filter((form) => isLikelyVisibleForm(form));
     if (visibleCandidates.length > 0) {
-      return visibleCandidates[0] as HTMLFormElement;
+      return visibleCandidates[0];
     }
 
-    return candidates[0] as HTMLFormElement;
+    return candidates[0];
   }
 
   function isLikelyVisibleForm(formNode: HTMLFormElement) {

@@ -63,7 +63,7 @@
 
     ensureThemeDocument(frameDocument, "main");
     cleanLegacyAttributes(frameDocument);
-    frameDocument.body.classList.add(TOKENS.mainClass as string);
+    frameDocument.body.classList.add(TOKENS.mainClass);
 
     // Force style override as a last resort
     frameDocument.body.style.setProperty("background-image", "none", "important");

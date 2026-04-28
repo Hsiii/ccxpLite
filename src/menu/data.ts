@@ -41,7 +41,7 @@
       collectFavoriteLinks(item, favoriteIds, favoriteLinks);
       const category = findCategoryForItem(item);
       if (category) {
-        buckets.get(category.id as string)?.push(item);
+        buckets.get(category.id)?.push(item);
       }
     });
 
@@ -56,7 +56,7 @@
         kind: "category",
       },
       categories: SIDEBAR_CATEGORIES.map((category) => {
-        const categoryItems = buckets.get(category.id as string) || [];
+        const categoryItems = buckets.get(category.id) || [];
         if (categoryItems.length === 0) {
           return null;
         }
@@ -295,8 +295,8 @@
   }
 
   function parseLegacyLink(rawLink: string): { href: string; target: string } {
-    const hrefMatch = rawLink.match(/^'([^']+)'/) as RegExpMatchArray | null;
-    const targetMatch = rawLink.match(/target="?([^"\s]+)"?/i) as RegExpMatchArray | null;
+    const hrefMatch = rawLink.match(/^'([^']+)'/);
+    const targetMatch = rawLink.match(/target="?([^"\s]+)"?/i);
 
     return {
       href: hrefMatch ? hrefMatch[1] : "",
@@ -305,7 +305,7 @@
   }
 
   function parseClickLinkArgs(rawHtml: string): { name: string; url: string } | null {
-    const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/) as RegExpMatchArray | null;
+    const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/);
     if (!match) {
       return null;
     }
@@ -442,7 +442,7 @@
 
     return (
       (item.directLinks || []).length +
-      ((item.sections || []) as CcxpLiteSidebarGroup[]).reduce(
+      (item.sections || []).reduce(
         (total: number, section: CcxpLiteSidebarGroup) => total + countLinksInTree(section),
         0,
       )

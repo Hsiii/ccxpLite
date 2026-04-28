@@ -20,7 +20,7 @@ describe("landing validation", () => {
       fnstrSeed: "777",
     });
 
-    (document.querySelector("input[name='fnstr']") as HTMLInputElement).value = "invalid";
+    document.querySelector("input[name='fnstr']").value = "invalid";
     expect(validation.captureLoginValidationState(document)).toHaveProperty("startedAt");
   });
 
@@ -40,7 +40,7 @@ describe("landing validation", () => {
       startedAt: Date.now() - 31 * 60 * 1000,
     });
 
-    const account = document.querySelector("input[name='account']") as HTMLInputElement;
+    const account = document.querySelector("input[name='account']");
     account.dispatchEvent(new Event("click"));
     expect(reloadSpy).toHaveBeenCalled();
   });
@@ -53,13 +53,11 @@ describe("landing validation", () => {
     const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
 
     const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
-    const image = form.querySelector("img") as HTMLImageElement;
+    const image = form.querySelector("img");
     image.setAttribute("src", "auth_img.php?pwdstr=20260501-123");
 
     landingValidation.ensureLoginSubmissionPayload(form, document);
-    expect((form.querySelector("input[name='fnstr']") as HTMLInputElement).value).toBe(
-      "20260501-123",
-    );
+    expect(form.querySelector("input[name='fnstr']").value).toBe("20260501-123");
 
     expect(
       landingValidation.extractPwdstrFromImage(

@@ -67,7 +67,7 @@ describe("sidebar runtime", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const destinationFrame = document.createElement("iframe") as HTMLIFrameElement;
+    const destinationFrame = document.createElement("iframe");
     window.CCXP_LITE.sidebarRuntime.activateLegacyLink(
       {
         id: "grades",

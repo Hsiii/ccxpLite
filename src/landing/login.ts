@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
   const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
-  const shared = namespace.shared as CcxpLiteShared;
+  const shared = namespace.shared;
   const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
     return;
@@ -15,7 +15,7 @@
       rootNode.querySelectorAll(
         "input[name='passwd'], input[type='password']:not([name='passwd2'])",
       ),
-    ) as HTMLInputElement[];
+    );
     const seen = new Set();
     const strings = getLandingStrings(targetDocument);
 
@@ -314,7 +314,7 @@
         return;
       }
 
-      const fieldCell = (fieldNode.closest("th, td") as HTMLElement | null) || cellNode;
+      const fieldCell = fieldNode.closest("th, td") || cellNode;
       if (usedFieldCells.has(fieldCell)) {
         return;
       }
@@ -344,8 +344,7 @@
       return pairs;
     }
 
-    const fallbackFieldCell =
-      (fallbackFieldNode.closest("th, td") as HTMLElement | null) || cells[cells.length - 1];
+    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells[cells.length - 1];
     const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
 
     pairs.push({
@@ -828,7 +827,7 @@
     let currentNode = walker.nextNode();
 
     while (currentNode) {
-      textNodes.push(currentNode as Node);
+      textNodes.push(currentNode);
       currentNode = walker.nextNode();
     }
 

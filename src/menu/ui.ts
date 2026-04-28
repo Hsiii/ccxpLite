@@ -36,20 +36,18 @@
     modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel),
     strings = STRINGS,
   ) {
-    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`) as HTMLElement | null;
+    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`);
     if (!shell) {
       return;
     }
 
-    const content = shell.querySelector(".ccxp-lite-sidebar-content") as HTMLElement | null;
-    const footer = shell.querySelector(".ccxp-lite-sidebar-footer") as HTMLElement | null;
+    const content = shell.querySelector(".ccxp-lite-sidebar-content");
+    const footer = shell.querySelector(".ccxp-lite-sidebar-footer");
     if (!content || !footer) {
       return;
     }
 
-    const searchInput = shell.querySelector(
-      ".ccxp-lite-sidebar-search-input",
-    ) as HTMLInputElement | null;
+    const searchInput = shell.querySelector(".ccxp-lite-sidebar-search-input");
     const state = getSidebarUiState(hostDocument);
 
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
@@ -64,9 +62,7 @@
       searchInput.value = state.searchQuery;
     }
 
-    const model = (
-      typeof modelInput === "function" ? modelInput() : modelInput
-    ) as CcxpLiteSidebarModel;
+    const model = typeof modelInput === "function" ? modelInput() : modelInput;
     const filteredCategories = filterCategories(model.categories || [], state.searchQuery);
     const activeCategoryFromFiltered = filteredCategories.find(
       (category) => category.id === state.currentCategoryId,
@@ -112,8 +108,8 @@
         createDestinationView(
           hostDocument,
           navDocument,
-          activeLeafCategory as CcxpLiteSidebarCategoryNode,
-          state.activeLeaf as CcxpLiteSidebarLinkItem,
+          activeLeafCategory,
+          state.activeLeaf,
           strings,
           () => {
             renderSidebar(hostDocument, navDocument, modelInput, strings);
@@ -126,16 +122,9 @@
 
     if (state.currentCategoryId && activeCategory) {
       content.appendChild(
-        createCategoryDetailView(
-          hostDocument,
-          navDocument,
-          activeCategory as CcxpLiteSidebarCategoryNode,
-          state,
-          strings,
-          () => {
-            renderSidebar(hostDocument, navDocument, modelInput, strings);
-          },
-        ),
+        createCategoryDetailView(hostDocument, navDocument, activeCategory, state, strings, () => {
+          renderSidebar(hostDocument, navDocument, modelInput, strings);
+        }),
       );
       restoreSidebarScroll(content, state.scrollTopByView.category);
       return;
@@ -146,7 +135,7 @@
         hostDocument,
         navDocument,
         filterFavoriteLinks(model.favorites.directLinks || [], state.searchQuery),
-        filteredCategories as CcxpLiteSidebarCategoryNode[],
+        filteredCategories,
         state,
         strings,
         () => {
@@ -270,7 +259,7 @@
       state.sidebarVariant = setPersistedSidebarVariant(
         state.sidebarVariant === "classic" ? "layered" : "classic",
       );
-      syncTopLevelFramesetLayout(state.sidebarVariant as "classic" | "layered");
+      syncTopLevelFramesetLayout(state.sidebarVariant);
       state.activeLeaf = null;
       state.currentCategoryId = "";
       persistSidebarScroll(targetDocument, "root");
@@ -292,7 +281,7 @@
     sidebarList.className = "ccxp-lite-sidebar-list";
 
     const items = createClassicSidebarItems(model, state.searchQuery);
-    const expandedItemIds = new Set<string>((state.classicExpandedItemIds || []) as string[]);
+    const expandedItemIds = new Set<string>(state.classicExpandedItemIds || []);
 
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set();
@@ -432,7 +421,7 @@
       } else {
         expandedItemIds.add(group.id);
       }
-      state.classicExpandedItemIds = Array.from(expandedItemIds as Set<string>);
+      state.classicExpandedItemIds = Array.from(expandedItemIds);
       rerender();
     });
     linkList.appendChild(button);

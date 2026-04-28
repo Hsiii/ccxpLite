@@ -158,7 +158,7 @@ declare global {
     ASSETS: Record<string, string>;
     LOCALIZED_STRINGS: Record<string, Record<string, string>>;
     SIDEBAR_CATEGORIES: CcxpLiteSidebarCategoryDefinition[];
-    [key: string]: any;
+    [key: string]: unknown;
   }
 
   interface CcxpLiteSharedLocale {
@@ -232,7 +232,7 @@ declare global {
     createBrandPartnerIcon: (targetDocument: Document) => SVGElement;
     createBrandPartnerLink: (
       targetDocument: Document,
-      options?: any,
+      options?: Record<string, unknown>,
     ) => { mark: HTMLElement; link: HTMLElement };
     moveChildNodes: (sourceNode: Node, targetNode: Node) => void;
     removeNode: (node: Node | null) => void;
@@ -242,7 +242,7 @@ declare global {
     ensureContextValid: () => boolean;
     invalidateContext: () => void;
     getRuntimeSafely: () => CcxpLiteRuntime | null;
-    getLocalStorageAreaSafely: () => any;
+    getLocalStorageAreaSafely: () => Record<string, unknown> | null;
     addCleanupTask: (task: () => void) => void;
   }
 
@@ -503,11 +503,11 @@ declare global {
     sidebarData?: CcxpLiteSidebarData;
     sidebarUi?: CcxpLiteSidebarUi;
     sidebarRuntime?: CcxpLiteSidebarRuntime;
-    menuData?: any;
-    menuFavorites?: any;
-    menuRuntime?: any;
-    menuState?: any;
-    menuUi?: any;
+    menuData?: Record<string, unknown>;
+    menuFavorites?: Record<string, unknown>;
+    menuRuntime?: Record<string, unknown>;
+    menuState?: Record<string, unknown>;
+    menuUi?: Record<string, unknown>;
     decaptcha?: CcxpLiteDecaptchaModel;
     decaptchaModel?: CcxpLiteDecaptchaModel;
     isOrphan?: boolean;

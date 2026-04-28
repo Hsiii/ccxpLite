@@ -40,7 +40,7 @@
     if (!model.preparedTensors) {
       const preparedTensors: Record<string, CcxpLitePreparedTensor> = {};
       Object.entries(model.tensors || {}).forEach(([name, tensor]) => {
-        const sourceTensor = tensor as CcxpLiteTensorSource;
+        const sourceTensor = tensor;
         preparedTensors[name] = {
           shape: Array.isArray(sourceTensor.shape) ? sourceTensor.shape.slice() : [],
           data:
