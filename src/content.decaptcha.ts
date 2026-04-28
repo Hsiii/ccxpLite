@@ -25,7 +25,7 @@
     const EPS = 1e-5;
 
     function getNamespace() {
-      return runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {});
+      return (runtimeScope.CCXP_LITE || (runtimeScope.CCXP_LITE = {})) as CcxpLiteNamespace;
     }
 
     function getPreparedModel(): CcxpLitePreparedModel {
@@ -277,7 +277,7 @@
       return createTensor(inputTensor.shape, out);
     }
 
-    function relu(inputTensor) {
+    function relu(inputTensor: CcxpLitePreparedTensor) {
       const out = new Float32Array(inputTensor.data.length);
       for (let index = 0; index < inputTensor.data.length; index += 1) {
         out[index] = inputTensor.data[index] > 0 ? inputTensor.data[index] : 0;
@@ -285,7 +285,11 @@
       return createTensor(inputTensor.shape, out);
     }
 
-    function adaptiveAvgPool2d(inputTensor, outHeight, outWidth) {
+    function adaptiveAvgPool2d(
+      inputTensor: CcxpLitePreparedTensor,
+      outHeight: number,
+      outWidth: number,
+    ) {
       const [channels, inHeight, inWidth] = inputTensor.shape;
       const out = new Float32Array(channels * outHeight * outWidth);
       let outIndex = 0;
@@ -337,7 +341,7 @@
       return out;
     }
 
-    function argmax(values) {
+    function argmax(values: Float32Array | number[]) {
       let bestIndex = 0;
       let bestValue = values[0];
 
@@ -387,9 +391,9 @@
       return relu(output);
     }
 
-    function getHeadInputVectors(pooledTensor, digits) {
+    function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: number) {
       const channels = pooledTensor.shape[0];
-      const vectors = [];
+      const vectors: Float32Array[] = [];
 
       for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
         const vector = new Float32Array(channels);
@@ -402,7 +406,7 @@
       return vectors;
     }
 
-    function predictDigitsFromTensor(imageTensor) {
+    function predictDigitsFromTensor(imageTensor: CcxpLitePreparedTensor) {
       const model = getPreparedModel();
       const tensors = model.tensors;
 

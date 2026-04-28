@@ -1,8 +1,8 @@
 (function bootstrapCcxpLite() {
   const namespace = (window.CCXP_LITE || {}) as CcxpLiteNamespace;
-  const shared = namespace.shared as unknown as any;
-  const sidebar: any = namespace.sidebar;
-  const landing: any = namespace.landing;
+  const shared = namespace.shared as CcxpLiteShared;
+  const sidebar: CcxpLiteSidebar = namespace.sidebar as any;
+  const landing: CcxpLiteLanding = namespace.landing as any;
 
   if (!shared || !sidebar || !landing) {
     return;
@@ -76,14 +76,19 @@
     markMainReady();
   }
 
-  function initializeLoadingSprite(targetDocument) {
+  function initializeLoadingSprite(targetDocument: Document) {
     if (!isSupportedInquirePath(targetDocument)) {
       return null;
     }
 
     ensureLoadingSprite(targetDocument);
 
-    const state = {
+    const state: {
+      navReady: boolean;
+      mainReady: boolean;
+      timerId: number | null;
+      released: boolean;
+    } = {
       navReady: false,
       mainReady: false,
       timerId: null,
@@ -160,8 +165,8 @@
   }
 
   function releaseLoadingSprite(targetDocument) {
-    const sprite = targetDocument.getElementById(LOADING_SPRITE_ID);
-    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID);
+    const sprite = targetDocument.getElementById(LOADING_SPRITE_ID) as HTMLElement | null;
+    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID) as HTMLElement | null;
 
     if (targetDocument.documentElement) {
       targetDocument.documentElement.dataset.ccxpLiteLoadingReady = "true";
@@ -226,7 +231,7 @@
       return;
     }
 
-    if (loadingState.timerId) {
+    if (loadingState.timerId !== null) {
       window.clearTimeout(loadingState.timerId);
     }
 
@@ -355,8 +360,8 @@
       return;
     }
 
-    ensureThemeDocument(mainDocument, "main");
-    cleanLegacyAttributes(mainDocument);
+    ensureThemeDocument(mainDocument as Document, "main");
+    cleanLegacyAttributes(mainDocument as Document);
     mainDocument.body.classList.add(TOKENS.mainClass);
     mainDocument.body.style.setProperty("background-image", "none", "important");
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
@@ -364,13 +369,13 @@
     // Mount lab button to main frame if in classic mode
     const { sidebarState, sidebarUi, shared: sharedLib } = window.CCXP_LITE || {};
     if (sidebarState && sidebarUi && sharedLib) {
-      const state = sidebarState.getSidebarUiState(mainDocument);
+      const state = sidebarState.getSidebarUiState(mainDocument as Document);
       const strings = sharedLib.getLocalizedStrings(
-        sharedLib.resolveLocaleFromDocument(mainDocument),
+        sharedLib.resolveLocaleFromDocument(mainDocument as Document),
       );
       if (state.sidebarVariant === "classic") {
         sidebarUi.mountSidebarVariantSwitch(
-          mainDocument,
+          mainDocument as Document,
           state,
           strings,
           () => {
