@@ -66,7 +66,7 @@ export function createTestWindow(
   return { window: testWindow };
 }
 
-export function loadModules(window: TestWindow, modulePaths: string[]) {
+export function loadModules(window: TestWindow, modulePaths: string[]): void {
   const context = vm.createContext(window as unknown as vm.Context);
   modulePaths.forEach((modulePath) => {
     const sourcePath = path.join(repoRoot, modulePath);

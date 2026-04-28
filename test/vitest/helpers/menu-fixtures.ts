@@ -1,4 +1,4 @@
-export function createSidebarShellHtml() {
+export function createSidebarShellHtml(): string {
   return `
     <!doctype html>
     <html lang="zh">

@@ -1,4 +1,4 @@
-export function createLandingLoginHtml() {
+export function createLandingLoginHtml(): string {
   return `
     <!doctype html>
     <html lang="zh">
