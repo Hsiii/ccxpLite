@@ -8,20 +8,20 @@ import {
   rmSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
 import { spawnSync } from "node:child_process";
+import path from "node:path";
 
 const projectRoot = process.cwd();
-const srcDir = join(projectRoot, "src");
-const compiledSrcDir = join(projectRoot, ".build", "src");
-const distDir = join(projectRoot, "dist");
-const unpackedDir = join(distDir, "unpacked");
-const outputZip = join(distDir, "ccxpLite.zip");
-const stagingDir = mkdtempSync(join(tmpdir(), "ccxp-lite-build-"));
-const exportScriptPath = join(projectRoot, "scripts", "export_decaptcha_model.py");
-const checkpointPath = join(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
-const generatedModelPath = join(srcDir, "content.decaptcha.model.ts");
-const buildTsconfigPath = join(projectRoot, "tsconfig.build.json");
+const srcDir = path.join(projectRoot, "src");
+const compiledSrcDir = path.join(projectRoot, ".build", "src");
+const distDir = path.join(projectRoot, "dist");
+const unpackedDir = path.join(distDir, "unpacked");
+const outputZip = path.join(distDir, "ccxpLite.zip");
+const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
+const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
+const checkpointPath = path.resolve(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
+const generatedModelPath = path.join(srcDir, "content.decaptcha.model.ts");
+const buildTsconfigPath = path.join(projectRoot, "tsconfig.build.json");
 function copyTree(
   sourceDir: string,
   targetDir: string,
@@ -30,8 +30,8 @@ function copyTree(
   mkdirSync(targetDir, { recursive: true });
 
   for (const entryName of readdirSync(sourceDir)) {
-    const sourcePath = join(sourceDir, entryName);
-    const targetPath = join(targetDir, entryName);
+    const sourcePath = path.join(sourceDir, entryName);
+    const targetPath = path.join(targetDir, entryName);
     const isDirectory = lstatSync(sourcePath).isDirectory();
 
     if (!shouldCopy(sourcePath, isDirectory)) {
@@ -43,7 +43,7 @@ function copyTree(
       continue;
     }
 
-    mkdirSync(dirname(targetPath), { recursive: true });
+    mkdirSync(path.dirname(targetPath), { recursive: true });
     copyFileSync(sourcePath, targetPath);
   }
 }
