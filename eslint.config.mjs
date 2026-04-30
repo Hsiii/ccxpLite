@@ -83,7 +83,6 @@ export default defineConfig(
       "unicorn/prefer-import-meta-properties": "off",
       "unicorn/prefer-math-min-max": "off",
       "unicorn/prefer-modern-dom-apis": "off",
-      "unicorn/prefer-number-properties": "off",
       "unicorn/prefer-query-selector": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-string-raw": "off",

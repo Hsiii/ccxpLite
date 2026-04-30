@@ -839,8 +839,10 @@
 
     const columnCount = 3;
     const styles = view.getComputedStyle(body);
-    const fallbackGap = parseFloat(styles.getPropertyValue("--ccxp-lite-spacing-md") || "16");
-    const gap = parseFloat(styles.columnGap || styles.gap) || fallbackGap;
+    const fallbackGap = Number.parseFloat(
+      styles.getPropertyValue("--ccxp-lite-spacing-md") || "16",
+    );
+    const gap = Number.parseFloat(styles.columnGap || styles.gap) || fallbackGap;
     const columnWidth = (body.clientWidth - gap * (columnCount - 1)) / columnCount;
     const columnHeights = Array.from({ length: columnCount }, () => 0);
 
