@@ -79,7 +79,6 @@ export default defineConfig(
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-string-raw": "off",
       "unicorn/prefer-switch": "off",
-      "unicorn/prefer-type-error": "off",
       "unicorn/require-module-specifiers": "off",
     },
   },

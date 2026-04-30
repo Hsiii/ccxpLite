@@ -104,7 +104,7 @@
     const blobBytes = new Uint8Array(bytes);
 
     if (typeof Blob === "undefined") {
-      throw new Error("Blob is not available for captcha decoding.");
+      throw new TypeError("Blob is not available for captcha decoding.");
     }
 
     if (typeof createImageBitmap === "function" && typeof OffscreenCanvas !== "undefined") {
