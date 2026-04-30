@@ -232,7 +232,7 @@
 
   function extractLegacyTabTarget(button: HTMLElement) {
     const onclickValue = button.getAttribute("onclick") || "";
-    const targetMatch = onclickValue.match(/['"]([^'"]+)['"]/);
+    const targetMatch = onclickValue.match(/["']([^"']+)["']/);
     return targetMatch ? targetMatch[1] : "";
   }
 

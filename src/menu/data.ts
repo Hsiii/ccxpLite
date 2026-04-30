@@ -111,7 +111,7 @@
   function normalizeSidebarLabel(label: string | null | undefined): string {
     return (label || "")
       .replaceAll(/[()（）]/g, " ")
-      .replaceAll(/[,&]/g, " ")
+      .replaceAll(/[&,]/g, " ")
       .replaceAll(/\s*\/\s*/g, " ")
       .replaceAll(/\s+/g, " ")
       .trim();
@@ -296,7 +296,7 @@
 
   function parseLegacyLink(rawLink: string): { href: string; target: string } {
     const hrefMatch = rawLink.match(/^'([^']+)'/);
-    const targetMatch = rawLink.match(/target="?([^"\s]+)"?/i);
+    const targetMatch = rawLink.match(/target="?([^\s"]+)"?/i);
 
     return {
       href: hrefMatch ? hrefMatch[1] : "",
@@ -328,7 +328,7 @@
 
     const scratch = navDocument.createElement("div");
     scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
-      .replaceAll(/onClick='[^']*'/gi, "")
+      .replaceAll(/onclick='[^']*'/gi, "")
       .replaceAll(String.raw`\"`, "&quot;")
       .replaceAll(String.raw`\'`, "&#39;")
       .replaceAll(/<br\s*\/?>/gi, " ");

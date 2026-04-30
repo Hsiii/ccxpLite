@@ -536,7 +536,7 @@
     const baseName =
       (fieldNode.getAttribute("name") || "field")
         .trim()
-        .replaceAll(/[^a-zA-Z0-9_-]+/g, "-")
+        .replaceAll(/[^\w-]+/g, "-")
         .replaceAll(/^-+|-+$/g, "") || "field";
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;

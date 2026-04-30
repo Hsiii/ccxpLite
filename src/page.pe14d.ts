@@ -21,7 +21,7 @@
   } | null = null;
 
   function isSupportedPage() {
-    return /^\/ccxp\/INQUIRE\/PE\/1\/14D\/.+/i.test(globalScope.location.pathname);
+    return /^\/ccxp\/inquire\/pe\/1\/14d\/.+/i.test(globalScope.location.pathname);
   }
 
   if (!isSupportedPage()) {

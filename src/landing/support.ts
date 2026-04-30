@@ -89,7 +89,7 @@
         }
 
         const rawDate = (firstCell.textContent || "").replaceAll(/\s+/g, "").trim();
-        if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
+        if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
           return false;
         }
 
@@ -186,7 +186,7 @@
       }
 
       const rawDate = (cells[0].textContent || "").replaceAll(/\s+/g, "").trim();
-      if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
+      if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
         return;
       }
 

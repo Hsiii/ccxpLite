@@ -428,9 +428,9 @@
       return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
     } catch {
       return value
-        .replaceAll(/([?&])(ACIXSTORE|sid|session|PHPSESSID|token|_|t)=[^&#]*/gi, "$1")
-        .replace(/[?&]+$/, "")
-        .replaceAll(/[?&]{2,}/g, "&")
+        .replaceAll(/([&?])(acixstore|sid|session|phpsessid|token|_|t)=[^#&]*/gi, "$1")
+        .replace(/[&?]+$/, "")
+        .replaceAll(/[&?]{2,}/g, "&")
         .replace("?&", "?");
     }
   }

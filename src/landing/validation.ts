@@ -100,7 +100,7 @@
       );
       return parsed.searchParams.get("pwdstr") || "";
     } catch {
-      const match = rawSrc.match(/[?&]pwdstr=([^&]+)/i);
+      const match = rawSrc.match(/[&?]pwdstr=([^&]+)/i);
       return match ? decodeURIComponent(match[1] || "") : "";
     }
   }

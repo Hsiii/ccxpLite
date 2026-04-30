@@ -44,7 +44,7 @@
       (targetDocument.location && targetDocument.location.search) ||
       ""
     ).toLowerCase();
-    const langMatch = search.match(/[?&]lang=([^&]+)/);
+    const langMatch = search.match(/[&?]lang=([^&]+)/);
     if (langMatch) {
       const langValue = decodeURIComponent(langMatch[1]);
       if (langValue.includes("en")) {
