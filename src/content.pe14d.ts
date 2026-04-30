@@ -26,12 +26,12 @@
   script.async = false;
   script.addEventListener("load", () => {
     if (script.parentNode) {
-      script.parentNode.removeChild(script);
+      script.remove();
     }
   });
   script.addEventListener("error", () => {
     if (script.parentNode) {
-      script.parentNode.removeChild(script);
+      script.remove();
     }
   });
 

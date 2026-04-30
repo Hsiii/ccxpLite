@@ -10,7 +10,7 @@
 
   function removeNode(node: Node | null) {
     if (node && node.parentNode) {
-      node.parentNode.removeChild(node);
+      node.remove();
     }
   }
 

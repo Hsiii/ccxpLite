@@ -77,7 +77,6 @@ export default defineConfig(
       "unicorn/prefer-add-event-listener": "off",
       "unicorn/prefer-dom-node-append": "off",
       "unicorn/prefer-dom-node-dataset": "off",
-      "unicorn/prefer-dom-node-remove": "off",
       "unicorn/prefer-import-meta-properties": "off",
       "unicorn/prefer-math-min-max": "off",
       "unicorn/prefer-modern-dom-apis": "off",
