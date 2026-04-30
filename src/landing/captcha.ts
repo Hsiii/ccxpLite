@@ -160,7 +160,7 @@
 
     clearCaptchaTimeoutFlash(state);
     // Trigger reflow
-     
+
     const _reflow = state.input.offsetWidth;
     state.input.setAttribute("data-timeout-flash", "true");
     state.timeoutFlashTimer = globalThis.setTimeout(() => {
@@ -308,12 +308,12 @@
           : globalThis.location.href,
       );
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
-      const fileName = pathSegments[pathSegments.length - 1] || "";
+      const fileName = pathSegments.at(-1) || "";
       return `${fileName}${parsed.search}`;
     } catch {
       const trimmedSource = rawSource.replace(/^https?:\/\/[^/]+\//i, "");
       const sourceSegments = trimmedSource.split("/").filter(Boolean);
-      return sourceSegments[sourceSegments.length - 1] || "";
+      return sourceSegments.at(-1) || "";
     }
   }
 

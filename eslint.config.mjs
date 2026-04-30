@@ -74,7 +74,6 @@ export default defineConfig(
       "unicorn/no-negated-condition": "off",
       "unicorn/no-null": "off",
       "unicorn/numeric-separators-style": "off",
-      "unicorn/prefer-at": "off",
       "unicorn/prefer-add-event-listener": "off",
       "unicorn/prefer-dom-node-append": "off",
       "unicorn/prefer-dom-node-dataset": "off",

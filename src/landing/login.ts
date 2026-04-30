@@ -341,7 +341,7 @@
       return pairs;
     }
 
-    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells[cells.length - 1];
+    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells.at(-1);
     const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
 
     pairs.push({
