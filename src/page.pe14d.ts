@@ -330,6 +330,6 @@
   }
 
   function escapeAttributeValue(value: string | null | undefined): string {
-    return (value || "").replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+    return (value || "").replaceAll("\\", "\\\\").replaceAll('"', String.raw`\"`);
   }
 })(globalThis);

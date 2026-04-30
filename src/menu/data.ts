@@ -329,8 +329,8 @@
     const scratch = navDocument.createElement("div");
     scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
       .replaceAll(/onClick='[^']*'/gi, "")
-      .replaceAll('\\"', "&quot;")
-      .replaceAll("\\'", "&#39;")
+      .replaceAll(String.raw`\"`, "&quot;")
+      .replaceAll(String.raw`\'`, "&#39;")
       .replaceAll(/<br\s*\/?>/gi, " ");
     return (scratch.textContent || "").replaceAll(/\s+/g, " ").trim();
   }
@@ -454,15 +454,15 @@
     const root: CcxpLiteLegacySidebarFolderNode = { desc: "", children: [] };
     nodes.set("foldersTree", root);
 
-    const stringPattern = "\"(?:[^\"\\\\]|\\\\.)*\"|'(?:[^'\\\\]|\\\\.)*'";
+    const stringPattern = String.raw`"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'`;
     const rootRegex = new RegExp(
-      `^foldersTree\\s*=\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)$`,
+      String.raw`^foldersTree\s*=\s*gFld\s*\(\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)$`,
     );
     const folderRegex = new RegExp(
-      `^(\\w+)\\s*=\\s*insFld\\s*\\(\\s*(\\w+)\\s*,\\s*gFld\\s*\\(\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`,
+      String.raw`^(\w+)\s*=\s*insFld\s*\(\s*(\w+)\s*,\s*gFld\s*\(\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)\s*\)$`,
     );
     const docRegex = new RegExp(
-      `^insDoc\\s*\\(\\s*(\\w+)\\s*,\\s*gLnk\\s*\\(\\s*([^,]+?)\\s*,\\s*(${stringPattern})\\s*,\\s*(${stringPattern})\\s*\\)\\s*\\)$`,
+      String.raw`^insDoc\s*\(\s*(\w+)\s*,\s*gLnk\s*\(\s*([^,]+?)\s*,\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)\s*\)$`,
     );
 
     statements.forEach((statement) => {
@@ -512,11 +512,11 @@
 
     return inner
       .replaceAll("\\\\", "\\")
-      .replaceAll("\\'", "'")
-      .replaceAll('\\"', '"')
-      .replaceAll("\\n", "\n")
-      .replaceAll("\\r", "\r")
-      .replaceAll("\\t", "\t");
+      .replaceAll(String.raw`\'`, "'")
+      .replaceAll(String.raw`\"`, '"')
+      .replaceAll(String.raw`\n`, "\n")
+      .replaceAll(String.raw`\r`, "\r")
+      .replaceAll(String.raw`\t`, "\t");
   }
 
   function buildLegacyLinkString(targetToken, href) {

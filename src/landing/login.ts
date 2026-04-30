@@ -1142,7 +1142,7 @@
         ? String(value)
         : "";
 
-    return normalizedValue.replaceAll("\\", "\\\\").replaceAll("'", "\\'");
+    return normalizedValue.replaceAll("\\", "\\\\").replaceAll("'", String.raw`\'`);
   }
 
   function createPasswordVisibilityIcon(targetDocument: Document, visible: boolean) {
