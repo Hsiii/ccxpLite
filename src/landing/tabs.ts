@@ -147,20 +147,37 @@
       });
 
       button.addEventListener("keydown", (event) => {
-        if (event.key === "ArrowRight") {
-          event.preventDefault();
-          activateTabAt((index + 1) % buttonPanelMap.length, { focusButton: true });
-        } else if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          activateTabAt((index - 1 + buttonPanelMap.length) % buttonPanelMap.length, {
-            focusButton: true,
-          });
-        } else if (event.key === "Home") {
-          event.preventDefault();
-          activateTabAt(0, { focusButton: true });
-        } else if (event.key === "End") {
-          event.preventDefault();
-          activateTabAt(buttonPanelMap.length - 1, { focusButton: true });
+        switch (event.key) {
+          case "ArrowRight": {
+            event.preventDefault();
+            activateTabAt((index + 1) % buttonPanelMap.length, { focusButton: true });
+
+            break;
+          }
+
+          case "ArrowLeft": {
+            event.preventDefault();
+            activateTabAt((index - 1 + buttonPanelMap.length) % buttonPanelMap.length, {
+              focusButton: true,
+            });
+
+            break;
+          }
+
+          case "Home": {
+            event.preventDefault();
+            activateTabAt(0, { focusButton: true });
+
+            break;
+          }
+
+          case "End": {
+            event.preventDefault();
+            activateTabAt(buttonPanelMap.length - 1, { focusButton: true });
+
+            break;
+          }
+          // No default
         }
       });
     });
