@@ -4,7 +4,7 @@
   const TRANSPORT_FRAME_NAME = "ccxp-lite-pe14d-transport";
   const STATE_STORAGE_KEY = "ccxp-lite-pe14d-submit-state";
   const INTERCEPTED_ACTIONS = new Set(["getLabInsList", "ins"]);
-  const RESTORE_TTL_MS = 30000;
+  const RESTORE_TTL_MS = 30_000;
 
   if (globalScope[PAGE_FLAG]) {
     return;
