@@ -295,7 +295,7 @@
   function relu(inputTensor: CcxpLitePreparedTensor) {
     const out = new Float32Array(inputTensor.data.length);
     for (let index = 0; index < inputTensor.data.length; index += 1) {
-      out[index] = inputTensor.data[index] > 0 ? inputTensor.data[index] : 0;
+      out[index] = Math.max(inputTensor.data[index], 0);
     }
     return createTensor(inputTensor.shape, out);
   }
