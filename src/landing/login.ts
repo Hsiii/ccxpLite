@@ -319,7 +319,7 @@
       const fieldCellIndex = cells.indexOf(fieldCell);
       const labelCell = resolveLabelCellForField(
         cells,
-        fieldCellIndex >= 0 ? fieldCellIndex : cellIndex,
+        fieldCellIndex !== -1 ? fieldCellIndex : cellIndex,
       );
       const labelText = getPreferredLoginLabelText(labelCell, fieldCell, fieldNode);
 
@@ -990,7 +990,7 @@
       (controlNode) => controlNode === node || controlNode.contains(node),
     );
 
-    if (loginIndex < 0 || currentIndex < 0 || currentIndex <= loginIndex) {
+    if (loginIndex === -1 || currentIndex === -1 || currentIndex <= loginIndex) {
       return false;
     }
 

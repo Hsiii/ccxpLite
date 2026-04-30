@@ -65,7 +65,6 @@ export default defineConfig(
       "no-param-reassign": "off",
       "unicorn/better-regex": "off",
       "unicorn/catch-error-name": "off",
-      "unicorn/consistent-existence-index-check": "off",
       "unicorn/consistent-function-scoping": "off",
       "unicorn/import-style": "off",
       "unicorn/no-array-for-each": "off",

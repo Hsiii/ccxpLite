@@ -107,14 +107,14 @@
       const byButtonClass = buttonPanelMap.findIndex(({ button }) =>
         button.classList.contains("active"),
       );
-      if (byButtonClass >= 0) {
+      if (byButtonClass !== -1) {
         return byButtonClass;
       }
 
       const byPanelVisibility = buttonPanelMap.findIndex(
         ({ panel }) => panel.style.display !== "none" && !panel.hidden,
       );
-      if (byPanelVisibility >= 0) {
+      if (byPanelVisibility !== -1) {
         return byPanelVisibility;
       }
 
