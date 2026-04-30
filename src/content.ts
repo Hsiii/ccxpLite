@@ -34,7 +34,7 @@
     const frames = findFrames();
     [frames.nav, frames.main, frames.top].forEach((frame) => {
       if (frame) {
-        frame.removeAttribute("data-ccxp-lite-listener-attached");
+        delete frame.dataset.ccxpLiteListenerAttached;
       }
     });
   });

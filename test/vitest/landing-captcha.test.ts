@@ -84,7 +84,7 @@ describe("landing captcha", () => {
     await flushPromises();
 
     expect(input.hasAttribute("aria-busy")).toBe(false);
-    expect(input.getAttribute("data-timeout-flash")).toBe("true");
+    expect(input.dataset.timeoutFlash).toBe("true");
     expect(input.value).toBe("");
   });
 });

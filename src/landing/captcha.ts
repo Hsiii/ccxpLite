@@ -150,7 +150,7 @@
       state.timeoutFlashTimer = null;
     }
 
-    state.input.removeAttribute("data-timeout-flash");
+    delete state.input.dataset.timeoutFlash;
   }
 
   function flashCaptchaTimeout(state: CcxpLiteCaptchaAutofillState | null) {
@@ -162,13 +162,13 @@
     // Trigger reflow
 
     const _reflow = state.input.offsetWidth;
-    state.input.setAttribute("data-timeout-flash", "true");
+    state.input.dataset.timeoutFlash = "true";
     state.timeoutFlashTimer = globalThis.setTimeout(() => {
       if (!state.input) {
         return;
       }
 
-      state.input.removeAttribute("data-timeout-flash");
+      delete state.input.dataset.timeoutFlash;
       state.timeoutFlashTimer = null;
     }, 1600);
   }
