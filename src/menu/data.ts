@@ -110,10 +110,10 @@
 
   function normalizeSidebarLabel(label: string | null | undefined): string {
     return (label || "")
-      .replace(/[()（）]/g, " ")
-      .replace(/[,&]/g, " ")
-      .replace(/\s*\/\s*/g, " ")
-      .replace(/\s+/g, " ")
+      .replaceAll(/[()（）]/g, " ")
+      .replaceAll(/[,&]/g, " ")
+      .replaceAll(/\s*\/\s*/g, " ")
+      .replaceAll(/\s+/g, " ")
       .trim();
   }
 
@@ -328,20 +328,20 @@
 
     const scratch = navDocument.createElement("div");
     scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
-      .replace(/onClick='[^']*'/gi, "")
-      .replace(/\\"/g, "&quot;")
-      .replace(/\\'/g, "&#39;")
-      .replace(/<br\s*\/?>/gi, " ");
-    return (scratch.textContent || "").replace(/\s+/g, " ").trim();
+      .replaceAll(/onClick='[^']*'/gi, "")
+      .replaceAll('\\"', "&quot;")
+      .replaceAll("\\'", "&#39;")
+      .replaceAll(/<br\s*\/?>/gi, " ");
+    return (scratch.textContent || "").replaceAll(/\s+/g, " ").trim();
   }
 
   function extractLegacyVisibleText(rawHtml) {
     return [
       ...String(rawHtml)
-        .replace(/<br\s*\/?>/gi, "\n")
+        .replaceAll(/<br\s*\/?>/gi, "\n")
         .matchAll(/>([^<>]+)/g),
     ]
-      .map((match) => (match[1] || "").replace(/\s+/g, " ").trim())
+      .map((match) => (match[1] || "").replaceAll(/\s+/g, " ").trim())
       .filter(Boolean)
       .join(" ")
       .trim();
@@ -425,7 +425,7 @@
   }
 
   function normalizeSearchText(text: string | null | undefined) {
-    return (text || "").toLowerCase().replace(/\s+/g, " ").trim();
+    return (text || "").toLowerCase().replaceAll(/\s+/g, " ").trim();
   }
 
   function countLinksInTree(item: CcxpLiteSidebarGroup | null): number {
@@ -511,12 +511,12 @@
     }
 
     return inner
-      .replace(/\\\\/g, "\\")
-      .replace(/\\'/g, "'")
-      .replace(/\\"/g, '"')
-      .replace(/\\n/g, "\n")
-      .replace(/\\r/g, "\r")
-      .replace(/\\t/g, "\t");
+      .replaceAll("\\\\", "\\")
+      .replaceAll("\\'", "'")
+      .replaceAll('\\"', '"')
+      .replaceAll("\\n", "\n")
+      .replaceAll("\\r", "\r")
+      .replaceAll("\\t", "\t");
   }
 
   function buildLegacyLinkString(targetToken, href) {

@@ -93,7 +93,7 @@
       return;
     }
 
-    const labelText = (labelCell.textContent || "").replace(/\s+/g, " ").trim();
+    const labelText = (labelCell.textContent || "").replaceAll(/\s+/g, " ").trim();
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
@@ -102,7 +102,7 @@
       });
 
       Array.from(labelCell.querySelectorAll("a, button, span, i")).forEach((node) => {
-        const text = (node.textContent || "").replace(/\s+/g, " ").trim();
+        const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
 
         if (!text && hasOnlyIconChild) {
@@ -379,7 +379,7 @@
   }
 
   function getNodeText(node: Node | null) {
-    return ((node && node.textContent) || "").replace(/\s+/g, " ").trim();
+    return ((node && node.textContent) || "").replaceAll(/\s+/g, " ").trim();
   }
 
   function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
@@ -476,7 +476,7 @@
     return leadingNodes
       .map((node) => getNodeText(node))
       .join(" ")
-      .replace(/\s+/g, " ")
+      .replaceAll(/\s+/g, " ")
       .trim();
   }
 
@@ -536,8 +536,8 @@
     const baseName =
       (fieldNode.getAttribute("name") || "field")
         .trim()
-        .replace(/[^a-zA-Z0-9_-]+/g, "-")
-        .replace(/^-+|-+$/g, "") || "field";
+        .replaceAll(/[^a-zA-Z0-9_-]+/g, "-")
+        .replaceAll(/^-+|-+$/g, "") || "field";
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;
     fieldNode.id = generatedId;
@@ -559,7 +559,7 @@
     const spans = Array.from(rootNode.querySelectorAll<HTMLSpanElement>("span"));
 
     spans.forEach((spanNode) => {
-      const labelText = (spanNode.textContent || "").replace(/\s+/g, " ").trim();
+      const labelText = (spanNode.textContent || "").replaceAll(/\s+/g, " ").trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
         return;
       }
@@ -751,7 +751,7 @@
         inputNode.textContent ||
         ""
       )
-        .replace(/\s+/g, " ")
+        .replaceAll(/\s+/g, " ")
         .trim();
 
       if (!label) {
@@ -802,7 +802,7 @@
   }
 
   function isPrimaryLoginActionLabel(rawLabel) {
-    const normalizedLabel = (rawLabel || "").replace(/\s+/g, "").trim().toLowerCase();
+    const normalizedLabel = (rawLabel || "").replaceAll(/\s+/g, "").trim().toLowerCase();
 
     if (!normalizedLabel) {
       return false;
@@ -826,7 +826,7 @@
     }
 
     textNodes.forEach((textNode) => {
-      const normalized = (textNode.textContent || "").replace(/\u00A0|&nbsp;|&npsp;/gi, " ");
+      const normalized = (textNode.textContent || "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim()) {
         textNode.textContent = normalized;
         return;
@@ -906,7 +906,7 @@
   }
 
   function normalizeLegacyButtonLabel(rawLabel) {
-    return (rawLabel || "").replace(/\s+/g, " ").trim();
+    return (rawLabel || "").replaceAll(/\s+/g, " ").trim();
   }
 
   function shouldKeepLegacyLoginImageSubmit(inputNode: HTMLInputElement) {
@@ -934,7 +934,7 @@
   }
 
   function isClearActionLabel(label) {
-    const normalized = (label || "").replace(/\s+/g, "").toLowerCase();
+    const normalized = (label || "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
       normalized.includes("清除") ||
@@ -1142,7 +1142,7 @@
         ? String(value)
         : "";
 
-    return normalizedValue.replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+    return normalizedValue.replaceAll("\\", "\\\\").replaceAll("'", "\\'");
   }
 
   function createPasswordVisibilityIcon(targetDocument: Document, visible: boolean) {

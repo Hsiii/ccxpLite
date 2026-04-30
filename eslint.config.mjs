@@ -86,7 +86,6 @@ export default defineConfig(
       "unicorn/prefer-query-selector": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-string-raw": "off",
-      "unicorn/prefer-string-replace-all": "off",
       "unicorn/prefer-switch": "off",
       "unicorn/prefer-type-error": "off",
       "unicorn/require-module-specifiers": "off",

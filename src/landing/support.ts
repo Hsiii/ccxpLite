@@ -88,12 +88,12 @@
           return false;
         }
 
-        const rawDate = (firstCell.textContent || "").replace(/\s+/g, "").trim();
+        const rawDate = (firstCell.textContent || "").replaceAll(/\s+/g, "").trim();
         if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
           return false;
         }
 
-        const topicText = (secondCell.textContent || "").replace(/\s+/g, " ").trim();
+        const topicText = (secondCell.textContent || "").replaceAll(/\s+/g, " ").trim();
         return topicText.length > 8;
       });
 
@@ -116,7 +116,7 @@
   }
 
   function normalizeAnnouncementHeading(rawText) {
-    return (rawText || "").replace(/\s+/g, " ").trim().toLowerCase();
+    return (rawText || "").replaceAll(/\s+/g, " ").trim().toLowerCase();
   }
 
   function prepareAnnouncementTable(
@@ -138,12 +138,12 @@
 
       const hasOnlyDecorativeCells = cells.every((cell) => {
         const hasBgColor = (cell.getAttribute("bgcolor") || "").trim().length > 0;
-        const text = (cell.textContent || "").replace(/\s+/g, "").trim();
+        const text = (cell.textContent || "").replaceAll(/\s+/g, "").trim();
         return hasBgColor && text.length === 0;
       });
 
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
-        const text = (cell.textContent || "").replace(/\s+/g, "").trim();
+        const text = (cell.textContent || "").replaceAll(/\s+/g, "").trim();
         if (text.length > 0) {
           return false;
         }
@@ -168,7 +168,7 @@
     const headerCell = rows
       .flatMap((row) => Array.from(row.cells || []))
       .find((cell) => cell.classList.contains("board_item"));
-    const titleText = (headerCell ? headerCell.textContent : "").replace(/\s+/g, " ").trim();
+    const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
 
     const headerRow = rows.find((row) => {
       const cells = Array.from(row.cells || []);
@@ -185,7 +185,7 @@
         return;
       }
 
-      const rawDate = (cells[0].textContent || "").replace(/\s+/g, "").trim();
+      const rawDate = (cells[0].textContent || "").replaceAll(/\s+/g, "").trim();
       if (!/^\d{4}\/\d{2}\/\d{2}$/.test(rawDate)) {
         return;
       }
@@ -296,7 +296,7 @@
   }
 
   function isCannotLoginLabel(label) {
-    const normalized = (label || "").replace(/\s+/g, "").toLowerCase();
+    const normalized = (label || "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
       normalized.includes("無法登入") ||
@@ -449,7 +449,7 @@
     }
 
     if (sibling.nodeType === Node.TEXT_NODE) {
-      const normalizedText = (sibling.textContent || "").replace(/\u00A0/g, " ").trim();
+      const normalizedText = (sibling.textContent || "").replaceAll("\u00A0", " ").trim();
       if (normalizedText.length === 0) {
         removeNode(sibling);
       }
@@ -617,9 +617,9 @@
     }
 
     const text = cells
-      .map((cell) => (cell.textContent || "").replace(/\u00A0/g, " "))
+      .map((cell) => (cell.textContent || "").replaceAll("\u00A0", " "))
       .join(" ")
-      .replace(/\s+/g, " ")
+      .replaceAll(/\s+/g, " ")
       .trim();
 
     if (text.length > 0) {
@@ -640,7 +640,7 @@
     }
 
     const widthText = (cell.getAttribute("width") || "").trim().toLowerCase();
-    const normalizedText = (cell.textContent || "").replace(/\u00A0/g, " ").trim();
+    const normalizedText = (cell.textContent || "").replaceAll("\u00A0", " ").trim();
 
     if ((widthText === "3%" || widthText === "3") && normalizedText.length === 0) {
       return true;
@@ -731,8 +731,8 @@
     }
 
     const normalizedText = (cell.textContent || "")
-      .replace(/\u00A0/g, " ")
-      .replace(/\s+/g, " ")
+      .replaceAll("\u00A0", " ")
+      .replaceAll(/\s+/g, " ")
       .trim();
 
     if (normalizedText.length > 0) {
@@ -768,7 +768,7 @@
   }
 
   function normalizeLegacyWidth(rawValue) {
-    return (rawValue || "").replace(/\s+/g, "").toLowerCase();
+    return (rawValue || "").replaceAll(/\s+/g, "").toLowerCase();
   }
 
   namespace.landingSupport = {

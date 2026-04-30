@@ -352,7 +352,7 @@
         ? String(value)
         : "";
 
-    return normalizedValue.replace(/\s+/g, " ").trim();
+    return normalizedValue.replaceAll(/\s+/g, " ").trim();
   }
 
   function buildFavoritePathSegments(
@@ -421,16 +421,16 @@
         url.searchParams.append(key, entryValue);
       });
 
-      const normalizedPath = url.pathname.replace(/\/+/g, "/");
+      const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();
       const normalizedHash = url.hash || "";
 
       return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
     } catch {
       return value
-        .replace(/([?&])(ACIXSTORE|sid|session|PHPSESSID|token|_|t)=[^&#]*/gi, "$1")
+        .replaceAll(/([?&])(ACIXSTORE|sid|session|PHPSESSID|token|_|t)=[^&#]*/gi, "$1")
         .replace(/[?&]+$/, "")
-        .replace(/[?&]{2,}/g, "&")
+        .replaceAll(/[?&]{2,}/g, "&")
         .replace("?&", "?");
     }
   }

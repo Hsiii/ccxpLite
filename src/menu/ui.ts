@@ -509,7 +509,7 @@
   }
 
   function normalizeClassicSearchText(text: string | null | undefined): string {
-    return (text || "").toLowerCase().replace(/\s+/g, " ").trim();
+    return (text || "").toLowerCase().replaceAll(/\s+/g, " ").trim();
   }
 
   function isClassicSearchMatch(text: string, normalizedQuery: string) {
