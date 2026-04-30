@@ -710,10 +710,10 @@
         allActionButtons[0].parentNode?.insertBefore(actionGroup, allActionButtons[0]);
       }
 
-      const primaryCandidates = allActionButtons.filter((buttonNode) =>
+      const primaryCandidate = allActionButtons.find((buttonNode) =>
         isPrimaryLoginActionLabel(buttonNode.textContent),
       );
-      const primaryButton = primaryCandidates[0] || allActionButtons[0];
+      const primaryButton = primaryCandidate || allActionButtons[0];
       const orderedButtons = [
         primaryButton,
         ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton),

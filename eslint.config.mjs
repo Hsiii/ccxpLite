@@ -76,7 +76,6 @@ export default defineConfig(
       "unicorn/numeric-separators-style": "off",
       "unicorn/prefer-at": "off",
       "unicorn/prefer-add-event-listener": "off",
-      "unicorn/prefer-array-find": "off",
       "unicorn/prefer-dom-node-append": "off",
       "unicorn/prefer-dom-node-dataset": "off",
       "unicorn/prefer-dom-node-remove": "off",
