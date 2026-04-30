@@ -407,7 +407,7 @@
         url.searchParams.delete(key);
       });
 
-      const sortedEntries = Array.from(url.searchParams.entries()).sort(
+      const sortedEntries = Array.from(url.searchParams.entries()).toSorted(
         ([leftKey, leftValue], [rightKey, rightValue]) => {
           if (leftKey === rightKey) {
             return leftValue.localeCompare(rightValue);
