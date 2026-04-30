@@ -64,7 +64,6 @@ export default defineConfig(
       "n/file-extension-in-import": "off",
       "no-param-reassign": "off",
       "unicorn/better-regex": "off",
-      "unicorn/catch-error-name": "off",
       "unicorn/consistent-function-scoping": "off",
       "unicorn/import-style": "off",
       "unicorn/no-array-for-each": "off",
