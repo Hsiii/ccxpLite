@@ -36,13 +36,13 @@
       }
 
       field.parentNode.insertBefore(wrapper, field);
-      wrapper.appendChild(field);
+      wrapper.append(field);
 
       const toggleButton = targetDocument.createElement("button");
       toggleButton.type = "button";
       toggleButton.className = "ccxp-lite-password-toggle";
       toggleButton.setAttribute("aria-label", strings.showPassword);
-      toggleButton.appendChild(createPasswordVisibilityIcon(targetDocument, false));
+      toggleButton.append(createPasswordVisibilityIcon(targetDocument, false));
 
       toggleButton.addEventListener("click", () => {
         const isHidden = field.type !== "text";
@@ -54,7 +54,7 @@
         toggleButton.replaceChildren(createPasswordVisibilityIcon(targetDocument, isHidden));
       });
 
-      wrapper.appendChild(toggleButton);
+      wrapper.append(toggleButton);
       field.dataset.ccxpLitePasswordToggle = "true";
     });
   }
@@ -251,10 +251,10 @@
     removeInlineLoginLabelNodes(fieldPair.fieldCell, fieldPair.fieldNode);
     moveChildNodes(fieldPair.fieldCell, controlWrap);
 
-    fieldGroup.appendChild(label);
-    fieldGroup.appendChild(controlWrap);
-    mergedCell.appendChild(fieldGroup);
-    row.appendChild(mergedCell);
+    fieldGroup.append(label);
+    fieldGroup.append(controlWrap);
+    mergedCell.append(fieldGroup);
+    row.append(mergedCell);
 
     return row;
   }
@@ -284,7 +284,7 @@
     fieldRows.forEach((rowNode) => {
       const fieldGroup = rowNode.querySelector(".ccxp-lite-login-field");
       if (fieldGroup) {
-        fieldsContainer.appendChild(fieldGroup);
+        fieldsContainer.append(fieldGroup);
       }
 
       removeNode(rowNode);
@@ -730,7 +730,7 @@
           buttonNode.classList.add("ccxp-lite-login-secondary-button");
         }
 
-        actionGroup.appendChild(buttonNode);
+        actionGroup.append(buttonNode);
       });
     });
   }
@@ -867,11 +867,11 @@
       }
 
       if (captchaImage.parentNode !== mediaRow) {
-        mediaRow.appendChild(captchaImage);
+        mediaRow.append(captchaImage);
       }
 
       if (audioControl.parentNode !== mediaRow) {
-        mediaRow.appendChild(audioControl);
+        mediaRow.append(audioControl);
       }
     });
   }
@@ -1074,7 +1074,7 @@
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = "ccxp-lite-audio-icon-button";
-    button.appendChild(createAudioIcon(targetDocument));
+    button.append(createAudioIcon(targetDocument));
 
     const label =
       resolveLegacyImageButtonLabel(inputNode) ||
@@ -1129,7 +1129,7 @@
       (pathData) => {
         const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathData);
-        icon.appendChild(path);
+        icon.append(path);
       },
     );
 
@@ -1164,7 +1164,7 @@
       ].forEach((pathData) => {
         const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathData);
-        icon.appendChild(path);
+        icon.append(path);
       });
     } else {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -1172,13 +1172,13 @@
         "d",
         "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
       );
-      icon.appendChild(path);
+      icon.append(path);
 
       const circle = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
       circle.setAttribute("cx", "12");
       circle.setAttribute("cy", "12");
       circle.setAttribute("r", "3");
-      icon.appendChild(circle);
+      icon.append(circle);
     }
 
     return icon;

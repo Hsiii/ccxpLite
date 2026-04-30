@@ -192,11 +192,11 @@
         const divider = targetDocument.createElement("span");
         divider.className = "ccxp-lite-tab-divider";
         divider.setAttribute("aria-hidden", "true");
-        item.appendChild(divider);
+        item.append(divider);
       }
 
-      item.appendChild(entry.button);
-      fragment.appendChild(item);
+      item.append(entry.button);
+      fragment.append(item);
     });
 
     tabNavigation.replaceChildren(fragment);

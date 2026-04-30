@@ -159,7 +159,7 @@
       return null;
     }
 
-    host.appendChild(frame);
+    host.append(frame);
     return frame;
   }
 

@@ -92,7 +92,7 @@
     );
 
     if (state.sidebarVariant === "classic") {
-      content.appendChild(
+      content.append(
         createClassicSidebarView(hostDocument, navDocument, model, state, strings, () => {
           renderSidebar(hostDocument, navDocument, modelInput, strings);
         }),
@@ -104,7 +104,7 @@
     if (state.activeLeaf) {
       const activeLeafCategory =
         activeCategory || findCategoryContainingLeaf(model.categories || [], state.activeLeaf);
-      content.appendChild(
+      content.append(
         createDestinationView(
           hostDocument,
           navDocument,
@@ -121,7 +121,7 @@
     }
 
     if (state.currentCategoryId && activeCategory) {
-      content.appendChild(
+      content.append(
         createCategoryDetailView(hostDocument, navDocument, activeCategory, state, strings, () => {
           renderSidebar(hostDocument, navDocument, modelInput, strings);
         }),
@@ -130,7 +130,7 @@
       return;
     }
 
-    content.appendChild(
+    content.append(
       createDashboardView(
         hostDocument,
         navDocument,
@@ -200,7 +200,7 @@
   ): HTMLElement {
     const search = targetDocument.createElement("label");
     search.className = "ccxp-lite-sidebar-search";
-    search.appendChild(createSearchIcon(targetDocument));
+    search.append(createSearchIcon(targetDocument));
 
     const input = targetDocument.createElement("input");
     input.className = "ccxp-lite-sidebar-search-input";
@@ -209,7 +209,7 @@
     input.spellcheck = false;
     input.placeholder = strings.sidebarSearchPlaceholder;
     input.setAttribute("aria-label", strings.sidebarSearchPlaceholder);
-    search.appendChild(input);
+    search.append(input);
 
     return search;
   }
@@ -246,14 +246,14 @@
       width: "20px",
       height: "20px",
     });
-    iconWrap.appendChild(createLabIcon(targetDocument));
+    iconWrap.append(createLabIcon(targetDocument));
 
     const textWrap = targetDocument.createElement("span");
     textWrap.className = "ccxp-lite-sidebar-experiment-copy";
     textWrap.textContent = `${strings.sidebarExperimentCaption}：${strings.sidebarVariantLayered}`;
 
-    button.appendChild(iconWrap);
-    button.appendChild(textWrap);
+    button.append(iconWrap);
+    button.append(textWrap);
 
     button.addEventListener("click", () => {
       state.sidebarVariant = setPersistedSidebarVariant(
@@ -298,17 +298,17 @@
       const empty = targetDocument.createElement("div");
       empty.className = "ccxp-lite-empty";
       empty.textContent = state.searchQuery ? strings.sidebarSearchEmptyBody : strings.emptyGroup;
-      sidebarList.appendChild(empty);
+      sidebarList.append(empty);
       return sidebarList;
     }
 
     items.forEach((item) => {
       if (item.kind === "link") {
-        sidebarList.appendChild(
+        sidebarList.append(
           createClassicLinkButton(targetDocument, navDocument, item.linkItem, 0, strings, rerender),
         );
       } else {
-        sidebarList.appendChild(
+        sidebarList.append(
           createClassicSidebarNode(
             targetDocument,
             navDocument,
@@ -407,14 +407,14 @@
     if (group.kind === "category") {
       const leading = targetDocument.createElement("span");
       leading.className = "ccxp-lite-row-leading";
-      leading.appendChild(createCategoryIcon(targetDocument, group.icon));
-      button.appendChild(leading);
+      leading.append(createCategoryIcon(targetDocument, group.icon));
+      button.append(leading);
     } else if (depth > 0) {
-      button.appendChild(createClassicRowLeadingSpacer(targetDocument));
+      button.append(createClassicRowLeadingSpacer(targetDocument));
     }
 
-    button.appendChild(createRowLabel(targetDocument, group.label, false));
-    button.appendChild(createClassicChevronIcon(targetDocument, isExpanded));
+    button.append(createRowLabel(targetDocument, group.label, false));
+    button.append(createClassicChevronIcon(targetDocument, isExpanded));
     button.addEventListener("click", () => {
       if (expandedItemIds.has(group.id)) {
         expandedItemIds.delete(group.id);
@@ -424,7 +424,7 @@
       state.classicExpandedItemIds = Array.from(expandedItemIds);
       rerender();
     });
-    linkList.appendChild(button);
+    linkList.append(button);
 
     if (!isExpanded) {
       return linkList;
@@ -436,7 +436,7 @@
 
     if (group.kind !== "link") {
       (group.directLinks || []).forEach((linkItem) => {
-        children.appendChild(
+        children.append(
           createClassicLinkButton(
             targetDocument,
             navDocument,
@@ -449,7 +449,7 @@
       });
 
       (group.sections || []).forEach((section) => {
-        children.appendChild(
+        children.append(
           createClassicSidebarNode(
             targetDocument,
             navDocument,
@@ -465,14 +465,14 @@
     }
 
     if (children.childElementCount > 0) {
-      linkList.appendChild(children);
+      linkList.append(children);
       return linkList;
     }
 
     const empty = targetDocument.createElement("div");
     empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
     empty.textContent = (group as CcxpLiteSidebarGroup).emptyMessage || strings.emptyGroup;
-    linkList.appendChild(empty);
+    linkList.append(empty);
     return linkList;
   }
 
@@ -494,13 +494,13 @@
     );
 
     if (depth > 0) {
-      button.appendChild(createClassicRowLeadingSpacer(targetDocument));
+      button.append(createClassicRowLeadingSpacer(targetDocument));
     }
 
-    button.appendChild(
+    button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
-    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
       activateLegacyLink(linkItem, navDocument);
     });
@@ -589,12 +589,10 @@
     const shell = targetDocument.createElement("section");
     shell.className = "ccxp-lite-dashboard-shell";
 
-    shell.appendChild(
-      createPinnedSection(targetDocument, navDocument, favorites, strings, rerender),
-    );
-    shell.appendChild(createAllSection(targetDocument, categories, state, strings, rerender));
+    shell.append(createPinnedSection(targetDocument, navDocument, favorites, strings, rerender));
+    shell.append(createAllSection(targetDocument, categories, state, strings, rerender));
 
-    layout.appendChild(shell);
+    layout.append(shell);
 
     return layout;
   }
@@ -611,16 +609,16 @@
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
-    header.appendChild(createSectionHeading(targetDocument, strings.sidebarPinned));
-    section.appendChild(header);
+    header.append(createSectionHeading(targetDocument, strings.sidebarPinned));
+    section.append(header);
 
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-pane-body ccxp-lite-pinned-list";
 
     if (!favoriteState.hasLoaded) {
-      body.appendChild(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
+      body.append(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
     } else if (favorites.length === 0) {
-      body.appendChild(
+      body.append(
         createEmptyState(
           targetDocument,
           strings.sidebarFavoritesEmptyTitle,
@@ -629,13 +627,11 @@
       );
     } else {
       favorites.forEach((linkItem) => {
-        body.appendChild(
-          createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
-        );
+        body.append(createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
       });
     }
 
-    section.appendChild(body);
+    section.append(body);
     return section;
   }
 
@@ -651,14 +647,14 @@
 
     const header = targetDocument.createElement("div");
     header.className = "ccxp-lite-pane-header";
-    header.appendChild(createSectionHeading(targetDocument, strings.sidebarAll));
-    section.appendChild(header);
+    header.append(createSectionHeading(targetDocument, strings.sidebarAll));
+    section.append(header);
 
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-pane-body ccxp-lite-category-browser";
 
     if (categories.length === 0) {
-      body.appendChild(
+      body.append(
         createEmptyState(
           targetDocument,
           strings.sidebarSearchEmptyTitle,
@@ -667,7 +663,7 @@
       );
     } else {
       categories.forEach((category) => {
-        body.appendChild(
+        body.append(
           createCategoryCard(targetDocument, category, strings, () => {
             persistSidebarScroll(targetDocument, "root");
             state.currentCategoryId = category.id;
@@ -678,7 +674,7 @@
       });
     }
 
-    section.appendChild(body);
+    section.append(body);
     return section;
   }
 
@@ -705,7 +701,7 @@
     backButton.className = "ccxp-lite-back-button";
     backButton.setAttribute("aria-label", strings.sidebarBack);
     backButton.setAttribute("title", strings.sidebarBack);
-    backButton.appendChild(createBackIcon(targetDocument));
+    backButton.append(createBackIcon(targetDocument));
     backButton.addEventListener("click", () => {
       if (state.activeLeaf) {
         persistSidebarScroll(targetDocument, "destination");
@@ -716,15 +712,15 @@
       }
       rerender();
     });
-    header.appendChild(backButton);
-    header.appendChild(createSectionHeading(targetDocument, category.label));
-    section.appendChild(header);
+    header.append(backButton);
+    header.append(createSectionHeading(targetDocument, category.label));
+    section.append(header);
 
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-category-detail";
 
     if (!filteredCategory) {
-      body.appendChild(
+      body.append(
         createEmptyState(
           targetDocument,
           strings.sidebarSearchEmptyTitle,
@@ -733,7 +729,7 @@
       );
     } else {
       if ((filteredCategory.directLinks || []).length > 0) {
-        body.appendChild(
+        body.append(
           createLinkCollection(
             targetDocument,
             navDocument,
@@ -745,13 +741,11 @@
       }
 
       (filteredCategory.sections || []).forEach((group: CcxpLiteSidebarGroup) => {
-        body.appendChild(
-          createCategoryBlock(targetDocument, navDocument, group, strings, rerender),
-        );
+        body.append(createCategoryBlock(targetDocument, navDocument, group, strings, rerender));
       });
 
       if (body.childElementCount === 0) {
-        body.appendChild(
+        body.append(
           createEmptyState(
             targetDocument,
             strings.sidebarSectionEmptyTitle,
@@ -761,7 +755,7 @@
       }
     }
 
-    section.appendChild(body);
+    section.append(body);
     scheduleCategoryDetailWaterfall(targetDocument, body);
     return section;
   }
@@ -891,21 +885,19 @@
       const title = targetDocument.createElement("h3");
       title.className = "ccxp-lite-category-block-title";
       title.textContent = group.label;
-      block.appendChild(title);
+      block.append(title);
     }
 
     if ((group.directLinks || []).length > 0) {
       group.directLinks.forEach((linkItem) => {
-        block.appendChild(
+        block.append(
           createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
         );
       });
     }
 
     (group.sections || []).forEach((section) => {
-      block.appendChild(
-        createCategoryBlock(targetDocument, navDocument, section, strings, rerender),
-      );
+      block.append(createCategoryBlock(targetDocument, navDocument, section, strings, rerender));
     });
 
     return block;
@@ -922,9 +914,7 @@
     list.className = "ccxp-lite-link-collection";
 
     linkItems.forEach((linkItem) => {
-      list.appendChild(
-        createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
-      );
+      list.append(createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
     });
 
     return list;
@@ -954,9 +944,9 @@
 
     const iconWrap = targetDocument.createElement("span");
     iconWrap.className = "ccxp-lite-category-card-icon";
-    iconWrap.appendChild(createCategoryIcon(targetDocument, category.icon));
-    media.appendChild(iconWrap);
-    button.appendChild(media);
+    iconWrap.append(createCategoryIcon(targetDocument, category.icon));
+    media.append(iconWrap);
+    button.append(media);
 
     const body = targetDocument.createElement("span");
     body.className = "ccxp-lite-category-card-body";
@@ -964,16 +954,16 @@
     const title = targetDocument.createElement("span");
     title.className = "ccxp-lite-category-card-title";
     title.textContent = category.label;
-    body.appendChild(title);
+    body.append(title);
 
     if (category.summary) {
       const summary = targetDocument.createElement("span");
       summary.className = "ccxp-lite-category-card-summary";
       summary.textContent = category.summary;
-      body.appendChild(summary);
+      body.append(summary);
     }
 
-    button.appendChild(body);
+    button.append(body);
 
     const footer = targetDocument.createElement("span");
     footer.className = "ccxp-lite-category-card-footer";
@@ -981,10 +971,10 @@
     const footerLabel = targetDocument.createElement("span");
     footerLabel.className = "ccxp-lite-category-card-action";
     footerLabel.textContent = strings.sidebarOpenCategory;
-    footer.appendChild(footerLabel);
+    footer.append(footerLabel);
 
-    footer.appendChild(createForwardIcon(targetDocument));
-    button.appendChild(footer);
+    footer.append(createForwardIcon(targetDocument));
+    button.append(footer);
 
     return button;
   }
@@ -1000,10 +990,10 @@
     button.type = "button";
     button.className = "ccxp-lite-link-card ccxp-lite-pinned-card";
     button.setAttribute("title", linkItem.label);
-    button.appendChild(
+    button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
-    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
       openLeafDestination(targetDocument, navDocument, linkItem, rerender);
     });
@@ -1022,10 +1012,10 @@
     button.type = "button";
     button.className = "ccxp-lite-link-card ccxp-lite-detail-link-card";
     button.setAttribute("title", linkItem.label);
-    button.appendChild(
+    button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
-    button.appendChild(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
       openLeafDestination(targetDocument, navDocument, linkItem, rerender);
     });
@@ -1040,13 +1030,13 @@
     const titleNode = targetDocument.createElement("div");
     titleNode.className = "ccxp-lite-empty-title";
     titleNode.textContent = title;
-    empty.appendChild(titleNode);
+    empty.append(titleNode);
 
     if (body) {
       const bodyNode = targetDocument.createElement("div");
       bodyNode.className = "ccxp-lite-empty-body";
       bodyNode.textContent = body;
-      empty.appendChild(bodyNode);
+      empty.append(bodyNode);
     }
 
     return empty;
@@ -1063,7 +1053,7 @@
     Array.from({ length: count }).forEach(() => {
       const item = targetDocument.createElement("div");
       item.className = itemClassName;
-      wrap.appendChild(item);
+      wrap.append(item);
     });
 
     return wrap;
@@ -1080,10 +1070,10 @@
     const label = targetDocument.createElement("span");
     label.className = "ccxp-lite-row-label";
     label.textContent = text;
-    labelWrap.appendChild(label);
+    labelWrap.append(label);
 
     if (withExternalLinkIcon) {
-      labelWrap.appendChild(createExternalLinkIcon(targetDocument));
+      labelWrap.append(createExternalLinkIcon(targetDocument));
     }
 
     return labelWrap;
@@ -1111,7 +1101,7 @@
       "title",
       isFavorite ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite,
     );
-    favoriteButton.appendChild(createFavoriteStarIcon(targetDocument, isFavorite));
+    favoriteButton.append(createFavoriteStarIcon(targetDocument, isFavorite));
 
     favoriteButton.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1302,13 +1292,13 @@
         }
       });
 
-      actions.appendChild(keepButton);
-      actions.appendChild(confirmButton);
-      dialog.appendChild(title);
-      dialog.appendChild(description);
-      dialog.appendChild(actions);
-      overlay.appendChild(dialog);
-      getOverlayMountNode(overlayDocument).appendChild(overlay);
+      actions.append(keepButton);
+      actions.append(confirmButton);
+      dialog.append(title);
+      dialog.append(description);
+      dialog.append(actions);
+      overlay.append(dialog);
+      getOverlayMountNode(overlayDocument).append(overlay);
 
       keepButton.focus();
     });
@@ -1397,33 +1387,33 @@
     backButton.className = "ccxp-lite-back-button";
     backButton.setAttribute("aria-label", strings.sidebarBack);
     backButton.setAttribute("title", strings.sidebarBack);
-    backButton.appendChild(createBackIcon(targetDocument));
+    backButton.append(createBackIcon(targetDocument));
     backButton.addEventListener("click", () => {
       const state = getSidebarUiState(targetDocument);
       state.activeLeaf = null;
       rerender();
     });
 
-    header.appendChild(backButton);
-    header.appendChild(createBreadcrumbHeading(targetDocument, activeCategory, activeLeaf));
-    section.appendChild(header);
+    header.append(backButton);
+    header.append(createBreadcrumbHeading(targetDocument, activeCategory, activeLeaf));
+    section.append(header);
 
     const frameWrap = targetDocument.createElement("div");
     frameWrap.className = "ccxp-lite-destination-wrap";
 
     const loading = targetDocument.createElement("div");
     loading.className = "ccxp-lite-destination-loading";
-    loading.appendChild(createSkeletonStack(targetDocument, 1, "ccxp-lite-skeleton-progress"));
+    loading.append(createSkeletonStack(targetDocument, 1, "ccxp-lite-skeleton-progress"));
     const loadingLabel = targetDocument.createElement("div");
     loadingLabel.className = "ccxp-lite-destination-loading-label";
     loadingLabel.textContent = strings.sidebarDestinationLoading;
-    loading.appendChild(loadingLabel);
-    loading.appendChild(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-frame-line"));
+    loading.append(loadingLabel);
+    loading.append(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-frame-line"));
 
     const error = targetDocument.createElement("div");
     error.className = "ccxp-lite-destination-error";
     error.hidden = true;
-    error.appendChild(
+    error.append(
       createEmptyState(
         targetDocument,
         strings.sidebarDestinationErrorTitle,
@@ -1455,9 +1445,9 @@
       openLeafInNewTab(activeLeaf, navDocument);
     });
 
-    actions.appendChild(retryButton);
-    actions.appendChild(openButton);
-    error.appendChild(actions);
+    actions.append(retryButton);
+    actions.append(openButton);
+    error.append(actions);
 
     const frame = targetDocument.createElement("iframe");
     frame.className = "ccxp-lite-destination-frame";
@@ -1517,13 +1507,13 @@
       simplifyEmbeddedFrame(frame);
       settleSuccess();
     });
-    frameWrap.appendChild(loading);
-    frameWrap.appendChild(error);
-    frameWrap.appendChild(frame);
+    frameWrap.append(loading);
+    frameWrap.append(error);
+    frameWrap.append(frame);
     if (legacyMainFrame) {
       legacyMainFrame.addEventListener("load", syncFromLegacyMainFrame, { once: true });
     }
-    section.appendChild(frameWrap);
+    section.append(frameWrap);
     activateLegacyLink(activeLeaf, navDocument, frame);
     return section;
   }
@@ -1542,7 +1532,7 @@
     ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16", "m21 21-4.3-4.3"].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;
@@ -1560,14 +1550,14 @@
       const category = targetDocument.createElement("span");
       category.className = "ccxp-lite-breadcrumb-parent";
       category.textContent = activeCategory.label;
-      heading.appendChild(category);
-      heading.appendChild(createBreadcrumbChevronIcon(targetDocument));
+      heading.append(category);
+      heading.append(createBreadcrumbChevronIcon(targetDocument));
     }
 
     const leaf = targetDocument.createElement("span");
     leaf.className = "ccxp-lite-breadcrumb-current";
     leaf.textContent = activeLeaf.label;
-    heading.appendChild(leaf);
+    heading.append(leaf);
 
     return heading;
   }
@@ -1585,7 +1575,7 @@
 
     const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", "m9 18 6-6-6-6");
-    icon.appendChild(path);
+    icon.append(path);
 
     return icon;
   }
@@ -1608,7 +1598,7 @@
     ].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;
@@ -1630,7 +1620,7 @@
       "d",
       "M11.525 2.295a.53.53 0 0 1 .95 0l2.262 4.584a.53.53 0 0 0 .399.29l5.06.735a.53.53 0 0 1 .294.904l-3.66 3.567a.53.53 0 0 0-.152.469l.864 5.039a.53.53 0 0 1-.768.559l-4.525-2.379a.53.53 0 0 0-.493 0l-4.525 2.38a.53.53 0 0 1-.768-.56l.864-5.039a.53.53 0 0 0-.152-.469L3.51 8.808a.53.53 0 0 1 .294-.904l5.06-.735a.53.53 0 0 0 .4-.29z",
     );
-    icon.appendChild(path);
+    icon.append(path);
 
     return icon;
   }
@@ -1657,7 +1647,7 @@
     ].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;
@@ -1705,7 +1695,7 @@
       bottom: "24px",
       zIndex: "2147483646",
     });
-    getOverlayMountNode(mountDocument).appendChild(button);
+    getOverlayMountNode(mountDocument).append(button);
   }
 
   function removeExistingSidebarVariantSwitches(documents: Array<Document | null | undefined>) {
@@ -1738,7 +1728,7 @@
     ["M19 12H5", "m12 7-7 5 7 5"].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;
@@ -1757,7 +1747,7 @@
 
     const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("d", "m9 6 6 6-6 6");
-    icon.appendChild(path);
+    icon.append(path);
 
     return icon;
   }
@@ -1784,7 +1774,7 @@
       Object.entries(attributes).forEach(([name, value]) => {
         element.setAttribute(name, value);
       });
-      icon.appendChild(element);
+      icon.append(element);
     });
 
     return icon;

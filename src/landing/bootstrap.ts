@@ -141,14 +141,14 @@
     const brandLockup = targetDocument.createElement("div");
     brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
 
-    brandLockup.appendChild(
+    brandLockup.append(
       createBrandImage(
         targetDocument,
         "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
         ASSETS.sidebarBrandLogoPath,
       ),
     );
-    brandLockup.appendChild(
+    brandLockup.append(
       createBrandCopy(
         targetDocument,
         "ccxp-lite-landing-brand-copy ccxp-lite-sidebar-brand-copy",
@@ -156,7 +156,7 @@
         strings.sidebarTitle,
       ),
     );
-    brandSection.appendChild(brandLockup);
+    brandSection.append(brandLockup);
 
     const { mark: repoMark, link: repoLink } = createBrandPartnerLink(targetDocument, {
       markClassName: "ccxp-lite-landing-brand-partner-mark",
@@ -164,11 +164,11 @@
       labelClassName: "ccxp-lite-landing-brand-partner-label",
       label: strings.sidebarGitHubLink,
     });
-    brandSection.appendChild(repoMark);
-    brandSection.appendChild(repoLink);
+    brandSection.append(repoMark);
+    brandSection.append(repoLink);
 
     if (languageLinks) {
-      langSection.appendChild(languageLinks);
+      langSection.append(languageLinks);
     }
 
     repoLink.addEventListener("click", () => {
@@ -178,10 +178,10 @@
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";
     loginHeaderLabel.textContent = strings.loginTitle;
-    loginSection.appendChild(loginHeaderLabel);
+    loginSection.append(loginHeaderLabel);
 
     if (loginForm) {
-      loginSection.appendChild(loginForm);
+      loginSection.append(loginForm);
     } else {
       moveChildNodes(loginSourceCell as Node, loginSection);
     }
@@ -204,9 +204,9 @@
 
     collapseLegacyThreeColumnRows(targetDocument.body);
 
-    headerSection.appendChild(brandSection);
+    headerSection.append(brandSection);
     if (languageLinks) {
-      headerSection.appendChild(langSection);
+      headerSection.append(langSection);
     }
 
     const utilityHeaderLinks = buildHeaderUtilityLinks(
@@ -219,7 +219,7 @@
       if (languageLinks) {
         headerSection.insertBefore(utilityHeaderLinks, langSection);
       } else {
-        headerSection.appendChild(utilityHeaderLinks);
+        headerSection.append(utilityHeaderLinks);
       }
     }
 
@@ -228,9 +228,9 @@
       removeNode(utilityLinks as Node);
     }
 
-    topSection.appendChild(headerSection);
-    topSection.appendChild(loginSection);
-    shell.appendChild(topSection);
+    topSection.append(headerSection);
+    topSection.append(loginSection);
+    shell.append(topSection);
 
     const supportLinks = buildLandingSupportLinks(
       targetDocument,
@@ -249,30 +249,30 @@
     if (tabNavigation && tabContents.length > 0) {
       const tabsHeader = targetDocument.createElement("div");
       tabsHeader.className = "ccxp-lite-landing-tabs-header";
-      tabsHeader.appendChild(tabNavigation);
+      tabsHeader.append(tabNavigation);
 
       if (supportLinks) {
-        tabsHeader.appendChild(supportLinks);
+        tabsHeader.append(supportLinks);
       }
 
-      tabsSection.appendChild(tabsHeader);
+      tabsSection.append(tabsHeader);
       tabContents.forEach((tabContent) => {
         collapseLegacyThreeColumnRows(tabContent);
-        tabsSection.appendChild(tabContent);
+        tabsSection.append(tabContent);
       });
 
       wireLandingTabs(targetDocument, tabNavigation, tabContents, strings);
-      shell.appendChild(tabsSection);
+      shell.append(tabsSection);
     } else if (supportLinks) {
       const supportSection = createLandingSection(targetDocument, "ccxp-lite-landing-support-only");
-      supportSection.appendChild(supportLinks);
-      shell.appendChild(supportSection);
+      supportSection.append(supportLinks);
+      shell.append(supportSection);
     }
 
     if (announcementTable) {
       prepareAnnouncementTable(announcementTable, strings);
-      noticesSection.appendChild(announcementTable);
-      shell.appendChild(noticesSection);
+      noticesSection.append(announcementTable);
+      shell.append(noticesSection);
     }
 
     cleanLegacyAttributes(shell);

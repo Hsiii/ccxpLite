@@ -151,16 +151,16 @@
       `;
 
       if (targetDocument.head) {
-        targetDocument.head.appendChild(styleNode);
+        targetDocument.head.append(styleNode);
       } else {
-        targetDocument.documentElement.appendChild(styleNode);
+        targetDocument.documentElement.append(styleNode);
       }
     }
 
     if (!targetDocument.getElementById(LOADING_SPRITE_ID)) {
       const sprite = targetDocument.createElement("div");
       sprite.id = LOADING_SPRITE_ID;
-      targetDocument.documentElement.appendChild(sprite);
+      targetDocument.documentElement.append(sprite);
     }
   }
 

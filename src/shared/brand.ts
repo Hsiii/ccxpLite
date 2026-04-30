@@ -41,13 +41,13 @@
       title.split(" ").forEach((word) => {
         const wordNode = targetDocument.createElement("span");
         wordNode.textContent = word;
-        titleNode.appendChild(wordNode);
+        titleNode.append(wordNode);
       });
     } else {
       titleNode.textContent = title;
     }
 
-    copy.appendChild(titleNode);
+    copy.append(titleNode);
     return copy;
   }
 
@@ -65,7 +65,7 @@
     ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;
@@ -82,7 +82,7 @@
   ) {
     const mark = targetDocument.createElement("span");
     mark.className = options.markClassName || "";
-    mark.appendChild(createBrandPartnerIcon(targetDocument));
+    mark.append(createBrandPartnerIcon(targetDocument));
 
     const link = targetDocument.createElement("button");
     link.type = "button";
@@ -93,7 +93,7 @@
     const label = targetDocument.createElement("span");
     label.className = options.labelClassName || "";
     label.textContent = options.label || "";
-    link.appendChild(label);
+    link.append(label);
 
     return { mark, link };
   }

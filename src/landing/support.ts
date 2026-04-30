@@ -201,7 +201,10 @@
       });
     });
 
-    const tbody = table.tBodies[0] || table.appendChild(table.ownerDocument.createElement("tbody"));
+    const tbody = table.tBodies[0] || table.ownerDocument.createElement("tbody");
+    if (!table.tBodies[0]) {
+      table.append(tbody);
+    }
     tbody.replaceChildren();
 
     const titleRow = table.ownerDocument.createElement("tr");
@@ -209,7 +212,7 @@
     const titleCell = table.ownerDocument.createElement("td");
     titleCell.className = "ccxp-lite-announcement-title";
     titleCell.textContent = titleText || strings.sidebarCategoryAnnouncementsAndVoting;
-    titleRow.appendChild(titleCell);
+    titleRow.append(titleCell);
 
     const contentRow = table.ownerDocument.createElement("tr");
     contentRow.className = "ccxp-lite-announcement-scroll-row";
@@ -229,23 +232,23 @@
       const body = table.ownerDocument.createElement("div");
       body.className = "ccxp-lite-announcement-topic";
       while (entry.topicContent.firstChild) {
-        body.appendChild(entry.topicContent.firstChild);
+        body.append(entry.topicContent.firstChild);
       }
 
       const date = table.ownerDocument.createElement("div");
       date.className = "ccxp-lite-announcement-date";
       date.textContent = entry.date;
 
-      entryRow.appendChild(body);
-      entryRow.appendChild(date);
-      item.appendChild(entryRow);
-      list.appendChild(item);
+      entryRow.append(body);
+      entryRow.append(date);
+      item.append(entryRow);
+      list.append(item);
     });
 
-    contentCell.appendChild(list);
-    contentRow.appendChild(contentCell);
-    tbody.appendChild(titleRow);
-    tbody.appendChild(contentRow);
+    contentCell.append(list);
+    contentRow.append(contentCell);
+    tbody.append(titleRow);
+    tbody.append(contentRow);
 
     table.dataset.ccxpLiteAnnouncementPrepared = "true";
   }
@@ -357,8 +360,8 @@
 
     const label = targetDocument.createElement("span");
     label.textContent = labelText;
-    anchor.appendChild(label);
-    anchor.appendChild(createLandingExternalLinkIcon(targetDocument));
+    anchor.append(label);
+    anchor.append(createLandingExternalLinkIcon(targetDocument));
 
     return anchor;
   }
@@ -380,11 +383,11 @@
     wrap.className = "ccxp-lite-landing-support-links";
 
     if (servicePhoneLink) {
-      wrap.appendChild(servicePhoneLink);
+      wrap.append(servicePhoneLink);
     }
 
     if (cannotLoginLink) {
-      wrap.appendChild(cannotLoginLink);
+      wrap.append(cannotLoginLink);
     }
 
     return wrap;
@@ -498,14 +501,14 @@
       anchor.className = "ccxp-lite-landing-utility-link";
       copyLegacyAnchorHandlers(sourceAnchor, anchor);
       anchor.textContent = sourceAnchor.textContent.trim();
-      anchor.appendChild(createLandingExternalLinkIcon(targetDocument));
-      nav.appendChild(anchor);
+      anchor.append(createLandingExternalLinkIcon(targetDocument));
+      nav.append(anchor);
 
       if (index < anchors.length - 1) {
         const separator = targetDocument.createElement("span");
         separator.className = "ccxp-lite-landing-utility-separator";
         separator.textContent = "|";
-        nav.appendChild(separator);
+        nav.append(separator);
       }
     });
 
@@ -556,7 +559,7 @@
     ].forEach((pathData) => {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
-      icon.appendChild(path);
+      icon.append(path);
     });
 
     return icon;

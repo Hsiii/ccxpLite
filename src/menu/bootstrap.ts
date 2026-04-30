@@ -82,10 +82,10 @@
       brand.className = "ccxp-lite-sidebar-brand ccxp-lite-sidebar-brand-button";
       brand.setAttribute("aria-label", strings.sidebarResetHome);
       brand.setAttribute("title", strings.sidebarResetHome);
-      brand.appendChild(
+      brand.append(
         createBrandImage(hostDocument, "ccxp-lite-sidebar-brand-logo", ASSETS.sidebarBrandLogoPath),
       );
-      brand.appendChild(
+      brand.append(
         createBrandCopy(
           hostDocument,
           "ccxp-lite-sidebar-brand-copy",
@@ -109,21 +109,21 @@
       const footer = hostDocument.createElement("footer");
       footer.className = "ccxp-lite-sidebar-footer";
 
-      brandGroup.appendChild(brand);
-      brandGroup.appendChild(repoMark);
-      brandGroup.appendChild(repoLink);
-      header.appendChild(brandGroup);
-      header.appendChild(search);
-      shell.appendChild(header);
-      shell.appendChild(content);
-      shell.appendChild(footer);
+      brandGroup.append(brand);
+      brandGroup.append(repoMark);
+      brandGroup.append(repoLink);
+      header.append(brandGroup);
+      header.append(search);
+      shell.append(header);
+      shell.append(content);
+      shell.append(footer);
 
       cleanLegacyAttributes(shell);
       hostDocument.body.replaceChildren(shell);
 
       if (helperFrame) {
         helperFrame.style.display = "none";
-        navDocument.body.appendChild(helperFrame);
+        navDocument.body.append(helperFrame);
       }
 
       brand.addEventListener("click", () => {

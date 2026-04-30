@@ -44,7 +44,7 @@
       link.rel = "stylesheet";
       link.href = runtime.getURL(ASSETS.stylesheetPath);
       link.dataset.ccxpLiteStylesheet = "true";
-      targetDocument.head.appendChild(link);
+      targetDocument.head.append(link);
     }
 
     applyCssVariables(targetDocument.documentElement, buildCssVariables());

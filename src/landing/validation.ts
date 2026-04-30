@@ -76,7 +76,7 @@
       fnstrField = targetDocument.createElement("input");
       fnstrField.type = "hidden";
       fnstrField.name = "fnstr";
-      form.appendChild(fnstrField);
+      form.append(fnstrField);
     }
 
     if (fnstrField && tokenFromImage && fnstrField.value !== tokenFromImage) {

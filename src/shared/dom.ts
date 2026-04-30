@@ -4,7 +4,7 @@
 
   function moveChildNodes(sourceNode: Node, targetNode: Node) {
     while (sourceNode.firstChild) {
-      targetNode.appendChild(sourceNode.firstChild);
+      targetNode.append(sourceNode.firstChild);
     }
   }
 
