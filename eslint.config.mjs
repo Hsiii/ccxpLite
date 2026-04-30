@@ -76,7 +76,6 @@ export default defineConfig(
       "unicorn/numeric-separators-style": "off",
       "unicorn/prefer-math-min-max": "off",
       "unicorn/prefer-modern-dom-apis": "off",
-      "unicorn/prefer-query-selector": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/prefer-string-raw": "off",
       "unicorn/prefer-switch": "off",

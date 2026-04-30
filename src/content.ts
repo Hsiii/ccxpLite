@@ -108,7 +108,7 @@
       return;
     }
 
-    if (!targetDocument.getElementById(LOADING_SPRITE_STYLE_ID)) {
+    if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`)) {
       const styleNode = targetDocument.createElement("style");
       styleNode.id = LOADING_SPRITE_STYLE_ID;
       styleNode.textContent = `
@@ -157,7 +157,7 @@
       }
     }
 
-    if (!targetDocument.getElementById(LOADING_SPRITE_ID)) {
+    if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_ID)}`)) {
       const sprite = targetDocument.createElement("div");
       sprite.id = LOADING_SPRITE_ID;
       targetDocument.documentElement.append(sprite);
@@ -165,8 +165,10 @@
   }
 
   function releaseLoadingSprite(targetDocument: Document) {
-    const sprite = targetDocument.getElementById(LOADING_SPRITE_ID);
-    const styleNode = targetDocument.getElementById(LOADING_SPRITE_STYLE_ID);
+    const sprite = targetDocument.querySelector<HTMLElement>(`#${CSS.escape(LOADING_SPRITE_ID)}`);
+    const styleNode = targetDocument.querySelector<HTMLElement>(
+      `#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`,
+    );
 
     if (targetDocument.documentElement) {
       targetDocument.documentElement.dataset.ccxpLiteLoadingReady = "true";

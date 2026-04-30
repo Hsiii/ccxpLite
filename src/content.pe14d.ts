@@ -1,7 +1,7 @@
 (function injectCcxpLitePe14dPageScript() {
   const sharedDom = (globalThis.CCXP_LITE as CcxpLiteNamespace)?.sharedDom;
   const pageScriptId = "ccxp-lite-pe14d-page-script";
-  if (document.getElementById(pageScriptId)) {
+  if (document.querySelector(`#${CSS.escape(pageScriptId)}`)) {
     return;
   }
 

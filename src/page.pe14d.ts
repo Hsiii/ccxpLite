@@ -138,7 +138,9 @@
   }
 
   function ensureTransportFrame() {
-    let frame = globalScope.document.getElementById(TRANSPORT_FRAME_ID) as HTMLIFrameElement | null;
+    let frame = globalScope.document.querySelector<HTMLIFrameElement>(
+      `#${CSS.escape(TRANSPORT_FRAME_ID)}`,
+    );
     if (frame instanceof HTMLIFrameElement) {
       return frame;
     }
@@ -205,7 +207,8 @@
     const applyRestore = () => {
       globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
       const focusTarget =
-        (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
+        (snapshot.activeId &&
+          globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
             `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
@@ -299,7 +302,8 @@
     globalScope.requestAnimationFrame(() => {
       globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
       const focusTarget =
-        (snapshot.activeId && globalScope.document.getElementById(snapshot.activeId)) ||
+        (snapshot.activeId &&
+          globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ||
         (snapshot.activeName &&
           globalScope.document.querySelector(
             `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
