@@ -1,11 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
-import { fileURLToPath } from "node:url";
 import { Window } from "happy-dom";
 import ts from "typescript";
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
 
 export type TestWindow = Window &
   typeof globalThis & {

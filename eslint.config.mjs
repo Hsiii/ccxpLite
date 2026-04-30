@@ -74,7 +74,6 @@ export default defineConfig(
       "unicorn/no-negated-condition": "off",
       "unicorn/no-null": "off",
       "unicorn/numeric-separators-style": "off",
-      "unicorn/prefer-import-meta-properties": "off",
       "unicorn/prefer-math-min-max": "off",
       "unicorn/prefer-modern-dom-apis": "off",
       "unicorn/prefer-query-selector": "off",
