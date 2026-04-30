@@ -81,12 +81,20 @@
   function loadImage(objectUrl: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {
       const image = new Image();
-      image.onload = () => {
-        resolve(image);
-      };
-      image.onerror = () => {
-        reject(new Error("Failed to decode captcha image."));
-      };
+      image.addEventListener(
+        "load",
+        () => {
+          resolve(image);
+        },
+        { once: true },
+      );
+      image.addEventListener(
+        "error",
+        () => {
+          reject(new Error("Failed to decode captcha image."));
+        },
+        { once: true },
+      );
       image.src = objectUrl;
     });
   }
