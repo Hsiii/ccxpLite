@@ -1,5 +1,6 @@
 (function registerCcxpLiteSharedTheme(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;
@@ -12,7 +13,8 @@
       return false;
     }
 
-    targetDocument.documentElement.dataset.ccxpLiteScope = scope;
+    const { documentElement } = targetDocument;
+    documentElement.dataset.ccxpLiteScope = scope;
 
     const { sharedDom } = namespace;
     const isContextReady = (() => {

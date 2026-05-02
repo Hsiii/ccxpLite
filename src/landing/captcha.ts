@@ -1,5 +1,6 @@
 (function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -85,15 +86,16 @@
     state: CcxpLiteCaptchaAutofillState,
     rootNode: ParentNode,
   ) {
+    const captchaState = state;
     const latestField = resolveCaptchaField(rootNode);
     if (!latestField) {
-      return state;
+      return captchaState;
     }
 
-    state.input = latestField.input;
-    state.image = latestField.image;
-    primeCaptchaAutofill(targetDocument, state);
-    return state;
+    captchaState.input = latestField.input;
+    captchaState.image = latestField.image;
+    primeCaptchaAutofill(targetDocument, captchaState);
+    return captchaState;
   }
 
   function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | null {
@@ -141,36 +143,38 @@
   }
 
   function clearCaptchaTimeoutFlash(state: CcxpLiteCaptchaAutofillState | null) {
-    if (!state?.input) {
+    const captchaState = state;
+    if (!captchaState?.input) {
       return;
     }
 
-    if (state.timeoutFlashTimer) {
-      globalThis.clearTimeout(state.timeoutFlashTimer);
-      state.timeoutFlashTimer = null;
+    if (captchaState.timeoutFlashTimer) {
+      globalThis.clearTimeout(captchaState.timeoutFlashTimer);
+      captchaState.timeoutFlashTimer = null;
     }
 
-    delete state.input.dataset.timeoutFlash;
+    delete captchaState.input.dataset.timeoutFlash;
   }
 
   function flashCaptchaTimeout(state: CcxpLiteCaptchaAutofillState | null) {
-    if (!state?.input) {
+    const captchaState = state;
+    if (!captchaState?.input) {
       return;
     }
 
-    clearCaptchaTimeoutFlash(state);
+    clearCaptchaTimeoutFlash(captchaState);
     // Trigger reflow
 
-    const _reflow = state.input.offsetWidth;
-    state.input.dataset.timeoutFlash = "true";
-    state.timeoutFlashTimer = globalThis.setTimeout(
+    const _reflow = captchaState.input.offsetWidth;
+    captchaState.input.dataset.timeoutFlash = "true";
+    captchaState.timeoutFlashTimer = globalThis.setTimeout(
       () => {
-        if (!state.input) {
+        if (!captchaState.input) {
           return;
         }
 
-        delete state.input.dataset.timeoutFlash;
-        state.timeoutFlashTimer = null;
+        delete captchaState.input.dataset.timeoutFlash;
+        captchaState.timeoutFlashTimer = null;
       },
       1600,
       undefined,
@@ -188,22 +192,24 @@
       return;
     }
 
-    state.lastRequestedSrc = captchaSrc;
-    state.requestToken++;
-    const { requestToken } = state;
-    setCaptchaLoadingState(state, true);
+    const captchaState = state;
+    captchaState.lastRequestedSrc = captchaSrc;
+    captchaState.requestToken++;
+    const { requestToken } = captchaState;
+    setCaptchaLoadingState(captchaState, true);
 
-    requestCaptchaAnswerForCurrentImage(targetDocument, state, captchaSrc)
+    requestCaptchaAnswerForCurrentImage(targetDocument, captchaState, captchaSrc)
       .then((answer) => {
-        if (requestToken !== state.requestToken || !answer) {
+        if (requestToken !== captchaState.requestToken || !answer) {
           return;
         }
 
-        captchaInput.value = answer;
-        captchaInput.dispatchEvent(new Event("input", { bubbles: true }));
-        captchaInput.dispatchEvent(new Event("change", { bubbles: true }));
-        state.failedSrc = "";
-        setCaptchaLoadingState(state, false);
+        const resolvedInput = captchaInput;
+        resolvedInput.value = answer;
+        resolvedInput.dispatchEvent(new Event("input", { bubbles: true }));
+        resolvedInput.dispatchEvent(new Event("change", { bubbles: true }));
+        captchaState.failedSrc = "";
+        setCaptchaLoadingState(captchaState, false);
       })
       .catch((error: unknown) => {
         if (requestToken === state.requestToken) {
@@ -242,21 +248,22 @@
     captchaSrc: string,
     options: { didTimeout?: boolean } = {},
   ) {
-    if (!state) {
+    const captchaState = state;
+    if (!captchaState) {
       return;
     }
 
-    state.lastRequestedSrc = "";
-    state.failedSrc = captchaSrc;
-    state.requestToken++;
-    setCaptchaLoadingState(state, false);
+    captchaState.lastRequestedSrc = "";
+    captchaState.failedSrc = captchaSrc;
+    captchaState.requestToken++;
+    setCaptchaLoadingState(captchaState, false);
 
-    if (state.input) {
-      state.input.removeAttribute("aria-busy");
+    if (captchaState.input) {
+      captchaState.input.removeAttribute("aria-busy");
     }
 
     if (options.didTimeout) {
-      flashCaptchaTimeout(state);
+      flashCaptchaTimeout(captchaState);
     }
   }
 
@@ -265,33 +272,34 @@
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
   ) {
-    if (state.cachedSrc === captchaSrc && state.cachedAnswer) {
-      return state.cachedAnswer;
+    const captchaState = state;
+    if (captchaState.cachedSrc === captchaSrc && captchaState.cachedAnswer) {
+      return captchaState.cachedAnswer;
     }
 
-    if (state.pendingSrc === captchaSrc && state.pendingRequest !== null) {
-      return await state.pendingRequest;
+    if (captchaState.pendingSrc === captchaSrc && captchaState.pendingRequest !== null) {
+      return await captchaState.pendingRequest;
     }
 
     const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
       .then(async (imageBytes) => await requestCaptchaAnswer(captchaSrc, imageBytes))
       .then((answer) => {
         if (answer) {
-          state.cachedSrc = captchaSrc;
-          state.cachedAnswer = answer;
+          captchaState.cachedSrc = captchaSrc;
+          captchaState.cachedAnswer = answer;
         }
 
         return answer;
       })
       .finally(() => {
-        if (state.pendingSrc === captchaSrc) {
-          state.pendingSrc = "";
-          state.pendingRequest = null;
+        if (captchaState.pendingSrc === captchaSrc) {
+          captchaState.pendingSrc = "";
+          captchaState.pendingRequest = null;
         }
       });
 
-    state.pendingSrc = captchaSrc;
-    state.pendingRequest = request;
+    captchaState.pendingSrc = captchaSrc;
+    captchaState.pendingRequest = request;
     return await request;
   }
 

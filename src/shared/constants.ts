@@ -1,6 +1,7 @@
 (function registerCcxpLiteSharedConstants(globalScope: Window & typeof globalThis) {
-  globalScope.CCXP_LITE ||= {};
-  const namespace = globalScope.CCXP_LITE;
+  const runtimeScope = globalScope;
+  runtimeScope.CCXP_LITE ||= {};
+  const namespace = runtimeScope.CCXP_LITE;
 
   const TOKENS = {
     colorPrimary: "rgb(121, 36, 133)",

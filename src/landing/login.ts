@@ -1,5 +1,6 @@
 (function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
@@ -298,7 +299,8 @@
       }
     }
 
-    formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
+    const formElement = formNode;
+    formElement.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
 
   function collectLoginFieldPairs(
@@ -546,7 +548,8 @@
         .replaceAll(/^-+|-+$/g, "") || "field";
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;
-    fieldNode.id = generatedId;
+    const inputField = fieldNode;
+    inputField.id = generatedId;
     return generatedId;
   }
 

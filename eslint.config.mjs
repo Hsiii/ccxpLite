@@ -27,7 +27,6 @@ export default [
           allow: ["**/*.css"],
         },
       ],
-      "no-param-reassign": "off",
       "unicorn/no-null": "off",
     },
   },

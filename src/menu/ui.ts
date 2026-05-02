@@ -1,5 +1,6 @@
 (function registerCcxpLiteSidebarUi(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared, sidebarState, sidebarFavorites, sidebarData, sidebarRuntime } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites || !sidebarData || !sidebarRuntime) {
     return;
@@ -256,12 +257,13 @@
     button.append(textWrap);
 
     button.addEventListener("click", () => {
-      state.sidebarVariant = setPersistedSidebarVariant(
-        state.sidebarVariant === "classic" ? "layered" : "classic",
+      const nextState = state;
+      nextState.sidebarVariant = setPersistedSidebarVariant(
+        nextState.sidebarVariant === "classic" ? "layered" : "classic",
       );
-      syncTopLevelFramesetLayout(state.sidebarVariant);
-      state.activeLeaf = null;
-      state.currentCategoryId = "";
+      syncTopLevelFramesetLayout(nextState.sidebarVariant);
+      nextState.activeLeaf = null;
+      nextState.currentCategoryId = "";
       persistSidebarScroll(targetDocument, "root");
       rerender();
     });
@@ -323,7 +325,8 @@
       }
     }
 
-    state.classicExpandedItemIds = [...expandedItemIds];
+    const nextState = state;
+    nextState.classicExpandedItemIds = [...expandedItemIds];
     return sidebarList;
   }
 
@@ -421,7 +424,8 @@
       } else {
         expandedItemIds.add(group.id);
       }
-      state.classicExpandedItemIds = [...expandedItemIds];
+      const nextState = state;
+      nextState.classicExpandedItemIds = [...expandedItemIds];
       rerender();
     });
     linkList.append(button);
@@ -666,8 +670,9 @@
         body.append(
           createCategoryCard(targetDocument, category, strings, () => {
             persistSidebarScroll(targetDocument, "root");
-            state.currentCategoryId = category.id;
-            state.activeLeaf = null;
+            const nextState = state;
+            nextState.currentCategoryId = category.id;
+            nextState.activeLeaf = null;
             rerender();
           }),
         );
@@ -705,10 +710,12 @@
     backButton.addEventListener("click", () => {
       if (state.activeLeaf) {
         persistSidebarScroll(targetDocument, "destination");
-        state.activeLeaf = null;
+        const nextState = state;
+        nextState.activeLeaf = null;
       } else {
         persistSidebarScroll(targetDocument, "category");
-        state.currentCategoryId = "";
+        const nextState = state;
+        nextState.currentCategoryId = "";
       }
       rerender();
     });
@@ -851,12 +858,14 @@
       columnHeights[columnIndex] += item.offsetHeight + gap;
     }
 
-    body.style.height = `${Math.max(...columnHeights) - gap}px`;
+    const detailBody = body;
+    detailBody.style.height = `${Math.max(...columnHeights) - gap}px`;
   }
 
   function resetCategoryDetailWaterfall(body: HTMLElement, detailItems: HTMLElement[]) {
-    body.classList.remove("is-waterfall-ready");
-    body.style.height = "";
+    const detailBody = body;
+    detailBody.classList.remove("is-waterfall-ready");
+    detailBody.style.height = "";
     for (const item of detailItems) {
       item.style.width = "";
       item.style.transform = "";

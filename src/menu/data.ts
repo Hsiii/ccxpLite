@@ -1,5 +1,6 @@
 (function registerCcxpLiteSidebarData(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared, sidebarFavorites } = namespace;
   if (!shared || !sidebarFavorites) {
     return;

@@ -1,5 +1,6 @@
 (function registerCcxpLiteSharedDom(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
   function isArray<T>(value: unknown): value is T[] {
@@ -42,10 +43,11 @@
 
       const style = el.getAttribute("style");
       if (style && /background(-image)?\s*:/i.test(style)) {
-        (el as HTMLElement).style.backgroundImage = "none";
+        const htmlElement = el as HTMLElement;
+        htmlElement.style.backgroundImage = "none";
         // If it's the body and we want to be very sure:
         if (el.tagName === "BODY") {
-          (el as HTMLElement).style.background = "var(--ccxp-lite-bg)";
+          htmlElement.style.background = "var(--ccxp-lite-bg)";
         }
       }
     };

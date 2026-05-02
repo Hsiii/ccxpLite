@@ -1,5 +1,6 @@
 (function registerCcxpLiteLandingTabs(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   if (!shared) {
     return;
@@ -33,22 +34,23 @@
     }
 
     const tabPanels = tabContents.map((panel, index) => {
-      panel.id ||= `ccxp-lite-tabpanel-${index + 1}`;
-      panel.setAttribute("role", "tabpanel");
-      panel.setAttribute("tabindex", "0");
-      return panel;
+      const tabPanel = panel;
+      tabPanel.id ||= `ccxp-lite-tabpanel-${index + 1}`;
+      tabPanel.setAttribute("role", "tabpanel");
+      tabPanel.setAttribute("tabindex", "0");
+      return tabPanel;
     });
 
     const resolvePanelByLegacyTarget = (button: HTMLElement) => {
       const directControl = button.getAttribute("aria-controls");
       if (directControl) {
-        return tabPanels.find((panel) => panel.id === directControl) || null;
+        return tabPanels.find((candidatePanel) => candidatePanel.id === directControl) || null;
       }
 
       const href = (button.getAttribute("href") || "").trim();
       if (href.startsWith("#")) {
         const hashId = href.slice(1);
-        const fromHash = tabPanels.find((panel) => panel.id === hashId);
+        const fromHash = tabPanels.find((candidatePanel) => candidatePanel.id === hashId);
         if (fromHash) {
           return fromHash;
         }
@@ -59,7 +61,7 @@
         return null;
       }
 
-      return tabPanels.find((panel) => panel.id === legacyTarget) || null;
+      return tabPanels.find((candidatePanel) => candidatePanel.id === legacyTarget) || null;
     };
 
     const buttonPanelMap: Array<{ button: HTMLElement; panel: HTMLElement }> = tabButtons

@@ -1,5 +1,6 @@
 (function registerCcxpLiteLandingSupport(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared || {};
 
@@ -250,7 +251,8 @@
     tbody.append(titleRow);
     tbody.append(contentRow);
 
-    table.dataset.ccxpLiteAnnouncementPrepared = "true";
+    const announcementTable = table;
+    announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
   }
 
   function findUtilityLinksTable(targetDocument: Document) {

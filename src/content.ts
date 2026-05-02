@@ -174,12 +174,14 @@
       `#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`,
     );
 
-    if (targetDocument.documentElement) {
-      targetDocument.documentElement.dataset.ccxpLiteLoadingReady = "true";
+    const targetDocumentElement = targetDocument.documentElement;
+    if (targetDocumentElement) {
+      targetDocumentElement.dataset.ccxpLiteLoadingReady = "true";
     }
 
-    if (targetDocument.body) {
-      targetDocument.body.dataset.ccxpLiteLoadingReady = "true";
+    const targetBody = targetDocument.body;
+    if (targetBody) {
+      targetBody.dataset.ccxpLiteLoadingReady = "true";
     }
 
     if (sprite) {
@@ -284,7 +286,8 @@
     }
 
     frame.addEventListener("load", callback);
-    frame.dataset.ccxpLiteListenerAttached = "true";
+    const targetFrame = frame;
+    targetFrame.dataset.ccxpLiteListenerAttached = "true";
 
     const poll = () => {
       if (!shared.ensureContextValid()) {

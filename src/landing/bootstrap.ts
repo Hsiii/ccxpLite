@@ -1,5 +1,6 @@
 (function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
-  const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const runtimeScope = globalScope;
+  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const {
     landingLocale,
@@ -280,11 +281,12 @@
     targetDocument.body.replaceChildren(shell);
 
     // Force a style override on the body as a last resort.
-    targetDocument.body.style.setProperty("background-image", "none", "important");
-    targetDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
+    const targetBody = targetDocument.body;
+    targetBody.style.setProperty("background-image", "none", "important");
+    targetBody.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
     enableLoginCaptchaAutofill(targetDocument, loginSection as ParentNode, captchaAutofillState);
     restoreLoginValidationGuards(targetDocument, loginValidationState);
-    targetDocument.body.dataset.ccxpLiteLandingApplied = "true";
+    targetBody.dataset.ccxpLiteLandingApplied = "true";
     onReady();
   }
 

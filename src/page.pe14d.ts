@@ -1,4 +1,5 @@
 (function registerCcxpLitePe14dPatch(globalScope: Window & typeof globalThis) {
+  const runtimeScope = globalScope;
   const PAGE_FLAG = "__ccxpLitePe14dPatchInstalled";
   const TRANSPORT_FRAME_ID = "ccxp-lite-pe14d-transport";
   const TRANSPORT_FRAME_NAME = "ccxp-lite-pe14d-transport";
@@ -6,11 +7,11 @@
   const INTERCEPTED_ACTIONS: ReadonlySet<string> = new Set(["getLabInsList", "ins"]);
   const RESTORE_TTL_MS = 30_000;
 
-  if (globalScope[PAGE_FLAG]) {
+  if (runtimeScope[PAGE_FLAG]) {
     return;
   }
 
-  globalScope[PAGE_FLAG] = true;
+  runtimeScope[PAGE_FLAG] = true;
 
   let pendingSubmission: {
     actionName: string;
@@ -64,7 +65,7 @@
 
       wrappedToSubmit.__ccxpLiteWrapped = true;
       wrappedToSubmit.__ccxpLiteOriginal = originalToSubmit;
-      globalScope.toSubmit = wrappedToSubmit;
+      runtimeScope.toSubmit = wrappedToSubmit;
 
       globalScope.setTimeout(installAttempt, 500, undefined);
     };
@@ -291,13 +292,13 @@
   }
 
   function replaceVisibleBody(sourceDocument: Document) {
-    const nextBody = globalScope.document.importNode(sourceDocument.body, true);
-    globalScope.document.body.replaceWith(nextBody as Node);
+    const nextBody = runtimeScope.document.importNode(sourceDocument.body, true);
+    runtimeScope.document.body.replaceWith(nextBody as Node);
   }
 
   function syncDocumentTitle(sourceDocument: Document) {
     if (sourceDocument.title) {
-      globalScope.document.title = sourceDocument.title;
+      runtimeScope.document.title = sourceDocument.title;
     }
   }
 
