@@ -1,6 +1,6 @@
-(function registerCcxpLiteSharedBrand(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSharedBrand(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { sharedConstants, sharedLocale } = namespace;
   if (!sharedConstants || !sharedLocale) {
     return;

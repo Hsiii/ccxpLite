@@ -1,6 +1,6 @@
-(function registerCcxpLiteLandingValidation(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingValidation(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -69,9 +69,9 @@
       return;
     }
 
-    const authImage = form.querySelector("img[src*='auth_img.php?pwdstr=']");
+    const authImage = form.querySelector<HTMLImageElement>("img[src*='auth_img.php?pwdstr=']");
     const tokenFromImage = extractPwdstrFromImage(authImage, targetDocument);
-    let fnstrField = form.querySelector("input[name='fnstr']");
+    let fnstrField = form.querySelector<HTMLInputElement>("input[name='fnstr']");
 
     if (!fnstrField && tokenFromImage) {
       fnstrField = targetDocument.createElement("input");

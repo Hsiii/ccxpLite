@@ -1,6 +1,6 @@
-(function registerCcxpLiteSharedLocale(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSharedLocale(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;

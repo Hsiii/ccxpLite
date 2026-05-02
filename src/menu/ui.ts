@@ -1,6 +1,6 @@
-(function registerCcxpLiteSidebarUi(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSidebarUi(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared, sidebarState, sidebarFavorites, sidebarData, sidebarRuntime } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites || !sidebarData || !sidebarRuntime) {
     return;
@@ -286,7 +286,7 @@
     const expandedItemIds = new Set<string>(state.classicExpandedItemIds);
 
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
-    const searchExpansionIds = new Set();
+    const searchExpansionIds = new Set<string>();
     if (searchQuery) {
       for (const item of items) {
         const expandedState = collectClassicExpandedState(item, searchQuery);
@@ -346,10 +346,12 @@
     }
 
     if (!query) {
-      return items.filter(Boolean);
+      return items.filter((item): item is CcxpLiteSidebarTreeNode => item !== null);
     }
 
-    return items.map((item) => filterClassicSidebarItem(item, query)).filter(Boolean);
+    return items
+      .map((item) => filterClassicSidebarItem(item, query))
+      .filter((item): item is CcxpLiteSidebarTreeNode => item !== null);
   }
 
   function filterClassicSidebarItem(
@@ -413,7 +415,7 @@
     if (group.kind === "category") {
       const leading = targetDocument.createElement("span");
       leading.className = "ccxp-lite-row-leading";
-      leading.append(createCategoryIcon(targetDocument, group.icon));
+      leading.append(createCategoryIcon(targetDocument, group.icon ?? "folder"));
       button.append(leading);
     } else if (depth > 0) {
       button.append(createClassicRowLeadingSpacer(targetDocument));
@@ -777,7 +779,7 @@
   }
 
   function scheduleCategoryDetailWaterfall(targetDocument: Document, body: HTMLElement) {
-    const view = targetDocument.defaultView ?? globalThis;
+    const view = targetDocument.defaultView ?? globalThis.window;
     const supportsNativeWaterfall =
       view.CSS &&
       (view.CSS.supports("display", "grid-lanes") ||
@@ -966,7 +968,7 @@
 
     const iconWrap = targetDocument.createElement("span");
     iconWrap.className = "ccxp-lite-category-card-icon";
-    iconWrap.append(createCategoryIcon(targetDocument, category.icon));
+    iconWrap.append(createCategoryIcon(targetDocument, category.icon ?? "folder"));
     media.append(iconWrap);
     button.append(media);
 
@@ -1130,7 +1132,7 @@
       event.stopPropagation();
 
       const applyFavoriteChange = () => {
-        const favoriteIds = getFavoriteIds();
+        const favoriteIds = new Set(getFavoriteIds());
         const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
         if (matchingIds.length > 0) {
           for (const favoriteId of matchingIds) {
@@ -1283,11 +1285,10 @@
         overlay.remove();
 
         if (
-          previousActiveElement &&
-          typeof previousActiveElement.focus === "function" &&
+          previousActiveElement instanceof HTMLElement &&
           targetDocument.contains(previousActiveElement)
         ) {
-          (previousActiveElement as HTMLElement).focus();
+          previousActiveElement.focus();
         }
 
         resolve(confirmed);
@@ -1452,6 +1453,10 @@
     retryButton.textContent = strings.sidebarRetry;
     retryButton.addEventListener("click", () => {
       const state = getSidebarUiState(targetDocument);
+      if (!state.activeLeaf) {
+        return;
+      }
+
       state.activeLeaf = {
         ...state.activeLeaf,
         nonce: Date.now(),
@@ -1697,7 +1702,7 @@
     _footer?: HTMLElement | null,
   ) {
     const variant = state.sidebarVariant;
-    const mainFrame = sidebarRuntime.getLegacyMainFrame();
+    const mainFrame = getLegacyMainFrame();
     const mainDocument = mainFrame?.contentDocument;
 
     // In classic mode, we want the button to stay at the bottom-right of the screen, which

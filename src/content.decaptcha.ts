@@ -172,7 +172,10 @@ function getHeadInputVectors(
     return {
       digits: model.digits ?? DIGITS,
       eps: model.eps ?? EPS,
-      cropRight: Number.isFinite(model.cropRight) ? model.cropRight : 0,
+      cropRight:
+        typeof model.cropRight === "number" && Number.isFinite(model.cropRight)
+          ? model.cropRight
+          : 0,
       tensors: model.preparedTensors,
     };
   }
@@ -466,7 +469,7 @@ function getHeadInputVectors(
       .join("");
   }
 
-  async function predictDigits(imageBytes) {
+  async function predictDigits(imageBytes: unknown) {
     const imageData = await decodeImageData(imageBytes);
     const tensor = extractImageTensorFromRgba(
       imageData.width,

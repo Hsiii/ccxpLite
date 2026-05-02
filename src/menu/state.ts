@@ -1,13 +1,16 @@
-(function registerCcxpLiteSidebarState(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSidebarState(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
   let persistedSidebarVariant: "classic" | "layered" | null = null;
 
   function getSidebarUiState(navDocument: Document): CcxpLiteSidebarState {
     if (sidebarUiStateByDocument.has(navDocument)) {
-      return sidebarUiStateByDocument.get(navDocument);
+      const existingState = sidebarUiStateByDocument.get(navDocument);
+      if (existingState) {
+        return existingState;
+      }
     }
 
     const state: CcxpLiteSidebarState = {

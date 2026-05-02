@@ -1,4 +1,4 @@
-(function registerCcxpLiteSharedConstants(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSharedConstants(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;

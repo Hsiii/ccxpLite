@@ -1,6 +1,6 @@
-(function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingLogin(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
@@ -139,10 +139,15 @@
     const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
 
     for (const formNode of forms) {
+      const formDocument = rootNode.ownerDocument;
+      if (!formDocument) {
+        continue;
+      }
+
       if (formNode.dataset.ccxpLiteFormStructured !== "true") {
-        structureLoginFormRows(rootNode.ownerDocument, formNode);
-        rebuildFlatLoginFormLabels(rootNode.ownerDocument, formNode);
-        groupLoginFieldRows(rootNode.ownerDocument, formNode);
+        structureLoginFormRows(formDocument, formNode);
+        rebuildFlatLoginFormLabels(formDocument, formNode);
+        groupLoginFieldRows(formDocument, formNode);
       }
 
       formNode.classList.add("ccxp-lite-login-form");
@@ -316,7 +321,7 @@
         continue;
       }
 
-      const fieldCell = fieldNode.closest("th, td") ?? cellNode;
+      const fieldCell = fieldNode.closest<HTMLElement>("th, td") ?? cellNode;
       if (usedFieldCells.has(fieldCell)) {
         continue;
       }
@@ -346,7 +351,11 @@
       return pairs;
     }
 
-    const fallbackFieldCell = fallbackFieldNode.closest("th, td") ?? cells.at(-1);
+    const fallbackFieldCell = fallbackFieldNode.closest<HTMLElement>("th, td") ?? cells.at(-1);
+    if (!fallbackFieldCell) {
+      return pairs;
+    }
+
     const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
 
     pairs.push({
@@ -487,7 +496,9 @@
 
   function removeInlineLoginLabelNodes(fieldCell: Node | null, fieldNode: Node | null) {
     for (const node of collectLeadingNodesBeforeField(fieldCell, fieldNode)) {
-      removeNode(node);
+      if (node.parentNode) {
+        removeNode(node as ChildNode);
+      }
     }
   }
 
@@ -844,7 +855,9 @@
         continue;
       }
 
-      removeNode(textNode);
+      if (textNode.parentNode) {
+        removeNode(textNode as ChildNode);
+      }
     }
   }
 

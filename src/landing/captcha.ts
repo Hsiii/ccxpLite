@@ -1,6 +1,6 @@
-(function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingCaptcha(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -234,7 +234,7 @@
     }
 
     setCaptchaLoadingState(state, true);
-    requestCaptchaAnswerForCurrentImage(targetDocument, state.image, state, captchaSrc).catch(
+    requestCaptchaAnswerForCurrentImage(targetDocument, state, captchaSrc).catch(
       (error: unknown) => {
         fallbackToManualCaptchaEntry(state, captchaSrc, {
           didTimeout: isCaptchaTimeoutError(error),

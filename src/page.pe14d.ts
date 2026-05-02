@@ -1,5 +1,8 @@
-(function registerCcxpLitePe14dPatch(globalScope: Window & typeof globalThis) {
-  const runtimeScope = globalScope;
+(function registerCcxpLitePe14dPatch(globalScope: typeof globalThis) {
+  const runtimeScope = globalScope as typeof globalThis & {
+    __ccxpLitePe14dPatchInstalled?: boolean;
+    toSubmit?: CcxpLiteWrappedSubmit;
+  };
   const PAGE_FLAG = "__ccxpLitePe14dPatchInstalled";
   const TRANSPORT_FRAME_ID = "ccxp-lite-pe14d-transport";
   const TRANSPORT_FRAME_NAME = "ccxp-lite-pe14d-transport";
@@ -38,7 +41,7 @@
         return;
       }
 
-      const currentToSubmit = globalScope.toSubmit;
+      const currentToSubmit = runtimeScope.toSubmit;
       if (typeof currentToSubmit !== "function") {
         globalScope.setTimeout(installAttempt, 150, undefined);
         return;
@@ -56,11 +59,11 @@
         actionName?: string,
         actionValue?: string,
       ) {
-        if (!shouldInterceptSubmission(form, actionName)) {
+        if (!shouldInterceptSubmission(form, actionName ?? "")) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
 
-        return submitThroughTransport(originalToSubmit, form, actionName, actionValue);
+        return submitThroughTransport(originalToSubmit, form, actionName ?? "", actionValue);
       };
 
       wrappedToSubmit.__ccxpLiteWrapped = true;

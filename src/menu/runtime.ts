@@ -1,6 +1,6 @@
-(function registerCcxpLiteSidebarRuntime(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSidebarRuntime(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared, sidebarState, sidebarFavorites } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites) {
     return;
@@ -121,8 +121,8 @@
     try {
       const scopeDocument = window.top ? window.top.document : document;
       return (
-        scopeDocument.querySelector("frame[name='main']") ??
-        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']") ??
+        scopeDocument.querySelector<HTMLIFrameElement>("frame[name='main']") ??
+        scopeDocument.querySelector<HTMLIFrameElement>("frame[name='ccxp-lite-legacy-main']") ??
         null
       );
     } catch {
@@ -136,14 +136,14 @@
     destinationFrame: HTMLIFrameElement | null = null,
   ) {
     if (linkItem.clickLinkArgs) {
-      const helperFrame = navDocument.querySelector("iframe[name='frame_7472']");
+      const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
       const helperUrl = new URL("JH/JH01.php", navDocument.location.href);
       helperUrl.searchParams.set("ACIXSTORE", readAcixstore(navDocument.location.href));
       helperUrl.searchParams.set("name", linkItem.clickLinkArgs.name);
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
 
-      if (helperFrame && (helperFrame as HTMLIFrameElement).contentWindow) {
-        const helperWindow = (helperFrame as HTMLIFrameElement).contentWindow;
+      if (helperFrame && helperFrame.contentWindow) {
+        const helperWindow = helperFrame.contentWindow;
         if (helperWindow) {
           helperWindow.location.replace(helperUrl.toString());
         }
@@ -163,7 +163,12 @@
     }
 
     if (normalizedTarget === "_top") {
-      window.top.location.href = resolvedUrl;
+      if (window.top) {
+        window.top.location.href = resolvedUrl;
+        return;
+      }
+
+      globalThis.location.href = resolvedUrl;
       return;
     }
 
@@ -193,7 +198,7 @@
   }
 
   function resolveLeafUrl(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
-    return new URL(linkItem.href, navDocument.location.href).toString();
+    return new URL(linkItem.href ?? "", navDocument.location.href).toString();
   }
 
   function isExternalLinkOnlyRoute(resolvedUrl: string) {

@@ -1,5 +1,5 @@
 (function bootstrapCcxpLite() {
-  const namespace = (globalThis.CCXP_LITE ?? {}) as CcxpLiteNamespace;
+  const namespace = globalThis.CCXP_LITE ?? {};
   const { shared } = namespace;
   const { sidebar } = namespace;
   const { landing } = namespace;
@@ -8,8 +8,11 @@
     return;
   }
 
-  const { TOKENS, removeNode, ensureThemeDocument, cleanLegacyAttributes } = shared;
-  const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landing;
+  const sharedLib = shared;
+  const sidebarLib = sidebar;
+  const landingLib = landing;
+  const { TOKENS, removeNode, ensureThemeDocument, cleanLegacyAttributes } = sharedLib;
+  const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landingLib;
 
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
@@ -24,7 +27,7 @@
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
 
-  shared.addCleanupTask(() => {
+  sharedLib.addCleanupTask(() => {
     if (loadingState) {
       loadingState.released = true;
       releaseLoadingSprite(document);
@@ -41,7 +44,7 @@
 
   function attachAndApply() {
     if (isLandingPage(document)) {
-      landing.preloadLandingCaptcha(document);
+      landingLib.preloadLandingCaptcha(document);
       simplifyLandingPage(document, {
         retry,
         onReady: markLandingReady,
@@ -56,23 +59,25 @@
       return;
     }
 
+    const navFrame = frames.nav;
+    const mainFrame = frames.main;
     applyFramesetLayout();
-    attachFrameListener(frames.nav, () => {
-      sidebar.simplifySidebar(frames.nav, retry);
-      updateLoadingStateForNav(frames.nav);
+    attachFrameListener(navFrame, () => {
+      sidebarLib.simplifySidebar(navFrame, retry);
+      updateLoadingStateForNav(navFrame);
       markMainReady();
     });
-    attachFrameListener(frames.main, () => {
-      simplifyMainFrame(frames.main);
+    attachFrameListener(mainFrame, () => {
+      simplifyMainFrame(mainFrame);
     });
 
     if (frames.top) {
       removeHeader(frames.top);
     }
 
-    sidebar.simplifySidebar(frames.nav, retry);
-    simplifyMainFrame(frames.main);
-    updateLoadingStateForNav(frames.nav);
+    sidebarLib.simplifySidebar(navFrame, retry);
+    simplifyMainFrame(mainFrame);
+    updateLoadingStateForNav(navFrame);
     markMainReady();
   }
 
@@ -253,26 +258,30 @@
 
   function findFrames() {
     const frameCandidates = [...document.querySelectorAll<HTMLIFrameElement>("frame")];
-    const top = frameCandidates.find((frame) => {
-      const src = (frame.getAttribute("src") ?? "").toLowerCase();
-      const name = (frame.getAttribute("name") ?? "").toLowerCase();
-      return src.includes("top.php") || src.includes("top.html") || name === "top";
-    });
+    const top =
+      frameCandidates.find((frame) => {
+        const src = (frame.getAttribute("src") ?? "").toLowerCase();
+        const name = (frame.getAttribute("name") ?? "").toLowerCase();
+        return src.includes("top.php") || src.includes("top.html") || name === "top";
+      }) ?? null;
 
-    const navBySource = frameCandidates.find((frame) => {
-      const src = (frame.getAttribute("src") ?? "").toLowerCase();
-      return src.includes("in_inq_stu.php") || src.includes("in_inq_stu.html");
-    });
+    const navBySource =
+      frameCandidates.find((frame) => {
+        const src = (frame.getAttribute("src") ?? "").toLowerCase();
+        return src.includes("in_inq_stu.php") || src.includes("in_inq_stu.html");
+      }) ?? null;
 
-    const main = frameCandidates.find((frame) => {
-      const name = (frame.getAttribute("name") ?? "").toLowerCase();
-      return name === "main";
-    });
+    const main =
+      frameCandidates.find((frame) => {
+        const name = (frame.getAttribute("name") ?? "").toLowerCase();
+        return name === "main";
+      }) ?? null;
 
-    const navByName = frameCandidates.find((frame) => {
-      const name = (frame.getAttribute("name") ?? "").toLowerCase();
-      return name === "nav" || name === "menu" || name === "left" || name === "list";
-    });
+    const navByName =
+      frameCandidates.find((frame) => {
+        const name = (frame.getAttribute("name") ?? "").toLowerCase();
+        return name === "nav" || name === "menu" || name === "left" || name === "list";
+      }) ?? null;
 
     const navFallback = frameCandidates.find((frame) => frame !== top && frame !== main) ?? null;
     const nav = navBySource ?? navByName ?? navFallback;
@@ -290,7 +299,7 @@
     targetFrame.dataset.ccxpLiteListenerAttached = "true";
 
     const poll = () => {
-      if (!shared.ensureContextValid()) {
+      if (!sharedLib.ensureContextValid()) {
         return;
       }
 
@@ -315,7 +324,7 @@
   }
 
   function retry() {
-    if (attempts >= RETRY_LIMIT || !shared.ensureContextValid()) {
+    if (attempts >= RETRY_LIMIT || !sharedLib.ensureContextValid()) {
       return;
     }
 
@@ -380,15 +389,11 @@
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
 
     // Mount the lab button to the main frame in classic mode.
-    const {
-      sidebarState,
-      sidebarUi,
-      shared: sharedLib,
-    } = (globalThis.CCXP_LITE ?? {}) as CcxpLiteNamespace;
-    if (sidebarState && sidebarUi && sharedLib) {
+    const { sidebarState, sidebarUi, shared: sharedNamespace } = globalThis.CCXP_LITE ?? {};
+    if (sidebarState && sidebarUi && sharedNamespace) {
       const state = sidebarState.getSidebarUiState(mainDocument);
-      const strings = sharedLib.getLocalizedStrings(
-        sharedLib.resolveLocaleFromDocument(mainDocument),
+      const strings = sharedNamespace.getLocalizedStrings(
+        sharedNamespace.resolveLocaleFromDocument(mainDocument),
       );
       if (state.sidebarVariant === "classic") {
         sidebarUi.mountSidebarVariantSwitch(

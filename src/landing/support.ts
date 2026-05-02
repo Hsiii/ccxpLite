@@ -1,29 +1,42 @@
-(function registerCcxpLiteLandingSupport(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingSupport(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
-  const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared ?? {};
-
-  function findLoginSourceCell(targetDocument: Document, loginForm: Element | null) {
-    if (loginForm) {
-      return loginForm.closest("td, table, section, article") ?? loginForm;
-    }
-
-    return [
-      ...targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article"),
-    ].find((cell) => cell.querySelector("form") !== null);
+  if (!shared) {
+    return;
   }
 
-  function findCalendarTable(targetNode: ParentNode) {
-    const calendarFrame = targetNode.querySelector("iframe[src*='calendar/cal.php']");
+  const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared;
+
+  function findLoginSourceCell(
+    targetDocument: Document,
+    loginForm: Element | null,
+  ): HTMLElement | null {
+    if (loginForm) {
+      return loginForm.closest<HTMLElement>("td, table, section, article");
+    }
+
+    return (
+      [...targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article")].find(
+        (cell) => cell.querySelector("form") !== null,
+      ) ?? null
+    );
+  }
+
+  function findCalendarTable(targetNode: ParentNode): HTMLTableElement | null {
+    const calendarFrame = targetNode.querySelector<HTMLIFrameElement>(
+      "iframe[src*='calendar/cal.php']",
+    );
     if (!calendarFrame) {
       return null;
     }
 
-    return [...targetNode.querySelectorAll<HTMLTableElement>("table")].find(
-      (table) =>
-        table.contains(calendarFrame) &&
-        ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
+    return (
+      [...targetNode.querySelectorAll<HTMLTableElement>("table")].find(
+        (table) =>
+          table.contains(calendarFrame) &&
+          ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
+      ) ?? null
     );
   }
 
@@ -262,9 +275,9 @@
     return anchor ? anchor.closest("table") : null;
   }
 
-  function findServiceLink(targetDocument: Document) {
-    const anchor = targetDocument.querySelector("a[href*='inquire_cpr.html']");
-    return anchor ? (anchor.closest("div") ?? anchor) : null;
+  function findServiceLink(targetDocument: Document): HTMLElement | null {
+    const anchor = targetDocument.querySelector<HTMLAnchorElement>("a[href*='inquire_cpr.html']");
+    return anchor?.closest<HTMLElement>("div") ?? anchor ?? null;
   }
 
   function findCannotLoginLink(targetDocument: Document, utilityLinksTable: Element | null) {
@@ -693,7 +706,7 @@
       );
 
       removeNode(leftCell);
-      removeNode(spacerCell);
+      removeNode(spacerCell ?? null);
 
       rightCell.removeAttribute("width");
       rightCell.style.width = "100%";

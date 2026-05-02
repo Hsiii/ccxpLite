@@ -1,6 +1,6 @@
-(function registerCcxpLiteSharedTheme(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSharedTheme(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;

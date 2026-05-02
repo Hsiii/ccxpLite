@@ -1,12 +1,17 @@
 export type CcxpLiteModuleMarker = never;
 
 declare global {
-  let CCXP_LITE: CcxpLiteNamespace;
+  // eslint-disable-next-line vars-on-top
+  var CCXP_LITE: CcxpLiteNamespace | undefined;
   let module:
     | {
         exports?: unknown;
       }
     | undefined;
+
+  interface Window {
+    CCXP_LITE?: CcxpLiteNamespace;
+  }
 
   type CcxpLiteLocale = "en" | "zh";
 
@@ -33,7 +38,7 @@ declare global {
     cropRight?: number;
     tensors?: Record<string, CcxpLiteTensorSource>;
     preparedTensors?: Record<string, CcxpLitePreparedTensor>;
-    predictDigits: (imageBytes: ArrayBuffer) => string;
+    predictDigits: (imageBytes: unknown) => Promise<string> | string;
   }
 
   interface CcxpLiteClickLinkArgs {
@@ -45,17 +50,18 @@ declare global {
     id: string;
     legacyId?: string;
     label: string;
-    pathSegments?: string[];
+    pathSegments?: readonly string[];
     href?: string;
     target?: string;
     clickLinkArgs?: CcxpLiteClickLinkArgs | null;
+    nonce?: number;
   }
 
   interface CcxpLiteSidebarGroup {
     id: string;
     label: string;
-    directLinks: CcxpLiteSidebarLinkItem[];
-    sections: CcxpLiteSidebarGroup[];
+    directLinks: readonly CcxpLiteSidebarLinkItem[];
+    sections: readonly CcxpLiteSidebarGroup[];
     kind: "group" | "category";
     emptyMessage?: string;
     icon?: string;
@@ -84,7 +90,7 @@ declare global {
 
   interface CcxpLiteSidebarModel {
     favorites: CcxpLiteSidebarCategoryNode;
-    categories: CcxpLiteSidebarCategoryNode[];
+    categories: readonly CcxpLiteSidebarCategoryNode[];
   }
 
   interface CcxpLiteLegacySidebarDocNode {
@@ -95,6 +101,8 @@ declare global {
   interface CcxpLiteLegacySidebarFolderNode extends CcxpLiteLegacySidebarDocNode {
     children: Array<CcxpLiteLegacySidebarFolderNode | CcxpLiteLegacySidebarDocNode>;
   }
+
+  type CcxpLiteLegacySidebarNode = CcxpLiteLegacySidebarFolderNode | CcxpLiteLegacySidebarDocNode;
 
   interface CcxpLiteCaptchaField {
     input: HTMLInputElement;
@@ -149,33 +157,46 @@ declare global {
     labelKey: string;
     fallbackLabel?: string;
     icon: string;
-    summaryLabels?: string[];
-    itemLabels: string[];
+    summaryLabels?: readonly string[];
+    itemLabels: readonly string[];
   }
 
   interface CcxpLiteSharedConstants {
     TOKENS: Record<string, string>;
     ASSETS: Record<string, string>;
     LOCALIZED_STRINGS: Record<string, Record<string, string>>;
-    SIDEBAR_CATEGORIES: CcxpLiteSidebarCategoryDefinition[];
+    SIDEBAR_CATEGORIES: readonly CcxpLiteSidebarCategoryDefinition[];
     [key: string]: unknown;
   }
 
   interface CcxpLiteSharedLocale {
-    getLocalizedStrings: (locale: string) => Record<string, string>;
+    getLocalizedStrings: (locale: string) => Readonly<Record<string, string>>;
     normalizeLocale: (locale: string) => string;
     resolveLocaleFromDocument: (targetDocument: Document) => string;
   }
 
   interface CcxpLiteSharedBrand {
-    createBrandImage: (targetDocument: Document, assetPath: string) => HTMLImageElement;
-    createBrandCopy: (targetDocument: Document, text: string) => HTMLElement;
-    createBrandPartnerIcon: (targetDocument: Document, assetPath: string) => HTMLImageElement;
+    createBrandImage: (
+      targetDocument: Document,
+      className: string,
+      assetPath?: string,
+    ) => HTMLImageElement;
+    createBrandCopy: (
+      targetDocument: Document,
+      containerClassName: string,
+      titleClassName: string,
+      title: string,
+    ) => HTMLDivElement;
+    createBrandPartnerIcon: (targetDocument: Document) => SVGElement;
     createBrandPartnerLink: (
       targetDocument: Document,
-      href: string,
-      content: Node,
-    ) => HTMLAnchorElement;
+      options?: {
+        markClassName?: string;
+        linkClassName?: string;
+        labelClassName?: string;
+        label?: string;
+      },
+    ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
   }
 
   interface CcxpLiteRuntime {
@@ -185,15 +206,20 @@ declare global {
   }
 
   interface CcxpLiteSharedDom {
-    moveChildNodes: (sourceNode: Node, targetNode: Node) => void;
-    removeNode: (node: Node | null) => void;
+    moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
+    removeNode: (node: ChildNode | null) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;
     cleanLegacyAttributes: (node: Node | null) => void;
     isContextValid: () => boolean;
     ensureContextValid: () => boolean;
     invalidateContext: () => boolean;
     getRuntimeSafely: () => CcxpLiteRuntime | null;
-    getLocalStorageAreaSafely: () => unknown;
+    getLocalStorageAreaSafely: () => {
+      get: (
+        keys: readonly string[],
+        callback: (result: Readonly<Record<string, unknown>>) => void,
+      ) => void;
+    } | null;
     addCleanupTask: (task: () => void) => void;
   }
 
@@ -205,17 +231,17 @@ declare global {
     TOKENS: Record<string, string>;
     STRINGS: Record<string, string>;
     LOCALIZED_STRINGS: Record<string, Record<string, string>>;
-    SIDEBAR_CATEGORIES: Array<{
+    SIDEBAR_CATEGORIES: ReadonlyArray<{
       id: string;
       labelKey: string;
       fallbackLabel?: string;
       icon: string;
-      summaryLabels?: string[];
-      itemLabels: string[];
+      summaryLabels?: readonly string[];
+      itemLabels: readonly string[];
     }>;
     ASSETS: Record<string, string>;
     ensureThemeDocument: (targetDocument: Document, scope: string) => boolean;
-    getLocalizedStrings: (locale: string) => Record<string, string>;
+    getLocalizedStrings: (locale: string) => Readonly<Record<string, string>>;
     normalizeLocale: (locale: string) => string;
     resolveLocaleFromDocument: (targetDocument: Document) => string;
     createBrandImage: (
@@ -232,23 +258,31 @@ declare global {
     createBrandPartnerIcon: (targetDocument: Document) => SVGElement;
     createBrandPartnerLink: (
       targetDocument: Document,
-      options?: Record<string, unknown>,
-    ) => { mark: HTMLElement; link: HTMLElement };
-    moveChildNodes: (sourceNode: Node, targetNode: Node) => void;
-    removeNode: (node: Node | null) => void;
+      options?: {
+        markClassName?: string;
+        linkClassName?: string;
+        labelClassName?: string;
+        label?: string;
+      },
+    ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
+    moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
+    removeNode: (node: ChildNode | null) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;
     cleanLegacyAttributes: (node: Node | null) => void;
     isContextValid: () => boolean;
     ensureContextValid: () => boolean;
     invalidateContext: () => void;
     getRuntimeSafely: () => CcxpLiteRuntime | null;
-    getLocalStorageAreaSafely: () => Record<string, unknown> | null;
+    getLocalStorageAreaSafely: CcxpLiteSharedDom["getLocalStorageAreaSafely"];
     addCleanupTask: (task: () => void) => void;
   }
 
   interface CcxpLiteSidebar {
-    simplifySidebar: (targetDocument: Document, retry: () => void) => void;
-    preloadLandingCaptcha: (targetDocument: Document) => void;
+    simplifySidebar: (
+      navFrame: HTMLIFrameElement,
+      retry: () => void,
+      options?: { hostDocument?: Document },
+    ) => void;
   }
 
   interface CcxpLiteLandingValidationState {
@@ -265,12 +299,13 @@ declare global {
     ) => void;
     ensureLoginSubmissionPayload: (form: HTMLFormElement | null, targetDocument: Document) => void;
     extractPwdstrFromImage: (
-      imageNode: Pick<HTMLImageElement, "getAttribute"> | null,
-      targetDocument: Pick<Document, "location">,
+      imageNode: HTMLImageElement | null,
+      targetDocument: Document,
     ) => string;
   }
 
   interface CcxpLiteLandingCaptcha {
+    CAPTCHA_AUTOFILL_TIMEOUT_MS: number;
     enableLoginCaptchaAutofill: (
       targetDocument: Document,
       rootNode: ParentNode,
@@ -290,9 +325,9 @@ declare global {
     createLandingSection: (targetDocument: Document, className: string) => HTMLElement;
     wireLandingTabs: (
       targetDocument: Document,
-      tabNavigation: Element | null,
-      tabContents: readonly Element[],
-      strings: Readonly<Record<string, string>>,
+      tabNavigation: HTMLElement,
+      tabContents: readonly HTMLElement[],
+      strings?: Readonly<Record<string, string>>,
     ) => void;
   }
 
@@ -340,7 +375,6 @@ declare global {
     removeLoginSpacingArtifacts: (targetDocument: Document, rootNode: ParentNode) => void;
     alignCaptchaMediaRow: (targetDocument: Document, rootNode: ParentNode) => void;
     enhancePasswordVisibilityToggle: (targetDocument: Document, rootNode: ParentNode) => void;
-    preloadLandingCaptcha: (targetDocument: Document) => void;
   }
 
   interface CcxpLiteLanding {
@@ -379,9 +413,9 @@ declare global {
     FAVORITES_STORAGE_KEY: string;
     INITIAL_MAIN_URL_STORAGE_KEY: string;
     favoriteSubscribers: Set<() => void>;
-    getFavoriteIds: () => Set<string>;
+    getFavoriteIds: () => ReadonlySet<string>;
     ensureFavoriteIdsLoaded: (onReady?: () => void) => void;
-    writeFavoriteIds: (favoriteIds: Iterable<string>) => void;
+    writeFavoriteIds: (favoriteIds: ReadonlySet<string>) => void;
     ensureFavoriteStorageSync: () => void;
     collectFavoriteLinks: (
       item: CcxpLiteSidebarTreeNode | null,
@@ -484,10 +518,6 @@ declare global {
       hasLoaded: boolean;
       pendingLoad: Promise<void> | null;
     };
-    getFavoriteIds: () => ReadonlySet<string>;
-    getMatchingFavoriteIds: (category: CcxpLiteSidebarCategoryDefinition) => ReadonlySet<string>;
-    writeFavoriteIds: (ids: Iterable<string>) => void;
-    isFavoriteLink: (linkItem: CcxpLiteSidebarLinkItem) => boolean;
   }
 
   interface CcxpLiteNamespace {
@@ -497,14 +527,14 @@ declare global {
     sharedDom?: CcxpLiteSharedDom;
     sharedTheme?: CcxpLiteSharedTheme;
     sharedBrand?: CcxpLiteSharedBrand;
-    landing: CcxpLiteLanding;
+    landing?: CcxpLiteLanding;
     landingLocale?: CcxpLiteLandingLocale;
     landingSupport?: CcxpLiteLandingSupport;
     landingCaptcha?: CcxpLiteLandingCaptcha;
     landingTabs?: CcxpLiteLandingTabs;
     landingValidation?: CcxpLiteLandingValidation;
     landingLogin?: CcxpLiteLandingLogin;
-    sidebar: CcxpLiteSidebar;
+    sidebar?: CcxpLiteSidebar;
     sidebarState?: CcxpLiteSidebarStateModule;
     sidebarFavorites?: CcxpLiteSidebarFavorites;
     sidebarData?: CcxpLiteSidebarData;

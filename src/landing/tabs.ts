@@ -1,6 +1,6 @@
-(function registerCcxpLiteLandingTabs(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingTabs(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   if (!shared) {
     return;
@@ -28,7 +28,9 @@
       return;
     }
 
-    const tabButtons = [...tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']")];
+    const tabButtons = [
+      ...tabNavigation.querySelectorAll<HTMLElement>("button, a[href^='#'], [role='tab']"),
+    ];
     if (tabButtons.length === 0) {
       return;
     }

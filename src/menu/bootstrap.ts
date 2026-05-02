@@ -1,6 +1,6 @@
-(function registerCcxpLiteSidebarBootstrap(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSidebarBootstrap(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared, sidebarFavorites, sidebarData, sidebarState, sidebarUi, sidebarRuntime } =
     namespace;
   if (
@@ -43,12 +43,13 @@
     options: { hostDocument?: Document } = {},
   ) {
     const navDocument = navFrame.contentDocument;
-    const hostDocument = options.hostDocument ?? navDocument;
 
     if (!navDocument || !navDocument.body || !navDocument.head) {
       retry();
       return;
     }
+
+    const hostDocument = options.hostDocument ?? navDocument;
 
     if (
       navDocument.body.dataset.ccxpLiteSidebarApplied !== "true" &&

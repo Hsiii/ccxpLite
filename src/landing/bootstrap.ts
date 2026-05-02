@@ -1,6 +1,6 @@
-(function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteLandingBootstrap(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   const {
     landingLocale,
@@ -102,7 +102,7 @@
     const loginForm = getLoginForm(targetDocument);
     const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
     const tabNavigation = targetDocument.querySelector(".tab");
-    const tabContents = [...targetDocument.querySelectorAll(".tabcontent")];
+    const tabContents = [...targetDocument.querySelectorAll<HTMLElement>(".tabcontent")];
     const languageLinks = targetDocument.querySelector("ul.links");
     const announcementTable = findAnnouncementTable(targetDocument);
     const utilityLinks = findUtilityLinksTable(targetDocument);
@@ -183,8 +183,8 @@
 
     if (loginForm) {
       loginSection.append(loginForm);
-    } else {
-      moveChildNodes(loginSourceCell as Node, loginSection);
+    } else if (loginSourceCell) {
+      moveChildNodes(loginSourceCell, loginSection);
     }
 
     normalizeLoginFormLayout(loginSection);
@@ -226,7 +226,7 @@
 
     if (utilityLinks) {
       collapseLegacyUtilityRow(utilityLinks);
-      removeNode(utilityLinks as Node);
+      removeNode(utilityLinks);
     }
 
     topSection.append(headerSection);
@@ -262,7 +262,7 @@
         tabsSection.append(tabContent);
       }
 
-      wireLandingTabs(targetDocument, tabNavigation, tabContents, strings);
+      wireLandingTabs(targetDocument, tabNavigation as HTMLElement, tabContents, strings);
       shell.append(tabsSection);
     } else if (supportLinks) {
       const supportSection = createLandingSection(targetDocument, "ccxp-lite-landing-support-only");

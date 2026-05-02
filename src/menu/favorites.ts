@@ -1,6 +1,6 @@
-(function registerCcxpLiteSidebarFavorites(globalScope: Window & typeof globalThis) {
+(function registerCcxpLiteSidebarFavorites(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
+  const namespace = runtimeScope.CCXP_LITE ?? {};
 
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
@@ -44,7 +44,7 @@
 
     favoriteState.pendingLoad = readFavoritesFromStorage()
       .then((favoriteIds) => {
-        favoriteState.ids = favoriteIds;
+        favoriteState.ids = new Set(favoriteIds);
         favoriteState.hasLoaded = true;
       })
       .catch(() => {
@@ -60,7 +60,7 @@
     }
   }
 
-  function writeFavoriteIds(favoriteIds: Iterable<string>) {
+  function writeFavoriteIds(favoriteIds: ReadonlySet<string>) {
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
@@ -104,7 +104,7 @@
           resolve(favoriteIds);
         },
         () => {
-          resolve(new Set());
+          resolve(new Set<string>());
         },
       );
     });
@@ -217,7 +217,7 @@
         }
       ).get(["ccxp-lite-sidebar-favorites"], (result: Readonly<Record<string, unknown>>) => {
         if (runtime && runtime.lastError) {
-          resolve(new Set());
+          resolve(new Set<string>());
           return;
         }
 
@@ -401,9 +401,13 @@
       return [];
     }
 
-    return [...new Set([linkItem.id, linkItem.legacyId].filter(Boolean))].filter((favoriteId) =>
-      favoriteIds.has(favoriteId),
+    return [...new Set([linkItem.id, linkItem.legacyId].filter(isDefinedString))].filter(
+      (favoriteId) => favoriteIds.has(favoriteId),
     );
+  }
+
+  function isDefinedString(value: string | undefined): value is string {
+    return typeof value === "string" && value !== "";
   }
 
   function normalizeFavoriteUrl(rawValue: string | null | undefined) {
