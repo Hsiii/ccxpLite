@@ -39,7 +39,7 @@
 
       const currentToSubmit = globalScope.toSubmit;
       if (typeof currentToSubmit !== "function") {
-        globalScope.setTimeout(installAttempt, 150);
+        globalScope.setTimeout(installAttempt, 150, undefined);
         return;
       }
 
@@ -66,7 +66,7 @@
       wrappedToSubmit.__ccxpLiteOriginal = originalToSubmit;
       globalScope.toSubmit = wrappedToSubmit;
 
-      globalScope.setTimeout(installAttempt, 500);
+      globalScope.setTimeout(installAttempt, 500, undefined);
     };
 
     installAttempt();
@@ -116,17 +116,21 @@
       }
       return originalToSubmit.call(globalScope, form, actionName, actionValue);
     } finally {
-      globalScope.setTimeout(() => {
-        if (!form) {
-          return;
-        }
+      globalScope.setTimeout(
+        () => {
+          if (!form) {
+            return;
+          }
 
-        if (originalTarget) {
-          form.setAttribute("target", originalTarget);
-        } else {
-          form.removeAttribute("target");
-        }
-      }, 0);
+          if (originalTarget) {
+            form.setAttribute("target", originalTarget);
+          } else {
+            form.removeAttribute("target");
+          }
+        },
+        0,
+        undefined,
+      );
     }
 
     return false;
@@ -144,12 +148,16 @@
     frame.id = TRANSPORT_FRAME_ID;
     frame.name = TRANSPORT_FRAME_NAME;
     frame.setAttribute("aria-hidden", "true");
-    Object.assign(frame.style, {
-      display: "none",
-      width: "0",
-      height: "0",
-      border: "0",
-    });
+    Object.assign(
+      frame.style,
+      {
+        display: "none",
+        width: "0",
+        height: "0",
+        border: "0",
+      },
+      0,
+    );
 
     const host = globalScope.document.documentElement || globalScope.document.body;
     if (!host) {

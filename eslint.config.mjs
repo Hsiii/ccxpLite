@@ -21,7 +21,6 @@ export default [
       "@typescript-eslint/strict-boolean-expressions": "off",
       "complete/prefer-readonly-parameter-types": "off",
       "complete/require-ascii": "off",
-      "complete/require-variadic-function-argument": "off",
       "import-x/no-unassigned-import": [
         "error",
         {

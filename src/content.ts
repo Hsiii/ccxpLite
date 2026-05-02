@@ -95,10 +95,14 @@
       released: false,
     };
 
-    state.timerId = globalThis.setTimeout(() => {
-      releaseLoadingSprite(targetDocument);
-      state.released = true;
-    }, LOADING_SPRITE_TIMEOUT_MS);
+    state.timerId = globalThis.setTimeout(
+      () => {
+        releaseLoadingSprite(targetDocument);
+        state.released = true;
+      },
+      LOADING_SPRITE_TIMEOUT_MS,
+      undefined,
+    );
 
     return state;
   }
@@ -182,10 +186,14 @@
       sprite.style.opacity = "0";
     }
 
-    globalThis.setTimeout(() => {
-      removeNode(sprite);
-      removeNode(styleNode);
-    }, 180);
+    globalThis.setTimeout(
+      () => {
+        removeNode(sprite);
+        removeNode(styleNode);
+      },
+      180,
+      undefined,
+    );
   }
 
   function updateLoadingStateForNav(navFrame: HTMLIFrameElement | null) {
@@ -309,7 +317,7 @@
     }
 
     attempts++;
-    globalThis.setTimeout(attachAndApply, RETRY_DELAY_MS);
+    globalThis.setTimeout(attachAndApply, RETRY_DELAY_MS, undefined);
   }
 
   function applyFramesetLayout() {
@@ -351,7 +359,7 @@
     }
 
     topDocument.documentElement.style.display = "none";
-    topDocument.body.replaceChildren();
+    topDocument.body.textContent = "";
     topDocument.body.dataset.ccxpLiteHeaderRemoved = "true";
     topFrame.setAttribute("scrolling", "no");
   }

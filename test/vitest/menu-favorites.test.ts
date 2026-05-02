@@ -34,7 +34,7 @@ describe("sidebar favorites", () => {
     const api = window.CCXP_LITE.sidebarFavorites;
     const callback = vi.fn();
     api.favoriteSubscribers.add(() => {
-      callback();
+      callback(undefined);
     });
 
     Object.defineProperty(window, "localStorage", {

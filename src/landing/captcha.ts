@@ -44,7 +44,7 @@
 
     triggerAutofill();
     globalThis.requestAnimationFrame(triggerAutofill);
-    globalThis.setTimeout(triggerAutofill, 0);
+    globalThis.setTimeout(triggerAutofill, 0, undefined);
 
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
@@ -163,14 +163,18 @@
 
     const _reflow = state.input.offsetWidth;
     state.input.dataset.timeoutFlash = "true";
-    state.timeoutFlashTimer = globalThis.setTimeout(() => {
-      if (!state.input) {
-        return;
-      }
+    state.timeoutFlashTimer = globalThis.setTimeout(
+      () => {
+        if (!state.input) {
+          return;
+        }
 
-      delete state.input.dataset.timeoutFlash;
-      state.timeoutFlashTimer = null;
-    }, 1600);
+        delete state.input.dataset.timeoutFlash;
+        state.timeoutFlashTimer = null;
+      },
+      1600,
+      undefined,
+    );
   }
 
   function autofillCaptchaInput(
@@ -369,10 +373,14 @@
   ) {
     const controller = new AbortController();
     let didTimeout = false;
-    const timerId = globalThis.setTimeout(() => {
-      didTimeout = true;
-      controller.abort();
-    }, timeoutMs);
+    const timerId = globalThis.setTimeout(
+      () => {
+        didTimeout = true;
+        controller.abort();
+      },
+      timeoutMs,
+      undefined,
+    );
 
     return await fetch(resource, {
       ...options,

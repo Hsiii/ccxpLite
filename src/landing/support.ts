@@ -205,7 +205,7 @@
     if (!table.tBodies[0]) {
       table.append(tbody);
     }
-    tbody.replaceChildren();
+    tbody.textContent = "";
 
     const titleRow = table.ownerDocument.createElement("tr");
     titleRow.className = "ccxp-lite-announcement-title-row";

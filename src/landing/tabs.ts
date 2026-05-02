@@ -8,7 +8,7 @@
   const { getLocalizedStrings } = shared;
 
   function isArray<T>(value: unknown): value is T[] {
-    return Object.prototype.toString.call(value) === "[object Array]";
+    return value !== null && typeof value === "object" && value.constructor === Array;
   }
 
   function createLandingSection(targetDocument: Document, className: string) {

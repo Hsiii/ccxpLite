@@ -53,7 +53,7 @@ describe("sidebar runtime", () => {
         target: "main",
       },
       () => {
-        rerender();
+        rerender(undefined);
       },
     );
 

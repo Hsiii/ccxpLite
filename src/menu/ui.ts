@@ -78,7 +78,7 @@
       state.currentCategoryId = "";
     }
 
-    footer.replaceChildren();
+    footer.textContent = "";
     content.innerHTML = "";
     shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
     mountSidebarVariantSwitch(
@@ -1506,7 +1506,7 @@
       }
     };
 
-    const timeoutId = globalThis.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS);
+    const timeoutId = globalThis.setTimeout(settleError, DESTINATION_LOAD_TIMEOUT_MS, undefined);
     frame.addEventListener("load", () => {
       simplifyEmbeddedFrame(frame);
       settleSuccess();

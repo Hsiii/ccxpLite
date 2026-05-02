@@ -40,11 +40,11 @@ describe("landing captcha", () => {
     const input = document.querySelector<HTMLInputElement>("input[name='passwd2']");
     const inputSpy = vi.fn();
     const changeSpy = vi.fn();
-    input.addEventListener("input", () => {
-      inputSpy();
+    input.addEventListener("input", (event) => {
+      inputSpy(event);
     });
-    input.addEventListener("change", () => {
-      changeSpy();
+    input.addEventListener("change", (event) => {
+      changeSpy(event);
     });
 
     landingCaptcha.enableLoginCaptchaAutofill(document, document);
