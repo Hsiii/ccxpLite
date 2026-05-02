@@ -29,7 +29,7 @@ describe("landing captcha", () => {
     loadModules(window, landingCaptchaModulePaths);
     const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
-    let resolveFetch: ((value: Response) => void) | null = null;
+    let resolveFetch: ((value: Response) => void) | undefined;
     window.fetch = vi.fn(
       async () =>
         await new Promise((resolve) => {

@@ -24,7 +24,6 @@ export default [
           allow: ["**/*.css"],
         },
       ],
-      "unicorn/no-null": "off",
     },
   },
 ];

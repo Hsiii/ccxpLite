@@ -21,7 +21,6 @@
   ) {
     return;
   }
-
   const {
     TOKENS,
     ASSETS,
@@ -65,12 +64,10 @@
     alignCaptchaMediaRow,
     enhancePasswordVisibilityToggle,
   } = landingLogin;
-
   function preloadLandingCaptcha(targetDocument: Document) {
     if (!isLandingPage(targetDocument)) {
       return;
     }
-
     getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
   }
 
@@ -83,22 +80,18 @@
   ) {
     const retryFn = typeof options.retry === "function" ? options.retry : () => undefined;
     const onReady = typeof options.onReady === "function" ? options.onReady : () => undefined;
-
     if (!targetDocument.body || !targetDocument.head) {
       retryFn();
       return;
     }
-
     if (targetDocument.body.dataset.ccxpLiteLandingApplied === "true") {
       onReady();
       return;
     }
-
     if (!isDocumentComplete(targetDocument)) {
       retryFn();
       return;
     }
-
     const loginForm = getLoginForm(targetDocument);
     const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
     const tabNavigation = targetDocument.querySelector(".tab");
@@ -110,24 +103,19 @@
     const serviceLink = findServiceLink(targetDocument);
     const locale = resolveLandingLocale(
       targetDocument,
-      languageLinks as ParentNode | null,
-      loginSourceCell as ParentNode | null,
+      languageLinks as ParentNode | undefined,
+      loginSourceCell as ParentNode | undefined,
       loginForm,
     );
     const strings = getLocalizedStrings(locale);
-
     if (!loginSourceCell) {
       retryFn();
       return;
     }
-
     const loginValidationState = captureLoginValidationState(targetDocument);
-
     ensureThemeDocument(targetDocument, "landing");
-
     const shell = targetDocument.createElement("main");
     shell.className = TOKENS.landingClass;
-
     const topSection = createLandingSection(targetDocument, "ccxp-lite-landing-top");
     const headerSection = createLandingSection(targetDocument, "ccxp-lite-landing-header");
     const brandSection = createLandingSection(
@@ -138,10 +126,8 @@
     const loginSection = createLandingSection(targetDocument, "ccxp-lite-landing-login");
     const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
     const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
-
     const brandLockup = targetDocument.createElement("div");
     brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
-
     brandLockup.append(
       createBrandImage(
         targetDocument,
@@ -158,7 +144,6 @@
       ),
     );
     brandSection.append(brandLockup);
-
     const { mark: repoMark, link: repoLink } = createBrandPartnerLink(targetDocument, {
       markClassName: "ccxp-lite-landing-brand-partner-mark",
       linkClassName: "ccxp-lite-landing-brand-partner-link",
@@ -167,26 +152,21 @@
     });
     brandSection.append(repoMark);
     brandSection.append(repoLink);
-
     if (languageLinks) {
       langSection.append(languageLinks);
     }
-
     repoLink.addEventListener("click", () => {
       window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
     });
-
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";
     loginHeaderLabel.textContent = strings.loginTitle;
     loginSection.append(loginHeaderLabel);
-
     if (loginForm) {
       loginSection.append(loginForm);
     } else if (loginSourceCell) {
       moveChildNodes(loginSourceCell, loginSection);
     }
-
     normalizeLoginFormLayout(loginSection);
     removeLoginResetControls(loginSection);
     forceCaptchaLabelDisplay(loginSection);
@@ -199,17 +179,13 @@
       targetDocument,
       loginSection as ParentNode,
     );
-
     removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? null);
-
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
     collapseLegacyThreeColumnRows(targetDocument.body);
-
     headerSection.append(brandSection);
     if (languageLinks) {
       headerSection.append(langSection);
     }
-
     const utilityHeaderLinks = buildHeaderUtilityLinks(
       targetDocument,
       utilityLinks,
@@ -223,16 +199,13 @@
         headerSection.append(utilityHeaderLinks);
       }
     }
-
     if (utilityLinks) {
       collapseLegacyUtilityRow(utilityLinks);
       removeNode(utilityLinks);
     }
-
     topSection.append(headerSection);
     topSection.append(loginSection);
     shell.append(topSection);
-
     const supportLinks = buildLandingSupportLinks(
       targetDocument,
       serviceLink,
@@ -242,26 +215,21 @@
     if (serviceLink) {
       collapseLegacyServiceRow(serviceLink);
     }
-
     if (cannotLoginLink) {
       collapseLegacyCannotLoginLink(cannotLoginLink);
     }
-
     if (tabNavigation && tabContents.length > 0) {
       const tabsHeader = targetDocument.createElement("div");
       tabsHeader.className = "ccxp-lite-landing-tabs-header";
       tabsHeader.append(tabNavigation);
-
       if (supportLinks) {
         tabsHeader.append(supportLinks);
       }
-
       tabsSection.append(tabsHeader);
       for (const tabContent of tabContents) {
         collapseLegacyThreeColumnRows(tabContent);
         tabsSection.append(tabContent);
       }
-
       wireLandingTabs(targetDocument, tabNavigation as HTMLElement, tabContents, strings);
       shell.append(tabsSection);
     } else if (supportLinks) {
@@ -269,17 +237,14 @@
       supportSection.append(supportLinks);
       shell.append(supportSection);
     }
-
     if (announcementTable) {
       prepareAnnouncementTable(announcementTable, strings);
       noticesSection.append(announcementTable);
       shell.append(noticesSection);
     }
-
     cleanLegacyAttributes(shell);
     cleanLegacyAttributes(targetDocument);
     targetDocument.body.replaceChildren(shell);
-
     // Force a style override on the body as a last resort.
     const targetBody = targetDocument.body;
     targetBody.style.setProperty("background-image", "none", "important");
@@ -289,7 +254,6 @@
     targetBody.dataset.ccxpLiteLandingApplied = "true";
     onReady();
   }
-
   namespace.landing = {
     isSupportedInquirePath,
     isLandingPage,

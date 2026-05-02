@@ -9,50 +9,41 @@
   const STATE_STORAGE_KEY = "ccxp-lite-pe14d-submit-state";
   const INTERCEPTED_ACTIONS: ReadonlySet<string> = new Set(["getLabInsList", "ins"]);
   const RESTORE_TTL_MS = 30_000;
-
   if (runtimeScope[PAGE_FLAG]) {
     return;
   }
-
   runtimeScope[PAGE_FLAG] = true;
-
-  let pendingSubmission: {
-    actionName: string;
-    snapshot: CcxpLitePe14dSnapshot;
-    originalTarget: string;
-    frame: HTMLIFrameElement;
-    cleanedUp: boolean;
-  } | null = null;
-
+  let pendingSubmission:
+    | {
+        actionName: string;
+        snapshot: CcxpLitePe14dSnapshot;
+        originalTarget: string;
+        frame: HTMLIFrameElement;
+        cleanedUp: boolean;
+      }
+    | undefined;
   function isSupportedPage() {
     return /^\/ccxp\/inquire\/pe\/1\/14d\/.+/i.test(globalScope.location.pathname);
   }
-
   if (!isSupportedPage()) {
     return;
   }
-
   restorePageState();
   installWhenReady();
-
   function installWhenReady() {
     const installAttempt = () => {
       if (!isSupportedPage()) {
         return;
       }
-
       const currentToSubmit = runtimeScope.toSubmit;
       if (typeof currentToSubmit !== "function") {
         globalScope.setTimeout(installAttempt, 150, undefined);
         return;
       }
-
       if (currentToSubmit.__ccxpLiteWrapped) {
         return;
       }
-
       const originalToSubmit = currentToSubmit;
-
       const wrappedToSubmit = function wrappedToSubmit(
         this: unknown,
         form: HTMLFormElement,
@@ -62,21 +53,17 @@
         if (!shouldInterceptSubmission(form, actionName ?? "")) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
-
         return submitThroughTransport(originalToSubmit, form, actionName ?? "", actionValue);
       };
-
       wrappedToSubmit.__ccxpLiteWrapped = true;
       wrappedToSubmit.__ccxpLiteOriginal = originalToSubmit;
       runtimeScope.toSubmit = wrappedToSubmit;
-
       globalScope.setTimeout(installAttempt, 500, undefined);
     };
-
     installAttempt();
   }
 
-  function shouldInterceptSubmission(form: HTMLFormElement | null, actionName: string) {
+  function shouldInterceptSubmission(form: HTMLFormElement | undefined, actionName: string) {
     return Boolean(form && INTERCEPTED_ACTIONS.has(actionName ?? ""));
   }
 
@@ -89,12 +76,10 @@
     if (pendingSubmission) {
       return false;
     }
-
     const transportFrame = ensureTransportFrame();
     if (!transportFrame) {
       return originalToSubmit.call(globalScope, form, actionName, actionValue);
     }
-
     const snapshot = captureSnapshot(form, actionName);
     pendingSubmission = {
       actionName,
@@ -104,11 +89,9 @@
       cleanedUp: false,
     };
     const { originalTarget } = pendingSubmission;
-
     persistSnapshot(snapshot);
     transportFrame.addEventListener("load", processTransportResponse, { once: true });
     form.setAttribute("target", TRANSPORT_FRAME_NAME);
-
     try {
       originalToSubmit.call(globalScope, form, actionName, actionValue);
     } catch {
@@ -125,7 +108,6 @@
           if (!form) {
             return;
           }
-
           if (originalTarget) {
             form.setAttribute("target", originalTarget);
           } else {
@@ -136,7 +118,6 @@
         undefined,
       );
     }
-
     return false;
   }
 
@@ -147,7 +128,6 @@
     if (frame instanceof HTMLIFrameElement) {
       return frame;
     }
-
     frame = globalScope.document.createElement("iframe");
     frame.id = TRANSPORT_FRAME_ID;
     frame.name = TRANSPORT_FRAME_NAME;
@@ -162,12 +142,10 @@
       },
       0,
     );
-
     const host = globalScope.document.documentElement || globalScope.document.body;
     if (!host) {
-      return null;
+      return undefined;
     }
-
     host.append(frame);
     return frame;
   }
@@ -208,30 +186,26 @@
     if (!snapshot) {
       return;
     }
-
     clearStoredSnapshot();
-
     const applyRestore = () => {
       globalScope.scrollTo(snapshot.scrollX ?? 0, snapshot.scrollY ?? snapshot.bodyScrollTop ?? 0);
       const focusTarget =
         (snapshot.activeId
           ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
-          : null) ??
+          : undefined) ??
         (snapshot.activeName
           ? globalScope.document.querySelector(
               `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
             )
-          : null);
+          : undefined);
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
     };
-
     if (globalScope.document.readyState === "complete") {
       globalScope.requestAnimationFrame(applyRestore);
       return;
     }
-
     globalScope.addEventListener(
       "load",
       () => {
@@ -245,21 +219,19 @@
     try {
       const rawValue = globalScope.sessionStorage.getItem(STATE_STORAGE_KEY);
       if (!rawValue) {
-        return null;
+        return undefined;
       }
-
       const snapshot = JSON.parse(rawValue) as CcxpLitePe14dSnapshot;
       if (
         !snapshot ||
         snapshot.pathname !== globalScope.location.pathname ||
         Date.now() - (snapshot.createdAt ?? 0) > RESTORE_TTL_MS
       ) {
-        return null;
+        return undefined;
       }
-
       return snapshot;
     } catch {
-      return null;
+      return undefined;
     }
   }
 
@@ -275,13 +247,11 @@
     if (!pendingSubmission || pendingSubmission.cleanedUp) {
       return;
     }
-
     const responseDocument = pendingSubmission.frame.contentDocument;
     if (!responseDocument || !responseDocument.body || !globalScope.document.body) {
       fallbackToHardReload();
       return;
     }
-
     try {
       replaceVisibleBody(responseDocument);
       syncDocumentTitle(responseDocument);
@@ -291,7 +261,6 @@
       fallbackToHardReload();
       return;
     }
-
     cleanupPendingSubmission();
   }
 
@@ -312,12 +281,12 @@
       const focusTarget =
         (snapshot.activeId
           ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
-          : null) ??
+          : undefined) ??
         (snapshot.activeName
           ? globalScope.document.querySelector(
               `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
             )
-          : null);
+          : undefined);
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
@@ -333,12 +302,11 @@
     if (!pendingSubmission) {
       return;
     }
-
     pendingSubmission.cleanedUp = true;
-    pendingSubmission = null;
+    pendingSubmission = undefined;
   }
 
-  function escapeAttributeValue(value: string | null | undefined): string {
+  function escapeAttributeValue(value: string | undefined): string {
     return (value ?? "").replaceAll("\\", "\\\\").replaceAll('"', String.raw`\"`);
   }
 })(globalThis);

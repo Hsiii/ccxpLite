@@ -5,23 +5,19 @@
   if (!shared || !sidebarState || !sidebarFavorites) {
     return;
   }
-
   const { TOKENS, ensureThemeDocument, cleanLegacyAttributes } = shared;
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
   const EXTERNAL_LINK_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"] as const;
-
   function shouldOpenLeafInDestination(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
     if ((linkItem?.target ?? "main").toLowerCase() !== "main") {
       return false;
     }
-
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     if (!resolvedUrl) {
       return false;
     }
-
     return !isExternalLinkOnlyRoute(resolvedUrl);
   }
 
@@ -35,14 +31,12 @@
       openLeafInNewTab(linkItem, navDocument);
       return;
     }
-
     const state = getSidebarUiState(targetDocument);
     const legacyMainFrame = getLegacyMainFrame();
     if (state.sidebarVariant === "classic" && legacyMainFrame) {
       activateLegacyLink(linkItem, navDocument, legacyMainFrame);
       return;
     }
-
     persistSidebarScroll(targetDocument, "category");
     state.activeLeaf = {
       id: linkItem.id,
@@ -61,11 +55,9 @@
     if (!frameDocument || !frameDocument.body || !frameDocument.head) {
       return;
     }
-
     ensureThemeDocument(frameDocument, "main");
     cleanLegacyAttributes(frameDocument);
     frameDocument.body.classList.add(TOKENS.mainClass);
-
     // Force a style override as a last resort.
     frameDocument.body.style.setProperty("background-image", "none", "important");
     frameDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
@@ -76,7 +68,6 @@
     if (!storage) {
       return;
     }
-
     try {
       if (storage.getItem(INITIAL_MAIN_URL_STORAGE_KEY)) {
         return;
@@ -84,12 +75,10 @@
     } catch {
       return;
     }
-
     const currentUrl = readInitialFrameHref();
     if (!currentUrl) {
       return;
     }
-
     try {
       storage.setItem(INITIAL_MAIN_URL_STORAGE_KEY, currentUrl);
     } catch {
@@ -108,7 +97,6 @@
       if (!frame) {
         return "";
       }
-
       const scopeDocument = window.top ? window.top.document : document;
       const src = frame.getAttribute("src") ?? "";
       return src ? new URL(src, scopeDocument.location.href).toString() : "";
@@ -123,17 +111,17 @@
       return (
         scopeDocument.querySelector<HTMLIFrameElement>("frame[name='main']") ??
         scopeDocument.querySelector<HTMLIFrameElement>("frame[name='ccxp-lite-legacy-main']") ??
-        null
+        undefined
       );
     } catch {
-      return null;
+      return undefined;
     }
   }
 
   function activateLegacyLink(
     linkItem: CcxpLiteSidebarLinkItem,
     navDocument: Document,
-    destinationFrame: HTMLIFrameElement | null = null,
+    destinationFrame?: HTMLIFrameElement,
   ) {
     if (linkItem.clickLinkArgs) {
       const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
@@ -141,7 +129,6 @@
       helperUrl.searchParams.set("ACIXSTORE", readAcixstore(navDocument.location.href));
       helperUrl.searchParams.set("name", linkItem.clickLinkArgs.name);
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
-
       if (helperFrame && helperFrame.contentWindow) {
         const helperWindow = helperFrame.contentWindow;
         if (helperWindow) {
@@ -151,32 +138,26 @@
         helperFrame.setAttribute("src", helperUrl.toString());
       }
     }
-
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     const normalizedTarget = (linkItem.target ?? "main").toLowerCase();
     const resolvedDestinationFrame =
       normalizedTarget === "main" ? (destinationFrame ?? getLegacyMainFrame()) : destinationFrame;
-
     if (normalizedTarget === "_blank") {
       window.open(resolvedUrl, "_blank", "noopener");
       return;
     }
-
     if (normalizedTarget === "_top") {
       if (window.top) {
         window.top.location.href = resolvedUrl;
         return;
       }
-
       globalThis.location.href = resolvedUrl;
       return;
     }
-
     if (normalizedTarget === "main" && resolvedDestinationFrame) {
       resolvedDestinationFrame.src = resolvedUrl;
       return;
     }
-
     globalThis.location.href = resolvedUrl;
   }
 
@@ -188,11 +169,9 @@
     if (normalizedTarget === "_blank") {
       return true;
     }
-
     if (!linkItem || typeof linkItem === "string" || !navDocument) {
       return false;
     }
-
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     return isExternalLinkOnlyRoute(resolvedUrl);
   }
@@ -214,7 +193,6 @@
     const url = new URL(locationHref);
     return url.searchParams.get("ACIXSTORE") ?? "";
   }
-
   namespace.sidebarRuntime = {
     DESTINATION_LOAD_TIMEOUT_MS,
     shouldOpenLeafInDestination,

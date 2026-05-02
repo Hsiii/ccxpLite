@@ -5,7 +5,6 @@
   if (!shared || !sidebarFavorites) {
     return;
   }
-
   const { STRINGS, SIDEBAR_CATEGORIES } = shared;
   const {
     collectFavoriteLinks,
@@ -15,7 +14,6 @@
     createLinkId,
     createLegacyLinkId,
   } = sidebarFavorites;
-
   function buildSidebarModel(
     root: CcxpLiteLegacySidebarFolderNode,
     navDocument: Document,
@@ -23,7 +21,7 @@
   ): CcxpLiteSidebarModel {
     const normalizedItems = (root.children ?? [])
       .map((entry, index) => normalizeRootEntry(entry, index, navDocument))
-      .filter((item): item is CcxpLiteSidebarTreeNode => item !== null);
+      .filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
     const favoriteIds = getFavoriteIds();
     return buildCategorizedSidebarItems(normalizedItems, favoriteIds, strings);
   }
@@ -37,14 +35,12 @@
       SIDEBAR_CATEGORIES.map((category) => [category.id, [] as CcxpLiteSidebarTreeNode[]]),
     );
     const favoriteLinks = items.flatMap((item) => collectFavoriteLinks(item, favoriteIds));
-
     for (const item of items) {
       const category = findCategoryForItem(item);
       if (category) {
         buckets.get(category.id)?.push(item);
       }
     }
-
     return {
       favorites: {
         id: "category-favorites",
@@ -55,12 +51,11 @@
         emptyMessage: strings.sidebarFavoritesEmpty || "Press star at any function to save it here",
         kind: "category",
       },
-      categories: SIDEBAR_CATEGORIES.map((category): CcxpLiteSidebarCategoryNode | null => {
+      categories: SIDEBAR_CATEGORIES.map((category): CcxpLiteSidebarCategoryNode | undefined => {
         const categoryItems = buckets.get(category.id) ?? [];
         if (categoryItems.length === 0) {
-          return null;
+          return undefined;
         }
-
         const directLinkItems = categoryItems
           .filter((item) => item.kind === "link")
           .map((item) => item.linkItem);
@@ -78,7 +73,6 @@
                 } as CcxpLiteSidebarSectionNode,
                 ...groupedSections,
               ];
-
         return {
           id: `category-${category.id}`,
           label: strings[category.labelKey] ?? category.fallbackLabel ?? category.id,
@@ -89,13 +83,12 @@
           emptyMessage: strings.emptyGroup,
           kind: "category",
         };
-      }).filter((item): item is CcxpLiteSidebarCategoryNode => item !== null),
+      }).filter((item): item is CcxpLiteSidebarCategoryNode => item !== undefined),
     };
   }
 
   function findCategoryForItem(item: CcxpLiteSidebarTreeNode) {
     const candidateLabels = collectSidebarLabels(item);
-
     return (
       SIDEBAR_CATEGORIES.find((category) =>
         category.itemLabels.some((label: string) => {
@@ -104,11 +97,11 @@
             isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel),
           );
         }),
-      ) ?? null
+      ) ?? undefined
     );
   }
 
-  function normalizeSidebarLabel(label: string | null | undefined): string {
+  function normalizeSidebarLabel(label: string | undefined): string {
     return (label ?? "")
       .replaceAll(/[()\uFF08\uFF09]/g, " ")
       .replaceAll(/[&,]/g, " ")
@@ -121,28 +114,23 @@
     if (!item) {
       return [];
     }
-
     const labels: string[] = [];
     const itemLabel = normalizeSidebarLabel(item.label);
     if (itemLabel) {
       labels.push(itemLabel);
     }
-
     if (item.kind === "link") {
       return labels;
     }
-
     for (const linkItem of item.directLinks ?? []) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel) {
         labels.push(linkLabel);
       }
     }
-
     for (const section of item.sections ?? []) {
       labels.push(...collectSidebarLabels(section));
     }
-
     return labels;
   }
 
@@ -150,7 +138,6 @@
     if (!candidateLabel || !normalizedCategoryLabel) {
       return false;
     }
-
     return (
       normalizedCategoryLabel === candidateLabel ||
       candidateLabel.includes(normalizedCategoryLabel) ||
@@ -162,20 +149,17 @@
     entryNode: CcxpLiteLegacySidebarNode,
     index: number,
     navDocument: Document,
-  ): CcxpLiteSidebarTreeNode | null {
+  ): CcxpLiteSidebarTreeNode | undefined {
     if (!entryNode) {
-      return null;
+      return undefined;
     }
-
     if ("children" in entryNode && entryNode.children) {
       return normalizeTopLevelGroup(entryNode, index, navDocument);
     }
-
     const linkItem = normalizeLinkItem(entryNode, navDocument, []);
     if (!linkItem) {
-      return null;
+      return undefined;
     }
-
     return {
       id: `link-${index}`,
       label: linkItem.label,
@@ -197,13 +181,11 @@
         directLinks.push(...collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments));
         continue;
       }
-
       const linkItem = normalizeLinkItem(childNode, navDocument, groupPathSegments);
       if (linkItem) {
         directLinks.push(linkItem);
       }
     }
-
     return {
       id: `group-${index}`,
       label: groupLabel,
@@ -219,7 +201,6 @@
     parentPathSegments: readonly string[],
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-
     for (const childNode of folderNode.children ?? []) {
       if (childNode && "children" in childNode) {
         directLinks.push(
@@ -227,35 +208,30 @@
         );
         continue;
       }
-
       const linkItem = normalizeLinkItem(childNode, navDocument, parentPathSegments);
       if (linkItem) {
         directLinks.push(linkItem);
       }
     }
-
     return directLinks;
   }
 
   function normalizeLinkItem(
-    itemNode: CcxpLiteLegacySidebarDocNode | null | undefined,
+    itemNode: CcxpLiteLegacySidebarDocNode | undefined,
     navDocument: Document,
     parentPathSegments: readonly string[],
-  ): CcxpLiteSidebarLinkItem | null {
+  ): CcxpLiteSidebarLinkItem | undefined {
     if (!itemNode || typeof itemNode.link !== "string") {
-      return null;
+      return undefined;
     }
-
     const parsedLink = parseLegacyLink(itemNode.link);
     if (!parsedLink.href) {
-      return null;
+      return undefined;
     }
-
     const rawHtml = itemNode.desc ?? "";
     const label = toPlainText(rawHtml, navDocument);
     const clickLinkArgs = parseClickLinkArgs(rawHtml);
     const pathSegments = buildFavoritePathSegments(parentPathSegments, label);
-
     return {
       id: createLinkId({
         label,
@@ -278,22 +254,28 @@
     };
   }
 
-  function parseLegacyLink(rawLink: string): { href: string; target: string } {
+  function parseLegacyLink(rawLink: string): {
+    href: string;
+    target: string;
+  } {
     const hrefMatch = rawLink.match(/^'([^']+)'/);
     const targetMatch = rawLink.match(/target="?([^\s"]+)"?/i);
-
     return {
       href: hrefMatch ? hrefMatch[1] : "",
       target: targetMatch ? targetMatch[1] : "main",
     };
   }
 
-  function parseClickLinkArgs(rawHtml: string): { name: string; url: string } | null {
+  function parseClickLinkArgs(rawHtml: string):
+    | {
+        name: string;
+        url: string;
+      }
+    | undefined {
     const match = rawHtml.match(/ClickLink\("([^"]+)","([^"]+)"\)/);
     if (!match) {
-      return null;
+      return undefined;
     }
-
     return {
       name: match[1],
       url: match[2],
@@ -304,12 +286,10 @@
     if (!rawHtml) {
       return "";
     }
-
     const extractedVisibleText = extractLegacyVisibleText(rawHtml);
     if (extractedVisibleText) {
       return extractedVisibleText;
     }
-
     const scratch = navDocument.createElement("div");
     scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
       .replaceAll(/onclick='[^']*'/gi, "")
@@ -338,7 +318,6 @@
     if (!query) {
       return linkItems;
     }
-
     return linkItems.filter((linkItem) => isSearchMatch(linkItem.label, query));
   }
 
@@ -349,32 +328,27 @@
     if (!query) {
       return categories;
     }
-
     return categories
       .map((category) => filterCategoryTree(category, query))
-      .filter((item): item is CcxpLiteSidebarCategoryNode => item !== null);
+      .filter((item): item is CcxpLiteSidebarCategoryNode => item !== undefined);
   }
 
-  function filterCategoryTree(category: CcxpLiteSidebarCategoryNode | null, query: string) {
+  function filterCategoryTree(category: CcxpLiteSidebarCategoryNode | undefined, query: string) {
     if (!category) {
-      return null;
+      return undefined;
     }
-
     if (isSearchMatch(category.label, query)) {
       return category;
     }
-
     const directLinks = (category.directLinks ?? []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
     const sections = (category.sections ?? [])
       .map((section) => filterSectionTree(section, query))
-      .filter((node): node is CcxpLiteSidebarGroup => node !== null);
-
+      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
     if (directLinks.length === 0 && sections.length === 0) {
-      return null;
+      return undefined;
     }
-
     return {
       ...category,
       directLinks,
@@ -383,28 +357,24 @@
   }
 
   function filterSectionTree(
-    section: CcxpLiteSidebarGroup | null,
+    section: CcxpLiteSidebarGroup | undefined,
     query: string,
-  ): CcxpLiteSidebarGroup | null {
+  ): CcxpLiteSidebarGroup | undefined {
     if (!section) {
-      return null;
+      return undefined;
     }
-
     if (isSearchMatch(section.label, query)) {
       return section;
     }
-
     const directLinks = (section.directLinks ?? []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
     const sections = (section.sections ?? [])
       .map((childSection) => filterSectionTree(childSection, query))
-      .filter((node): node is CcxpLiteSidebarGroup => node !== null);
-
+      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
     if (directLinks.length === 0 && sections.length === 0) {
-      return null;
+      return undefined;
     }
-
     return {
       ...section,
       directLinks,
@@ -412,23 +382,21 @@
     };
   }
 
-  function isSearchMatch(text: string | null | undefined, query: string) {
+  function isSearchMatch(text: string | undefined, query: string) {
     return normalizeSearchText(text).includes(normalizeSearchText(query));
   }
 
-  function normalizeSearchText(text: string | null | undefined) {
+  function normalizeSearchText(text: string | undefined) {
     return (text ?? "").toLowerCase().replaceAll(/\s+/g, " ").trim();
   }
 
-  function countLinksInTree(item: CcxpLiteSidebarTreeNode | null): number {
+  function countLinksInTree(item: CcxpLiteSidebarTreeNode | undefined): number {
     if (!item) {
       return 0;
     }
-
     if (item.kind === "link") {
       return 1;
     }
-
     return (
       (item.directLinks ?? []).length +
       (item.sections ?? []).reduce(
@@ -438,18 +406,16 @@
     );
   }
 
-  function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | null {
+  function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | undefined {
     const statements = [...navDocument.scripts]
       .map((script) => script.textContent ?? "")
       .join("\n")
       .split(";")
       .map((statement) => statement.trim())
       .filter(Boolean);
-
     const nodes = new Map<string, CcxpLiteLegacySidebarFolderNode>();
     const root: CcxpLiteLegacySidebarFolderNode = { desc: "", children: [] };
     nodes.set("foldersTree", root);
-
     const stringPattern = String.raw`"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'`;
     const rootRegex = new RegExp(
       String.raw`^foldersTree\s*=\s*gFld\s*\(\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)$`,
@@ -460,14 +426,12 @@
     const docRegex = new RegExp(
       String.raw`^insDoc\s*\(\s*(\w+)\s*,\s*gLnk\s*\(\s*([^,]+?)\s*,\s*(${stringPattern})\s*,\s*(${stringPattern})\s*\)\s*\)$`,
     );
-
     for (const statement of statements) {
       const rootMatch = statement.match(rootRegex);
       if (rootMatch) {
         root.desc = parseJsStringLiteral(rootMatch[1]);
         continue;
       }
-
       const folderMatch = statement.match(folderRegex);
       if (folderMatch) {
         const [, variableName, parentName, descLiteral] = folderMatch;
@@ -479,7 +443,6 @@
         }
         continue;
       }
-
       const docMatch = statement.match(docRegex);
       if (docMatch) {
         const [, parentName, targetToken, descLiteral, hrefLiteral] = docMatch;
@@ -487,25 +450,21 @@
         if (!parentNode) {
           continue;
         }
-
         parentNode.children.push({
           desc: parseJsStringLiteral(descLiteral),
           link: buildLegacyLinkString(targetToken.trim(), parseJsStringLiteral(hrefLiteral)),
         });
       }
     }
-
-    return root.children.length > 0 ? root : null;
+    return root.children.length > 0 ? root : undefined;
   }
 
   function parseJsStringLiteral(literal: string): string {
     const quote = literal[0];
     const inner = literal.slice(1, -1);
-
     if (quote === '"') {
       return JSON.parse(literal) as string;
     }
-
     return inner
       .replaceAll("\\\\", "\\")
       .replaceAll(String.raw`\'`, "'")
@@ -518,7 +477,6 @@
   function buildLegacyLinkString(targetToken: string, href: string) {
     return `'${href}' target="${targetToken === "1" ? "_blank" : "main"}"`;
   }
-
   namespace.sidebarData = {
     buildSidebarModel,
     parseSidebarTree,

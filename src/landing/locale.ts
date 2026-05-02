@@ -2,7 +2,6 @@
   const runtimeScope = globalScope;
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
-
   function isSupportedInquirePath(targetDocument: Document) {
     const pathName = (
       (targetDocument.location && targetDocument.location.pathname) ??
@@ -15,7 +14,6 @@
     if (!isSupportedInquirePath(targetDocument)) {
       return false;
     }
-
     return Boolean(getLoginForm(targetDocument) ?? hasLandingTabContent(targetDocument));
   }
 
@@ -25,9 +23,9 @@
 
   function resolveLandingLocale(
     targetDocument: Document,
-    languageLinks: ParentNode | null,
-    loginSourceCell: ParentNode | null,
-    loginForm: HTMLFormElement | null,
+    languageLinks: ParentNode | undefined,
+    loginSourceCell: ParentNode | undefined,
+    loginForm: HTMLFormElement | undefined,
   ): CcxpLiteLocale {
     const htmlLang = (
       (targetDocument.documentElement && targetDocument.documentElement.lang) ??
@@ -36,11 +34,9 @@
     if (htmlLang.startsWith("en")) {
       return "en";
     }
-
     if (htmlLang.startsWith("zh")) {
       return "zh";
     }
-
     const search = (
       (targetDocument.location && targetDocument.location.search) ??
       ""
@@ -55,7 +51,6 @@
         return "zh";
       }
     }
-
     if (languageLinks) {
       const currentLangNode = languageLinks.querySelector(
         ".active, .current, .selected, [aria-current='page'], strong, b",
@@ -70,7 +65,6 @@
         }
       }
     }
-
     const formInputTextSample = loginForm
       ? [...loginForm.querySelectorAll("input, select, textarea, button")]
           .map((node) =>
@@ -84,7 +78,6 @@
           )
           .join(" ")
       : "";
-
     const loginTextSample = [
       loginForm && loginForm.textContent,
       loginSourceCell && loginSourceCell.textContent,
@@ -93,7 +86,6 @@
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
-
     const localePairs = [
       {
         zh: ["\u5E33\u865F", "\u5B78\u865F"],
@@ -102,7 +94,6 @@
       { zh: ["\u5BC6\u78BC"], en: ["password"] },
       { zh: ["\u9A57\u8B49\u78BC"], en: ["captcha", "verification code", "security code"] },
     ];
-
     let zhHits = 0;
     let enHits = 0;
     for (const pair of localePairs) {
@@ -113,22 +104,18 @@
         enHits++;
       }
     }
-
     if (zhHits > enHits) {
       return "zh";
     }
-
     if (enHits > zhHits) {
       return "en";
     }
-
     const sampleText = ((loginSourceCell && loginSourceCell.textContent) ?? "").trim();
     return /[\u3400-\u9FFF]/.test(sampleText) ? "zh" : "en";
   }
 
-  function getLoginForm(targetDocument: Document): HTMLFormElement | null {
+  function getLoginForm(targetDocument: Document): HTMLFormElement | undefined {
     const forms = [...targetDocument.querySelectorAll("form")];
-
     const candidates = forms.filter((form) => {
       const action = (form.getAttribute("action") ?? "").toLowerCase();
       const hasKnownAction =
@@ -144,16 +131,13 @@
         Boolean(form.querySelector("input[name='passwd'], input[name='passwd2']"));
       return hasKnownAction || hasCredentials || (hasPasswordField && hasAccountLikeField);
     });
-
     if (candidates.length === 0) {
-      return null;
+      return undefined;
     }
-
     const visibleCandidates = candidates.filter((form) => isLikelyVisibleForm(form));
     if (visibleCandidates.length > 0) {
       return visibleCandidates[0];
     }
-
     return candidates[0];
   }
 
@@ -161,30 +145,24 @@
     if (!formNode) {
       return false;
     }
-
     if (formNode.hidden) {
       return false;
     }
-
-    let node: HTMLElement | null = formNode;
+    let node: HTMLElement | undefined = formNode ?? undefined;
     while (node && node !== document.body) {
       if (node.nodeType !== Node.ELEMENT_NODE) {
-        node = node.parentElement;
+        node = node.parentElement ?? undefined;
         continue;
       }
-
       const style = globalThis.getComputedStyle(node);
       if (style.display === "none" || style.visibility === "hidden") {
         return false;
       }
-
-      node = node.parentElement;
+      node = node.parentElement ?? undefined;
     }
-
     const rect = formNode.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0;
   }
-
   namespace.landingLocale = {
     isSupportedInquirePath,
     isLandingPage,

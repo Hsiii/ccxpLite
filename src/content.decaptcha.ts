@@ -6,15 +6,12 @@ function toUint8Array(imageBytes: unknown) {
   if (imageBytes instanceof Uint8Array) {
     return imageBytes;
   }
-
   if (imageBytes instanceof ArrayBuffer) {
     return new Uint8Array(imageBytes);
   }
-
   if (ArrayBuffer.isView(imageBytes)) {
     return new Uint8Array(imageBytes.buffer, imageBytes.byteOffset, imageBytes.byteLength);
   }
-
   throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
 }
 
@@ -52,12 +49,10 @@ function createTensor(
 function tensorGet(tensor: CcxpLitePreparedTensor, indices: readonly number[]) {
   let flatIndex = 0;
   let stride = 1;
-
   for (let axis = tensor.shape.length - 1; axis >= 0; axis--) {
     flatIndex += indices[axis] * stride;
     stride *= tensor.shape[axis];
   }
-
   return tensor.data[flatIndex];
 }
 
@@ -68,7 +63,6 @@ function linear(
 ) {
   const [outFeatures, inFeatures] = weight.shape;
   const out = new Float32Array(outFeatures);
-
   for (let outIndex = 0; outIndex < outFeatures; outIndex++) {
     const base = outIndex * inFeatures;
     let acc = bias.data[outIndex];
@@ -77,21 +71,18 @@ function linear(
     }
     out[outIndex] = acc;
   }
-
   return out;
 }
 
 function argmax(values: Float32Array | readonly number[]) {
   let bestIndex = 0;
   let bestValue = values[0];
-
   for (let index = 1; index < values.length; index++) {
     if (values[index] > bestValue) {
       bestIndex = index;
       bestValue = values[index];
     }
   }
-
   return bestIndex;
 }
 
@@ -101,7 +92,6 @@ function getHeadInputVectors(
 ): readonly Float32Array[] {
   const channels = pooledTensor.shape[0];
   const vectors: Float32Array[] = [];
-
   for (let digitIndex = 0; digitIndex < digits; digitIndex++) {
     const vector = new Float32Array(channels);
     for (let channel = 0; channel < channels; channel++) {
@@ -109,10 +99,8 @@ function getHeadInputVectors(
     }
     vectors.push(vector);
   }
-
   return vectors;
 }
-
 (function bootstrapCcxpLiteDecaptcha(
   globalScope: typeof globalThis,
   factory: (globalScope: typeof globalThis) => {
@@ -120,11 +108,12 @@ function getHeadInputVectors(
   },
 ) {
   const api = factory(globalScope as Window & typeof globalThis);
-  const runtimeScope = globalScope as typeof globalThis & { CCXP_LITE?: CcxpLiteNamespace };
+  const runtimeScope = globalScope as typeof globalThis & {
+    CCXP_LITE?: CcxpLiteNamespace;
+  };
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
   namespace.decaptcha = api;
-
   // eslint-disable-next-line import-x/no-commonjs
   if (typeof module === "object" && module.exports) {
     // eslint-disable-next-line import-x/no-commonjs
@@ -139,21 +128,17 @@ function getHeadInputVectors(
   };
   const DIGITS = 6;
   const EPS = 1e-5;
-
   function getNamespace() {
     runtimeScope.CCXP_LITE ??= {};
-
     return runtimeScope.CCXP_LITE as CcxpLiteNamespace;
   }
 
   function getPreparedModel(): CcxpLitePreparedModel {
     const namespace = getNamespace();
     const model = namespace.decaptchaModel;
-
     if (!model) {
       throw new Error("Decaptcha model is not available.");
     }
-
     if (!model.preparedTensors) {
       const preparedTensors: Record<string, CcxpLitePreparedTensor> = {};
       for (const [name, tensor] of Object.entries(model.tensors ?? {})) {
@@ -168,7 +153,6 @@ function getHeadInputVectors(
       }
       model.preparedTensors = preparedTensors;
     }
-
     return {
       digits: model.digits ?? DIGITS,
       eps: model.eps ?? EPS,
@@ -183,11 +167,9 @@ function getHeadInputVectors(
   async function decodeImageData(imageBytes: unknown) {
     const bytes = toUint8Array(imageBytes);
     const blobBytes = new Uint8Array(bytes);
-
     if (typeof Blob === "undefined") {
       throw new TypeError("Blob is not available for captcha decoding.");
     }
-
     if (typeof createImageBitmap === "function" && typeof OffscreenCanvas !== "undefined") {
       const bitmap = await createImageBitmap(new Blob([blobBytes]));
       try {
@@ -196,7 +178,6 @@ function getHeadInputVectors(
         if (!context) {
           throw new Error("Failed to create 2d canvas context.");
         }
-
         context.drawImage(bitmap, 0, 0);
         return {
           width: bitmap.width,
@@ -209,11 +190,9 @@ function getHeadInputVectors(
         }
       }
     }
-
     if (!runtimeScope.document) {
       throw new Error("Document is not available for captcha decoding.");
     }
-
     const objectUrl = URL.createObjectURL(new Blob([blobBytes]));
     try {
       const image = await loadImage(objectUrl);
@@ -224,7 +203,6 @@ function getHeadInputVectors(
       if (!context) {
         throw new Error("Failed to create 2d canvas context.");
       }
-
       context.drawImage(image, 0, 0);
       return {
         width: canvas.width,
@@ -240,18 +218,17 @@ function getHeadInputVectors(
     width: number,
     height: number,
     rgba: Uint8ClampedArray,
-    options: { cropRight?: number } = {},
+    options: {
+      cropRight?: number;
+    } = {},
   ) {
     const cropRight = Math.max(0, Math.trunc(options.cropRight ?? 0));
     const usableWidth = width - cropRight;
-
     if (usableWidth <= 0) {
       throw new Error("Captcha crop removes the entire image width.");
     }
-
     const tensorData = new Float32Array(3 * height * usableWidth);
     let writeIndex = 0;
-
     for (let channel = 0; channel < 3; channel++) {
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < usableWidth; x++) {
@@ -261,15 +238,18 @@ function getHeadInputVectors(
         }
       }
     }
-
     return createTensor([3, height, usableWidth], tensorData);
   }
 
   function conv2d(
     inputTensor: CcxpLitePreparedTensor,
     weight: CcxpLitePreparedTensor,
-    bias: CcxpLitePreparedTensor | null = null,
-    options: { stride?: number; padding?: number; groups?: number } = {},
+    bias?: CcxpLitePreparedTensor,
+    options: {
+      stride?: number;
+      padding?: number;
+      groups?: number;
+    } = {},
   ) {
     const stride = options.stride ?? 1;
     const padding = options.padding ?? 0;
@@ -280,46 +260,38 @@ function getHeadInputVectors(
     const outWidth = Math.floor((inWidth + 2 * padding - kernelWidth) / stride) + 1;
     const out = new Float32Array(outChannels * outHeight * outWidth);
     const outChannelsPerGroup = outChannels / groups;
-
     let outIndex = 0;
     for (let outChannel = 0; outChannel < outChannels; outChannel++) {
       const groupIndex = Math.floor(outChannel / outChannelsPerGroup);
       const inputChannelOffset = groupIndex * channelsPerGroup;
-
       for (let outY = 0; outY < outHeight; outY++) {
         for (let outX = 0; outX < outWidth; outX++) {
           let acc = bias ? bias.data[outChannel] : 0;
           const inY0 = outY * stride - padding;
           const inX0 = outX * stride - padding;
-
           for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex++) {
             const inputChannel = inputChannelOffset + channelIndex;
-
             for (let kernelY = 0; kernelY < kernelHeight; kernelY++) {
               const inY = inY0 + kernelY;
               if (inY < 0 || inY >= inHeight) {
                 continue;
               }
-
               for (let kernelX = 0; kernelX < kernelWidth; kernelX++) {
                 const inX = inX0 + kernelX;
                 if (inX < 0 || inX >= inWidth) {
                   continue;
                 }
-
                 acc +=
                   tensorGet(inputTensor, [inputChannel, inY, inX]) *
                   tensorGet(weight, [outChannel, channelIndex, kernelY, kernelX]);
               }
             }
           }
-
           out[outIndex] = acc;
           outIndex++;
         }
       }
     }
-
     return createTensor([outChannels, outHeight, outWidth], out);
   }
 
@@ -334,20 +306,17 @@ function getHeadInputVectors(
     const [channels, height, width] = inputTensor.shape;
     const out = new Float32Array(inputTensor.data.length);
     let index = 0;
-
     for (let channel = 0; channel < channels; channel++) {
       const gain = gamma.data[channel];
       const offset = beta.data[channel];
       const mean = runningMean.data[channel];
       const variance = runningVar.data[channel];
       const invStd = 1 / Math.sqrt(variance + eps);
-
       for (let pixel = 0; pixel < height * width; pixel++) {
         out[index] = (inputTensor.data[index] - mean) * invStd * gain + offset;
         index++;
       }
     }
-
     return createTensor(inputTensor.shape, out);
   }
 
@@ -367,16 +336,13 @@ function getHeadInputVectors(
     const [channels, inHeight, inWidth] = inputTensor.shape;
     const out = new Float32Array(channels * outHeight * outWidth);
     let outIndex = 0;
-
     for (let channel = 0; channel < channels; channel++) {
       for (let pooledY = 0; pooledY < outHeight; pooledY++) {
         const y0 = Math.floor((pooledY * inHeight) / outHeight);
         const y1 = Math.ceil(((pooledY + 1) * inHeight) / outHeight);
-
         for (let pooledX = 0; pooledX < outWidth; pooledX++) {
           const x0 = Math.floor((pooledX * inWidth) / outWidth);
           const x1 = Math.ceil(((pooledX + 1) * inWidth) / outWidth);
-
           let total = 0;
           let count = 0;
           for (let inY = y0; inY < y1; inY++) {
@@ -385,13 +351,11 @@ function getHeadInputVectors(
               count++;
             }
           }
-
           out[outIndex] = total / Math.max(count, 1);
           outIndex++;
         }
       }
     }
-
     return createTensor([channels, outHeight, outWidth], out);
   }
 
@@ -399,11 +363,13 @@ function getHeadInputVectors(
     inputTensor: CcxpLitePreparedTensor,
     tensors: Readonly<Record<string, CcxpLitePreparedTensor>>,
     prefix: string,
-    options: { stride?: number } = {},
+    options: {
+      stride?: number;
+    } = {},
   ) {
     const stride = options.stride ?? 1;
     const inputChannels = inputTensor.shape[0];
-    let output = conv2d(inputTensor, tensors[`${prefix}.0.weight`], null, {
+    let output = conv2d(inputTensor, tensors[`${prefix}.0.weight`], undefined, {
       stride,
       padding: 1,
       groups: inputChannels,
@@ -416,7 +382,7 @@ function getHeadInputVectors(
       tensors[`${prefix}.1.running_var`],
     );
     output = relu(output);
-    output = conv2d(output, tensors[`${prefix}.3.weight`], null, {
+    output = conv2d(output, tensors[`${prefix}.3.weight`], undefined, {
       stride: 1,
       padding: 0,
       groups: 1,
@@ -434,8 +400,7 @@ function getHeadInputVectors(
   function predictDigitsFromTensor(imageTensor: CcxpLitePreparedTensor) {
     const model = getPreparedModel();
     const { tensors } = model;
-
-    let features = conv2d(imageTensor, tensors["features.0.weight"], null, {
+    let features = conv2d(imageTensor, tensors["features.0.weight"], undefined, {
       stride: 2,
       padding: 1,
       groups: 1,
@@ -449,14 +414,11 @@ function getHeadInputVectors(
       model.eps,
     );
     features = relu(features);
-
     features = applyDepthwiseSeparableBlock(features, tensors, "features.3.block", { stride: 1 });
     features = applyDepthwiseSeparableBlock(features, tensors, "features.4.block", { stride: 2 });
     features = applyDepthwiseSeparableBlock(features, tensors, "features.5.block", { stride: 1 });
-
     const pooled = adaptiveAvgPool2d(features, 1, model.digits);
     const headInputs = getHeadInputVectors(pooled, model.digits);
-
     return headInputs
       .map((vector, digitIndex) => {
         const logits = linear(
@@ -479,7 +441,6 @@ function getHeadInputVectors(
     );
     return predictDigitsFromTensor(tensor);
   }
-
   return {
     predictDigits,
     __test: {

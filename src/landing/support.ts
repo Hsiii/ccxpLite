@@ -5,38 +5,34 @@
   if (!shared) {
     return;
   }
-
   const { getLocalizedStrings, removeNode, cleanLegacyAttributes } = shared;
-
   function findLoginSourceCell(
     targetDocument: Document,
-    loginForm: Element | null,
-  ): HTMLElement | null {
+    loginForm: Element | undefined,
+  ): HTMLElement | undefined {
     if (loginForm) {
-      return loginForm.closest<HTMLElement>("td, table, section, article");
+      return loginForm.closest<HTMLElement>("td, table, section, article") ?? undefined;
     }
-
     return (
       [...targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article")].find(
         (cell) => cell.querySelector("form") !== null,
-      ) ?? null
+      ) ?? undefined
     );
   }
 
-  function findCalendarTable(targetNode: ParentNode): HTMLTableElement | null {
+  function findCalendarTable(targetNode: ParentNode): HTMLTableElement | undefined {
     const calendarFrame = targetNode.querySelector<HTMLIFrameElement>(
       "iframe[src*='calendar/cal.php']",
     );
     if (!calendarFrame) {
-      return null;
+      return undefined;
     }
-
     return (
       [...targetNode.querySelectorAll<HTMLTableElement>("table")].find(
         (table) =>
           table.contains(calendarFrame) &&
           ["\u6708\u66C6", "Calendar"].some((text) => table.textContent.includes(text)),
-      ) ?? null
+      ) ?? undefined
     );
   }
 
@@ -47,49 +43,39 @@
         if (widthText !== "35%" && widthText !== "35") {
           return false;
         }
-
         return Boolean(cell.querySelector(".board_item, .board_subject"));
       },
     );
-
     const panelTables = rightPanel
       ? [...rightPanel.querySelectorAll<HTMLTableElement>("table")]
       : [];
     const fallbackTables = [...targetDocument.querySelectorAll<HTMLTableElement>("table")];
-
     const isAnnouncementTable = (table: HTMLTableElement) => {
       const rows = [...(table.rows ?? [])];
       if (rows.length === 0) {
         return false;
       }
-
       const headingCell = rows
         .flatMap((row) => [...(row.cells ?? [])])
         .find((cell) => cell.classList.contains("board_item"));
-
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
       const hasNoticeHeading =
         headingText.includes("\u7CFB\u7D71\u516C\u544A") || headingText.includes("system notice");
-
       if (!hasNoticeHeading) {
         return false;
       }
-
       const boardHeaderRow = rows.find((row) => {
         const cells = [...(row.cells ?? [])];
         return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
       });
-
       if (!boardHeaderRow) {
         return false;
       }
-
       const dateRows = rows.filter((row) => {
         const cells = [...(row.cells ?? [])];
         if (cells.length < 2) {
           return false;
         }
-
         const firstCell = cells[0];
         const secondCell = cells[1];
         const firstClass = firstCell.classList;
@@ -97,93 +83,75 @@
         const isBoardPair =
           (firstClass.contains("board_0") && secondClass.contains("board_0")) ||
           (firstClass.contains("board_1") && secondClass.contains("board_1"));
-
         if (!isBoardPair) {
           return false;
         }
-
         const rawDate = (firstCell.textContent ?? "").replaceAll(/\s+/g, "").trim();
         if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
           return false;
         }
-
         const topicText = (secondCell.textContent ?? "").replaceAll(/\s+/g, " ").trim();
         return topicText.length > 8;
       });
-
       return dateRows.length >= 3;
     };
-
     const preferred = panelTables.find((table) => {
       if (table.closest(".tabcontent")) {
         return false;
       }
-
       return isAnnouncementTable(table);
     });
-
     if (preferred) {
       return preferred;
     }
-
-    return fallbackTables.find((table) => isAnnouncementTable(table)) ?? null;
+    return fallbackTables.find((table) => isAnnouncementTable(table)) ?? undefined;
   }
 
-  function normalizeAnnouncementHeading(rawText: string | null | undefined) {
+  function normalizeAnnouncementHeading(rawText: string | undefined) {
     return (rawText ?? "").replaceAll(/\s+/g, " ").trim().toLowerCase();
   }
 
   function prepareAnnouncementTable(
-    table: HTMLTableElement | null,
+    table: HTMLTableElement | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!table || table.dataset.ccxpLiteAnnouncementPrepared === "true") {
       return;
     }
-
     table.classList.add("ccxp-lite-announcement-table");
-
     const rows = [...(table.rows ?? [])];
     for (const row of rows) {
       const cells = [...(row.cells ?? [])];
       if (cells.length === 0) {
         continue;
       }
-
       const hasOnlyDecorativeCells = cells.every((cell) => {
         const hasBgColor = (cell.getAttribute("bgcolor") ?? "").trim() !== "";
         const text = (cell.textContent ?? "").replaceAll(/\s+/g, "").trim();
         return hasBgColor && text === "";
       });
-
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
         const text = (cell.textContent ?? "").replaceAll(/\s+/g, "").trim();
         if (text !== "") {
           return false;
         }
-
         return !cell.querySelector("img, iframe, table, form, input, button, a, ul, ol, p");
       });
-
       const hasLegacySpacerHeight =
         (row.getAttribute("height") ?? "").trim() !== "" ||
         cells.some((cell) => (cell.getAttribute("height") ?? "").trim() !== "");
-
       if (hasOnlyDecorativeCells) {
         removeNode(row);
         continue;
       }
-
       if (hasOnlyEmptySpacerCells && hasLegacySpacerHeight) {
         removeNode(row);
       }
     }
-
     const headerCell = rows
       .flatMap((row) => [...(row.cells ?? [])])
       .find((cell) => cell.classList.contains("board_item"));
     const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
-
     const headerRow = rows.find((row) => {
       const cells = [...(row.cells ?? [])];
       return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
@@ -191,19 +159,19 @@
     if (headerRow) {
       removeNode(headerRow);
     }
-
-    const entries: Array<{ date: string; topicContent: HTMLElement }> = [];
+    const entries: Array<{
+      date: string;
+      topicContent: HTMLElement;
+    }> = [];
     for (const row of rows) {
       const cells = [...(row.cells ?? [])];
       if (cells.length < 2) {
         continue;
       }
-
       const rawDate = (cells[0].textContent ?? "").replaceAll(/\s+/g, "").trim();
       if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
         continue;
       }
-
       const topicCell = cells[1];
       const topicContent = topicCell.cloneNode(true) as HTMLElement;
       if (typeof cleanLegacyAttributes === "function") {
@@ -214,108 +182,91 @@
         topicContent,
       });
     }
-
     const tbody = table.tBodies[0] || table.ownerDocument.createElement("tbody");
     if (!table.tBodies[0]) {
       table.append(tbody);
     }
     tbody.textContent = "";
-
     const titleRow = table.ownerDocument.createElement("tr");
     titleRow.className = "ccxp-lite-announcement-title-row";
     const titleCell = table.ownerDocument.createElement("td");
     titleCell.className = "ccxp-lite-announcement-title";
     titleCell.textContent = titleText || strings.sidebarCategoryAnnouncementsAndVoting;
     titleRow.append(titleCell);
-
     const contentRow = table.ownerDocument.createElement("tr");
     contentRow.className = "ccxp-lite-announcement-scroll-row";
     const contentCell = table.ownerDocument.createElement("td");
     contentCell.className = "ccxp-lite-announcement-content-cell";
-
     const list = table.ownerDocument.createElement("div");
     list.className = "ccxp-lite-announcement-list";
-
     for (const entry of entries) {
       const item = table.ownerDocument.createElement("article");
       item.className = "ccxp-lite-announcement-row";
-
       const entryRow = table.ownerDocument.createElement("div");
       entryRow.className = "ccxp-lite-announcement-entry";
-
       const body = table.ownerDocument.createElement("div");
       body.className = "ccxp-lite-announcement-topic";
       while (entry.topicContent.firstChild) {
         body.append(entry.topicContent.firstChild);
       }
-
       const date = table.ownerDocument.createElement("div");
       date.className = "ccxp-lite-announcement-date";
       date.textContent = entry.date;
-
       entryRow.append(body);
       entryRow.append(date);
       item.append(entryRow);
       list.append(item);
     }
-
     contentCell.append(list);
     contentRow.append(contentCell);
     tbody.append(titleRow);
     tbody.append(contentRow);
-
     const announcementTable = table;
     announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
   }
 
-  function findUtilityLinksTable(targetDocument: Document) {
+  function findUtilityLinksTable(targetDocument: Document): HTMLTableElement | undefined {
     const anchor = targetDocument.querySelector(
       "a[href*='ccc.site.nthu.edu.tw'], a[href*='aisccc.site.nthu.edu.tw'], a[href*='nthu-en.site.nthu.edu.tw']",
     );
-    return anchor ? anchor.closest("table") : null;
+    return anchor?.closest<HTMLTableElement>("table") ?? undefined;
   }
 
-  function findServiceLink(targetDocument: Document): HTMLElement | null {
+  function findServiceLink(targetDocument: Document): HTMLElement | undefined {
     const anchor = targetDocument.querySelector<HTMLAnchorElement>("a[href*='inquire_cpr.html']");
-    return anchor?.closest<HTMLElement>("div") ?? anchor ?? null;
+    return anchor?.closest<HTMLElement>("div") ?? anchor ?? undefined;
   }
 
-  function findCannotLoginLink(targetDocument: Document, utilityLinksTable: Element | null) {
-    const isCannotLoginAnchor = (anchor: HTMLAnchorElement | null) => {
+  function findCannotLoginLink(targetDocument: Document, utilityLinksTable: Element | undefined) {
+    const isCannotLoginAnchor = (anchor: HTMLAnchorElement | undefined) => {
       if (!anchor) {
         return false;
       }
-
       const href = (anchor.getAttribute("href") ?? "").toLowerCase();
       if (href.includes("inquire_cpr.html") || href.includes("forget.php")) {
         return true;
       }
-
       return isCannotLoginLabel(anchor.textContent);
     };
-
     if (!utilityLinksTable) {
       const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
         "a[href*='forget.php'], a[href*='inquire_cpr.html']",
       );
-      return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
+      return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
     }
-
     const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")];
     const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor));
     if (fromUtility) {
       return fromUtility;
     }
-
     const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
       "a[href*='forget.php'], a[href*='inquire_cpr.html']",
     );
-    return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
+    return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
   }
 
-  function isCannotLoginLabel(label: string | null | undefined) {
+  function isCannotLoginLabel(label: string | undefined) {
     const normalized = (label ?? "").replaceAll(/\s+/g, "").toLowerCase();
-
     return (
       normalized.includes("\u7121\u6CD5\u767B\u5165") ||
       normalized.includes("\u65E0\u6CD5\u767B\u5165") ||
@@ -327,29 +278,26 @@
 
   function buildServicePhoneLink(
     targetDocument: Document,
-    serviceLinkNode: Element | null,
+    serviceLinkNode: Element | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!serviceLinkNode) {
-      return null;
+      return undefined;
     }
-
     const sourceAnchor = serviceLinkNode.matches("a[href]")
       ? (serviceLinkNode as HTMLAnchorElement)
       : serviceLinkNode.querySelector<HTMLAnchorElement>("a[href]");
-
-    return buildLandingSupportLink(targetDocument, sourceAnchor, strings.servicePhone);
+    return buildLandingSupportLink(targetDocument, sourceAnchor ?? undefined, strings.servicePhone);
   }
 
   function buildCannotLoginLink(
     targetDocument: Document,
-    sourceAnchor: HTMLAnchorElement | null,
+    sourceAnchor: HTMLAnchorElement | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!sourceAnchor) {
-      return null;
+      return undefined;
     }
-
     const sourceLabel = (sourceAnchor.textContent ?? "").trim();
     const labelText = isCannotLoginLabel(sourceLabel)
       ? strings.cannotLogin
@@ -359,101 +307,83 @@
 
   function buildLandingSupportLink(
     targetDocument: Document,
-    sourceAnchor: HTMLAnchorElement | null,
+    sourceAnchor: HTMLAnchorElement | undefined,
     labelText: string,
   ) {
     if (!sourceAnchor) {
-      return null;
+      return undefined;
     }
-
     const anchor = targetDocument.createElement("a");
     anchor.className = "ccxp-lite-landing-service-link";
     anchor.href = sourceAnchor.href;
     anchor.target = sourceAnchor.target || "_blank";
     anchor.rel = "noopener noreferrer";
     copyLegacyAnchorHandlers(sourceAnchor, anchor);
-
     const label = targetDocument.createElement("span");
     label.textContent = labelText;
     anchor.append(label);
     anchor.append(createLandingExternalLinkIcon(targetDocument));
-
     return anchor;
   }
 
   function buildLandingSupportLinks(
     targetDocument: Document,
-    serviceLinkNode: Element | null,
-    cannotLoginAnchor: HTMLAnchorElement | null,
+    serviceLinkNode: Element | undefined,
+    cannotLoginAnchor: HTMLAnchorElement | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     const servicePhoneLink = buildServicePhoneLink(targetDocument, serviceLinkNode, strings);
     const cannotLoginLink = buildCannotLoginLink(targetDocument, cannotLoginAnchor, strings);
-
     if (!servicePhoneLink && !cannotLoginLink) {
-      return null;
+      return undefined;
     }
-
     const wrap = targetDocument.createElement("div");
     wrap.className = "ccxp-lite-landing-support-links";
-
     if (servicePhoneLink) {
       wrap.append(servicePhoneLink);
     }
-
     if (cannotLoginLink) {
       wrap.append(cannotLoginLink);
     }
-
     return wrap;
   }
 
-  function collapseLegacyServiceRow(serviceLinkNode: Element | null) {
+  function collapseLegacyServiceRow(serviceLinkNode: Element | undefined) {
     if (!serviceLinkNode) {
       return;
     }
-
     const sourceAnchor = serviceLinkNode.matches("a[href]")
       ? serviceLinkNode
       : serviceLinkNode.querySelector("a[href*='inquire_cpr.html'], a[href]");
-
     if (!sourceAnchor) {
       return;
     }
-
     const sourceRow = sourceAnchor.closest("tr");
     if (!sourceRow) {
       removeNode(sourceAnchor.closest("div") ?? sourceAnchor);
       return;
     }
-
     const previousRow = sourceRow.previousElementSibling;
     const nextRow = sourceRow.nextElementSibling;
-
     removeNode(sourceRow);
-
-    if (isLikelySpacerRow(previousRow)) {
-      removeNode(previousRow);
+    if (isLikelySpacerRow(previousRow ?? undefined)) {
+      removeNode(previousRow ?? undefined);
     }
-
-    if (isLikelySpacerRow(nextRow)) {
-      removeNode(nextRow);
+    if (isLikelySpacerRow(nextRow ?? undefined)) {
+      removeNode(nextRow ?? undefined);
     }
   }
 
-  function collapseLegacyCannotLoginLink(cannotLoginAnchor: Element | null) {
+  function collapseLegacyCannotLoginLink(cannotLoginAnchor: Element | undefined) {
     if (!cannotLoginAnchor) {
       return;
     }
-
     const sourceAnchor = cannotLoginAnchor.matches("a[href]")
       ? cannotLoginAnchor
       : cannotLoginAnchor.closest("a[href]");
-
     if (!sourceAnchor) {
       return;
     }
-
     removeAdjacentLegacyBreak(sourceAnchor, "previous");
     removeAdjacentLegacyBreak(sourceAnchor, "next");
     removeNode(sourceAnchor);
@@ -461,11 +391,9 @@
 
   function removeAdjacentLegacyBreak(node: Node, direction: "previous" | "next") {
     const sibling = direction === "previous" ? node.previousSibling : node.nextSibling;
-
     if (!sibling) {
       return;
     }
-
     if (sibling.nodeType === Node.TEXT_NODE) {
       const normalizedText = (sibling.textContent ?? "").replaceAll("\u00A0", " ").trim();
       if (normalizedText === "") {
@@ -473,7 +401,6 @@
       }
       return;
     }
-
     if (sibling.nodeType === Node.ELEMENT_NODE && (sibling as Element).tagName === "BR") {
       removeNode(sibling);
     }
@@ -481,16 +408,14 @@
 
   function buildHeaderUtilityLinks(
     targetDocument: Document,
-    utilityLinksTable: Element | null,
-    excludedAnchor: HTMLAnchorElement | null,
+    utilityLinksTable: Element | undefined,
+    excludedAnchor: HTMLAnchorElement | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!utilityLinksTable) {
-      return null;
+      return undefined;
     }
-
     const excludedHref = excludedAnchor ? (excludedAnchor.getAttribute("href") ?? "") : "";
-
     const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")]
       .filter((anchor) => anchor !== excludedAnchor)
       .filter((anchor) => {
@@ -499,17 +424,14 @@
           href !== "" && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html")
         );
       })
-      .filter((anchor) => anchor.textContent !== null && anchor.textContent.trim() !== "")
+      .filter((anchor) => anchor.textContent !== undefined && anchor.textContent.trim() !== "")
       .slice(0, 3);
-
     if (anchors.length === 0) {
-      return null;
+      return undefined;
     }
-
     const nav = targetDocument.createElement("nav");
     nav.className = "ccxp-lite-landing-utility";
     nav.setAttribute("aria-label", strings.externalLinksLabel);
-
     for (const [index, sourceAnchor] of anchors.entries()) {
       const anchor = targetDocument.createElement("a");
       anchor.href = sourceAnchor.href;
@@ -520,7 +442,6 @@
       anchor.textContent = sourceAnchor.textContent.trim();
       anchor.append(createLandingExternalLinkIcon(targetDocument));
       nav.append(anchor);
-
       if (index < anchors.length - 1) {
         const separator = targetDocument.createElement("span");
         separator.className = "ccxp-lite-landing-utility-separator";
@@ -528,18 +449,16 @@
         nav.append(separator);
       }
     }
-
     return nav;
   }
 
   function copyLegacyAnchorHandlers(
-    sourceAnchor: HTMLAnchorElement | null,
-    targetAnchor: HTMLAnchorElement | null,
+    sourceAnchor: HTMLAnchorElement | undefined,
+    targetAnchor: HTMLAnchorElement | undefined,
   ) {
     if (!sourceAnchor || !targetAnchor) {
       return;
     }
-
     for (const name of [
       "onclick",
       "onmousedown",
@@ -568,7 +487,6 @@
     icon.setAttribute("stroke-linecap", "round");
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
-
     for (const pathData of [
       "M15 3h6v6",
       "M10 14 21 3",
@@ -578,27 +496,22 @@
       path.setAttribute("d", pathData);
       icon.append(path);
     }
-
     return icon;
   }
 
-  function collapseLegacyUtilityRow(utilityLinksTable: Element | null) {
+  function collapseLegacyUtilityRow(utilityLinksTable: Element | undefined) {
     if (!utilityLinksTable) {
       return;
     }
-
     const sourceCell = utilityLinksTable.closest("td");
     if (!sourceCell) {
       return;
     }
-
     const sourceRow = sourceCell.closest("tr");
     if (!sourceRow) {
       return;
     }
-
     removeNode(sourceCell);
-
     const rowCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
@@ -607,7 +520,6 @@
         removeNode(cell);
       }
     }
-
     const remainingCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
@@ -617,102 +529,85 @@
     }
   }
 
-  function isLikelySpacerRow(row: Element | null) {
+  function isLikelySpacerRow(row: Element | undefined) {
     if (!row || row.tagName !== "TR") {
       return false;
     }
-
     const cells = [...row.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
     if (cells.length === 0) {
       return false;
     }
-
     const hasInteractiveContent = cells.some(
-      (cell) => cell.querySelector("a, button, input, select, textarea, table, iframe") !== null,
+      (cell) =>
+        cell.querySelector("a, button, input, select, textarea, table, iframe") !== undefined,
     );
     if (hasInteractiveContent) {
       return false;
     }
-
     const text = cells
       .map((cell) => (cell.textContent ?? "").replaceAll("\u00A0", " "))
       .join(" ")
       .replaceAll(/\s+/g, " ")
       .trim();
-
     if (text !== "") {
       return false;
     }
-
     const rowHeight = (row.getAttribute("height") ?? "").trim();
     const cellHasHeight = cells.some((cell) => (cell.getAttribute("height") ?? "").trim() !== "");
-
     return rowHeight !== "" || cellHasHeight;
   }
 
-  function isLegacySpacerCell(cell: HTMLTableCellElement | null) {
+  function isLegacySpacerCell(cell: HTMLTableCellElement | undefined) {
     if (!cell) {
       return false;
     }
-
     const widthText = (cell.getAttribute("width") ?? "").trim().toLowerCase();
     const normalizedText = (cell.textContent ?? "").replaceAll("\u00A0", " ").trim();
-
     if ((widthText === "3%" || widthText === "3") && normalizedText === "") {
       return true;
     }
-
     return (
-      normalizedText === "" && cell.querySelector("table, iframe, form, input, button, a") === null
+      normalizedText === "" &&
+      cell.querySelector("table, iframe, form, input, button, a") === undefined
     );
   }
 
-  function collapseLegacyThreeColumnRows(rootNode: ParentNode | null) {
+  function collapseLegacyThreeColumnRows(rootNode: ParentNode | undefined) {
     if (!rootNode) {
       return;
     }
-
     const rows = [...rootNode.querySelectorAll<HTMLTableRowElement>("tr")];
-
     for (const row of rows) {
       if (shouldSkipLegacyRowCollapse(row)) {
         continue;
       }
-
       const cells = [...row.children].filter(
         (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
       );
       if (cells.length < 2) {
         continue;
       }
-
       const leftCell = cells.find((cell) => isLegacyWideLeftCell(cell));
       const rightCell = cells.find((cell) => isLegacyRightPanelCell(cell));
-
       if (!leftCell || !rightCell) {
         continue;
       }
-
       if (!isLikelyEmptyCell(leftCell)) {
         continue;
       }
-
       const spacerCell = cells.find(
         (cell) =>
           isLegacySpacerCell(cell) ||
           normalizeLegacyWidth(cell.getAttribute("width") ?? cell.style.width) === "3%",
       );
-
       removeNode(leftCell);
-      removeNode(spacerCell ?? null);
-
+      removeNode(spacerCell ?? undefined);
       rightCell.removeAttribute("width");
       rightCell.style.width = "100%";
       rightCell.style.minWidth = "0";
       rightCell.colSpan = Math.max(1, rightCell.colSpan ?? 1);
-
       for (const cell of [...row.children].filter(
         (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
       )) {
@@ -723,71 +618,61 @@
     }
   }
 
-  function isLegacyWideLeftCell(cell: HTMLTableCellElement | null) {
+  function isLegacyWideLeftCell(cell: HTMLTableCellElement | undefined) {
     if (!cell) {
       return false;
     }
-
     const widthText = normalizeLegacyWidth(cell.getAttribute("width") ?? cell.style.width);
     const styleText = (cell.getAttribute("style") ?? "").toLowerCase();
     return widthText === "60%" && styleText.includes("min-width") && styleText.includes("30em");
   }
 
-  function isLegacyRightPanelCell(cell: HTMLTableCellElement | null) {
+  function isLegacyRightPanelCell(cell: HTMLTableCellElement | undefined) {
     if (!cell) {
       return false;
     }
-
     const widthText = normalizeLegacyWidth(cell.getAttribute("width") ?? cell.style.width);
     return widthText === "35%";
   }
 
-  function isLikelyEmptyCell(cell: HTMLTableCellElement | null) {
+  function isLikelyEmptyCell(cell: HTMLTableCellElement | undefined) {
     if (!cell) {
       return false;
     }
-
     const normalizedText = (cell.textContent ?? "")
       .replaceAll("\u00A0", " ")
       .replaceAll(/\s+/g, " ")
       .trim();
-
     if (normalizedText !== "") {
       return false;
     }
-
     return (
       cell.querySelector(
         "img, iframe, form, input, button, select, textarea, a, object, embed, video, audio, table, div, span, ul, ol, p",
-      ) === null
+      ) === undefined
     );
   }
 
-  function shouldSkipLegacyRowCollapse(row: HTMLTableRowElement | null) {
+  function shouldSkipLegacyRowCollapse(row: HTMLTableRowElement | undefined) {
     if (!row) {
       return true;
     }
-
     const table = row.closest("table");
     if (!table) {
       return false;
     }
-
     if (table.classList.contains("ccxp-lite-announcement-table")) {
       return true;
     }
-
     if (table.querySelector(".board_item, .board_subject, .board_0, .board_1")) {
       return true;
     }
-
     return false;
   }
 
-  function normalizeLegacyWidth(rawValue: string | null | undefined) {
+  function normalizeLegacyWidth(rawValue: string | undefined) {
     return (rawValue ?? "").replaceAll(/\s+/g, "").toLowerCase();
   }
-
   namespace.landingSupport = {
     findLoginSourceCell,
     findAnnouncementTable,

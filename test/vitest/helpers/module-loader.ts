@@ -19,7 +19,7 @@ export type TestWindow = Window &
       storage: {
         local: {
           get: (
-            keys: readonly string[] | null,
+            keys: readonly string[] | undefined,
             callback: (result: Readonly<Record<string, unknown>>) => void,
           ) => void;
         };
@@ -49,7 +49,7 @@ export function createTestWindow(
     storage: {
       local: {
         get: (
-          _keys: readonly string[] | null,
+          _keys: readonly string[] | undefined,
           callback: (result: Readonly<Record<string, unknown>>) => void,
         ) => {
           callback({});
@@ -90,8 +90,8 @@ export function loadModules(window: TestWindow, modulePaths: readonly string[]):
   }
 }
 
-export function requireValue<T>(value: T | null | undefined, message = "Expected value"): T {
-  if (value === null || value === undefined) {
+export function requireValue<T>(value: T | undefined, message = "Expected value"): T {
+  if (value === undefined || value === undefined) {
     throw new Error(message);
   }
 

@@ -5,30 +5,24 @@
   if (!landingLocale) {
     return;
   }
-
   const { getLoginForm } = landingLocale;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap<Document, CcxpLiteCaptchaAutofillState>();
-
   function enableLoginCaptchaAutofill(
     targetDocument: Document,
     rootNode: ParentNode,
-    existingState?: CcxpLiteCaptchaAutofillState | null,
+    existingState?: CcxpLiteCaptchaAutofillState,
   ) {
     const form = getLoginForm(targetDocument);
     const state = existingState ?? getOrCreateCaptchaAutofillState(targetDocument, rootNode);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
-
     const { input: captchaInput, image: captchaImage } = state;
-
     const triggerAutofill = () => {
       autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state);
     };
-
     captchaImage.addEventListener("load", triggerAutofill);
-
     const observer = new MutationObserver((mutations: readonly MutationRecord[]) => {
       if (!namespace.sharedDom?.ensureContextValid()) {
         observer.disconnect();
@@ -42,40 +36,35 @@
       attributes: true,
       attributeFilter: ["src"],
     });
-
     triggerAutofill();
     globalThis.requestAnimationFrame(triggerAutofill);
     globalThis.setTimeout(triggerAutofill, 0, undefined);
-
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
 
   function getOrCreateCaptchaAutofillState(
     targetDocument: Document,
     rootNode: ParentNode,
-  ): CcxpLiteCaptchaAutofillState | null {
+  ): CcxpLiteCaptchaAutofillState | undefined {
     const existingState = captchaAutofillStateByDocument.get(targetDocument);
     if (existingState) {
       syncCaptchaAutofillState(targetDocument, existingState, rootNode);
       return existingState;
     }
-
     const captchaField = resolveCaptchaField(rootNode);
     if (!captchaField) {
-      return null;
+      return undefined;
     }
-
     const state = {
       ...captchaField,
       lastRequestedSrc: "",
       requestToken: 0,
-      pendingRequest: null,
+      pendingRequest: undefined,
       pendingSrc: "",
       failedSrc: "",
       cachedAnswer: "",
       cachedSrc: "",
     };
-
     captchaAutofillStateByDocument.set(targetDocument, state);
     primeCaptchaAutofill(targetDocument, state);
     return state;
@@ -91,19 +80,17 @@
     if (!latestField) {
       return captchaState;
     }
-
     captchaState.input = latestField.input;
     captchaState.image = latestField.image;
     primeCaptchaAutofill(targetDocument, captchaState);
     return captchaState;
   }
 
-  function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | null {
+  function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | undefined {
     const input = rootNode.querySelector("input[name='passwd2']");
     if (!input) {
-      return null;
+      return undefined;
     }
-
     const scope =
       input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") ?? rootNode;
     const mediaRow =
@@ -116,11 +103,9 @@
       rootNode.querySelector(
         ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
       );
-
     if (!image || !mediaRow) {
-      return null;
+      return undefined;
     }
-
     return {
       input: input as HTMLInputElement,
       image: image as HTMLImageElement,
@@ -129,11 +114,13 @@
     };
   }
 
-  function setCaptchaLoadingState(state: CcxpLiteCaptchaAutofillState | null, isLoading: boolean) {
+  function setCaptchaLoadingState(
+    state: CcxpLiteCaptchaAutofillState | undefined,
+    isLoading: boolean,
+  ) {
     if (!state) {
       return;
     }
-
     if (state.input) {
       state.input.setAttribute("aria-busy", isLoading ? "true" : "false");
       if (isLoading) {
@@ -142,29 +129,25 @@
     }
   }
 
-  function clearCaptchaTimeoutFlash(state: CcxpLiteCaptchaAutofillState | null) {
+  function clearCaptchaTimeoutFlash(state: CcxpLiteCaptchaAutofillState | undefined) {
     const captchaState = state;
     if (!captchaState?.input) {
       return;
     }
-
     if (captchaState.timeoutFlashTimer) {
       globalThis.clearTimeout(captchaState.timeoutFlashTimer);
-      captchaState.timeoutFlashTimer = null;
+      captchaState.timeoutFlashTimer = undefined;
     }
-
     delete captchaState.input.dataset.timeoutFlash;
   }
 
-  function flashCaptchaTimeout(state: CcxpLiteCaptchaAutofillState | null) {
+  function flashCaptchaTimeout(state: CcxpLiteCaptchaAutofillState | undefined) {
     const captchaState = state;
     if (!captchaState?.input) {
       return;
     }
-
     clearCaptchaTimeoutFlash(captchaState);
     // Trigger reflow
-
     const _reflow = captchaState.input.offsetWidth;
     captchaState.input.dataset.timeoutFlash = "true";
     captchaState.timeoutFlashTimer = globalThis.setTimeout(
@@ -172,9 +155,8 @@
         if (!captchaState.input) {
           return;
         }
-
         delete captchaState.input.dataset.timeoutFlash;
-        captchaState.timeoutFlashTimer = null;
+        captchaState.timeoutFlashTimer = undefined;
       },
       1600,
       undefined,
@@ -191,19 +173,16 @@
     if (!captchaSrc || state.lastRequestedSrc === captchaSrc || state.failedSrc === captchaSrc) {
       return;
     }
-
     const captchaState = state;
     captchaState.lastRequestedSrc = captchaSrc;
     captchaState.requestToken++;
     const { requestToken } = captchaState;
     setCaptchaLoadingState(captchaState, true);
-
     requestCaptchaAnswerForCurrentImage(targetDocument, captchaState, captchaSrc)
       .then((answer) => {
         if (requestToken !== captchaState.requestToken || !answer) {
           return;
         }
-
         const resolvedInput = captchaInput;
         resolvedInput.value = answer;
         resolvedInput.dispatchEvent(new Event("input", { bubbles: true }));
@@ -222,17 +201,15 @@
 
   function primeCaptchaAutofill(
     targetDocument: Document,
-    state: CcxpLiteCaptchaAutofillState | null,
+    state: CcxpLiteCaptchaAutofillState | undefined,
   ) {
     if (!state || !state.image) {
       return;
     }
-
     const captchaSrc = getCaptchaRequestSource(state.image, targetDocument);
     if (!captchaSrc) {
       return;
     }
-
     setCaptchaLoadingState(state, true);
     requestCaptchaAnswerForCurrentImage(targetDocument, state, captchaSrc).catch(
       (error: unknown) => {
@@ -244,24 +221,23 @@
   }
 
   function fallbackToManualCaptchaEntry(
-    state: CcxpLiteCaptchaAutofillState | null,
+    state: CcxpLiteCaptchaAutofillState | undefined,
     captchaSrc: string,
-    options: { didTimeout?: boolean } = {},
+    options: {
+      didTimeout?: boolean;
+    } = {},
   ) {
     const captchaState = state;
     if (!captchaState) {
       return;
     }
-
     captchaState.lastRequestedSrc = "";
     captchaState.failedSrc = captchaSrc;
     captchaState.requestToken++;
     setCaptchaLoadingState(captchaState, false);
-
     if (captchaState.input) {
       captchaState.input.removeAttribute("aria-busy");
     }
-
     if (options.didTimeout) {
       flashCaptchaTimeout(captchaState);
     }
@@ -276,11 +252,9 @@
     if (captchaState.cachedSrc === captchaSrc && captchaState.cachedAnswer) {
       return captchaState.cachedAnswer;
     }
-
-    if (captchaState.pendingSrc === captchaSrc && captchaState.pendingRequest !== null) {
+    if (captchaState.pendingSrc === captchaSrc && captchaState.pendingRequest !== undefined) {
       return await captchaState.pendingRequest;
     }
-
     const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
       .then(async (imageBytes) => await requestCaptchaAnswer(captchaSrc, imageBytes))
       .then((answer) => {
@@ -288,30 +262,27 @@
           captchaState.cachedSrc = captchaSrc;
           captchaState.cachedAnswer = answer;
         }
-
         return answer;
       })
       .finally(() => {
         if (captchaState.pendingSrc === captchaSrc) {
           captchaState.pendingSrc = "";
-          captchaState.pendingRequest = null;
+          captchaState.pendingRequest = undefined;
         }
       });
-
     captchaState.pendingSrc = captchaSrc;
     captchaState.pendingRequest = request;
     return await request;
   }
 
   function getCaptchaRequestSource(
-    captchaImage: HTMLImageElement | null,
+    captchaImage: HTMLImageElement | undefined,
     targetDocument: Document,
   ) {
     const rawSource = (captchaImage?.getAttribute("src") ?? "").trim();
     if (!rawSource) {
       return "";
     }
-
     try {
       const parsed = new URL(
         rawSource,
@@ -336,7 +307,6 @@
         ? targetDocument.location.href
         : globalThis.location.href,
     );
-
     return await fetchWithTimeout(
       captchaUrl.toString(),
       { credentials: "include" },
@@ -345,7 +315,6 @@
       if (!response.ok) {
         throw new Error(`captcha-download-failed:${response.status}`);
       }
-
       return await response.arrayBuffer();
     });
   }
@@ -359,13 +328,11 @@
       (answer ?? "").trim(),
     );
   }
-
   interface CcxpLiteCaptchaError extends Error {
     code?: string;
   }
-
   function isCaptchaTimeoutError(error: unknown) {
-    const typedError = error as CcxpLiteCaptchaError | null;
+    const typedError = error as CcxpLiteCaptchaError | undefined;
     return Boolean(
       typedError &&
       (typedError.name === "AbortError" ||
@@ -389,7 +356,6 @@
       timeoutMs,
       undefined,
     );
-
     return await fetch(resource, {
       ...options,
       signal: controller.signal,
@@ -401,14 +367,12 @@
           timeoutError.code = "CAPTCHA_TIMEOUT";
           throw timeoutError;
         }
-
         throw error;
       })
       .finally(() => {
         globalThis.clearTimeout(timerId);
       });
   }
-
   namespace.landingCaptcha = {
     CAPTCHA_AUTOFILL_TIMEOUT_MS,
     enableLoginCaptchaAutofill,

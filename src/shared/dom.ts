@@ -2,7 +2,6 @@
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
-
   function isArray<T>(value: unknown): value is T[] {
     return value !== null && typeof value === "object" && value.constructor === Array;
   }
@@ -13,7 +12,7 @@
     }
   }
 
-  function removeNode(node: ChildNode | null) {
+  function removeNode(node: ChildNode | undefined) {
     if (node && node.parentNode) {
       node.remove();
     }
@@ -23,14 +22,12 @@
     return targetDocument.readyState === "complete";
   }
 
-  function cleanLegacyAttributes(node: Node | null) {
+  function cleanLegacyAttributes(node: Node | undefined) {
     if (!node) {
       return;
     }
-
     const legacyAttrs = ["background", "bgcolor", "text", "link", "vlink", "alink"];
     const selector = legacyAttrs.map((attr) => `[${attr}]`).join(", ");
-
     const cleanElement = (el: Element) => {
       if (el.nodeType !== Node.ELEMENT_NODE) {
         return;
@@ -40,7 +37,6 @@
           el.removeAttribute(attr);
         }
       }
-
       const style = el.getAttribute("style");
       if (style && /background(-image)?\s*:/i.test(style)) {
         const htmlElement = el as HTMLElement;
@@ -51,7 +47,6 @@
         }
       }
     };
-
     if (node.nodeType === Node.DOCUMENT_NODE) {
       const doc = node as Document;
       if (doc.documentElement) {
@@ -86,7 +81,6 @@
     if (namespace.isOrphan) {
       return false;
     }
-
     namespace.isOrphan = true;
     triggerCleanup();
     return false;
@@ -94,15 +88,14 @@
 
   function getRuntimeSafely() {
     if (namespace.isOrphan) {
-      return null;
+      return undefined;
     }
-
     try {
-      const runtime = typeof chrome === "undefined" ? null : chrome.runtime;
-      return runtime && runtime.id ? runtime : null;
+      const runtime = typeof chrome === "undefined" ? undefined : chrome.runtime;
+      return runtime && runtime.id ? runtime : undefined;
     } catch {
       invalidateContext();
-      return null;
+      return undefined;
     }
   }
 
@@ -114,25 +107,22 @@
     if (isContextValid()) {
       return true;
     }
-
     if (hasRuntimeObject()) {
       invalidateContext();
     }
-
     return false;
   }
 
   function getLocalStorageAreaSafely() {
     const runtime = getRuntimeSafely();
     if (!runtime) {
-      return null;
+      return undefined;
     }
-
     try {
-      return chrome.storage ? chrome.storage.local : null;
+      return chrome.storage ? chrome.storage.local : undefined;
     } catch {
       invalidateContext();
-      return null;
+      return undefined;
     }
   }
 
@@ -153,18 +143,15 @@
     if (typeof task !== "function") {
       return;
     }
-
     if (namespace.isOrphan) {
       task();
       return;
     }
-
     if (!isArray(namespace.cleanupTasks)) {
       namespace.cleanupTasks = [];
     }
     namespace.cleanupTasks.push(task);
   }
-
   namespace.sharedDom = {
     moveChildNodes,
     removeNode,
@@ -177,17 +164,14 @@
     getLocalStorageAreaSafely,
     addCleanupTask,
   };
-
   if (!sharedConstants || !sharedTheme || !sharedLocale || !sharedBrand) {
     return;
   }
-
   const { TOKENS, LOCALIZED_STRINGS, SIDEBAR_CATEGORIES, ASSETS } = sharedConstants;
   const { ensureThemeDocument } = sharedTheme;
   const { getLocalizedStrings, normalizeLocale, resolveLocaleFromDocument } = sharedLocale;
   const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
     sharedBrand;
-
   namespace.shared = {
     TOKENS,
     STRINGS: LOCALIZED_STRINGS.zh,

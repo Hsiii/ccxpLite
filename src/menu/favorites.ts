@@ -1,24 +1,20 @@
 (function registerCcxpLiteSidebarFavorites(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
   const INITIAL_MAIN_URL_STORAGE_KEY = `ccxp-lite-sidebar-initial-main-url::${FAVORITES_STORAGE_SCOPE_PATH}`;
-
   const favoriteState: {
     ids: Set<string>;
     hasLoaded: boolean;
-    pendingLoad: Promise<void> | null;
+    pendingLoad: Promise<void> | undefined;
   } = {
     ids: new Set<string>(),
     hasLoaded: false,
-    pendingLoad: null,
+    pendingLoad: undefined,
   };
-
   const favoriteSubscribers = new Set<() => void>();
   let favoriteStorageSyncBound = false;
-
   function isArray<T>(value: unknown): value is T[] {
     return value !== null && typeof value === "object" && value.constructor === Array;
   }
@@ -34,14 +30,12 @@
       }
       return;
     }
-
-    if (favoriteState.pendingLoad !== null) {
+    if (favoriteState.pendingLoad !== undefined) {
       if (typeof onReady === "function") {
         favoriteState.pendingLoad.then(onReady, () => undefined);
       }
       return;
     }
-
     favoriteState.pendingLoad = readFavoritesFromStorage()
       .then((favoriteIds) => {
         favoriteState.ids = new Set(favoriteIds);
@@ -52,9 +46,8 @@
         favoriteState.hasLoaded = true;
       })
       .finally(() => {
-        favoriteState.pendingLoad = null;
+        favoriteState.pendingLoad = undefined;
       });
-
     if (typeof onReady === "function") {
       favoriteState.pendingLoad.then(onReady, () => undefined);
     }
@@ -64,12 +57,10 @@
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
-
     const storage = getScopedFavoriteStorage();
     if (!storage) {
       return;
     }
-
     try {
       storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
     } catch {
@@ -95,7 +86,6 @@
           // Fall through to migration fallback.
         }
       }
-
       readLegacyFavoritesFromExtensionStorage().then(
         (favoriteIds) => {
           if (favoriteIds.size > 0) {
@@ -115,18 +105,15 @@
     if (favoriteStorageSyncBound || !scopeWindow) {
       return;
     }
-
     const onStorage = (event: StorageEvent) => {
       const { sharedDom } = namespace;
       if (sharedDom && !sharedDom.ensureContextValid()) {
         scopeWindow.removeEventListener("storage", onStorage);
         return;
       }
-
       if (!event || event.key !== FAVORITES_STORAGE_KEY) {
         return;
       }
-
       const nextValue = (() => {
         try {
           return JSON.parse(event.newValue ?? "[]") as unknown[];
@@ -134,19 +121,16 @@
           return [];
         }
       })();
-
       favoriteState.ids = new Set(
         isArray(nextValue) ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean) : [],
       );
       favoriteState.hasLoaded = true;
       notifyFavoriteSubscribers();
     };
-
     scopeWindow.addEventListener("storage", onStorage);
     namespace.sharedDom?.addCleanupTask(() => {
       scopeWindow.removeEventListener("storage", onStorage);
     });
-
     favoriteStorageSyncBound = true;
   }
 
@@ -163,34 +147,31 @@
   function getScopedFavoriteStorage() {
     const scopeWindow = getFavoriteScopeWindow();
     if (!scopeWindow) {
-      return null;
+      return undefined;
     }
-
     try {
-      return scopeWindow.localStorage ?? null;
+      return scopeWindow.localStorage ?? undefined;
     } catch {
-      return null;
+      return undefined;
     }
   }
 
   function getScopedSessionStorage() {
     const scopeWindow = getFavoriteScopeWindow();
     if (!scopeWindow) {
-      return null;
+      return undefined;
     }
-
     try {
-      return scopeWindow.sessionStorage ?? null;
+      return scopeWindow.sessionStorage ?? undefined;
     } catch {
-      return null;
+      return undefined;
     }
   }
 
   function getFavoriteScopeWindow() {
     if (globalThis.window === undefined) {
-      return null;
+      return undefined;
     }
-
     try {
       return window.top ?? globalThis;
     } catch {
@@ -200,14 +181,12 @@
 
   async function readLegacyFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
     return await new Promise((resolve) => {
-      const runtime = namespace.sharedDom?.getRuntimeSafely() ?? null;
-      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() ?? null;
-
+      const runtime = namespace.sharedDom?.getRuntimeSafely();
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
       if (!storageApi) {
         resolve(new Set());
         return;
       }
-
       (
         storageApi as {
           get: (
@@ -220,7 +199,6 @@
           resolve(new Set<string>());
           return;
         }
-
         const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
         resolve(
           new Set(
@@ -234,29 +212,24 @@
   }
 
   function collectFavoriteLinks(
-    item: CcxpLiteSidebarTreeNode | null,
+    item: CcxpLiteSidebarTreeNode | undefined,
     favoriteIds: ReadonlySet<string>,
   ): readonly CcxpLiteSidebarLinkItem[] {
     if (!item) {
       return [];
     }
-
     if (item.kind === "link") {
       return item.linkItem && isFavoriteLink(item.linkItem, favoriteIds) ? [item.linkItem] : [];
     }
-
     const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
-
     for (const linkItem of item.directLinks ?? []) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
         favoriteLinks.push(linkItem);
       }
     }
-
     for (const section of item.sections ?? []) {
       favoriteLinks.push(...collectFavoriteLinks(section, favoriteIds));
     }
-
     return favoriteLinks;
   }
 
@@ -264,12 +237,10 @@
     linkItems: readonly CcxpLiteSidebarLinkItem[],
   ): readonly CcxpLiteSidebarLinkItem[] {
     const seen = new Set();
-
     return linkItems.filter((linkItem) => {
       if (!linkItem || seen.has(linkItem.id)) {
         return false;
       }
-
       seen.add(linkItem.id);
       return true;
     });
@@ -282,7 +253,6 @@
     const clickSignature = linkItem.clickLinkArgs
       ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
-
     return [
       "v2",
       pathSignature,
@@ -296,7 +266,6 @@
     const clickSignature = linkItem.clickLinkArgs
       ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
-
     return [
       normalizeFavoriteText(linkItem.label),
       normalizeFavoriteUrl(linkItem.href),
@@ -309,7 +278,6 @@
     if (typeof value !== "string") {
       return "";
     }
-
     const parts = value.split("||");
     if (parts.length === 4) {
       return createLegacyLinkId({
@@ -319,11 +287,9 @@
         clickLinkArgs: parseFavoriteClickSignature(parts[3]),
       });
     }
-
     if (parts.length !== 5 || parts[0] !== "v2") {
       return normalizeFavoriteText(value);
     }
-
     return createLinkId({
       pathSegments: parseFavoritePathSignature(parts[1]),
       label: parts[2],
@@ -336,12 +302,11 @@
     return normalizeFavoriteText(signature).split(">").map(normalizeFavoriteText).filter(Boolean);
   }
 
-  function parseFavoriteClickSignature(signature: unknown): CcxpLiteClickLinkArgs | null {
+  function parseFavoriteClickSignature(signature: unknown): CcxpLiteClickLinkArgs | undefined {
     const normalizedSignature = normalizeFavoriteText(signature);
     if (!normalizedSignature) {
-      return null;
+      return undefined;
     }
-
     const separatorIndex = normalizedSignature.indexOf("::");
     if (separatorIndex === -1) {
       return {
@@ -349,7 +314,6 @@
         url: "",
       };
     }
-
     return {
       name: normalizedSignature.slice(0, separatorIndex),
       url: normalizedSignature.slice(separatorIndex + 2),
@@ -361,7 +325,6 @@
       typeof value === "string" || typeof value === "number" || typeof value === "boolean"
         ? String(value)
         : "";
-
     return normalizedValue.replaceAll(/\s+/g, " ").trim();
   }
 
@@ -374,33 +337,29 @@
       ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
       : [];
     const normalizedLabel = normalizeFavoriteText(label);
-
     if (normalizedLabel) {
       return [...normalizedParentSegments, normalizedLabel];
     }
-
     if (fallbackSegment) {
       return [...normalizedParentSegments, fallbackSegment];
     }
-
     return normalizedParentSegments;
   }
 
   function isFavoriteLink(
-    linkItem: CcxpLiteSidebarLinkItem | null,
+    linkItem: CcxpLiteSidebarLinkItem | undefined,
     favoriteIds: ReadonlySet<string>,
   ) {
     return getMatchingFavoriteIds(linkItem, favoriteIds).length > 0;
   }
 
   function getMatchingFavoriteIds(
-    linkItem: CcxpLiteSidebarLinkItem | null,
+    linkItem: CcxpLiteSidebarLinkItem | undefined,
     favoriteIds: ReadonlySet<string>,
   ): readonly string[] {
     if (!linkItem || !favoriteIds) {
       return [];
     }
-
     return [...new Set([linkItem.id, linkItem.legacyId].filter(isDefinedString))].filter(
       (favoriteId) => favoriteIds.has(favoriteId),
     );
@@ -410,19 +369,17 @@
     return typeof value === "string" && value !== "";
   }
 
-  function normalizeFavoriteUrl(rawValue: string | null | undefined) {
+  function normalizeFavoriteUrl(rawValue: string | undefined) {
     const value = (rawValue ?? "").trim();
     if (!value) {
       return "";
     }
-
     try {
       const url = new URL(value, "https://www.ccxp.nthu.edu.tw/");
       const volatileParams = ["acixstore", "sid", "session", "phpsessid", "token", "_", "t"];
       for (const key of volatileParams) {
         url.searchParams.delete(key);
       }
-
       const sortedEntries = [...url.searchParams.entries()].toSorted(
         ([leftKey, leftValue], [rightKey, rightValue]) => {
           if (leftKey === rightKey) {
@@ -431,16 +388,13 @@
           return leftKey.localeCompare(rightKey);
         },
       );
-
       url.search = "";
       for (const [key, entryValue] of sortedEntries) {
         url.searchParams.append(key, entryValue);
       }
-
       const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();
       const normalizedHash = url.hash;
-
       return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
     } catch {
       return value
@@ -450,7 +404,6 @@
         .replace("?&", "?");
     }
   }
-
   namespace.sidebarFavorites = {
     FAVORITES_STORAGE_SCOPE_PATH,
     FAVORITES_STORAGE_KEY,

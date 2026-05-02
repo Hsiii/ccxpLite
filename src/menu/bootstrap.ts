@@ -135,7 +135,7 @@
       brand.addEventListener("click", () => {
         const uiState = getSidebarUiState(hostDocument);
         uiState.currentCategoryId = "";
-        uiState.activeLeaf = null;
+        uiState.activeLeaf = undefined;
         renderSidebar(
           hostDocument,
           navDocument,

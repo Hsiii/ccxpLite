@@ -45,7 +45,7 @@ describe("sidebar favorites", () => {
     });
 
     window.chrome.storage.local.get = (
-      _keys: readonly string[] | null,
+      _keys: readonly string[] | undefined,
       done: (result: Readonly<Record<string, unknown>>) => void,
     ) => {
       done({

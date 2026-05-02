@@ -5,17 +5,13 @@
   if (!sharedConstants) {
     return;
   }
-
   const { TOKENS, ASSETS } = sharedConstants;
-
   function ensureThemeDocument(targetDocument: Document, scope: string) {
     if (!targetDocument.head || !targetDocument.documentElement) {
       return false;
     }
-
     const { documentElement } = targetDocument;
     documentElement.dataset.ccxpLiteScope = scope;
-
     const { sharedDom } = namespace;
     const isContextReady = (() => {
       try {
@@ -24,31 +20,26 @@
         return false;
       }
     })();
-
     if (!isContextReady) {
       return false;
     }
-
     if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
       const runtime = (() => {
         try {
-          return sharedDom?.getRuntimeSafely() ?? null;
+          return sharedDom?.getRuntimeSafely() ?? undefined;
         } catch {
-          return null;
+          return undefined;
         }
       })();
-
       if (!runtime) {
         return false;
       }
-
       const link = targetDocument.createElement("link");
       link.rel = "stylesheet";
       link.href = runtime.getURL(ASSETS.stylesheetPath);
       link.dataset.ccxpLiteStylesheet = "true";
       targetDocument.head.append(link);
     }
-
     applyCssVariables(targetDocument.documentElement, buildCssVariables());
     return true;
   }
@@ -206,7 +197,6 @@
       targetElement.style.setProperty(name, value);
     }
   }
-
   namespace.sharedTheme = {
     ensureThemeDocument,
   };

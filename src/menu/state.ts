@@ -3,8 +3,7 @@
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
-  let persistedSidebarVariant: "classic" | "layered" | null = null;
-
+  let persistedSidebarVariant: "classic" | "layered" | undefined;
   function getSidebarUiState(navDocument: Document): CcxpLiteSidebarState {
     if (sidebarUiStateByDocument.has(navDocument)) {
       const existingState = sidebarUiStateByDocument.get(navDocument);
@@ -12,12 +11,11 @@
         return existingState;
       }
     }
-
     const state: CcxpLiteSidebarState = {
       hasLoaded: true,
       currentCategoryId: "",
       searchQuery: "",
-      activeLeaf: null,
+      activeLeaf: undefined,
       sidebarVariant: getPersistedSidebarVariant(),
       classicExpandedItemIds: ["category-favorites"],
       scrollTopByView: {
@@ -26,7 +24,6 @@
         destination: 0,
       },
     };
-
     sidebarUiStateByDocument.set(navDocument, state);
     return state;
   }
@@ -36,7 +33,6 @@
     if (!content) {
       return;
     }
-
     const state = getSidebarUiState(targetDocument);
     state.scrollTopByView[viewKey] = content.scrollTop;
   }
@@ -53,7 +49,6 @@
     if (persistedSidebarVariant === "classic" || persistedSidebarVariant === "layered") {
       return persistedSidebarVariant;
     }
-
     try {
       const storedValue = globalThis.localStorage.getItem(SIDEBAR_VARIANT_STORAGE_KEY);
       persistedSidebarVariant = storedValue === "layered" ? "layered" : "classic";
@@ -66,16 +61,13 @@
 
   function setPersistedSidebarVariant(variant: "classic" | "layered"): "classic" | "layered" {
     persistedSidebarVariant = variant === "classic" ? "classic" : "layered";
-
     try {
       globalThis.localStorage.setItem(SIDEBAR_VARIANT_STORAGE_KEY, persistedSidebarVariant);
     } catch {
       // Ignore storage write failures and keep the in-memory variant.
     }
-
     return persistedSidebarVariant;
   }
-
   namespace.sidebarState = {
     getSidebarUiState,
     persistSidebarScroll,

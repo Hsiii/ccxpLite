@@ -53,7 +53,7 @@ declare global {
     pathSegments?: readonly string[];
     href?: string;
     target?: string;
-    clickLinkArgs?: CcxpLiteClickLinkArgs | null;
+    clickLinkArgs?: CcxpLiteClickLinkArgs | undefined;
     nonce?: number;
   }
 
@@ -114,12 +114,12 @@ declare global {
   interface CcxpLiteCaptchaAutofillState extends CcxpLiteCaptchaField {
     lastRequestedSrc: string;
     requestToken: number;
-    pendingRequest: Promise<string> | null;
+    pendingRequest: Promise<string> | undefined;
     pendingSrc: string;
     failedSrc: string;
     cachedAnswer: string;
     cachedSrc: string;
-    timeoutFlashTimer?: number | null;
+    timeoutFlashTimer?: number | undefined;
   }
 
   interface CcxpLitePe14dSnapshot {
@@ -145,11 +145,11 @@ declare global {
     isLandingPage: (targetDocument: Document) => boolean;
     resolveLandingLocale: (
       targetDocument: Document,
-      languageLinks: ParentNode | null,
-      loginSourceCell: ParentNode | null,
-      loginForm: HTMLFormElement | null,
+      languageLinks: ParentNode | undefined,
+      loginSourceCell: ParentNode | undefined,
+      loginForm: HTMLFormElement | undefined,
     ) => CcxpLiteLocale;
-    getLoginForm: (targetDocument: Document) => HTMLFormElement | null;
+    getLoginForm: (targetDocument: Document) => HTMLFormElement | undefined;
   }
 
   interface CcxpLiteSidebarCategoryDefinition {
@@ -207,19 +207,21 @@ declare global {
 
   interface CcxpLiteSharedDom {
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
-    removeNode: (node: ChildNode | null) => void;
+    removeNode: (node: ChildNode | undefined) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;
-    cleanLegacyAttributes: (node: Node | null) => void;
+    cleanLegacyAttributes: (node: Node | undefined) => void;
     isContextValid: () => boolean;
     ensureContextValid: () => boolean;
     invalidateContext: () => boolean;
-    getRuntimeSafely: () => CcxpLiteRuntime | null;
-    getLocalStorageAreaSafely: () => {
-      get: (
-        keys: readonly string[],
-        callback: (result: Readonly<Record<string, unknown>>) => void,
-      ) => void;
-    } | null;
+    getRuntimeSafely: () => CcxpLiteRuntime | undefined;
+    getLocalStorageAreaSafely: () =>
+      | {
+          get: (
+            keys: readonly string[],
+            callback: (result: Readonly<Record<string, unknown>>) => void,
+          ) => void;
+        }
+      | undefined;
     addCleanupTask: (task: () => void) => void;
   }
 
@@ -266,13 +268,13 @@ declare global {
       },
     ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
-    removeNode: (node: ChildNode | null) => void;
+    removeNode: (node: ChildNode | undefined) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;
-    cleanLegacyAttributes: (node: Node | null) => void;
+    cleanLegacyAttributes: (node: Node | undefined) => void;
     isContextValid: () => boolean;
     ensureContextValid: () => boolean;
     invalidateContext: () => void;
-    getRuntimeSafely: () => CcxpLiteRuntime | null;
+    getRuntimeSafely: () => CcxpLiteRuntime | undefined;
     getLocalStorageAreaSafely: CcxpLiteSharedDom["getLocalStorageAreaSafely"];
     addCleanupTask: (task: () => void) => void;
   }
@@ -297,9 +299,12 @@ declare global {
       targetDocument: Document,
       state: CcxpLiteLandingValidationState,
     ) => void;
-    ensureLoginSubmissionPayload: (form: HTMLFormElement | null, targetDocument: Document) => void;
+    ensureLoginSubmissionPayload: (
+      form: HTMLFormElement | undefined,
+      targetDocument: Document,
+    ) => void;
     extractPwdstrFromImage: (
-      imageNode: HTMLImageElement | null,
+      imageNode: HTMLImageElement | undefined,
       targetDocument: Document,
     ) => string;
   }
@@ -309,15 +314,15 @@ declare global {
     enableLoginCaptchaAutofill: (
       targetDocument: Document,
       rootNode: ParentNode,
-      existingState?: CcxpLiteCaptchaAutofillState | null,
+      existingState?: CcxpLiteCaptchaAutofillState,
     ) => void;
     getOrCreateCaptchaAutofillState: (
       targetDocument: Document,
       rootNode: ParentNode,
-    ) => CcxpLiteCaptchaAutofillState | null;
+    ) => CcxpLiteCaptchaAutofillState | undefined;
     primeCaptchaAutofill: (
       targetDocument: Document,
-      state: CcxpLiteCaptchaAutofillState | null,
+      state: CcxpLiteCaptchaAutofillState | undefined,
     ) => void;
   }
 
@@ -334,34 +339,34 @@ declare global {
   interface CcxpLiteLandingSupport {
     findLoginSourceCell: (
       targetDocument: Document,
-      loginForm: Element | null,
-    ) => HTMLElement | null;
-    findAnnouncementTable: (targetDocument: Document) => HTMLTableElement | null;
-    findUtilityLinksTable: (targetDocument: Document) => HTMLTableElement | null;
+      loginForm: Element | undefined,
+    ) => HTMLElement | undefined;
+    findAnnouncementTable: (targetDocument: Document) => HTMLTableElement | undefined;
+    findUtilityLinksTable: (targetDocument: Document) => HTMLTableElement | undefined;
     findCannotLoginLink: (
       targetDocument: Document,
-      utilityLinksTable: Element | null,
-    ) => HTMLAnchorElement | null;
-    findServiceLink: (targetDocument: Document) => HTMLElement | null;
+      utilityLinksTable: Element | undefined,
+    ) => HTMLAnchorElement | undefined;
+    findServiceLink: (targetDocument: Document) => HTMLElement | undefined;
     buildHeaderUtilityLinks: (
       targetDocument: Document,
-      utilityLinksTable: Element | null,
-      excludedAnchor: HTMLAnchorElement | null,
+      utilityLinksTable: Element | undefined,
+      excludedAnchor: HTMLAnchorElement | undefined,
       strings?: Readonly<Record<string, string>>,
-    ) => HTMLElement | null;
+    ) => HTMLElement | undefined;
     buildLandingSupportLinks: (
       targetDocument: Document,
-      serviceLinkNode: Element | null,
-      cannotLoginAnchor: HTMLAnchorElement | null,
+      serviceLinkNode: Element | undefined,
+      cannotLoginAnchor: HTMLAnchorElement | undefined,
       strings?: Readonly<Record<string, string>>,
-    ) => HTMLElement | null;
-    collapseLegacyServiceRow: (serviceLinkNode: Element | null) => void;
-    collapseLegacyCannotLoginLink: (cannotLoginAnchor: Element | null) => void;
-    collapseLegacyUtilityRow: (utilityLinksTable: Element | null) => void;
-    collapseLegacyThreeColumnRows: (rootNode: ParentNode | null) => void;
-    findCalendarTable: (targetNode: ParentNode) => HTMLTableElement | null;
+    ) => HTMLElement | undefined;
+    collapseLegacyServiceRow: (serviceLinkNode: Element | undefined) => void;
+    collapseLegacyCannotLoginLink: (cannotLoginAnchor: Element | undefined) => void;
+    collapseLegacyUtilityRow: (utilityLinksTable: Element | undefined) => void;
+    collapseLegacyThreeColumnRows: (rootNode: ParentNode | undefined) => void;
+    findCalendarTable: (targetNode: ParentNode) => HTMLTableElement | undefined;
     prepareAnnouncementTable: (
-      table: HTMLTableElement | null,
+      table: HTMLTableElement | undefined,
       strings?: Readonly<Record<string, string>>,
     ) => void;
   }
@@ -402,7 +407,7 @@ declare global {
     hasLoaded: boolean;
     currentCategoryId: string;
     searchQuery: string;
-    activeLeaf: CcxpLiteSidebarLinkItem | null;
+    activeLeaf: CcxpLiteSidebarLinkItem | undefined;
     sidebarVariant: "classic" | "layered";
     classicExpandedItemIds: string[];
     scrollTopByView: Record<string, number>;
@@ -418,7 +423,7 @@ declare global {
     writeFavoriteIds: (favoriteIds: ReadonlySet<string>) => void;
     ensureFavoriteStorageSync: () => void;
     collectFavoriteLinks: (
-      item: CcxpLiteSidebarTreeNode | null,
+      item: CcxpLiteSidebarTreeNode | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => readonly CcxpLiteSidebarLinkItem[];
     dedupeLinkItems: (
@@ -432,14 +437,14 @@ declare global {
       fallbackSegment?: string,
     ) => readonly string[];
     isFavoriteLink: (
-      linkItem: CcxpLiteSidebarLinkItem | null,
+      linkItem: CcxpLiteSidebarLinkItem | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => boolean;
     getMatchingFavoriteIds: (
-      linkItem: CcxpLiteSidebarLinkItem | null,
+      linkItem: CcxpLiteSidebarLinkItem | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => readonly string[];
-    getScopedSessionStorage: () => Storage | null;
+    getScopedSessionStorage: () => Storage | undefined;
   }
 
   interface CcxpLiteSidebarData {
@@ -448,7 +453,7 @@ declare global {
       navDocument: Document,
       strings: Readonly<Record<string, string>>,
     ) => CcxpLiteSidebarModel;
-    parseSidebarTree: (navDocument: Document) => CcxpLiteLegacySidebarFolderNode | null;
+    parseSidebarTree: (navDocument: Document) => CcxpLiteLegacySidebarFolderNode | undefined;
     filterFavoriteLinks: (
       links: readonly CcxpLiteSidebarLinkItem[],
       query: string,
@@ -458,10 +463,10 @@ declare global {
       query: string,
     ) => readonly CcxpLiteSidebarCategoryNode[];
     filterCategoryTree: (
-      category: CcxpLiteSidebarCategoryNode | null,
+      category: CcxpLiteSidebarCategoryNode | undefined,
       query: string,
-    ) => CcxpLiteSidebarCategoryNode | null;
-    countLinksInTree: (item: CcxpLiteSidebarTreeNode | null) => number;
+    ) => CcxpLiteSidebarCategoryNode | undefined;
+    countLinksInTree: (item: CcxpLiteSidebarTreeNode | undefined) => number;
   }
 
   interface CcxpLiteSidebarUi {
@@ -481,7 +486,7 @@ declare global {
       state: CcxpLiteSidebarState,
       strings: Readonly<Record<string, string>>,
       onSwitch: () => void,
-      footer?: HTMLElement | null,
+      footer?: HTMLElement,
     ) => void;
   }
 
@@ -498,13 +503,13 @@ declare global {
       rerender: () => void,
     ) => void;
     simplifyEmbeddedFrame: (frame: HTMLIFrameElement) => void;
-    getLegacyMainFrame: () => HTMLIFrameElement | null;
+    getLegacyMainFrame: () => HTMLIFrameElement | undefined;
     captureInitialMainFrameUrl: () => void;
     openLeafInNewTab: (activeLeaf: CcxpLiteSidebarLinkItem, navDocument: Document) => void;
     activateLegacyLink: (
       linkItem: CcxpLiteSidebarLinkItem,
       navDocument: Document,
-      destinationFrame?: HTMLIFrameElement | null,
+      destinationFrame?: HTMLIFrameElement,
     ) => void;
     isExternalLinkTarget: (
       linkItem: CcxpLiteSidebarLinkItem | string,
@@ -516,7 +521,7 @@ declare global {
     favoriteState: {
       ids: Set<string>;
       hasLoaded: boolean;
-      pendingLoad: Promise<void> | null;
+      pendingLoad: Promise<void> | undefined;
     };
   }
 

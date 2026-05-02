@@ -33,7 +33,7 @@
   ) {
     const fields = ["account", "passwd", "passwd2"]
       .map((name) => targetDocument.querySelector<HTMLInputElement>(`input[name='${name}']`))
-      .filter((field): field is HTMLInputElement => field !== null);
+      .filter((field): field is HTMLInputElement => field !== undefined);
 
     if (fields.length === 0) {
       return;
@@ -64,13 +64,16 @@
     form.dataset.ccxpLiteValidationBound = "true";
   }
 
-  function ensureLoginSubmissionPayload(form: HTMLFormElement | null, targetDocument: Document) {
+  function ensureLoginSubmissionPayload(
+    form: HTMLFormElement | undefined,
+    targetDocument: Document,
+  ) {
     if (!form) {
       return;
     }
 
     const authImage = form.querySelector<HTMLImageElement>("img[src*='auth_img.php?pwdstr=']");
-    const tokenFromImage = extractPwdstrFromImage(authImage, targetDocument);
+    const tokenFromImage = extractPwdstrFromImage(authImage ?? undefined, targetDocument);
     let fnstrField = form.querySelector<HTMLInputElement>("input[name='fnstr']");
 
     if (!fnstrField && tokenFromImage) {
@@ -85,7 +88,10 @@
     }
   }
 
-  function extractPwdstrFromImage(imageNode: HTMLImageElement | null, targetDocument: Document) {
+  function extractPwdstrFromImage(
+    imageNode: HTMLImageElement | undefined,
+    targetDocument: Document,
+  ) {
     if (!imageNode) {
       return "";
     }
