@@ -37,7 +37,7 @@ describe("landing captcha", () => {
         }),
     ) as typeof window.fetch;
 
-    const input = document.querySelector("input[name='passwd2']");
+    const input = document.querySelector<HTMLInputElement>("input[name='passwd2']");
     const inputSpy = vi.fn();
     const changeSpy = vi.fn();
     input.addEventListener("input", () => {
@@ -83,7 +83,7 @@ describe("landing captcha", () => {
       throw error;
     }) as typeof window.fetch;
 
-    const input = document.querySelector("input[name='passwd2']");
+    const input = document.querySelector<HTMLInputElement>("input[name='passwd2']");
     landingCaptcha.enableLoginCaptchaAutofill(document, document);
     await flushPromises();
     await flushPromises();

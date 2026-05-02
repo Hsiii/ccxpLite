@@ -36,13 +36,13 @@
     modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel),
     strings = STRINGS,
   ) {
-    const shell = hostDocument.querySelector(`.${TOKENS.sidebarClass}`);
+    const shell = hostDocument.querySelector<HTMLElement>(`.${TOKENS.sidebarClass}`);
     if (!shell) {
       return;
     }
 
-    const content = shell.querySelector(".ccxp-lite-sidebar-content");
-    const footer = shell.querySelector(".ccxp-lite-sidebar-footer");
+    const content = shell.querySelector<HTMLElement>(".ccxp-lite-sidebar-content");
+    const footer = shell.querySelector<HTMLElement>(".ccxp-lite-sidebar-footer");
     if (!content || !footer) {
       return;
     }

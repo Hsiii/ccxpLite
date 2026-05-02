@@ -18,7 +18,6 @@ export default defineConfig(
   {
     rules: {
       "@typescript-eslint/no-unsafe-call": "off",
-      "@typescript-eslint/no-unsafe-member-access": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",

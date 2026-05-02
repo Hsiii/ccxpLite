@@ -12,11 +12,11 @@
 
   function enhancePasswordVisibilityToggle(targetDocument: Document, rootNode: ParentNode) {
     const passwordFields = [
-      ...rootNode.querySelectorAll(
+      ...rootNode.querySelectorAll<HTMLInputElement>(
         "input[name='passwd'], input[type='password']:not([name='passwd2'])",
       ),
     ];
-    const seen = new Set();
+    const seen = new Set<HTMLInputElement>();
     const strings = getLandingStrings(targetDocument);
 
     for (const field of passwordFields) {
