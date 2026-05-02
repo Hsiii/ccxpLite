@@ -102,12 +102,7 @@
     const { originalTarget } = pendingSubmission;
 
     persistSnapshot(snapshot);
-
-    const handleLoad = () => {
-      processTransportResponse();
-    };
-
-    transportFrame.addEventListener("load", handleLoad, { once: true });
+    transportFrame.addEventListener("load", processTransportResponse, { once: true });
     form.setAttribute("target", TRANSPORT_FRAME_NAME);
 
     try {

@@ -57,7 +57,6 @@ export default defineConfig(
         },
       ],
       "no-param-reassign": "off",
-      "unicorn/consistent-function-scoping": "off",
       "unicorn/no-array-for-each": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-spread": "off",

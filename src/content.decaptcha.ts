@@ -1,3 +1,115 @@
+function isArray<T>(value: unknown): value is T[] {
+  return Object.prototype.toString.call(value) === "[object Array]";
+}
+
+function toUint8Array(imageBytes: unknown) {
+  if (imageBytes instanceof Uint8Array) {
+    return imageBytes;
+  }
+
+  if (imageBytes instanceof ArrayBuffer) {
+    return new Uint8Array(imageBytes);
+  }
+
+  if (ArrayBuffer.isView(imageBytes)) {
+    return new Uint8Array(imageBytes.buffer, imageBytes.byteOffset, imageBytes.byteLength);
+  }
+
+  throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
+}
+
+function loadImage(objectUrl: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener(
+      "load",
+      () => {
+        resolve(image);
+      },
+      { once: true },
+    );
+    image.addEventListener(
+      "error",
+      () => {
+        reject(new Error("Failed to decode captcha image."));
+      },
+      { once: true },
+    );
+    image.src = objectUrl;
+  });
+}
+
+function createTensor(
+  shape: number[],
+  data: Float32Array | ArrayLike<number>,
+): CcxpLitePreparedTensor {
+  return {
+    shape: shape.slice(),
+    data: data instanceof Float32Array ? data : new Float32Array(data),
+  };
+}
+
+function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
+  let flatIndex = 0;
+  let stride = 1;
+
+  for (let axis = tensor.shape.length - 1; axis >= 0; axis -= 1) {
+    flatIndex += indices[axis] * stride;
+    stride *= tensor.shape[axis];
+  }
+
+  return tensor.data[flatIndex];
+}
+
+function linear(
+  inputVector: Float32Array | number[],
+  weight: CcxpLitePreparedTensor,
+  bias: CcxpLitePreparedTensor,
+) {
+  const [outFeatures, inFeatures] = weight.shape;
+  const out = new Float32Array(outFeatures);
+
+  for (let outIndex = 0; outIndex < outFeatures; outIndex += 1) {
+    const base = outIndex * inFeatures;
+    let acc = bias.data[outIndex];
+    for (let inIndex = 0; inIndex < inFeatures; inIndex += 1) {
+      acc += weight.data[base + inIndex] * inputVector[inIndex];
+    }
+    out[outIndex] = acc;
+  }
+
+  return out;
+}
+
+function argmax(values: Float32Array | number[]) {
+  let bestIndex = 0;
+  let bestValue = values[0];
+
+  for (let index = 1; index < values.length; index += 1) {
+    if (values[index] > bestValue) {
+      bestIndex = index;
+      bestValue = values[index];
+    }
+  }
+
+  return bestIndex;
+}
+
+function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: number) {
+  const channels = pooledTensor.shape[0];
+  const vectors: Float32Array[] = [];
+
+  for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
+    const vector = new Float32Array(channels);
+    for (let channel = 0; channel < channels; channel += 1) {
+      vector[channel] = tensorGet(pooledTensor, [channel, 0, digitIndex]);
+    }
+    vectors.push(vector);
+  }
+
+  return vectors;
+}
+
 (function bootstrapCcxpLiteDecaptcha(
   globalScope: typeof globalThis,
   factory: (globalScope: typeof globalThis) => {
@@ -24,10 +136,6 @@
   };
   const DIGITS = 6;
   const EPS = 1e-5;
-
-  function isArray<T>(value: unknown): value is T[] {
-    return Object.prototype.toString.call(value) === "[object Array]";
-  }
 
   function getNamespace() {
     runtimeScope.CCXP_LITE ||= {};
@@ -64,43 +172,6 @@
       cropRight: Number.isFinite(model.cropRight) ? model.cropRight : 0,
       tensors: model.preparedTensors,
     };
-  }
-
-  function toUint8Array(imageBytes: unknown) {
-    if (imageBytes instanceof Uint8Array) {
-      return imageBytes;
-    }
-
-    if (imageBytes instanceof ArrayBuffer) {
-      return new Uint8Array(imageBytes);
-    }
-
-    if (ArrayBuffer.isView(imageBytes)) {
-      return new Uint8Array(imageBytes.buffer, imageBytes.byteOffset, imageBytes.byteLength);
-    }
-
-    throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
-  }
-
-  function loadImage(objectUrl: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const image = new Image();
-      image.addEventListener(
-        "load",
-        () => {
-          resolve(image);
-        },
-        { once: true },
-      );
-      image.addEventListener(
-        "error",
-        () => {
-          reject(new Error("Failed to decode captcha image."));
-        },
-        { once: true },
-      );
-      image.src = objectUrl;
-    });
   }
 
   async function decodeImageData(imageBytes: unknown) {
@@ -157,28 +228,6 @@
     } finally {
       URL.revokeObjectURL(objectUrl);
     }
-  }
-
-  function createTensor(
-    shape: number[],
-    data: Float32Array | ArrayLike<number>,
-  ): CcxpLitePreparedTensor {
-    return {
-      shape: shape.slice(),
-      data: data instanceof Float32Array ? data : new Float32Array(data),
-    };
-  }
-
-  function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
-    let flatIndex = 0;
-    let stride = 1;
-
-    for (let axis = tensor.shape.length - 1; axis >= 0; axis -= 1) {
-      flatIndex += indices[axis] * stride;
-      stride *= tensor.shape[axis];
-    }
-
-    return tensor.data[flatIndex];
   }
 
   function extractImageTensorFromRgba(
@@ -340,40 +389,6 @@
     return createTensor([channels, outHeight, outWidth], out);
   }
 
-  function linear(
-    inputVector: Float32Array | number[],
-    weight: CcxpLitePreparedTensor,
-    bias: CcxpLitePreparedTensor,
-  ) {
-    const [outFeatures, inFeatures] = weight.shape;
-    const out = new Float32Array(outFeatures);
-
-    for (let outIndex = 0; outIndex < outFeatures; outIndex += 1) {
-      const base = outIndex * inFeatures;
-      let acc = bias.data[outIndex];
-      for (let inIndex = 0; inIndex < inFeatures; inIndex += 1) {
-        acc += weight.data[base + inIndex] * inputVector[inIndex];
-      }
-      out[outIndex] = acc;
-    }
-
-    return out;
-  }
-
-  function argmax(values: Float32Array | number[]) {
-    let bestIndex = 0;
-    let bestValue = values[0];
-
-    for (let index = 1; index < values.length; index += 1) {
-      if (values[index] > bestValue) {
-        bestIndex = index;
-        bestValue = values[index];
-      }
-    }
-
-    return bestIndex;
-  }
-
   function applyDepthwiseSeparableBlock(
     inputTensor: CcxpLitePreparedTensor,
     tensors: Record<string, CcxpLitePreparedTensor>,
@@ -408,21 +423,6 @@
       tensors[`${prefix}.4.running_var`],
     );
     return relu(output);
-  }
-
-  function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: number) {
-    const channels = pooledTensor.shape[0];
-    const vectors: Float32Array[] = [];
-
-    for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
-      const vector = new Float32Array(channels);
-      for (let channel = 0; channel < channels; channel += 1) {
-        vector[channel] = tensorGet(pooledTensor, [channel, 0, digitIndex]);
-      }
-      vectors.push(vector);
-    }
-
-    return vectors;
   }
 
   function predictDigitsFromTensor(imageTensor: CcxpLitePreparedTensor) {
