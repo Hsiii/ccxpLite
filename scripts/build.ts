@@ -21,7 +21,7 @@ const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
 const checkpointPath = path.resolve(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
 const generatedModelPath = path.join(srcDir, "content.decaptcha.model.ts");
-const buildTsconfigPath = path.join(projectRoot, "tsconfig.build.json");
+const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
 function copyTree(
   sourceDir: string,
   targetDir: string,
@@ -75,10 +75,24 @@ try {
     throw new Error(`Missing generated decaptcha model file: ${generatedModelPath}`);
   }
 
-  const compileResult = spawnSync("bunx", ["tsc", "-p", buildTsconfigPath], {
-    cwd: projectRoot,
-    stdio: "inherit",
-  });
+  const compileResult = spawnSync(
+    "bunx",
+    [
+      "tsc",
+      "-p",
+      srcTsconfigPath,
+      "--noEmit",
+      "false",
+      "--rootDir",
+      "./src",
+      "--outDir",
+      "./.build/src",
+    ],
+    {
+      cwd: projectRoot,
+      stdio: "inherit",
+    },
+  );
 
   if (compileResult.status !== 0) {
     throw new Error("TypeScript extension build failed");
