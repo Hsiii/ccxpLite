@@ -330,7 +330,7 @@
   function createClassicSidebarItems(
     model: CcxpLiteSidebarModel,
     query: string,
-  ): CcxpLiteSidebarTreeNode[] {
+  ): readonly CcxpLiteSidebarTreeNode[] {
     const items: CcxpLiteSidebarTreeNode[] = [];
     if (model?.favorites) {
       items.push(model.favorites);
@@ -1784,7 +1784,7 @@
 
   function getCategoryIconShapes(
     iconName: string,
-  ): Array<string | { tag: string; attributes: Record<string, string> }> {
+  ): ReadonlyArray<string | { tag: string; attributes: Record<string, string> }> {
     const iconShapeMap: Record<
       string,
       Array<string | { tag: string; attributes: Record<string, string> }>

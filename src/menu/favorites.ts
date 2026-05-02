@@ -22,7 +22,7 @@
     return Object.prototype.toString.call(value) === "[object Array]";
   }
 
-  function getFavoriteIds(): Set<string> {
+  function getFavoriteIds(): ReadonlySet<string> {
     return new Set(favoriteState.ids);
   }
 
@@ -76,7 +76,7 @@
     }
   }
 
-  async function readFavoritesFromStorage(): Promise<Set<string>> {
+  async function readFavoritesFromStorage(): Promise<ReadonlySet<string>> {
     return await new Promise((resolve) => {
       const storage = getScopedFavoriteStorage();
       if (storage) {
@@ -197,7 +197,7 @@
     }
   }
 
-  async function readLegacyFavoritesFromExtensionStorage(): Promise<Set<string>> {
+  async function readLegacyFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
     return await new Promise((resolve) => {
       const runtime = namespace.sharedDom?.getRuntimeSafely() || null;
       const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() || null;
@@ -254,7 +254,9 @@
     }
   }
 
-  function dedupeLinkItems(linkItems: CcxpLiteSidebarLinkItem[]) {
+  function dedupeLinkItems(
+    linkItems: CcxpLiteSidebarLinkItem[],
+  ): readonly CcxpLiteSidebarLinkItem[] {
     const seen = new Set();
 
     return linkItems.filter((linkItem) => {
@@ -324,7 +326,7 @@
     });
   }
 
-  function parseFavoritePathSignature(signature: unknown) {
+  function parseFavoritePathSignature(signature: unknown): readonly string[] {
     return normalizeFavoriteText(signature).split(">").map(normalizeFavoriteText).filter(Boolean);
   }
 
@@ -361,7 +363,7 @@
     parentPathSegments: string[] | undefined,
     label: unknown,
     fallbackSegment?: string,
-  ) {
+  ): readonly string[] {
     const normalizedParentSegments = isArray(parentPathSegments)
       ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
       : [];
@@ -385,7 +387,7 @@
   function getMatchingFavoriteIds(
     linkItem: CcxpLiteSidebarLinkItem | null,
     favoriteIds: Set<string>,
-  ) {
+  ): readonly string[] {
     if (!linkItem || !favoriteIds) {
       return [];
     }

@@ -388,19 +388,19 @@ declare global {
       favoriteIds: Set<string>,
       favoriteLinks: CcxpLiteSidebarLinkItem[],
     ) => void;
-    dedupeLinkItems: (linkItems: CcxpLiteSidebarLinkItem[]) => CcxpLiteSidebarLinkItem[];
+    dedupeLinkItems: (linkItems: CcxpLiteSidebarLinkItem[]) => readonly CcxpLiteSidebarLinkItem[];
     createLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
     createLegacyLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
     buildFavoritePathSegments: (
       parentPathSegments: string[] | undefined,
       label: unknown,
       fallbackSegment?: string,
-    ) => string[];
+    ) => readonly string[];
     isFavoriteLink: (linkItem: CcxpLiteSidebarLinkItem | null, favoriteIds: Set<string>) => boolean;
     getMatchingFavoriteIds: (
       linkItem: CcxpLiteSidebarLinkItem | null,
       favoriteIds: Set<string>,
-    ) => string[];
+    ) => readonly string[];
     getScopedSessionStorage: () => Storage | null;
   }
 
@@ -414,11 +414,11 @@ declare global {
     filterFavoriteLinks: (
       links: CcxpLiteSidebarLinkItem[],
       query: string,
-    ) => CcxpLiteSidebarLinkItem[];
+    ) => readonly CcxpLiteSidebarLinkItem[];
     filterCategories: (
       categories: CcxpLiteSidebarCategoryNode[],
       query: string,
-    ) => CcxpLiteSidebarCategoryNode[];
+    ) => readonly CcxpLiteSidebarCategoryNode[];
     filterCategoryTree: (
       category: CcxpLiteSidebarCategoryNode | null,
       query: string,
@@ -477,8 +477,8 @@ declare global {
       hasLoaded: boolean;
       pendingLoad: Promise<void> | null;
     };
-    getFavoriteIds: () => Set<string>;
-    getMatchingFavoriteIds: (category: CcxpLiteSidebarCategoryDefinition) => Set<string>;
+    getFavoriteIds: () => ReadonlySet<string>;
+    getMatchingFavoriteIds: (category: CcxpLiteSidebarCategoryDefinition) => ReadonlySet<string>;
     writeFavoriteIds: (ids: Iterable<string>) => void;
     isFavoriteLink: (linkItem: CcxpLiteSidebarLinkItem) => boolean;
   }

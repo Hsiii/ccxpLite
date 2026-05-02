@@ -301,7 +301,10 @@
     formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
 
-  function collectLoginFieldPairs(rowNode: ParentNode, cells: HTMLElement[]) {
+  function collectLoginFieldPairs(
+    rowNode: ParentNode,
+    cells: HTMLElement[],
+  ): ReadonlyArray<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> {
     const pairs: Array<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> = [];
     const usedFieldCells = new Set<HTMLElement>();
 
@@ -486,7 +489,10 @@
     }
   }
 
-  function collectLeadingNodesBeforeField(fieldCell: Node | null, fieldNode: Node | null) {
+  function collectLeadingNodesBeforeField(
+    fieldCell: Node | null,
+    fieldNode: Node | null,
+  ): readonly Node[] {
     if (!fieldCell || !fieldNode || fieldNode.parentNode !== fieldCell) {
       return [];
     }
@@ -1003,7 +1009,7 @@
     return isTwoImagePair;
   }
 
-  function collectLegacyActionControls(row: Element) {
+  function collectLegacyActionControls(row: Element): readonly Element[] {
     return [
       ...row.querySelectorAll(
         "input[type='image'], input[type='submit'], input[type='reset'], button, a > img",

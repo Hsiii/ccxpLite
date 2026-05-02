@@ -95,7 +95,10 @@ function argmax(values: Float32Array | number[]) {
   return bestIndex;
 }
 
-function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: number) {
+function getHeadInputVectors(
+  pooledTensor: CcxpLitePreparedTensor,
+  digits: number,
+): readonly Float32Array[] {
   const channels = pooledTensor.shape[0];
   const vectors: Float32Array[] = [];
 

@@ -117,7 +117,7 @@
       .trim();
   }
 
-  function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): string[] {
+  function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): readonly string[] {
     if (!item) {
       return [];
     }
@@ -347,7 +347,10 @@
       .trim();
   }
 
-  function filterFavoriteLinks(linkItems: CcxpLiteSidebarLinkItem[], query: string) {
+  function filterFavoriteLinks(
+    linkItems: CcxpLiteSidebarLinkItem[],
+    query: string,
+  ): readonly CcxpLiteSidebarLinkItem[] {
     if (!query) {
       return linkItems;
     }
@@ -355,7 +358,10 @@
     return linkItems.filter((linkItem) => isSearchMatch(linkItem.label, query));
   }
 
-  function filterCategories(categories: CcxpLiteSidebarCategoryNode[], query: string) {
+  function filterCategories(
+    categories: CcxpLiteSidebarCategoryNode[],
+    query: string,
+  ): readonly CcxpLiteSidebarCategoryNode[] {
     if (!query) {
       return categories;
     }
