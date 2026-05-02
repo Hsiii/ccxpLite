@@ -59,7 +59,6 @@ export default defineConfig(
           allow: ["**/*.css"],
         },
       ],
-      "n/file-extension-in-import": "off",
       "no-param-reassign": "off",
       "unicorn/consistent-function-scoping": "off",
       "unicorn/no-array-for-each": "off",
