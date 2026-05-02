@@ -8,7 +8,7 @@ globalThis.CCXP_LITE = {} as CcxpLiteNamespace;
 
 interface DecaptchaTest {
   __test: {
-    createTensor: (s: number[], d: number[]) => CcxpLitePreparedTensor;
+    createTensor: (s: readonly number[], d: readonly number[]) => CcxpLitePreparedTensor;
     extractImageTensorFromRgba: (
       w: number,
       h: number,
@@ -30,7 +30,7 @@ interface DecaptchaTest {
       e: number,
     ) => CcxpLitePreparedTensor;
     relu: (i: CcxpLitePreparedTensor) => CcxpLitePreparedTensor;
-    adaptiveAvgPool2d: (i: CcxpLitePreparedTensor, s: number[]) => CcxpLitePreparedTensor;
+    adaptiveAvgPool2d: (i: CcxpLitePreparedTensor, s: readonly number[]) => CcxpLitePreparedTensor;
     linear: (i: Float32Array, w: CcxpLitePreparedTensor, b: CcxpLitePreparedTensor) => Float32Array;
     argmax: (i: Float32Array) => number;
     predictDigitsFromTensor: (t: CcxpLitePreparedTensor, m: unknown) => string;

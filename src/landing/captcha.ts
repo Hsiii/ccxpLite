@@ -29,7 +29,7 @@
 
     captchaImage.addEventListener("load", triggerAutofill);
 
-    const observer = new MutationObserver((mutations) => {
+    const observer = new MutationObserver((mutations: readonly MutationRecord[]) => {
       if (!namespace.sharedDom?.ensureContextValid()) {
         observer.disconnect();
         return;

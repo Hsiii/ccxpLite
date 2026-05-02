@@ -305,7 +305,7 @@
 
   function collectLoginFieldPairs(
     rowNode: ParentNode,
-    cells: HTMLElement[],
+    cells: readonly HTMLElement[],
   ): ReadonlyArray<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> {
     const pairs: Array<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> = [];
     const usedFieldCells = new Set<HTMLElement>();
@@ -362,7 +362,7 @@
     return pairs;
   }
 
-  function resolveLabelCellForField(cells: HTMLElement[], fieldCellIndex: number) {
+  function resolveLabelCellForField(cells: readonly HTMLElement[], fieldCellIndex: number) {
     for (let index = fieldCellIndex - 1; index >= 0; index--) {
       const candidate = cells[index];
       if (!candidate) {
@@ -1116,7 +1116,7 @@
     return button;
   }
 
-  function getLandingStrings(targetDocument: Document): Record<string, string> {
+  function getLandingStrings(targetDocument: Document): Readonly<Record<string, string>> {
     return getLocalizedStrings(
       resolveLandingLocale(
         targetDocument,

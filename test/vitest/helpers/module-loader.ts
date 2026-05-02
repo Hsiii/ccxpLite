@@ -18,7 +18,10 @@ export type TestWindow = Window &
       };
       storage: {
         local: {
-          get: (keys: string[] | null, callback: (result: Record<string, unknown>) => void) => void;
+          get: (
+            keys: readonly string[] | null,
+            callback: (result: Readonly<Record<string, unknown>>) => void,
+          ) => void;
         };
       };
     };
@@ -45,7 +48,10 @@ export function createTestWindow(
     },
     storage: {
       local: {
-        get: (_keys: string[] | null, callback: (result: Record<string, unknown>) => void) => {
+        get: (
+          _keys: readonly string[] | null,
+          callback: (result: Readonly<Record<string, unknown>>) => void,
+        ) => {
           callback({});
         },
       },
@@ -67,7 +73,7 @@ export function createTestWindow(
   return { window: testWindow };
 }
 
-export function loadModules(window: TestWindow, modulePaths: string[]): void {
+export function loadModules(window: TestWindow, modulePaths: readonly string[]): void {
   const context = vm.createContext(window as unknown as vm.Context);
   for (const modulePath of modulePaths) {
     const sourcePath = path.join(repoRoot, modulePath);

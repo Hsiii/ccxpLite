@@ -198,7 +198,10 @@
     };
   }
 
-  function applyCssVariables(targetElement: HTMLElement, variables: Record<string, string>) {
+  function applyCssVariables(
+    targetElement: HTMLElement,
+    variables: Readonly<Record<string, string>>,
+  ) {
     for (const [name, value] of Object.entries(variables)) {
       targetElement.style.setProperty(name, value);
     }

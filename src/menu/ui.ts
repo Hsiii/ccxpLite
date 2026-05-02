@@ -35,7 +35,7 @@
     hostDocument: Document,
     navDocument: Document,
     modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel),
-    strings = STRINGS,
+    strings: Readonly<Record<string, string>> = STRINGS,
   ) {
     const shell = hostDocument.querySelector<HTMLElement>(`.${TOKENS.sidebarClass}`);
     if (!shell) {
@@ -148,7 +148,7 @@
   }
 
   function findCategoryContainingLeaf(
-    categories: CcxpLiteSidebarCategoryNode[],
+    categories: readonly CcxpLiteSidebarCategoryNode[],
     activeLeaf: CcxpLiteSidebarLinkItem | null,
   ): CcxpLiteSidebarCategoryNode | null {
     if (!activeLeaf) {
@@ -197,7 +197,7 @@
 
   function createSidebarSearch(
     targetDocument: Document,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
   ): HTMLElement {
     const search = targetDocument.createElement("label");
     search.className = "ccxp-lite-sidebar-search";
@@ -218,7 +218,7 @@
   function createSidebarVariantSwitch(
     targetDocument: Document,
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const button = targetDocument.createElement("button");
@@ -276,7 +276,7 @@
     navDocument: Document,
     model: CcxpLiteSidebarModel,
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ) {
     const sidebarList = targetDocument.createElement("aside");
@@ -289,7 +289,10 @@
     const searchExpansionIds = new Set();
     if (searchQuery) {
       for (const item of items) {
-        collectClassicExpandedIds(item, searchQuery, searchExpansionIds);
+        const expandedState = collectClassicExpandedState(item, searchQuery);
+        for (const itemId of expandedState.expandedItemIds) {
+          searchExpansionIds.add(itemId);
+        }
       }
       for (const itemId of searchExpansionIds) {
         expandedItemIds.add(itemId);
@@ -387,9 +390,9 @@
     targetDocument: Document,
     navDocument: Document,
     group: CcxpLiteSidebarTreeNode,
-    expandedItemIds: Set<string>,
+    expandedItemIds: ReadonlySet<string>,
     depth: number,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     state: CcxpLiteSidebarState,
     rerender: () => void,
   ) {
@@ -419,13 +422,14 @@
     button.append(createRowLabel(targetDocument, group.label, false));
     button.append(createClassicChevronIcon(targetDocument, isExpanded));
     button.addEventListener("click", () => {
-      if (expandedItemIds.has(group.id)) {
-        expandedItemIds.delete(group.id);
+      const nextExpandedItemIds = new Set(expandedItemIds);
+      if (nextExpandedItemIds.has(group.id)) {
+        nextExpandedItemIds.delete(group.id);
       } else {
-        expandedItemIds.add(group.id);
+        nextExpandedItemIds.add(group.id);
       }
       const nextState = state;
-      nextState.classicExpandedItemIds = [...expandedItemIds];
+      nextState.classicExpandedItemIds = [...nextExpandedItemIds];
       rerender();
     });
     linkList.append(button);
@@ -485,7 +489,7 @@
     navDocument: Document,
     linkItem: CcxpLiteSidebarLinkItem,
     depth: number,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const button = targetDocument.createElement("button");
@@ -520,18 +524,21 @@
     return normalizeClassicSearchText(text).includes(normalizedQuery);
   }
 
-  function collectClassicExpandedIds(
+  function collectClassicExpandedState(
     item: CcxpLiteSidebarTreeNode,
     normalizedQuery: string,
-    expandedItemIds: Set<string>,
-  ): boolean {
+  ): { hasMatch: boolean; expandedItemIds: readonly string[] } {
     if (!item) {
-      return false;
+      return {
+        hasMatch: false,
+        expandedItemIds: [],
+      };
     }
 
     const itemLabel = item.kind === "link" ? item.linkItem.label : item.label;
     const itemMatches = isClassicSearchMatch(itemLabel, normalizedQuery);
     let hasMatch = itemMatches;
+    const expandedItemIds: string[] = [];
 
     if (item.kind !== "link") {
       for (const linkItem of item.directLinks || []) {
@@ -541,17 +548,19 @@
       }
 
       for (const section of item.sections || []) {
-        if (collectClassicExpandedIds(section, normalizedQuery, expandedItemIds)) {
+        const childState = collectClassicExpandedState(section, normalizedQuery);
+        expandedItemIds.push(...childState.expandedItemIds);
+        if (childState.hasMatch) {
           hasMatch = true;
         }
       }
 
       if (hasMatch && (item.sections || []).length > 0) {
-        expandedItemIds.add(item.id);
+        expandedItemIds.push(item.id);
       }
     }
 
-    return hasMatch;
+    return { hasMatch, expandedItemIds };
   }
 
   function getClassicSidebarIndentLevel(kind: string, depth: number): number {
@@ -581,10 +590,10 @@
   function createDashboardView(
     targetDocument: Document,
     navDocument: Document,
-    favorites: CcxpLiteSidebarLinkItem[],
-    categories: CcxpLiteSidebarCategoryNode[],
+    favorites: readonly CcxpLiteSidebarLinkItem[],
+    categories: readonly CcxpLiteSidebarCategoryNode[],
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const layout = targetDocument.createElement("div");
@@ -604,8 +613,8 @@
   function createPinnedSection(
     targetDocument: Document,
     navDocument: Document,
-    favorites: CcxpLiteSidebarLinkItem[],
-    strings: Record<string, string>,
+    favorites: readonly CcxpLiteSidebarLinkItem[],
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const section = targetDocument.createElement("section");
@@ -641,9 +650,9 @@
 
   function createAllSection(
     targetDocument: Document,
-    categories: CcxpLiteSidebarCategoryNode[],
+    categories: readonly CcxpLiteSidebarCategoryNode[],
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const section = targetDocument.createElement("section");
@@ -688,7 +697,7 @@
     navDocument: Document,
     category: CcxpLiteSidebarCategoryNode,
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const filteredCategory = state.searchQuery
@@ -828,7 +837,7 @@
   function layoutCategoryDetailWaterfall(
     view: Window,
     body: HTMLElement,
-    detailItems: HTMLElement[],
+    detailItems: readonly HTMLElement[],
   ) {
     const isSingleColumn = view.matchMedia("(max-width: 900px)").matches;
 
@@ -862,7 +871,7 @@
     detailBody.style.height = `${Math.max(...columnHeights) - gap}px`;
   }
 
-  function resetCategoryDetailWaterfall(body: HTMLElement, detailItems: HTMLElement[]) {
+  function resetCategoryDetailWaterfall(body: HTMLElement, detailItems: readonly HTMLElement[]) {
     const detailBody = body;
     detailBody.classList.remove("is-waterfall-ready");
     detailBody.style.height = "";
@@ -872,7 +881,7 @@
     }
   }
 
-  function getShortestColumnIndex(columnHeights: number[]): number {
+  function getShortestColumnIndex(columnHeights: readonly number[]): number {
     let shortestIndex = 0;
 
     for (const [index, height] of columnHeights.entries()) {
@@ -888,7 +897,7 @@
     targetDocument: Document,
     navDocument: Document,
     group: CcxpLiteSidebarGroup,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const block = targetDocument.createElement("div");
@@ -919,8 +928,8 @@
   function createLinkCollection(
     targetDocument: Document,
     navDocument: Document,
-    linkItems: CcxpLiteSidebarLinkItem[],
-    strings: Record<string, string>,
+    linkItems: readonly CcxpLiteSidebarLinkItem[],
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const list = targetDocument.createElement("div");
@@ -943,7 +952,7 @@
   function createCategoryCard(
     targetDocument: Document,
     category: CcxpLiteSidebarCategoryNode,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     onOpen: () => void,
   ) {
     const button = targetDocument.createElement("button");
@@ -996,7 +1005,7 @@
     targetDocument: Document,
     navDocument: Document,
     linkItem: CcxpLiteSidebarLinkItem,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ) {
     const button = targetDocument.createElement("button");
@@ -1018,7 +1027,7 @@
     targetDocument: Document,
     navDocument: Document,
     linkItem: CcxpLiteSidebarLinkItem,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ) {
     const button = targetDocument.createElement("button");
@@ -1095,7 +1104,7 @@
   function createFavoriteToggle(
     targetDocument: Document,
     linkItem: CcxpLiteSidebarLinkItem,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     onFavoritesChange: () => void,
   ): HTMLElement {
     const favoriteButton = targetDocument.createElement("button");
@@ -1163,7 +1172,7 @@
   async function showRemovePinnedDialog(
     targetDocument: Document,
     itemName: string,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
   ): Promise<boolean> {
     return await new Promise((resolve) => {
       // In layered mode the nav frame is full-screen, so targetDocument works. In classic mode the
@@ -1386,7 +1395,7 @@
     navDocument: Document,
     activeCategory: CcxpLiteSidebarCategoryNode | null,
     activeLeaf: CcxpLiteSidebarLinkItem,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const section = targetDocument.createElement("section");
@@ -1683,7 +1692,7 @@
   function mountSidebarVariantSwitch(
     targetDocument: Document,
     state: CcxpLiteSidebarState,
-    strings: Record<string, string>,
+    strings: Readonly<Record<string, string>>,
     rerender: () => void,
     _footer?: HTMLElement | null,
   ) {
@@ -1711,7 +1720,9 @@
     getOverlayMountNode(mountDocument).append(button);
   }
 
-  function removeExistingSidebarVariantSwitches(documents: Array<Document | null | undefined>) {
+  function removeExistingSidebarVariantSwitches(
+    documents: ReadonlyArray<Document | null | undefined>,
+  ) {
     for (const scopeDocument of documents) {
       if (!scopeDocument || !("querySelectorAll" in scopeDocument)) {
         continue;

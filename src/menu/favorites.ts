@@ -209,8 +209,13 @@
       }
 
       (
-        storageApi as { get: (keys: string[], cb: (res: Record<string, unknown>) => void) => void }
-      ).get(["ccxp-lite-sidebar-favorites"], (result: Record<string, unknown>) => {
+        storageApi as {
+          get: (
+            keys: readonly string[],
+            cb: (res: Readonly<Record<string, unknown>>) => void,
+          ) => void;
+        }
+      ).get(["ccxp-lite-sidebar-favorites"], (result: Readonly<Record<string, unknown>>) => {
         if (runtime && runtime.lastError) {
           resolve(new Set());
           return;
@@ -230,19 +235,17 @@
 
   function collectFavoriteLinks(
     item: CcxpLiteSidebarTreeNode | null,
-    favoriteIds: Set<string>,
-    favoriteLinks: CcxpLiteSidebarLinkItem[],
-  ) {
+    favoriteIds: ReadonlySet<string>,
+  ): readonly CcxpLiteSidebarLinkItem[] {
     if (!item) {
-      return;
+      return [];
     }
 
     if (item.kind === "link") {
-      if (item.linkItem && isFavoriteLink(item.linkItem, favoriteIds)) {
-        favoriteLinks.push(item.linkItem);
-      }
-      return;
+      return item.linkItem && isFavoriteLink(item.linkItem, favoriteIds) ? [item.linkItem] : [];
     }
+
+    const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
 
     for (const linkItem of item.directLinks || []) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
@@ -251,12 +254,14 @@
     }
 
     for (const section of item.sections || []) {
-      collectFavoriteLinks(section, favoriteIds, favoriteLinks);
+      favoriteLinks.push(...collectFavoriteLinks(section, favoriteIds));
     }
+
+    return favoriteLinks;
   }
 
   function dedupeLinkItems(
-    linkItems: CcxpLiteSidebarLinkItem[],
+    linkItems: readonly CcxpLiteSidebarLinkItem[],
   ): readonly CcxpLiteSidebarLinkItem[] {
     const seen = new Set();
 
@@ -361,7 +366,7 @@
   }
 
   function buildFavoritePathSegments(
-    parentPathSegments: string[] | undefined,
+    parentPathSegments: readonly string[] | undefined,
     label: unknown,
     fallbackSegment?: string,
   ): readonly string[] {
@@ -381,22 +386,24 @@
     return normalizedParentSegments;
   }
 
-  function isFavoriteLink(linkItem: CcxpLiteSidebarLinkItem | null, favoriteIds: Set<string>) {
+  function isFavoriteLink(
+    linkItem: CcxpLiteSidebarLinkItem | null,
+    favoriteIds: ReadonlySet<string>,
+  ) {
     return getMatchingFavoriteIds(linkItem, favoriteIds).length > 0;
   }
 
   function getMatchingFavoriteIds(
     linkItem: CcxpLiteSidebarLinkItem | null,
-    favoriteIds: Set<string>,
+    favoriteIds: ReadonlySet<string>,
   ): readonly string[] {
     if (!linkItem || !favoriteIds) {
       return [];
     }
 
-    return [linkItem.id, linkItem.legacyId]
-      .filter(Boolean)
-      .filter((favoriteId, index, values) => values.indexOf(favoriteId) === index)
-      .filter((favoriteId) => favoriteIds.has(favoriteId));
+    return [...new Set([linkItem.id, linkItem.legacyId].filter(Boolean))].filter((favoriteId) =>
+      favoriteIds.has(favoriteId),
+    );
   }
 
   function normalizeFavoriteUrl(rawValue: string | null | undefined) {

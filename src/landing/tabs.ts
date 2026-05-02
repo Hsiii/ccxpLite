@@ -21,8 +21,8 @@
   function wireLandingTabs(
     targetDocument: Document,
     tabNavigation: HTMLElement,
-    tabContents: HTMLElement[],
-    strings = getLocalizedStrings("zh"),
+    tabContents: readonly HTMLElement[],
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!tabNavigation || !isArray(tabContents) || tabContents.length === 0) {
       return;
@@ -192,7 +192,7 @@
   function structureLandingTabNavigation(
     targetDocument: Document,
     tabNavigation: HTMLElement,
-    buttonPanelMap: Array<{ button: HTMLElement }>,
+    buttonPanelMap: ReadonlyArray<{ button: HTMLElement }>,
   ) {
     if (
       !targetDocument ||

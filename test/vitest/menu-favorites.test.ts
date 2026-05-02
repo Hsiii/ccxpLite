@@ -45,8 +45,8 @@ describe("sidebar favorites", () => {
     });
 
     window.chrome.storage.local.get = (
-      _keys: string[] | null,
-      done: (result: Record<string, unknown>) => void,
+      _keys: readonly string[] | null,
+      done: (result: Readonly<Record<string, unknown>>) => void,
     ) => {
       done({
         "ccxp-lite-sidebar-favorites": ["legacy|Academic>Grades|Semester Grades|main|"],

@@ -40,7 +40,7 @@ async function loadImage(objectUrl: string): Promise<HTMLImageElement> {
 }
 
 function createTensor(
-  shape: number[],
+  shape: readonly number[],
   data: Float32Array | ArrayLike<number>,
 ): CcxpLitePreparedTensor {
   return {
@@ -49,7 +49,7 @@ function createTensor(
   };
 }
 
-function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
+function tensorGet(tensor: CcxpLitePreparedTensor, indices: readonly number[]) {
   let flatIndex = 0;
   let stride = 1;
 
@@ -62,7 +62,7 @@ function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
 }
 
 function linear(
-  inputVector: Float32Array | number[],
+  inputVector: Float32Array | readonly number[],
   weight: CcxpLitePreparedTensor,
   bias: CcxpLitePreparedTensor,
 ) {
@@ -81,7 +81,7 @@ function linear(
   return out;
 }
 
-function argmax(values: Float32Array | number[]) {
+function argmax(values: Float32Array | readonly number[]) {
   let bestIndex = 0;
   let bestValue = values[0];
 
@@ -394,7 +394,7 @@ function getHeadInputVectors(
 
   function applyDepthwiseSeparableBlock(
     inputTensor: CcxpLitePreparedTensor,
-    tensors: Record<string, CcxpLitePreparedTensor>,
+    tensors: Readonly<Record<string, CcxpLitePreparedTensor>>,
     prefix: string,
     options: { stride?: number } = {},
   ) {

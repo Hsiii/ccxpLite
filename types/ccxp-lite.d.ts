@@ -291,8 +291,8 @@ declare global {
     wireLandingTabs: (
       targetDocument: Document,
       tabNavigation: Element | null,
-      tabContents: Element[],
-      strings: Record<string, string>,
+      tabContents: readonly Element[],
+      strings: Readonly<Record<string, string>>,
     ) => void;
   }
 
@@ -312,13 +312,13 @@ declare global {
       targetDocument: Document,
       utilityLinksTable: Element | null,
       excludedAnchor: HTMLAnchorElement | null,
-      strings?: Record<string, string>,
+      strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | null;
     buildLandingSupportLinks: (
       targetDocument: Document,
       serviceLinkNode: Element | null,
       cannotLoginAnchor: HTMLAnchorElement | null,
-      strings?: Record<string, string>,
+      strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | null;
     collapseLegacyServiceRow: (serviceLinkNode: Element | null) => void;
     collapseLegacyCannotLoginLink: (cannotLoginAnchor: Element | null) => void;
@@ -327,7 +327,7 @@ declare global {
     findCalendarTable: (targetNode: ParentNode) => HTMLTableElement | null;
     prepareAnnouncementTable: (
       table: HTMLTableElement | null,
-      strings?: Record<string, string>,
+      strings?: Readonly<Record<string, string>>,
     ) => void;
   }
 
@@ -385,21 +385,25 @@ declare global {
     ensureFavoriteStorageSync: () => void;
     collectFavoriteLinks: (
       item: CcxpLiteSidebarTreeNode | null,
-      favoriteIds: Set<string>,
-      favoriteLinks: CcxpLiteSidebarLinkItem[],
-    ) => void;
-    dedupeLinkItems: (linkItems: CcxpLiteSidebarLinkItem[]) => readonly CcxpLiteSidebarLinkItem[];
+      favoriteIds: ReadonlySet<string>,
+    ) => readonly CcxpLiteSidebarLinkItem[];
+    dedupeLinkItems: (
+      linkItems: readonly CcxpLiteSidebarLinkItem[],
+    ) => readonly CcxpLiteSidebarLinkItem[];
     createLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
     createLegacyLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
     buildFavoritePathSegments: (
-      parentPathSegments: string[] | undefined,
+      parentPathSegments: readonly string[] | undefined,
       label: unknown,
       fallbackSegment?: string,
     ) => readonly string[];
-    isFavoriteLink: (linkItem: CcxpLiteSidebarLinkItem | null, favoriteIds: Set<string>) => boolean;
+    isFavoriteLink: (
+      linkItem: CcxpLiteSidebarLinkItem | null,
+      favoriteIds: ReadonlySet<string>,
+    ) => boolean;
     getMatchingFavoriteIds: (
       linkItem: CcxpLiteSidebarLinkItem | null,
-      favoriteIds: Set<string>,
+      favoriteIds: ReadonlySet<string>,
     ) => readonly string[];
     getScopedSessionStorage: () => Storage | null;
   }
@@ -408,15 +412,15 @@ declare global {
     buildSidebarModel: (
       root: CcxpLiteLegacySidebarFolderNode,
       navDocument: Document,
-      strings: Record<string, string>,
+      strings: Readonly<Record<string, string>>,
     ) => CcxpLiteSidebarModel;
     parseSidebarTree: (navDocument: Document) => CcxpLiteLegacySidebarFolderNode | null;
     filterFavoriteLinks: (
-      links: CcxpLiteSidebarLinkItem[],
+      links: readonly CcxpLiteSidebarLinkItem[],
       query: string,
     ) => readonly CcxpLiteSidebarLinkItem[];
     filterCategories: (
-      categories: CcxpLiteSidebarCategoryNode[],
+      categories: readonly CcxpLiteSidebarCategoryNode[],
       query: string,
     ) => readonly CcxpLiteSidebarCategoryNode[];
     filterCategoryTree: (
@@ -431,14 +435,17 @@ declare global {
       hostDocument: Document,
       navDocument: Document,
       modelInput: CcxpLiteSidebarModel | (() => CcxpLiteSidebarModel),
-      strings?: Record<string, string>,
+      strings?: Readonly<Record<string, string>>,
     ) => void;
-    createSidebarSearch: (hostDocument: Document, strings: Record<string, string>) => HTMLElement;
+    createSidebarSearch: (
+      hostDocument: Document,
+      strings: Readonly<Record<string, string>>,
+    ) => HTMLElement;
     syncTopLevelFramesetLayout: (variant: "classic" | "layered") => void;
     mountSidebarVariantSwitch: (
       targetDocument: Document,
       state: CcxpLiteSidebarState,
-      strings: Record<string, string>,
+      strings: Readonly<Record<string, string>>,
       onSwitch: () => void,
       footer?: HTMLElement | null,
     ) => void;

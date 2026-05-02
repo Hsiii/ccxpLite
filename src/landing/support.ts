@@ -122,7 +122,7 @@
 
   function prepareAnnouncementTable(
     table: HTMLTableElement | null,
-    strings = getLocalizedStrings("zh"),
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!table || table.dataset.ccxpLiteAnnouncementPrepared === "true") {
       return;
@@ -315,7 +315,7 @@
   function buildServicePhoneLink(
     targetDocument: Document,
     serviceLinkNode: Element | null,
-    strings = getLocalizedStrings("zh"),
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!serviceLinkNode) {
       return null;
@@ -331,7 +331,7 @@
   function buildCannotLoginLink(
     targetDocument: Document,
     sourceAnchor: HTMLAnchorElement | null,
-    strings = getLocalizedStrings("zh"),
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!sourceAnchor) {
       return null;
@@ -372,7 +372,7 @@
     targetDocument: Document,
     serviceLinkNode: Element | null,
     cannotLoginAnchor: HTMLAnchorElement | null,
-    strings = getLocalizedStrings("zh"),
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     const servicePhoneLink = buildServicePhoneLink(targetDocument, serviceLinkNode, strings);
     const cannotLoginLink = buildCannotLoginLink(targetDocument, cannotLoginAnchor, strings);
@@ -470,7 +470,7 @@
     targetDocument: Document,
     utilityLinksTable: Element | null,
     excludedAnchor: HTMLAnchorElement | null,
-    strings = getLocalizedStrings("zh"),
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!utilityLinksTable) {
       return null;
