@@ -45,7 +45,6 @@ export default defineConfig(
       "complete/no-let-any": "off",
       "complete/no-mutable-return": "off",
       "complete/no-object-any": "off",
-      "complete/no-string-length-0": "off",
       "complete/no-unnecessary-assignment": "off",
       "complete/prefer-is-array": "off",
       "complete/prefer-plusplus": "off",

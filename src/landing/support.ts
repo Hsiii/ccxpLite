@@ -137,14 +137,14 @@
       }
 
       const hasOnlyDecorativeCells = cells.every((cell) => {
-        const hasBgColor = (cell.getAttribute("bgcolor") || "").trim().length > 0;
+        const hasBgColor = (cell.getAttribute("bgcolor") || "").trim() !== "";
         const text = (cell.textContent || "").replaceAll(/\s+/g, "").trim();
-        return hasBgColor && text.length === 0;
+        return hasBgColor && text === "";
       });
 
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
         const text = (cell.textContent || "").replaceAll(/\s+/g, "").trim();
-        if (text.length > 0) {
+        if (text !== "") {
           return false;
         }
 
@@ -152,8 +152,8 @@
       });
 
       const hasLegacySpacerHeight =
-        (row.getAttribute("height") || "").trim().length > 0 ||
-        cells.some((cell) => (cell.getAttribute("height") || "").trim().length > 0);
+        (row.getAttribute("height") || "").trim() !== "" ||
+        cells.some((cell) => (cell.getAttribute("height") || "").trim() !== "");
 
       if (hasOnlyDecorativeCells) {
         removeNode(row);
@@ -453,7 +453,7 @@
 
     if (sibling.nodeType === Node.TEXT_NODE) {
       const normalizedText = (sibling.textContent || "").replaceAll("\u00A0", " ").trim();
-      if (normalizedText.length === 0) {
+      if (normalizedText === "") {
         removeNode(sibling);
       }
       return;
@@ -482,7 +482,7 @@
         const href = anchor.getAttribute("href") || "";
         return href && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html");
       })
-      .filter((anchor) => anchor.textContent && anchor.textContent.trim().length > 0)
+      .filter((anchor) => anchor.textContent && anchor.textContent.trim() !== "")
       .slice(0, 3);
 
     if (anchors.length === 0) {
@@ -625,16 +625,14 @@
       .replaceAll(/\s+/g, " ")
       .trim();
 
-    if (text.length > 0) {
+    if (text !== "") {
       return false;
     }
 
     const rowHeight = (row.getAttribute("height") || "").trim();
-    const cellHasHeight = cells.some(
-      (cell) => (cell.getAttribute("height") || "").trim().length > 0,
-    );
+    const cellHasHeight = cells.some((cell) => (cell.getAttribute("height") || "").trim() !== "");
 
-    return rowHeight.length > 0 || cellHasHeight;
+    return rowHeight !== "" || cellHasHeight;
   }
 
   function isLegacySpacerCell(cell: HTMLTableCellElement | null) {
@@ -645,13 +643,12 @@
     const widthText = (cell.getAttribute("width") || "").trim().toLowerCase();
     const normalizedText = (cell.textContent || "").replaceAll("\u00A0", " ").trim();
 
-    if ((widthText === "3%" || widthText === "3") && normalizedText.length === 0) {
+    if ((widthText === "3%" || widthText === "3") && normalizedText === "") {
       return true;
     }
 
     return (
-      normalizedText.length === 0 &&
-      cell.querySelector("table, iframe, form, input, button, a") === null
+      normalizedText === "" && cell.querySelector("table, iframe, form, input, button, a") === null
     );
   }
 
@@ -738,7 +735,7 @@
       .replaceAll(/\s+/g, " ")
       .trim();
 
-    if (normalizedText.length > 0) {
+    if (normalizedText !== "") {
       return false;
     }
 
