@@ -16,13 +16,6 @@ export default defineConfig(
   },
 
   {
-    files: ["**/*.d.ts"],
-    rules: {
-      "import-x/no-default-export": "off",
-    },
-  },
-
-  {
     rules: {
       "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
