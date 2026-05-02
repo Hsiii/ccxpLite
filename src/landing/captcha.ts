@@ -256,21 +256,21 @@
     }
   }
 
-  function requestCaptchaAnswerForCurrentImage(
+  async function requestCaptchaAnswerForCurrentImage(
     targetDocument: Document,
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
   ) {
     if (state.cachedSrc === captchaSrc && state.cachedAnswer) {
-      return Promise.resolve(state.cachedAnswer);
+      return state.cachedAnswer;
     }
 
     if (state.pendingSrc === captchaSrc && state.pendingRequest !== null) {
-      return state.pendingRequest;
+      return await state.pendingRequest;
     }
 
     const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
-      .then((imageBytes) => requestCaptchaAnswer(captchaSrc, imageBytes))
+      .then(async (imageBytes) => await requestCaptchaAnswer(captchaSrc, imageBytes))
       .then((answer) => {
         if (answer) {
           state.cachedSrc = captchaSrc;
@@ -288,7 +288,7 @@
 
     state.pendingSrc = captchaSrc;
     state.pendingRequest = request;
-    return request;
+    return await request;
   }
 
   function getCaptchaRequestSource(
@@ -317,7 +317,7 @@
     }
   }
 
-  function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
+  async function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
     const captchaUrl = new URL(
       captchaSrc,
       targetDocument.location && targetDocument.location.href
@@ -325,25 +325,27 @@
         : globalThis.location.href,
     );
 
-    return fetchWithTimeout(
+    return await fetchWithTimeout(
       captchaUrl.toString(),
       { credentials: "include" },
       CAPTCHA_AUTOFILL_TIMEOUT_MS,
-    ).then((response) => {
+    ).then(async (response) => {
       if (!response.ok) {
         throw new Error(`captcha-download-failed:${response.status}`);
       }
 
-      return response.arrayBuffer();
+      return await response.arrayBuffer();
     });
   }
 
-  function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
+  async function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
     const dc = namespace.decaptcha;
     if (!dc) {
-      return Promise.resolve("");
+      return "";
     }
-    return Promise.resolve(dc.predictDigits(imageBytes)).then((answer) => (answer || "").trim());
+    return await Promise.resolve(dc.predictDigits(imageBytes)).then((answer) =>
+      (answer || "").trim(),
+    );
   }
 
   interface CcxpLiteCaptchaError extends Error {
@@ -360,7 +362,7 @@
     );
   }
 
-  function fetchWithTimeout(
+  async function fetchWithTimeout(
     resource: RequestInfo | URL,
     options: RequestInit = {},
     timeoutMs = CAPTCHA_AUTOFILL_TIMEOUT_MS,
@@ -372,7 +374,7 @@
       controller.abort();
     }, timeoutMs);
 
-    return fetch(resource, {
+    return await fetch(resource, {
       ...options,
       signal: controller.signal,
     })

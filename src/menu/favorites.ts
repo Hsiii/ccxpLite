@@ -76,8 +76,8 @@
     }
   }
 
-  function readFavoritesFromStorage(): Promise<Set<string>> {
-    return new Promise((resolve) => {
+  async function readFavoritesFromStorage(): Promise<Set<string>> {
+    return await new Promise((resolve) => {
       const storage = getScopedFavoriteStorage();
       if (storage) {
         try {
@@ -197,8 +197,8 @@
     }
   }
 
-  function readLegacyFavoritesFromExtensionStorage(): Promise<Set<string>> {
-    return new Promise((resolve) => {
+  async function readLegacyFavoritesFromExtensionStorage(): Promise<Set<string>> {
+    return await new Promise((resolve) => {
       const runtime = namespace.sharedDom?.getRuntimeSafely() || null;
       const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() || null;
 

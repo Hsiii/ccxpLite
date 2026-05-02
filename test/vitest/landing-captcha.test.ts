@@ -14,8 +14,8 @@ const landingCaptchaModulePaths = [
   "src/landing/captcha.ts",
 ];
 
-function flushPromises() {
-  return new Promise<void>((resolve) => {
+async function flushPromises() {
+  await new Promise<void>((resolve) => {
     setTimeout(resolve, 0);
   });
 }
@@ -31,8 +31,8 @@ describe("landing captcha", () => {
 
     let resolveFetch: ((value: Response) => void) | null = null;
     window.fetch = vi.fn(
-      () =>
-        new Promise((resolve) => {
+      async () =>
+        await new Promise((resolve) => {
           resolveFetch = resolve;
         }),
     ) as typeof window.fetch;
@@ -55,7 +55,7 @@ describe("landing captcha", () => {
 
     resolveFetch?.({
       ok: true,
-      arrayBuffer: () => Promise.resolve(new ArrayBuffer(8)),
+      arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
     } as Response);
     await flushPromises();
     await flushPromises();
@@ -76,10 +76,11 @@ describe("landing captcha", () => {
     loadModules(window, landingCaptchaModulePaths);
     const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
-    window.fetch = vi.fn(() => {
+    window.fetch = vi.fn(async () => {
+      await Promise.resolve();
       const error = new Error("captcha-timeout");
       error.name = "TimeoutError";
-      return Promise.reject(error);
+      throw error;
     }) as typeof window.fetch;
 
     const input = document.querySelector("input[name='passwd2']");

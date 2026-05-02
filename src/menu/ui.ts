@@ -1151,12 +1151,12 @@
     return favoriteButton;
   }
 
-  function showRemovePinnedDialog(
+  async function showRemovePinnedDialog(
     targetDocument: Document,
     itemName: string,
     strings: Record<string, string>,
   ): Promise<boolean> {
-    return new Promise((resolve) => {
+    return await new Promise((resolve) => {
       // In layered mode the nav frame is full-screen, so targetDocument works.
       // In classic mode the nav frame is narrow (324px); mount the dialog in
       // the main frame instead so it centers over the larger content area.

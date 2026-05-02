@@ -18,8 +18,8 @@ function toUint8Array(imageBytes: unknown) {
   throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
 }
 
-function loadImage(objectUrl: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
+async function loadImage(objectUrl: string): Promise<HTMLImageElement> {
+  return await new Promise((resolve, reject) => {
     const image = new Image();
     image.addEventListener(
       "load",
