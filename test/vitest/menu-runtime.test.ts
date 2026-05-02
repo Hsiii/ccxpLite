@@ -23,7 +23,7 @@ describe("sidebar runtime", () => {
       window.document,
       window.document,
       linkItem,
-      vi.fn(),
+      () => undefined,
     );
 
     expect(openSpy).toHaveBeenCalledWith(
@@ -52,7 +52,9 @@ describe("sidebar runtime", () => {
         href: "/grades",
         target: "main",
       },
-      rerender,
+      () => {
+        rerender();
+      },
     );
 
     expect(state.activeLeaf?.label).toBe("Semester Grades");

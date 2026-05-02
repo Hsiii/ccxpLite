@@ -206,7 +206,9 @@
     cleanLegacyAttributes,
     isContextValid,
     ensureContextValid,
-    invalidateContext,
+    invalidateContext: () => {
+      invalidateContext();
+    },
     getRuntimeSafely,
     getLocalStorageAreaSafely,
     addCleanupTask,

@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import {
   createTestWindow,
@@ -61,7 +61,7 @@ describe("sidebar ui", () => {
       document,
       state,
       requireValue(window.CCXP_LITE.shared, "shared").LOCALIZED_STRINGS.zh,
-      vi.fn(),
+      () => undefined,
     );
 
     const switcherNode = document.querySelector("[data-ccxp-lite-sidebar-lab-switch]");

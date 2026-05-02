@@ -40,8 +40,12 @@ describe("landing captcha", () => {
     const input = document.querySelector("input[name='passwd2']");
     const inputSpy = vi.fn();
     const changeSpy = vi.fn();
-    input.addEventListener("input", inputSpy);
-    input.addEventListener("change", changeSpy);
+    input.addEventListener("input", () => {
+      inputSpy();
+    });
+    input.addEventListener("change", () => {
+      changeSpy();
+    });
 
     landingCaptcha.enableLoginCaptchaAutofill(document, document);
     expect(input.getAttribute("aria-busy")).toBe("true");
