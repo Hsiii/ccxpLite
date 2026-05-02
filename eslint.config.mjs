@@ -24,7 +24,6 @@ export default defineConfig(
 
   {
     rules: {
-      "@stylistic/quotes": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
 
       "@typescript-eslint/no-unsafe-call": "off",
