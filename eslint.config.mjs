@@ -48,7 +48,6 @@ export default defineConfig(
       "complete/prefer-plusplus": "off",
       "complete/prefer-readonly-parameter-types": "off",
       "complete/require-ascii": "off",
-      "complete/require-capital-const-assertions": "off",
       "complete/require-capital-read-only": "off",
       "complete/require-variadic-function-argument": "off",
       "complete/strict-array-methods": "off",

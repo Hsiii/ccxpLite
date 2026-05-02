@@ -100,7 +100,7 @@
     sidebarClass: "ccxp-lite-sidebar-shell",
     mainClass: "ccxp-lite-main-skin",
     landingClass: "ccxp-lite-landing-shell",
-  };
+  } as const;
 
   const LOCALIZED_STRINGS = {
     en: {
@@ -243,7 +243,7 @@
       sidebarSwitchToClassic: "切換為經典側欄",
       sidebarSwitchToLayered: "切換為分層選單",
     },
-  };
+  } as const;
 
   const SIDEBAR_CATEGORIES = [
     {
@@ -365,13 +365,13 @@
       ],
       summaryLabels: ["會議", "公告", "投票", "通報"],
     },
-  ];
+  ] as const;
 
   const ASSETS = {
     brandLogoPath: "assets/nthu.jpg",
     sidebarBrandLogoPath: "assets/nthu.png",
     stylesheetPath: "content.css",
-  };
+  } as const;
 
   namespace.sharedConstants = {
     TOKENS,
