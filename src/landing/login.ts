@@ -358,7 +358,7 @@
   }
 
   function resolveLabelCellForField(cells: HTMLElement[], fieldCellIndex: number) {
-    for (let index = fieldCellIndex - 1; index >= 0; index -= 1) {
+    for (let index = fieldCellIndex - 1; index >= 0; index--) {
       const candidate = cells[index];
       if (!candidate) {
         continue;

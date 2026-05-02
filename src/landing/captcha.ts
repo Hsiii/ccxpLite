@@ -185,7 +185,7 @@
     }
 
     state.lastRequestedSrc = captchaSrc;
-    state.requestToken += 1;
+    state.requestToken++;
     const { requestToken } = state;
     setCaptchaLoadingState(state, true);
 
@@ -244,7 +244,7 @@
 
     state.lastRequestedSrc = "";
     state.failedSrc = captchaSrc;
-    state.requestToken += 1;
+    state.requestToken++;
     setCaptchaLoadingState(state, false);
 
     if (state.input) {

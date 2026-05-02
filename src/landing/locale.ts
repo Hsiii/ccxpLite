@@ -103,10 +103,10 @@
     let enHits = 0;
     localePairs.forEach((pair) => {
       if (pair.zh.some((token) => loginTextSample.includes(token))) {
-        zhHits += 1;
+        zhHits++;
       }
       if (pair.en.some((token) => loginTextSample.includes(token))) {
-        enHits += 1;
+        enHits++;
       }
     });
 

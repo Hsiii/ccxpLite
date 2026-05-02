@@ -308,7 +308,7 @@
       return;
     }
 
-    attempts += 1;
+    attempts++;
     globalThis.setTimeout(attachAndApply, RETRY_DELAY_MS);
   }
 

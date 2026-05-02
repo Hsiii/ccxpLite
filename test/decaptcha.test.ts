@@ -51,8 +51,8 @@ describe("decaptcha preprocessing", () => {
     const height = 36;
     const rgba = new Uint8ClampedArray(width * height * 4);
 
-    for (let y = 0; y < height; y += 1) {
-      for (let x = 0; x < width; x += 1) {
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
         const index = (y * width + x) * 4;
         rgba[index] = x % 256;
         rgba[index + 1] = y % 256;
@@ -128,8 +128,8 @@ describe("decaptcha model parity", () => {
           const height = 36;
           const rgba = new Uint8ClampedArray(width * height * 4);
 
-          for (let y = 0; y < height; y += 1) {
-            for (let x = 0; x < width; x += 1) {
+          for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
               const index = (y * width + x) * 4;
               rgba[index] = (x * 3 + y) % 256;
               rgba[index + 1] = (x + y * 5) % 256;

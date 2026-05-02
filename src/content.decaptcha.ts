@@ -53,7 +53,7 @@ function tensorGet(tensor: CcxpLitePreparedTensor, indices: number[]) {
   let flatIndex = 0;
   let stride = 1;
 
-  for (let axis = tensor.shape.length - 1; axis >= 0; axis -= 1) {
+  for (let axis = tensor.shape.length - 1; axis >= 0; axis--) {
     flatIndex += indices[axis] * stride;
     stride *= tensor.shape[axis];
   }
@@ -69,10 +69,10 @@ function linear(
   const [outFeatures, inFeatures] = weight.shape;
   const out = new Float32Array(outFeatures);
 
-  for (let outIndex = 0; outIndex < outFeatures; outIndex += 1) {
+  for (let outIndex = 0; outIndex < outFeatures; outIndex++) {
     const base = outIndex * inFeatures;
     let acc = bias.data[outIndex];
-    for (let inIndex = 0; inIndex < inFeatures; inIndex += 1) {
+    for (let inIndex = 0; inIndex < inFeatures; inIndex++) {
       acc += weight.data[base + inIndex] * inputVector[inIndex];
     }
     out[outIndex] = acc;
@@ -85,7 +85,7 @@ function argmax(values: Float32Array | number[]) {
   let bestIndex = 0;
   let bestValue = values[0];
 
-  for (let index = 1; index < values.length; index += 1) {
+  for (let index = 1; index < values.length; index++) {
     if (values[index] > bestValue) {
       bestIndex = index;
       bestValue = values[index];
@@ -99,9 +99,9 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
   const channels = pooledTensor.shape[0];
   const vectors: Float32Array[] = [];
 
-  for (let digitIndex = 0; digitIndex < digits; digitIndex += 1) {
+  for (let digitIndex = 0; digitIndex < digits; digitIndex++) {
     const vector = new Float32Array(channels);
-    for (let channel = 0; channel < channels; channel += 1) {
+    for (let channel = 0; channel < channels; channel++) {
       vector[channel] = tensorGet(pooledTensor, [channel, 0, digitIndex]);
     }
     vectors.push(vector);
@@ -246,12 +246,12 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
     const tensorData = new Float32Array(3 * height * usableWidth);
     let writeIndex = 0;
 
-    for (let channel = 0; channel < 3; channel += 1) {
-      for (let y = 0; y < height; y += 1) {
-        for (let x = 0; x < usableWidth; x += 1) {
+    for (let channel = 0; channel < 3; channel++) {
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < usableWidth; x++) {
           const pixelIndex = (y * width + x) * 4;
           tensorData[writeIndex] = rgba[pixelIndex + channel] / 255;
-          writeIndex += 1;
+          writeIndex++;
         }
       }
     }
@@ -276,26 +276,26 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
     const outChannelsPerGroup = outChannels / groups;
 
     let outIndex = 0;
-    for (let outChannel = 0; outChannel < outChannels; outChannel += 1) {
+    for (let outChannel = 0; outChannel < outChannels; outChannel++) {
       const groupIndex = Math.floor(outChannel / outChannelsPerGroup);
       const inputChannelOffset = groupIndex * channelsPerGroup;
 
-      for (let outY = 0; outY < outHeight; outY += 1) {
-        for (let outX = 0; outX < outWidth; outX += 1) {
+      for (let outY = 0; outY < outHeight; outY++) {
+        for (let outX = 0; outX < outWidth; outX++) {
           let acc = bias ? bias.data[outChannel] : 0;
           const inY0 = outY * stride - padding;
           const inX0 = outX * stride - padding;
 
-          for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex += 1) {
+          for (let channelIndex = 0; channelIndex < channelsPerGroup; channelIndex++) {
             const inputChannel = inputChannelOffset + channelIndex;
 
-            for (let kernelY = 0; kernelY < kernelHeight; kernelY += 1) {
+            for (let kernelY = 0; kernelY < kernelHeight; kernelY++) {
               const inY = inY0 + kernelY;
               if (inY < 0 || inY >= inHeight) {
                 continue;
               }
 
-              for (let kernelX = 0; kernelX < kernelWidth; kernelX += 1) {
+              for (let kernelX = 0; kernelX < kernelWidth; kernelX++) {
                 const inX = inX0 + kernelX;
                 if (inX < 0 || inX >= inWidth) {
                   continue;
@@ -309,7 +309,7 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
           }
 
           out[outIndex] = acc;
-          outIndex += 1;
+          outIndex++;
         }
       }
     }
@@ -329,16 +329,16 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
     const out = new Float32Array(inputTensor.data.length);
     let index = 0;
 
-    for (let channel = 0; channel < channels; channel += 1) {
+    for (let channel = 0; channel < channels; channel++) {
       const gain = gamma.data[channel];
       const offset = beta.data[channel];
       const mean = runningMean.data[channel];
       const variance = runningVar.data[channel];
       const invStd = 1 / Math.sqrt(variance + eps);
 
-      for (let pixel = 0; pixel < height * width; pixel += 1) {
+      for (let pixel = 0; pixel < height * width; pixel++) {
         out[index] = (inputTensor.data[index] - mean) * invStd * gain + offset;
-        index += 1;
+        index++;
       }
     }
 
@@ -347,7 +347,7 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
 
   function relu(inputTensor: CcxpLitePreparedTensor) {
     const out = new Float32Array(inputTensor.data.length);
-    for (let index = 0; index < inputTensor.data.length; index += 1) {
+    for (let index = 0; index < inputTensor.data.length; index++) {
       out[index] = Math.max(inputTensor.data[index], 0);
     }
     return createTensor(inputTensor.shape, out);
@@ -362,26 +362,26 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
     const out = new Float32Array(channels * outHeight * outWidth);
     let outIndex = 0;
 
-    for (let channel = 0; channel < channels; channel += 1) {
-      for (let pooledY = 0; pooledY < outHeight; pooledY += 1) {
+    for (let channel = 0; channel < channels; channel++) {
+      for (let pooledY = 0; pooledY < outHeight; pooledY++) {
         const y0 = Math.floor((pooledY * inHeight) / outHeight);
         const y1 = Math.ceil(((pooledY + 1) * inHeight) / outHeight);
 
-        for (let pooledX = 0; pooledX < outWidth; pooledX += 1) {
+        for (let pooledX = 0; pooledX < outWidth; pooledX++) {
           const x0 = Math.floor((pooledX * inWidth) / outWidth);
           const x1 = Math.ceil(((pooledX + 1) * inWidth) / outWidth);
 
           let total = 0;
           let count = 0;
-          for (let inY = y0; inY < y1; inY += 1) {
-            for (let inX = x0; inX < x1; inX += 1) {
+          for (let inY = y0; inY < y1; inY++) {
+            for (let inX = x0; inX < x1; inX++) {
               total += tensorGet(inputTensor, [channel, inY, inX]);
-              count += 1;
+              count++;
             }
           }
 
           out[outIndex] = total / Math.max(count, 1);
-          outIndex += 1;
+          outIndex++;
         }
       }
     }
