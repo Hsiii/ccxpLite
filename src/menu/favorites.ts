@@ -396,7 +396,7 @@
       .filter((favoriteId) => favoriteIds.has(favoriteId));
   }
 
-  function normalizeFavoriteUrl(rawValue) {
+  function normalizeFavoriteUrl(rawValue: string | null | undefined) {
     const value = (rawValue || "").trim();
     if (!value) {
       return "";

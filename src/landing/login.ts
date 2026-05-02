@@ -804,7 +804,7 @@
     }
   }
 
-  function isPrimaryLoginActionLabel(rawLabel) {
+  function isPrimaryLoginActionLabel(rawLabel: string | null | undefined) {
     const normalizedLabel = (rawLabel || "").replaceAll(/\s+/g, "").trim().toLowerCase();
 
     if (!normalizedLabel) {
@@ -908,7 +908,7 @@
     return "";
   }
 
-  function normalizeLegacyButtonLabel(rawLabel) {
+  function normalizeLegacyButtonLabel(rawLabel: string | null | undefined) {
     return (rawLabel || "").replaceAll(/\s+/g, " ").trim();
   }
 
@@ -1107,7 +1107,7 @@
     return button;
   }
 
-  function getLandingStrings(targetDocument: Document) {
+  function getLandingStrings(targetDocument: Document): Record<string, string> {
     return getLocalizedStrings(
       resolveLandingLocale(
         targetDocument,
