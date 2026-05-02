@@ -719,15 +719,7 @@
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-category-detail";
 
-    if (!filteredCategory) {
-      body.append(
-        createEmptyState(
-          targetDocument,
-          strings.sidebarSearchEmptyTitle,
-          strings.sidebarSearchEmptyBody,
-        ),
-      );
-    } else {
+    if (filteredCategory) {
       if ((filteredCategory.directLinks || []).length > 0) {
         body.append(
           createLinkCollection(
@@ -753,6 +745,14 @@
           ),
         );
       }
+    } else {
+      body.append(
+        createEmptyState(
+          targetDocument,
+          strings.sidebarSearchEmptyTitle,
+          strings.sidebarSearchEmptyBody,
+        ),
+      );
     }
 
     section.append(body);

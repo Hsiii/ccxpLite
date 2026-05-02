@@ -319,7 +319,7 @@
       const fieldCellIndex = cells.indexOf(fieldCell);
       const labelCell = resolveLabelCellForField(
         cells,
-        fieldCellIndex !== -1 ? fieldCellIndex : cellIndex,
+        fieldCellIndex === -1 ? cellIndex : fieldCellIndex,
       );
       const labelText = getPreferredLoginLabelText(labelCell, fieldCell, fieldNode);
 

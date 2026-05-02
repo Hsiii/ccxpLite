@@ -92,7 +92,7 @@
     }
 
     try {
-      const runtime = typeof chrome !== "undefined" ? chrome.runtime : null;
+      const runtime = typeof chrome === "undefined" ? null : chrome.runtime;
       return runtime && runtime.id ? runtime : null;
     } catch {
       invalidateContext();
