@@ -1,4 +1,5 @@
 {
+  "extends": "./tsconfig.base.json",
   "files": [],
   "references": [{ "path": "./tsconfig.tools.json" }, { "path": "./tsconfig.src.json" }],
   "exclude": ["dist", "node_modules", ".playwright-cli", "fixtures/ccxp-snapshot"]
