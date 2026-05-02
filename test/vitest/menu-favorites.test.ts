@@ -75,7 +75,7 @@ describe("sidebar favorites", () => {
         newValue: JSON.stringify(["grades"]),
       }),
     );
-    expect(Array.from(api.getFavoriteIds())).toEqual(["grades"]);
+    expect([...api.getFavoriteIds()]).toEqual(["grades"]);
 
     window.dispatchEvent(
       new window.StorageEvent("storage", {
@@ -83,6 +83,6 @@ describe("sidebar favorites", () => {
         newValue: "{invalid",
       }),
     );
-    expect(Array.from(api.getFavoriteIds())).toEqual([]);
+    expect([...api.getFavoriteIds()]).toEqual([]);
   });
 });

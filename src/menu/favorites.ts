@@ -70,7 +70,7 @@
     }
 
     try {
-      storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favoriteIds)));
+      storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
     } catch {
       // Ignore storage write failures; in-memory state still updates for the current page.
     }
@@ -409,7 +409,7 @@
         url.searchParams.delete(key);
       });
 
-      const sortedEntries = Array.from(url.searchParams.entries()).toSorted(
+      const sortedEntries = [...url.searchParams.entries()].toSorted(
         ([leftKey, leftValue], [rightKey, rightValue]) => {
           if (leftKey === rightKey) {
             return leftValue.localeCompare(rightValue);

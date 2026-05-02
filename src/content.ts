@@ -242,7 +242,7 @@
   }
 
   function findFrames() {
-    const frameCandidates = Array.from(document.querySelectorAll<HTMLIFrameElement>("frame"));
+    const frameCandidates = [...document.querySelectorAll<HTMLIFrameElement>("frame")];
     const top = frameCandidates.find((frame) => {
       const src = (frame.getAttribute("src") || "").toLowerCase();
       const name = (frame.getAttribute("name") || "").toLowerCase();

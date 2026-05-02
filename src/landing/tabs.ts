@@ -27,9 +27,7 @@
       return;
     }
 
-    const tabButtons = Array.from(
-      tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']"),
-    );
+    const tabButtons = [...tabNavigation.querySelectorAll("button, a[href^='#'], [role='tab']")];
     if (tabButtons.length === 0) {
       return;
     }
@@ -82,7 +80,7 @@
     tabNavigation.setAttribute("role", "tablist");
     tabNavigation.setAttribute("aria-label", strings.portalSectionsLabel);
 
-    const uniquePanels = Array.from(new Set(buttonPanelMap.map((entry) => entry.panel)));
+    const uniquePanels = [...new Set(buttonPanelMap.map((entry) => entry.panel))];
 
     buttonPanelMap.forEach((entry, index) => {
       const { button, panel } = entry;

@@ -443,7 +443,7 @@
   }
 
   function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | null {
-    const statements = Array.from(navDocument.scripts)
+    const statements = [...navDocument.scripts]
       .map((script) => script.textContent || "")
       .join("\n")
       .split(";")

@@ -67,7 +67,7 @@ describe("sidebar destination states", () => {
     const error = document.querySelector(".ccxp-lite-destination-error");
     expect(error.hidden).toBe(false);
 
-    const retryButton = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+    const retryButton = [...document.querySelectorAll<HTMLButtonElement>("button")].find(
       (button) => button.textContent === "重試",
     );
     retryButton.click();
@@ -91,7 +91,7 @@ describe("sidebar destination states", () => {
 
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
 
-    const openButton = Array.from(document.querySelectorAll<HTMLButtonElement>("button")).find(
+    const openButton = [...document.querySelectorAll<HTMLButtonElement>("button")].find(
       (button) => button.textContent === "新分頁開啟",
     );
     openButton.click();

@@ -44,7 +44,7 @@ function createTensor(
   data: Float32Array | ArrayLike<number>,
 ): CcxpLitePreparedTensor {
   return {
-    shape: shape.slice(),
+    shape: [...shape],
     data: data instanceof Float32Array ? data : new Float32Array(data),
   };
 }
@@ -156,11 +156,11 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
       Object.entries(model.tensors || {}).forEach(([name, tensor]) => {
         const sourceTensor = tensor;
         preparedTensors[name] = {
-          shape: isArray(sourceTensor.shape) ? sourceTensor.shape.slice() : [],
+          shape: isArray(sourceTensor.shape) ? [...sourceTensor.shape] : [],
           data:
             sourceTensor.data instanceof Float32Array
               ? sourceTensor.data
-              : new Float32Array(Array.from(sourceTensor.data || [])),
+              : new Float32Array(sourceTensor.data || []),
         };
       });
       model.preparedTensors = preparedTensors;

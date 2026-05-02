@@ -71,7 +71,7 @@
     }
 
     const formInputTextSample = loginForm
-      ? Array.from(loginForm.querySelectorAll("input, select, textarea, button"))
+      ? [...loginForm.querySelectorAll("input, select, textarea, button")]
           .map((node) =>
             [
               node.getAttribute("placeholder") || "",
@@ -123,7 +123,7 @@
   }
 
   function getLoginForm(targetDocument: Document): HTMLFormElement | null {
-    const forms = Array.from(targetDocument.querySelectorAll("form"));
+    const forms = [...targetDocument.querySelectorAll("form")];
 
     const candidates = forms.filter((form) => {
       const action = (form.getAttribute("action") || "").toLowerCase();

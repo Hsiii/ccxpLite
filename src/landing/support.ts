@@ -8,9 +8,9 @@
       return loginForm.closest("td, table, section, article") || loginForm;
     }
 
-    return Array.from(
-      targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article"),
-    ).find((cell) => cell.querySelector("form") !== null);
+    return [
+      ...targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article"),
+    ].find((cell) => cell.querySelector("form") !== null);
   }
 
   function findCalendarTable(targetNode: ParentNode) {
@@ -19,7 +19,7 @@
       return null;
     }
 
-    return Array.from(targetNode.querySelectorAll<HTMLTableElement>("table")).find(
+    return [...targetNode.querySelectorAll<HTMLTableElement>("table")].find(
       (table) =>
         table.contains(calendarFrame) &&
         ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
@@ -27,7 +27,7 @@
   }
 
   function findAnnouncementTable(targetDocument: Document) {
-    const rightPanel = Array.from(targetDocument.querySelectorAll<HTMLTableCellElement>("td")).find(
+    const rightPanel = [...targetDocument.querySelectorAll<HTMLTableCellElement>("td")].find(
       (cell) => {
         const widthText = normalizeLegacyWidth(cell.getAttribute("width") || cell.style.width);
         if (widthText !== "35%" && widthText !== "35") {
@@ -39,18 +39,18 @@
     );
 
     const panelTables = rightPanel
-      ? Array.from(rightPanel.querySelectorAll<HTMLTableElement>("table"))
+      ? [...rightPanel.querySelectorAll<HTMLTableElement>("table")]
       : [];
-    const fallbackTables = Array.from(targetDocument.querySelectorAll<HTMLTableElement>("table"));
+    const fallbackTables = [...targetDocument.querySelectorAll<HTMLTableElement>("table")];
 
     const isAnnouncementTable = (table: HTMLTableElement) => {
-      const rows = Array.from(table.rows || []);
+      const rows = [...(table.rows || [])];
       if (rows.length === 0) {
         return false;
       }
 
       const headingCell = rows
-        .flatMap((row) => Array.from(row.cells || []))
+        .flatMap((row) => [...(row.cells || [])])
         .find((cell) => cell.classList.contains("board_item"));
 
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
@@ -62,7 +62,7 @@
       }
 
       const boardHeaderRow = rows.find((row) => {
-        const cells = Array.from(row.cells || []);
+        const cells = [...(row.cells || [])];
         return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
       });
 
@@ -71,7 +71,7 @@
       }
 
       const dateRows = rows.filter((row) => {
-        const cells = Array.from(row.cells || []);
+        const cells = [...(row.cells || [])];
         if (cells.length < 2) {
           return false;
         }
@@ -129,9 +129,9 @@
 
     table.classList.add("ccxp-lite-announcement-table");
 
-    const rows = Array.from(table.rows || []);
+    const rows = [...(table.rows || [])];
     rows.forEach((row) => {
-      const cells = Array.from(row.cells || []);
+      const cells = [...(row.cells || [])];
       if (cells.length === 0) {
         return;
       }
@@ -166,12 +166,12 @@
     });
 
     const headerCell = rows
-      .flatMap((row) => Array.from(row.cells || []))
+      .flatMap((row) => [...(row.cells || [])])
       .find((cell) => cell.classList.contains("board_item"));
     const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
 
     const headerRow = rows.find((row) => {
-      const cells = Array.from(row.cells || []);
+      const cells = [...(row.cells || [])];
       return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
     });
     if (headerRow) {
@@ -180,7 +180,7 @@
 
     const entries: Array<{ date: string; topicContent: HTMLElement }> = [];
     rows.forEach((row) => {
-      const cells = Array.from(row.cells || []);
+      const cells = [...(row.cells || [])];
       if (cells.length < 2) {
         return;
       }
@@ -286,7 +286,7 @@
       return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
     }
 
-    const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"));
+    const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")];
     const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor) === true);
     if (fromUtility) {
       return fromUtility;
@@ -476,7 +476,7 @@
 
     const excludedHref = excludedAnchor ? excludedAnchor.getAttribute("href") || "" : "";
 
-    const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"))
+    const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")]
       .filter((anchor) => anchor !== excludedAnchor)
       .filter((anchor) => {
         const href = anchor.getAttribute("href") || "";
@@ -584,7 +584,7 @@
 
     removeNode(sourceCell);
 
-    const rowCells = Array.from(sourceRow.children).filter(
+    const rowCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
     rowCells.forEach((cell) => {
@@ -593,7 +593,7 @@
       }
     });
 
-    const remainingCells = Array.from(sourceRow.children).filter(
+    const remainingCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
     if (remainingCells.length === 1) {
@@ -607,7 +607,7 @@
       return false;
     }
 
-    const cells = Array.from(row.children).filter(
+    const cells = [...row.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
     if (cells.length === 0) {
@@ -659,14 +659,14 @@
       return;
     }
 
-    const rows = Array.from(rootNode.querySelectorAll<HTMLTableRowElement>("tr"));
+    const rows = [...rootNode.querySelectorAll<HTMLTableRowElement>("tr")];
 
     rows.forEach((row) => {
       if (shouldSkipLegacyRowCollapse(row)) {
         return;
       }
 
-      const cells = Array.from(row.children).filter(
+      const cells = [...row.children].filter(
         (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
       );
       if (cells.length < 2) {
@@ -698,7 +698,7 @@
       rightCell.style.minWidth = "0";
       rightCell.colSpan = Math.max(1, rightCell.colSpan || 1);
 
-      Array.from(row.children)
+      [...row.children]
         .filter((node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement)
         .forEach((cell) => {
           if (cell !== rightCell) {

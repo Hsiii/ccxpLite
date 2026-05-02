@@ -101,7 +101,7 @@
     const loginForm = getLoginForm(targetDocument);
     const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
     const tabNavigation = targetDocument.querySelector(".tab");
-    const tabContents = Array.from(targetDocument.querySelectorAll(".tabcontent"));
+    const tabContents = [...targetDocument.querySelectorAll(".tabcontent")];
     const languageLinks = targetDocument.querySelector("ul.links");
     const announcementTable = findAnnouncementTable(targetDocument);
     const utilityLinks = findUtilityLinksTable(targetDocument);

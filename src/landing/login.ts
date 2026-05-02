@@ -11,11 +11,11 @@
   const { findLoginSourceCell } = landingSupport;
 
   function enhancePasswordVisibilityToggle(targetDocument: Document, rootNode: ParentNode) {
-    const passwordFields = Array.from(
-      rootNode.querySelectorAll(
+    const passwordFields = [
+      ...rootNode.querySelectorAll(
         "input[name='passwd'], input[type='password']:not([name='passwd2'])",
       ),
-    );
+    ];
     const seen = new Set();
     const strings = getLandingStrings(targetDocument);
 
@@ -66,11 +66,11 @@
 
     const inlineScope = passwordField.closest("form") || passwordField.parentElement;
     if (inlineScope) {
-      const legacyInlineToggles = Array.from(
-        inlineScope.querySelectorAll(
+      const legacyInlineToggles = [
+        ...inlineScope.querySelectorAll(
           "svg#showPassword, svg#hidePassword, svg[onclick*='togglePassword']",
         ),
-      );
+      ];
 
       legacyInlineToggles.forEach((node) => {
         const relation = node.compareDocumentPosition(passwordField);
@@ -97,11 +97,11 @@
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
-      Array.from(labelCell.querySelectorAll("svg")).forEach((node) => {
+      [...labelCell.querySelectorAll("svg")].forEach((node) => {
         node.remove();
       });
 
-      Array.from(labelCell.querySelectorAll("a, button, span, i")).forEach((node) => {
+      [...labelCell.querySelectorAll("a, button, span, i")].forEach((node) => {
         const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
 
@@ -112,7 +112,7 @@
     }
 
     const eyePattern = /(eye|show|hide|visible|visibility|view|顯示|隱藏|密碼)/i;
-    const candidates = Array.from(labelCell.querySelectorAll("img, svg, i, span, a, button"));
+    const candidates = [...labelCell.querySelectorAll("img, svg, i, span, a, button")];
 
     candidates.forEach((node) => {
       const hints = [
@@ -135,7 +135,7 @@
   }
 
   function normalizeLoginFormLayout(rootNode: ParentNode) {
-    const forms = Array.from(rootNode.querySelectorAll<HTMLFormElement>("form"));
+    const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
 
     forms.forEach((formNode) => {
       if (formNode.dataset.ccxpLiteFormStructured !== "true") {
@@ -150,14 +150,14 @@
   }
 
   function structureLoginFormRows(targetDocument: Document, formNode: HTMLFormElement) {
-    const rows = Array.from(formNode.querySelectorAll<HTMLTableRowElement>("tr"));
+    const rows = [...formNode.querySelectorAll<HTMLTableRowElement>("tr")];
 
     rows.forEach((rowNode, rowIndex) => {
       if (!rowNode || rowNode.dataset.ccxpLiteLoginRow === "true") {
         return;
       }
 
-      const cells = Array.from(rowNode.querySelectorAll<HTMLElement>(":scope > th, :scope > td"));
+      const cells = [...rowNode.querySelectorAll<HTMLElement>(":scope > th, :scope > td")];
       if (cells.length === 0) {
         return;
       }
@@ -185,11 +185,11 @@
   }
 
   function rebuildFlatLoginFormLabels(targetDocument: Document, formNode: HTMLFormElement) {
-    const fields = Array.from(
-      formNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    const fields = [
+      ...formNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
         "input, select, textarea",
       ),
-    );
+    ];
 
     fields.forEach((fieldNode, fieldIndex) => {
       const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
@@ -264,9 +264,9 @@
       return;
     }
 
-    const fieldRows = Array.from(
-      formNode.querySelectorAll<HTMLTableRowElement>("tr.ccxp-lite-login-field-row"),
-    );
+    const fieldRows = [
+      ...formNode.querySelectorAll<HTMLTableRowElement>("tr.ccxp-lite-login-field-row"),
+    ];
     if (fieldRows.length === 0) {
       return;
     }
@@ -290,13 +290,13 @@
       removeNode(rowNode);
     });
 
-    Array.from(
-      formNode.querySelectorAll<HTMLTableElement>("table.ccxp-lite-login-form-table"),
-    ).forEach((tableNode) => {
-      if (!tableNode.querySelector("tr")) {
-        removeNode(tableNode);
-      }
-    });
+    [...formNode.querySelectorAll<HTMLTableElement>("table.ccxp-lite-login-form-table")].forEach(
+      (tableNode) => {
+        if (!tableNode.querySelector("tr")) {
+          removeNode(tableNode);
+        }
+      },
+    );
 
     formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
@@ -512,11 +512,11 @@
   }
 
   function findPrimaryFieldControl(scopeNode: ParentNode) {
-    const candidates = Array.from(
-      scopeNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
+    const candidates = [
+      ...scopeNode.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
         "input, select, textarea",
       ),
-    );
+    ];
 
     return (
       candidates.find((field) => {
@@ -545,9 +545,9 @@
   }
 
   function removeLoginResetControls(rootNode: ParentNode) {
-    const resetControls = Array.from(
-      rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
-    );
+    const resetControls = [
+      ...rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
+    ];
 
     resetControls.forEach((controlNode) => {
       removeNode(controlNode);
@@ -556,7 +556,7 @@
 
   function forceCaptchaLabelDisplay(rootNode: ParentNode) {
     const captchaLabelPattern = /(驗證碼|captcha)/i;
-    const spans = Array.from(rootNode.querySelectorAll<HTMLSpanElement>("span"));
+    const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
 
     spans.forEach((spanNode) => {
       const labelText = (spanNode.textContent || "").replaceAll(/\s+/g, " ").trim();
@@ -569,9 +569,9 @@
   }
 
   function replaceLoginFormImageButtons(targetDocument: Document, rootNode: ParentNode) {
-    const imageSubmitInputs = Array.from(
-      rootNode.querySelectorAll<HTMLInputElement>("form input[type='image']"),
-    );
+    const imageSubmitInputs = [
+      ...rootNode.querySelectorAll<HTMLInputElement>("form input[type='image']"),
+    ];
 
     imageSubmitInputs.forEach((inputNode) => {
       if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
@@ -646,9 +646,7 @@
       button.dataset.ccxpLiteImageButtonReplaced = "true";
     });
 
-    const imageAnchors = Array.from(
-      rootNode.querySelectorAll<HTMLImageElement>("form a > img[alt]"),
-    );
+    const imageAnchors = [...rootNode.querySelectorAll<HTMLImageElement>("form a > img[alt]")];
     imageAnchors.forEach((imageNode) => {
       const anchor = imageNode.closest("a");
       if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
@@ -689,16 +687,16 @@
   }
 
   function wrapPrimaryLoginButtons(targetDocument: Document, rootNode: ParentNode) {
-    const forms = Array.from(rootNode.querySelectorAll<HTMLFormElement>("form"));
+    const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
 
     forms.forEach((formNode) => {
       normalizeNativeLoginSubmitControls(targetDocument, formNode);
 
-      const allActionButtons = Array.from(
-        formNode.querySelectorAll<HTMLElement>(
+      const allActionButtons = [
+        ...formNode.querySelectorAll<HTMLElement>(
           ".ccxp-lite-image-action-button, .ccxp-lite-image-link-button",
         ),
-      );
+      ];
       if (allActionButtons.length === 0) {
         return;
       }
@@ -736,9 +734,9 @@
   }
 
   function normalizeNativeLoginSubmitControls(targetDocument: Document, formNode: HTMLFormElement) {
-    const nativeSubmitInputs = Array.from(
-      formNode.querySelectorAll<HTMLInputElement>("input[type='submit']"),
-    );
+    const nativeSubmitInputs = [
+      ...formNode.querySelectorAll<HTMLInputElement>("input[type='submit']"),
+    ];
 
     nativeSubmitInputs.forEach((inputNode) => {
       if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
@@ -765,7 +763,7 @@
       button.value = label;
       button.setAttribute("value", label);
 
-      Array.from(inputNode.attributes).forEach((attribute) => {
+      [...inputNode.attributes].forEach((attribute) => {
         const attributeName = attribute.name.toLowerCase();
         if (attributeName === "type" || attributeName === "class") {
           return;
@@ -786,9 +784,9 @@
       button.dataset.ccxpLiteSubmitRebuilt = "true";
     });
 
-    const nativeSubmitButtons = Array.from(
-      formNode.querySelectorAll<HTMLButtonElement>("button[type='submit'], button:not([type])"),
-    );
+    const nativeSubmitButtons = [
+      ...formNode.querySelectorAll<HTMLButtonElement>("button[type='submit'], button:not([type])"),
+    ];
     nativeSubmitButtons.forEach((buttonNode) => {
       if (
         buttonNode.classList.contains("ccxp-lite-audio-icon-button") ||
@@ -812,7 +810,7 @@
   }
 
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
-    Array.from(rootNode.querySelectorAll("br")).forEach((node) => {
+    [...rootNode.querySelectorAll("br")].forEach((node) => {
       removeNode(node);
     });
 
@@ -837,9 +835,9 @@
   }
 
   function alignCaptchaMediaRow(targetDocument: Document, rootNode: ParentNode) {
-    const captchaImages = Array.from(
-      rootNode.querySelectorAll<HTMLImageElement>("img[src*='auth_img.php']"),
-    );
+    const captchaImages = [
+      ...rootNode.querySelectorAll<HTMLImageElement>("img[src*='auth_img.php']"),
+    ];
 
     captchaImages.forEach((captchaImage) => {
       const host = captchaImage.parentElement;
@@ -1001,11 +999,11 @@
   }
 
   function collectLegacyActionControls(row: Element) {
-    return Array.from(
-      row.querySelectorAll(
+    return [
+      ...row.querySelectorAll(
         "input[type='image'], input[type='submit'], input[type='reset'], button, a > img",
       ),
-    ).filter((node) => {
+    ].filter((node) => {
       if (node.matches("a > img")) {
         return true;
       }

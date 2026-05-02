@@ -80,7 +80,7 @@ describe("decaptcha tensor ops", () => {
       groups: 2,
     });
     expect(output.shape).toEqual([2, 2, 2]);
-    expect(Array.from(output.data)).toEqual([2, 4, 6, 8, 30, 60, 90, 120]);
+    expect([...output.data]).toEqual([2, 4, 6, 8, 30, 60, 90, 120]);
   });
 
   test("computes batchnorm, relu, adaptive avg pool, linear, and argmax", () => {
@@ -91,10 +91,10 @@ describe("decaptcha tensor ops", () => {
     const variance = decaptcha.__test.createTensor([1], [4]);
 
     const normalized = decaptcha.__test.batchnorm2d(input, gamma, beta, mean, variance, 0);
-    expect(Array.from(normalized.data)).toEqual([0, 1, 2, 3]);
+    expect([...normalized.data]).toEqual([0, 1, 2, 3]);
 
     const relu = decaptcha.__test.relu(decaptcha.__test.createTensor([1, 2, 2], [-2, -1, 0, 3]));
-    expect(Array.from(relu.data)).toEqual([0, 0, 0, 3]);
+    expect([...relu.data]).toEqual([0, 0, 0, 3]);
 
     const pooled = decaptcha.__test.adaptiveAvgPool2d(
       decaptcha.__test.createTensor(
@@ -104,14 +104,14 @@ describe("decaptcha tensor ops", () => {
       1,
       2,
     );
-    expect(Array.from(pooled.data)).toEqual([7.5, 9.5]);
+    expect([...pooled.data]).toEqual([7.5, 9.5]);
 
     const logits = decaptcha.__test.linear(
       new Float32Array([1, 2, 3]),
       decaptcha.__test.createTensor([2, 3], [1, 0, 1, 0, 1, 0]),
       decaptcha.__test.createTensor([2], [0.5, -1]),
     );
-    expect(Array.from(logits)).toEqual([4.5, 1]);
+    expect([...logits]).toEqual([4.5, 1]);
     expect(decaptcha.__test.argmax(logits)).toBe(0);
   });
 });

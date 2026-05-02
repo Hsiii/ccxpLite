@@ -323,7 +323,7 @@
       }
     });
 
-    state.classicExpandedItemIds = Array.from(expandedItemIds);
+    state.classicExpandedItemIds = [...expandedItemIds];
     return sidebarList;
   }
 
@@ -421,7 +421,7 @@
       } else {
         expandedItemIds.add(group.id);
       }
-      state.classicExpandedItemIds = Array.from(expandedItemIds);
+      state.classicExpandedItemIds = [...expandedItemIds];
       rerender();
     });
     linkList.append(button);
@@ -771,7 +771,7 @@
       return;
     }
 
-    const detailItems = Array.from(body.children as HTMLCollectionOf<HTMLElement>).filter(
+    const detailItems = [...(body.children as HTMLCollectionOf<HTMLElement>)].filter(
       (child) => !child.classList.contains("ccxp-lite-empty"),
     );
 
