@@ -1,4 +1,4 @@
-export {};
+export type CcxpLiteModuleMarker = never;
 
 declare global {
   let CCXP_LITE: CcxpLiteNamespace;

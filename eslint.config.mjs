@@ -63,7 +63,6 @@ export default defineConfig(
       "unicorn/no-array-for-each": "off",
       "unicorn/no-null": "off",
       "unicorn/prefer-spread": "off",
-      "unicorn/require-module-specifiers": "off",
     },
   },
 );
