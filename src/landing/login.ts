@@ -863,7 +863,7 @@
       if (!mediaRow) {
         mediaRow = targetDocument.createElement("span");
         mediaRow.className = "ccxp-lite-captcha-media-row";
-        host.insertBefore(mediaRow, captchaImage);
+        captchaImage.before(mediaRow);
       }
 
       if (captchaImage.parentNode !== mediaRow) {

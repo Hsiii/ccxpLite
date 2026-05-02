@@ -68,7 +68,6 @@ export default defineConfig(
       "unicorn/no-array-reduce": "off",
       "unicorn/no-negated-condition": "off",
       "unicorn/no-null": "off",
-      "unicorn/prefer-modern-dom-apis": "off",
       "unicorn/prefer-spread": "off",
       "unicorn/require-module-specifiers": "off",
     },

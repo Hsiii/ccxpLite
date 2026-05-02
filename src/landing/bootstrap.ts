@@ -217,7 +217,7 @@
     );
     if (utilityHeaderLinks) {
       if (languageLinks) {
-        headerSection.insertBefore(utilityHeaderLinks, langSection);
+        langSection.before(utilityHeaderLinks);
       } else {
         headerSection.append(utilityHeaderLinks);
       }
