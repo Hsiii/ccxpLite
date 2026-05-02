@@ -1,13 +1,18 @@
 import { describe, expect, test } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  menuModulePaths,
+  requireValue,
+} from "./helpers/module-loader.js";
 
 describe("sidebar state", () => {
   test("returns a stable state object per document with the expected defaults", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
 
-    const { getSidebarUiState } = window.CCXP_LITE.sidebarState;
+    const { getSidebarUiState } = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
     const state = getSidebarUiState(window.document);
 
     expect(getSidebarUiState(window.document)).toBe(state);

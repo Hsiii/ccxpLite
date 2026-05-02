@@ -369,7 +369,11 @@
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
 
     // Mount lab button to main frame if in classic mode
-    const { sidebarState, sidebarUi, shared: sharedLib } = globalThis.CCXP_LITE || {};
+    const {
+      sidebarState,
+      sidebarUi,
+      shared: sharedLib,
+    } = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
     if (sidebarState && sidebarUi && sharedLib) {
       const state = sidebarState.getSidebarUiState(mainDocument);
       const strings = sharedLib.getLocalizedStrings(

@@ -47,7 +47,7 @@
       return;
     }
 
-    const searchInput = shell.querySelector(".ccxp-lite-sidebar-search-input");
+    const searchInput = shell.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input");
     const state = getSidebarUiState(hostDocument);
 
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {

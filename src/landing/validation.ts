@@ -8,7 +8,7 @@
   const { getLoginForm } = landingLocale;
 
   function captureLoginValidationState(targetDocument: Document): CcxpLiteLandingValidationState {
-    const fnstrField = targetDocument.querySelector("input[name='fnstr']");
+    const fnstrField = targetDocument.querySelector<HTMLInputElement>("input[name='fnstr']");
     const rawFnstr = fnstrField ? fnstrField.value : "";
     const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
 
@@ -31,8 +31,8 @@
     state: CcxpLiteLandingValidationState,
   ) {
     const fields = ["account", "passwd", "passwd2"]
-      .map((name) => targetDocument.querySelector(`input[name='${name}']`))
-      .filter(Boolean);
+      .map((name) => targetDocument.querySelector<HTMLInputElement>(`input[name='${name}']`))
+      .filter((field): field is HTMLInputElement => field !== null);
 
     if (fields.length === 0) {
       return;
