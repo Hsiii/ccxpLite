@@ -95,7 +95,7 @@
     }
 
     const labelText = (labelCell.textContent ?? "").replaceAll(/\s+/g, " ").trim();
-    const isPasswordLabel = /(密碼|password)/i.test(labelText);
+    const isPasswordLabel = /(\u5BC6\u78BC|password)/i.test(labelText);
 
     if (isPasswordLabel) {
       for (const node of labelCell.querySelectorAll("svg")) {
@@ -112,7 +112,8 @@
       }
     }
 
-    const eyePattern = /(eye|show|hide|visible|visibility|view|顯示|隱藏|密碼)/i;
+    const eyePattern =
+      /(eye|show|hide|visible|visibility|view|\u986F\u793A|\u96B1\u85CF|\u5BC6\u78BC)/i;
     const candidates = [...labelCell.querySelectorAll("img, svg, i, span, a, button")];
 
     for (const node of candidates) {
@@ -127,7 +128,7 @@
         .map((value) => (value ?? "").toLowerCase())
         .join(" ");
 
-      if (hints.includes("👁") || eyePattern.test(hints)) {
+      if (hints.includes("\uD83D\uDC41") || eyePattern.test(hints)) {
         node.remove();
       }
     }
@@ -575,7 +576,7 @@
   }
 
   function forceCaptchaLabelDisplay(rootNode: ParentNode) {
-    const captchaLabelPattern = /(驗證碼|captcha)/i;
+    const captchaLabelPattern = /(\u9A57\u8B49\u78BC|captcha)/i;
     const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
 
     for (const spanNode of spans) {
@@ -831,7 +832,9 @@
       return false;
     }
 
-    return /(登入|登录|login|signin|logon|送出|確定|确定|submit)/i.test(normalizedLabel);
+    return /(\u767B\u5165|\u767B\u5F55|login|signin|logon|\u9001\u51FA|\u78BA\u5B9A|\u786E\u5B9A|submit)/i.test(
+      normalizedLabel,
+    );
   }
 
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
@@ -962,9 +965,9 @@
     const normalized = (label ?? "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
-      normalized.includes("清除") ||
+      normalized.includes("\u6E05\u9664") ||
       normalized.includes("clear") ||
-      normalized.includes("重填") ||
+      normalized.includes("\u91CD\u586B") ||
       normalized.includes("reset")
     );
   }
@@ -988,7 +991,7 @@
       .map((value) => (value ?? "").toLowerCase())
       .join(" ");
 
-    return /(voice|audio|sound|speak|listen|語音|朗讀|播放)/.test(hintText);
+    return /(voice|audio|sound|speak|listen|\u8A9E\u97F3|\u6717\u8B80|\u64AD\u653E)/.test(hintText);
   }
 
   function isAdjacentLoginClearControl(node: Element | null) {
@@ -1058,7 +1061,7 @@
 
   function isLoginLikeControl(node: Element) {
     const hints = extractControlHints(node);
-    return /(登入|login|sign\s*-?\s*in|submit)/i.test(hints);
+    return /(\u767B\u5165|login|sign\s*-?\s*in|submit)/i.test(hints);
   }
 
   function isClearLikeControl(node: Element) {
@@ -1068,7 +1071,7 @@
     }
 
     const hints = extractControlHints(node);
-    return /(清除|重填|clear|reset)/i.test(hints);
+    return /(\u6E05\u9664|\u91CD\u586B|clear|reset)/i.test(hints);
   }
 
   function extractControlHints(node: Element) {

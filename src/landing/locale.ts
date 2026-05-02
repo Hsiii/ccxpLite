@@ -65,7 +65,7 @@
         if (currentLangText.includes("english")) {
           return "en";
         }
-        if (/中文|chinese/.test(currentLangText)) {
+        if (/\u4E2D\u6587|chinese/.test(currentLangText)) {
           return "zh";
         }
       }
@@ -95,9 +95,12 @@
       .toLowerCase();
 
     const localePairs = [
-      { zh: ["帳號", "學號"], en: ["account", "username", "user id", "student id"] },
-      { zh: ["密碼"], en: ["password"] },
-      { zh: ["驗證碼"], en: ["captcha", "verification code", "security code"] },
+      {
+        zh: ["\u5E33\u865F", "\u5B78\u865F"],
+        en: ["account", "username", "user id", "student id"],
+      },
+      { zh: ["\u5BC6\u78BC"], en: ["password"] },
+      { zh: ["\u9A57\u8B49\u78BC"], en: ["captcha", "verification code", "security code"] },
     ];
 
     let zhHits = 0;

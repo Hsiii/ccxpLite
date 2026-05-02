@@ -231,7 +231,7 @@
     }
 
     const label = (button.textContent ?? "").replaceAll(/\s+/g, " ").trim().toLowerCase();
-    if (/(學生|校友|student|alumni)/i.test(label)) {
+    if (/(\u5B78\u751F|\u6821\u53CB|student|alumni)/i.test(label)) {
       panel.classList.add("ccxp-lite-student-alumni-panel");
     }
   }

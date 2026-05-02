@@ -68,7 +68,7 @@ describe("sidebar destination states", () => {
     expect(error.hidden).toBe(false);
 
     const retryButton = [...document.querySelectorAll<HTMLButtonElement>("button")].find(
-      (button) => button.textContent === "重試",
+      (button) => button.textContent === "\u91CD\u8A66",
     );
     retryButton.click();
     expect(state.activeLeaf?.nonce).not.toBe(1);
@@ -92,7 +92,7 @@ describe("sidebar destination states", () => {
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
 
     const openButton = [...document.querySelectorAll<HTMLButtonElement>("button")].find(
-      (button) => button.textContent === "新分頁開啟",
+      (button) => button.textContent === "\u65B0\u5206\u9801\u958B\u555F",
     );
     openButton.click();
 

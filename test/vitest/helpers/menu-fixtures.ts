@@ -54,7 +54,7 @@ export function createSidebarModel(): CcxpLiteSidebarModel {
         id: "category-courses",
         label: "Courses & Grades",
         icon: "notepad-text",
-        summary: "Grades · Schedule",
+        summary: "Grades \u00B7 Schedule",
         directLinks: [],
         sections: [
           {

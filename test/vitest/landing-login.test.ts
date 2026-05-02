@@ -22,11 +22,11 @@ describe("landing login ui", () => {
     const toggle = document.querySelector<HTMLButtonElement>(".ccxp-lite-password-toggle");
 
     expect(document.querySelectorAll(".ccxp-lite-password-field")).toHaveLength(1);
-    expect(toggle.getAttribute("aria-label")).toBe("顯示密碼");
+    expect(toggle.getAttribute("aria-label")).toBe("\u986F\u793A\u5BC6\u78BC");
 
     toggle.click();
     expect(passwordField.type).toBe("text");
-    expect(toggle.getAttribute("aria-label")).toBe("隱藏密碼");
+    expect(toggle.getAttribute("aria-label")).toBe("\u96B1\u85CF\u5BC6\u78BC");
   });
 
   test("marks the login form as structured without duplicating work", () => {

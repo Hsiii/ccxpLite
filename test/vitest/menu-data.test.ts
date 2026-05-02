@@ -9,10 +9,10 @@ function createSidebarTreeDocument() {
       <body>
         <script>
           foldersTree = gFld("root", "");
-          aux0 = insFld(foldersTree, gFld("課程、成績 Courses, transcript", ""));
-          insDoc(aux0, gLnk(0, "學期成績", "/grades?sid=1&keep=yes"));
-          aux1 = insFld(foldersTree, gFld("校內其他系統", ""));
-          insDoc(aux1, gLnk(1, "外部系統", "/ccxp/INQUIRE/PE/1/14D/report"));
+          aux0 = insFld(foldersTree, gFld("\u8AB2\u7A0B\u3001\u6210\u7E3E Courses, transcript", ""));
+          insDoc(aux0, gLnk(0, "\u5B78\u671F\u6210\u7E3E", "/grades?sid=1&keep=yes"));
+          aux1 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
+          insDoc(aux1, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
         </script>
       </body>
     </html>
@@ -29,12 +29,12 @@ describe("sidebar data", () => {
 
     expect(root.children).toHaveLength(2);
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
-      "課程成績",
+      "\u8AB2\u7A0B\u6210\u7E3E",
     );
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
-      "校園系統",
+      "\u6821\u5712\u7CFB\u7D71",
     );
-    expect(model.categories[0].sections[0].directLinks[0].label).toBe("學期成績");
+    expect(model.categories[0].sections[0].directLinks[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
   });
 
   test("filters favorites and categories by normalized search text", () => {

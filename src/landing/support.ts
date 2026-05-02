@@ -35,7 +35,7 @@
       [...targetNode.querySelectorAll<HTMLTableElement>("table")].find(
         (table) =>
           table.contains(calendarFrame) &&
-          ["月曆", "Calendar"].some((text) => table.textContent.includes(text)),
+          ["\u6708\u66C6", "Calendar"].some((text) => table.textContent.includes(text)),
       ) ?? null
     );
   }
@@ -69,7 +69,7 @@
 
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
       const hasNoticeHeading =
-        headingText.includes("系統公告") || headingText.includes("system notice");
+        headingText.includes("\u7CFB\u7D71\u516C\u544A") || headingText.includes("system notice");
 
       if (!hasNoticeHeading) {
         return false;
@@ -317,8 +317,8 @@
     const normalized = (label ?? "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
-      normalized.includes("無法登入") ||
-      normalized.includes("无法登入") ||
+      normalized.includes("\u7121\u6CD5\u767B\u5165") ||
+      normalized.includes("\u65E0\u6CD5\u767B\u5165") ||
       normalized.includes("cannotlogin") ||
       normalized.includes("can'tlogin") ||
       normalized.includes("cantlogin")

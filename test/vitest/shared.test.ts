@@ -24,7 +24,7 @@ describe("shared locale", () => {
 
     document.documentElement.lang = "en-GB";
     expect(resolveLocaleFromDocument(document)).toBe("en");
-    expect(getLocalizedStrings("fr").sidebarTitle).toBe("校務資訊系統");
+    expect(getLocalizedStrings("fr").sidebarTitle).toBe("\u6821\u52D9\u8CC7\u8A0A\u7CFB\u7D71");
   });
 });
 

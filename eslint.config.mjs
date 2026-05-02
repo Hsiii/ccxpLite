@@ -18,7 +18,6 @@ export default [
     rules: {
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
-      "complete/require-ascii": "off",
       "import-x/no-unassigned-import": [
         "error",
         {

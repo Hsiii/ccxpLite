@@ -251,7 +251,7 @@
 
     const textWrap = targetDocument.createElement("span");
     textWrap.className = "ccxp-lite-sidebar-experiment-copy";
-    textWrap.textContent = `${strings.sidebarExperimentCaption}：${strings.sidebarVariantLayered}`;
+    textWrap.textContent = `${strings.sidebarExperimentCaption}\uFF1A${strings.sidebarVariantLayered}`;
 
     button.append(iconWrap);
     button.append(textWrap);

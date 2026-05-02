@@ -48,7 +48,7 @@
     return {
       favorites: {
         id: "category-favorites",
-        label: strings.sidebarCategoryFavorites || "常用功能",
+        label: strings.sidebarCategoryFavorites || "\u5E38\u7528\u529F\u80FD",
         icon: "star",
         directLinks: dedupeLinkItems(favoriteLinks),
         sections: [],
@@ -71,7 +71,7 @@
             : [
                 {
                   id: `category-${category.id}-other`,
-                  label: strings.sidebarCategoryOtherSection || "其他",
+                  label: strings.sidebarCategoryOtherSection || "\u5176\u4ED6",
                   directLinks: directLinkItems,
                   sections: [],
                   kind: "group",
@@ -83,7 +83,7 @@
           id: `category-${category.id}`,
           label: strings[category.labelKey] ?? category.fallbackLabel ?? category.id,
           icon: category.icon,
-          summary: (category.summaryLabels ?? []).join(" · "),
+          summary: (category.summaryLabels ?? []).join(" \u00B7 "),
           directLinks: [],
           sections,
           emptyMessage: strings.emptyGroup,
@@ -110,7 +110,7 @@
 
   function normalizeSidebarLabel(label: string | null | undefined): string {
     return (label ?? "")
-      .replaceAll(/[()（）]/g, " ")
+      .replaceAll(/[()\uFF08\uFF09]/g, " ")
       .replaceAll(/[&,]/g, " ")
       .replaceAll(/\s*\/\s*/g, " ")
       .replaceAll(/\s+/g, " ")

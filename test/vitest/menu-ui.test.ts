@@ -44,7 +44,9 @@ describe("sidebar ui", () => {
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, createSidebarModel());
 
     expect(state.currentCategoryId).toBe("");
-    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe("找不到符合項目");
+    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
+      "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
+    );
   });
 
   test("switching the sidebar variant resets navigation state", () => {
@@ -86,7 +88,9 @@ describe("sidebar ui", () => {
     model.favorites.directLinks = [];
 
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
-    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain("試試其他關鍵字");
+    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain(
+      "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57",
+    );
 
     state.searchQuery = "";
     window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
