@@ -10,7 +10,7 @@
 
     return Array.from(
       targetDocument.querySelectorAll<HTMLElement>("td, table, div, section, article"),
-    ).find((cell) => cell.querySelector("form"));
+    ).find((cell) => cell.querySelector("form") !== null);
   }
 
   function findCalendarTable(targetNode: ParentNode) {
@@ -287,7 +287,7 @@
     }
 
     const anchors = Array.from(utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]"));
-    const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor));
+    const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor) === true);
     if (fromUtility) {
       return fromUtility;
     }
@@ -480,9 +480,11 @@
       .filter((anchor) => anchor !== excludedAnchor)
       .filter((anchor) => {
         const href = anchor.getAttribute("href") || "";
-        return href && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html");
+        return (
+          href !== "" && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html")
+        );
       })
-      .filter((anchor) => anchor.textContent && anchor.textContent.trim() !== "")
+      .filter((anchor) => anchor.textContent !== null && anchor.textContent.trim() !== "")
       .slice(0, 3);
 
     if (anchors.length === 0) {
@@ -612,8 +614,8 @@
       return false;
     }
 
-    const hasInteractiveContent = cells.some((cell) =>
-      cell.querySelector("a, button, input, select, textarea, table, iframe"),
+    const hasInteractiveContent = cells.some(
+      (cell) => cell.querySelector("a, button, input, select, textarea, table, iframe") !== null,
     );
     if (hasInteractiveContent) {
       return false;

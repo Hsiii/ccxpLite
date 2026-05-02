@@ -49,7 +49,6 @@ export default defineConfig(
       "complete/prefer-readonly-parameter-types": "off",
       "complete/require-ascii": "off",
       "complete/require-variadic-function-argument": "off",
-      "complete/strict-array-methods": "off",
       "import-x/no-unassigned-import": [
         "error",
         {
