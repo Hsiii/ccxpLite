@@ -936,7 +936,7 @@
     return true;
   }
 
-  function isClearActionLabel(label) {
+  function isClearActionLabel(label: string | null | undefined) {
     const normalized = (label || "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (

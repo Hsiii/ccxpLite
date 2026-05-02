@@ -115,7 +115,7 @@
     return fallbackTables.find((table) => isAnnouncementTable(table)) || null;
   }
 
-  function normalizeAnnouncementHeading(rawText) {
+  function normalizeAnnouncementHeading(rawText: string | null | undefined) {
     return (rawText || "").replaceAll(/\s+/g, " ").trim().toLowerCase();
   }
 
@@ -287,7 +287,7 @@
     }
 
     const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")];
-    const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor) === true);
+    const fromUtility = anchors.find((anchor) => isCannotLoginAnchor(anchor));
     if (fromUtility) {
       return fromUtility;
     }
@@ -298,7 +298,7 @@
     return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : null;
   }
 
-  function isCannotLoginLabel(label) {
+  function isCannotLoginLabel(label: string | null | undefined) {
     const normalized = (label || "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
@@ -769,7 +769,7 @@
     return false;
   }
 
-  function normalizeLegacyWidth(rawValue) {
+  function normalizeLegacyWidth(rawValue: string | null | undefined) {
     return (rawValue || "").replaceAll(/\s+/g, "").toLowerCase();
   }
 
