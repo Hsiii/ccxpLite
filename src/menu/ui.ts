@@ -864,11 +864,15 @@
   }
 
   function getShortestColumnIndex(columnHeights: number[]): number {
-    return columnHeights.reduce(
-      (shortestIndex, height, index) =>
-        height < columnHeights[shortestIndex] ? index : shortestIndex,
-      0,
-    );
+    let shortestIndex = 0;
+
+    for (const [index, height] of columnHeights.entries()) {
+      if (height < columnHeights[shortestIndex]) {
+        shortestIndex = index;
+      }
+    }
+
+    return shortestIndex;
   }
 
   function createCategoryBlock(
