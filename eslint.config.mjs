@@ -31,7 +31,6 @@ export default defineConfig(
       "@typescript-eslint/strict-boolean-expressions": "off",
       "complete/complete-sentences-line-comments": "off",
       "complete/format-line-comments": "off",
-      "complete/no-let-any": "off",
       "complete/no-mutable-return": "off",
       "complete/no-object-any": "off",
       "complete/prefer-plusplus": "off",
