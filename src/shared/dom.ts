@@ -6,13 +6,13 @@
     return Object.prototype.toString.call(value) === "[object Array]";
   }
 
-  function moveChildNodes(sourceNode: Node, targetNode: Node) {
+  function moveChildNodes(sourceNode: ParentNode & Node, targetNode: ParentNode & Node) {
     while (sourceNode.firstChild) {
       targetNode.append(sourceNode.firstChild);
     }
   }
 
-  function removeNode(node: Node | null) {
+  function removeNode(node: ChildNode | null) {
     if (node && node.parentNode) {
       node.remove();
     }

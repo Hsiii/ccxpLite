@@ -1,7 +1,6 @@
 import { completeConfigBase } from "eslint-config-complete";
-import { defineConfig } from "eslint/config";
 
-export default defineConfig(
+export default [
   ...completeConfigBase,
 
   {
@@ -17,7 +16,6 @@ export default defineConfig(
 
   {
     rules: {
-      "@typescript-eslint/no-unsafe-call": "off",
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
@@ -35,4 +33,4 @@ export default defineConfig(
       "unicorn/no-null": "off",
     },
   },
-);
+];

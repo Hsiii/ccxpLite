@@ -64,7 +64,7 @@ describe("sidebar ui", () => {
       () => undefined,
     );
 
-    const switcherNode = document.querySelector("[data-ccxp-lite-sidebar-lab-switch]");
+    const switcherNode = document.querySelector<HTMLElement>("[data-ccxp-lite-sidebar-lab-switch]");
     switcherNode.click();
 
     expect(state.sidebarVariant).toBe("layered");

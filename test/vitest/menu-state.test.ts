@@ -34,8 +34,10 @@ describe("sidebar state", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
 
-    const { getPersistedSidebarVariant, setPersistedSidebarVariant } =
-      window.CCXP_LITE.sidebarState;
+    const { getPersistedSidebarVariant, setPersistedSidebarVariant } = requireValue(
+      window.CCXP_LITE.sidebarState,
+      "sidebarState",
+    );
 
     expect(setPersistedSidebarVariant("layered")).toBe("layered");
     expect(window.localStorage.getItem("ccxp-lite-sidebar-variant")).toBe("layered");
