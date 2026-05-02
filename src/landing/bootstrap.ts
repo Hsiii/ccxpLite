@@ -256,10 +256,10 @@
       }
 
       tabsSection.append(tabsHeader);
-      tabContents.forEach((tabContent) => {
+      for (const tabContent of tabContents) {
         collapseLegacyThreeColumnRows(tabContent);
         tabsSection.append(tabContent);
-      });
+      }
 
       wireLandingTabs(targetDocument, tabNavigation, tabContents, strings);
       shell.append(tabsSection);

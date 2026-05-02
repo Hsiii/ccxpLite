@@ -101,14 +101,14 @@
 
     let zhHits = 0;
     let enHits = 0;
-    localePairs.forEach((pair) => {
+    for (const pair of localePairs) {
       if (pair.zh.some((token) => loginTextSample.includes(token))) {
         zhHits++;
       }
       if (pair.en.some((token) => loginTextSample.includes(token))) {
         enHits++;
       }
-    });
+    }
 
     if (zhHits > enHits) {
       return "zh";

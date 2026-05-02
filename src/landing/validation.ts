@@ -50,11 +50,11 @@
       }
     };
 
-    ["click", "change", "keydown"].forEach((eventName) => {
-      fields.forEach((field) => {
+    for (const eventName of ["click", "change", "keydown"]) {
+      for (const field of fields) {
         field.addEventListener(eventName, onFieldActivity);
-      });
-    });
+      }
+    }
 
     form.addEventListener("submit", () => {
       ensureLoginSubmissionPayload(form, targetDocument);

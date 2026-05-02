@@ -19,9 +19,9 @@
     const seen = new Set();
     const strings = getLandingStrings(targetDocument);
 
-    passwordFields.forEach((field) => {
+    for (const field of passwordFields) {
       if (!field || seen.has(field) || field.dataset.ccxpLitePasswordToggle === "true") {
-        return;
+        continue;
       }
 
       seen.add(field);
@@ -32,7 +32,7 @@
       wrapper.className = "ccxp-lite-password-field";
 
       if (!field.parentNode) {
-        return;
+        continue;
       }
 
       field.parentNode.insertBefore(wrapper, field);
@@ -56,7 +56,7 @@
 
       wrapper.append(toggleButton);
       field.dataset.ccxpLitePasswordToggle = "true";
-    });
+    }
   }
 
   function removeRedundantPasswordLabelEyeIcon(passwordField: HTMLInputElement) {
@@ -72,7 +72,7 @@
         ),
       ];
 
-      legacyInlineToggles.forEach((node) => {
+      for (const node of legacyInlineToggles) {
         const relation = node.compareDocumentPosition(passwordField);
         // eslint-disable-next-line no-bitwise
         const isBeforeField = Boolean(relation & Node.DOCUMENT_POSITION_FOLLOWING);
@@ -80,7 +80,7 @@
         if (isBeforeField) {
           node.remove();
         }
-      });
+      }
     }
 
     const row = passwordField.closest("tr");
@@ -97,24 +97,24 @@
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
-      [...labelCell.querySelectorAll("svg")].forEach((node) => {
+      for (const node of labelCell.querySelectorAll("svg")) {
         node.remove();
-      });
+      }
 
-      [...labelCell.querySelectorAll("a, button, span, i")].forEach((node) => {
+      for (const node of labelCell.querySelectorAll("a, button, span, i")) {
         const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
 
         if (!text && hasOnlyIconChild) {
           node.remove();
         }
-      });
+      }
     }
 
     const eyePattern = /(eye|show|hide|visible|visibility|view|顯示|隱藏|密碼)/i;
     const candidates = [...labelCell.querySelectorAll("img, svg, i, span, a, button")];
 
-    candidates.forEach((node) => {
+    for (const node of candidates) {
       const hints = [
         node.getAttribute("alt"),
         node.getAttribute("title"),
@@ -129,7 +129,7 @@
       if (hints.includes("👁") || eyePattern.test(hints)) {
         node.remove();
       }
-    });
+    }
 
     row.dataset.ccxpLitePasswordLabelCleaned = "true";
   }
@@ -137,7 +137,7 @@
   function normalizeLoginFormLayout(rootNode: ParentNode) {
     const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
 
-    forms.forEach((formNode) => {
+    for (const formNode of forms) {
       if (formNode.dataset.ccxpLiteFormStructured !== "true") {
         structureLoginFormRows(rootNode.ownerDocument, formNode);
         rebuildFlatLoginFormLabels(rootNode.ownerDocument, formNode);
@@ -146,25 +146,25 @@
 
       formNode.classList.add("ccxp-lite-login-form");
       formNode.dataset.ccxpLiteFormStructured = "true";
-    });
+    }
   }
 
   function structureLoginFormRows(targetDocument: Document, formNode: HTMLFormElement) {
     const rows = [...formNode.querySelectorAll<HTMLTableRowElement>("tr")];
 
-    rows.forEach((rowNode, rowIndex) => {
+    for (const [rowIndex, rowNode] of rows.entries()) {
       if (!rowNode || rowNode.dataset.ccxpLiteLoginRow === "true") {
-        return;
+        continue;
       }
 
       const cells = [...rowNode.querySelectorAll<HTMLElement>(":scope > th, :scope > td")];
       if (cells.length === 0) {
-        return;
+        continue;
       }
 
       const fieldPairs = collectLoginFieldPairs(rowNode, cells);
       if (fieldPairs.length === 0) {
-        return;
+        continue;
       }
 
       const replacementRows = fieldPairs.map((fieldPair, pairIndex) => {
@@ -173,15 +173,15 @@
       });
 
       rowNode.replaceWith(...replacementRows);
-      replacementRows.forEach((replacementRow) => {
+      for (const replacementRow of replacementRows) {
         replacementRow.dataset.ccxpLiteLoginRow = "true";
-      });
+      }
 
       const table = rowNode.closest("table");
       if (table) {
         table.classList.add("ccxp-lite-login-form-table");
       }
-    });
+    }
   }
 
   function rebuildFlatLoginFormLabels(targetDocument: Document, formNode: HTMLFormElement) {
@@ -191,28 +191,28 @@
       ),
     ];
 
-    fields.forEach((fieldNode, fieldIndex) => {
+    for (const [fieldIndex, fieldNode] of fields.entries()) {
       const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
       if (
         ["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].includes(
           inputType,
         )
       ) {
-        return;
+        continue;
       }
 
       if (fieldNode.parentNode !== formNode) {
-        return;
+        continue;
       }
 
       const labelSourceNode = findLegacyInlineLabelNode(fieldNode, formNode);
       if (!labelSourceNode) {
-        return;
+        continue;
       }
 
       const labelText = getNodeText(labelSourceNode);
       if (!labelText) {
-        return;
+        continue;
       }
 
       const fieldId = ensureFieldId(fieldNode, fieldIndex);
@@ -222,7 +222,7 @@
       labelNode.textContent = labelText;
 
       labelSourceNode.replaceWith(labelNode);
-    });
+    }
   }
 
   function buildLoginFieldRow(
@@ -281,22 +281,22 @@
       formNode.insertBefore(fieldsContainer, formNode.firstChild);
     }
 
-    fieldRows.forEach((rowNode) => {
+    for (const rowNode of fieldRows) {
       const fieldGroup = rowNode.querySelector(".ccxp-lite-login-field");
       if (fieldGroup) {
         fieldsContainer.append(fieldGroup);
       }
 
       removeNode(rowNode);
-    });
+    }
 
-    [...formNode.querySelectorAll<HTMLTableElement>("table.ccxp-lite-login-form-table")].forEach(
-      (tableNode) => {
-        if (!tableNode.querySelector("tr")) {
-          removeNode(tableNode);
-        }
-      },
-    );
+    for (const tableNode of formNode.querySelectorAll<HTMLTableElement>(
+      "table.ccxp-lite-login-form-table",
+    )) {
+      if (!tableNode.querySelector("tr")) {
+        removeNode(tableNode);
+      }
+    }
 
     formNode.dataset.ccxpLiteFieldRowsGrouped = "true";
   }
@@ -305,15 +305,15 @@
     const pairs: Array<{ fieldNode: Element; fieldCell: HTMLElement; labelText: string }> = [];
     const usedFieldCells = new Set<HTMLElement>();
 
-    cells.forEach((cellNode, cellIndex) => {
+    for (const [cellIndex, cellNode] of cells.entries()) {
       const fieldNode = findPrimaryFieldControl(cellNode);
       if (!fieldNode) {
-        return;
+        continue;
       }
 
       const fieldCell = fieldNode.closest("th, td") || cellNode;
       if (usedFieldCells.has(fieldCell)) {
-        return;
+        continue;
       }
 
       const fieldCellIndex = cells.indexOf(fieldCell);
@@ -330,7 +330,7 @@
       });
 
       usedFieldCells.add(fieldCell);
-    });
+    }
 
     if (pairs.length > 0) {
       return pairs;
@@ -481,9 +481,9 @@
   }
 
   function removeInlineLoginLabelNodes(fieldCell: Node | null, fieldNode: Node | null) {
-    collectLeadingNodesBeforeField(fieldCell, fieldNode).forEach((node) => {
+    for (const node of collectLeadingNodesBeforeField(fieldCell, fieldNode)) {
       removeNode(node);
-    });
+    }
   }
 
   function collectLeadingNodesBeforeField(fieldCell: Node | null, fieldNode: Node | null) {
@@ -549,23 +549,23 @@
       ...rootNode.querySelectorAll("form input[type='reset'], form button[type='reset']"),
     ];
 
-    resetControls.forEach((controlNode) => {
+    for (const controlNode of resetControls) {
       removeNode(controlNode);
-    });
+    }
   }
 
   function forceCaptchaLabelDisplay(rootNode: ParentNode) {
     const captchaLabelPattern = /(驗證碼|captcha)/i;
     const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
 
-    spans.forEach((spanNode) => {
+    for (const spanNode of spans) {
       const labelText = (spanNode.textContent || "").replaceAll(/\s+/g, " ").trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
-        return;
+        continue;
       }
 
       spanNode.style.display = "block";
-    });
+    }
   }
 
   function replaceLoginFormImageButtons(targetDocument: Document, rootNode: ParentNode) {
@@ -573,35 +573,35 @@
       ...rootNode.querySelectorAll<HTMLInputElement>("form input[type='image']"),
     ];
 
-    imageSubmitInputs.forEach((inputNode) => {
+    for (const inputNode of imageSubmitInputs) {
       if (inputNode.dataset.ccxpLiteImageButtonReplaced === "true") {
-        return;
+        continue;
       }
 
       if (shouldKeepLegacyLoginImageSubmit(inputNode)) {
-        return;
+        continue;
       }
 
       if (isVerificationAudioControl(inputNode)) {
         const audioButton = createAudioIconButtonFromImageInput(targetDocument, inputNode);
         inputNode.replaceWith(audioButton);
         audioButton.dataset.ccxpLiteImageButtonReplaced = "true";
-        return;
+        continue;
       }
 
       if (isAdjacentLoginClearControl(inputNode)) {
         removeNode(inputNode);
-        return;
+        continue;
       }
 
       const label = resolveLegacyImageButtonLabel(inputNode);
       if (!label) {
-        return;
+        continue;
       }
 
       if (isClearActionLabel(label)) {
         removeNode(inputNode);
-        return;
+        continue;
       }
 
       const button = targetDocument.createElement("button");
@@ -629,14 +629,19 @@
         button.disabled = true;
       }
 
-      ["onclick", "formaction", "formmethod", "formenctype", "formtarget", "tabindex"].forEach(
-        (attributeName) => {
-          const value = inputNode.getAttribute(attributeName);
-          if (value) {
-            button.setAttribute(attributeName, value);
-          }
-        },
-      );
+      for (const attributeName of [
+        "onclick",
+        "formaction",
+        "formmethod",
+        "formenctype",
+        "formtarget",
+        "tabindex",
+      ]) {
+        const value = inputNode.getAttribute(attributeName);
+        if (value) {
+          button.setAttribute(attributeName, value);
+        }
+      }
 
       if (inputNode.hasAttribute("formnovalidate")) {
         button.setAttribute("formnovalidate", "");
@@ -644,13 +649,13 @@
 
       inputNode.replaceWith(button);
       button.dataset.ccxpLiteImageButtonReplaced = "true";
-    });
+    }
 
     const imageAnchors = [...rootNode.querySelectorAll<HTMLImageElement>("form a > img[alt]")];
-    imageAnchors.forEach((imageNode) => {
+    for (const imageNode of imageAnchors) {
       const anchor = imageNode.closest("a");
       if (!anchor || anchor.dataset.ccxpLiteImageButtonReplaced === "true") {
-        return;
+        continue;
       }
 
       if (isVerificationAudioControl(imageNode)) {
@@ -662,34 +667,34 @@
         );
         anchor.replaceChildren(createAudioIcon(targetDocument));
         anchor.dataset.ccxpLiteImageButtonReplaced = "true";
-        return;
+        continue;
       }
 
       if (isAdjacentLoginClearControl(imageNode)) {
         removeNode(anchor);
-        return;
+        continue;
       }
 
       const label = resolveLegacyImageButtonLabel(imageNode);
       if (!label) {
-        return;
+        continue;
       }
 
       if (isClearActionLabel(label)) {
         removeNode(anchor);
-        return;
+        continue;
       }
 
       anchor.classList.add("ccxp-lite-image-link-button");
       anchor.replaceChildren(targetDocument.createTextNode(label));
       anchor.dataset.ccxpLiteImageButtonReplaced = "true";
-    });
+    }
   }
 
   function wrapPrimaryLoginButtons(targetDocument: Document, rootNode: ParentNode) {
     const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
 
-    forms.forEach((formNode) => {
+    for (const formNode of forms) {
       normalizeNativeLoginSubmitControls(targetDocument, formNode);
 
       const allActionButtons = [
@@ -698,7 +703,7 @@
         ),
       ];
       if (allActionButtons.length === 0) {
-        return;
+        continue;
       }
 
       let actionGroup = formNode.querySelector<HTMLElement>(".ccxp-lite-login-action-group");
@@ -717,7 +722,7 @@
         ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton),
       ];
 
-      orderedButtons.forEach((buttonNode) => {
+      for (const buttonNode of orderedButtons) {
         buttonNode.classList.remove(
           "ccxp-lite-login-primary-button",
           "ccxp-lite-login-secondary-button",
@@ -729,8 +734,8 @@
         }
 
         actionGroup.append(buttonNode);
-      });
-    });
+      }
+    }
   }
 
   function normalizeNativeLoginSubmitControls(targetDocument: Document, formNode: HTMLFormElement) {
@@ -738,9 +743,9 @@
       ...formNode.querySelectorAll<HTMLInputElement>("input[type='submit']"),
     ];
 
-    nativeSubmitInputs.forEach((inputNode) => {
+    for (const inputNode of nativeSubmitInputs) {
       if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
-        return;
+        continue;
       }
 
       const label = (
@@ -753,7 +758,7 @@
         .trim();
 
       if (!label) {
-        return;
+        continue;
       }
 
       const button = targetDocument.createElement("button");
@@ -763,14 +768,14 @@
       button.value = label;
       button.setAttribute("value", label);
 
-      [...inputNode.attributes].forEach((attribute) => {
+      for (const attribute of inputNode.attributes) {
         const attributeName = attribute.name.toLowerCase();
         if (attributeName === "type" || attributeName === "class") {
-          return;
+          continue;
         }
 
         button.setAttribute(attribute.name, attribute.value);
-      });
+      }
 
       if (inputNode.className) {
         button.className = `${button.className} ${inputNode.className}`.trim();
@@ -782,21 +787,21 @@
 
       inputNode.replaceWith(button);
       button.dataset.ccxpLiteSubmitRebuilt = "true";
-    });
+    }
 
     const nativeSubmitButtons = [
       ...formNode.querySelectorAll<HTMLButtonElement>("button[type='submit'], button:not([type])"),
     ];
-    nativeSubmitButtons.forEach((buttonNode) => {
+    for (const buttonNode of nativeSubmitButtons) {
       if (
         buttonNode.classList.contains("ccxp-lite-audio-icon-button") ||
         buttonNode.classList.contains("ccxp-lite-image-action-button")
       ) {
-        return;
+        continue;
       }
 
       buttonNode.classList.add("ccxp-lite-image-action-button");
-    });
+    }
   }
 
   function isPrimaryLoginActionLabel(rawLabel) {
@@ -810,9 +815,9 @@
   }
 
   function removeLoginSpacingArtifacts(targetDocument: Document, rootNode: ParentNode & Node) {
-    [...rootNode.querySelectorAll("br")].forEach((node) => {
+    for (const node of rootNode.querySelectorAll("br")) {
       removeNode(node);
-    });
+    }
 
     const textNodes: Node[] = [];
     const walker = targetDocument.createTreeWalker(rootNode, NodeFilter.SHOW_TEXT);
@@ -823,15 +828,15 @@
       currentNode = walker.nextNode();
     }
 
-    textNodes.forEach((textNode) => {
+    for (const textNode of textNodes) {
       const normalized = (textNode.textContent || "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim()) {
         textNode.textContent = normalized;
-        return;
+        continue;
       }
 
       removeNode(textNode);
-    });
+    }
   }
 
   function alignCaptchaMediaRow(targetDocument: Document, rootNode: ParentNode) {
@@ -839,17 +844,17 @@
       ...rootNode.querySelectorAll<HTMLImageElement>("img[src*='auth_img.php']"),
     ];
 
-    captchaImages.forEach((captchaImage) => {
+    for (const captchaImage of captchaImages) {
       const host = captchaImage.parentElement;
       if (!host) {
-        return;
+        continue;
       }
 
       const audioControl = host.querySelector(
         ".ccxp-lite-audio-icon-button, .ccxp-lite-audio-icon-link",
       );
       if (!audioControl) {
-        return;
+        continue;
       }
 
       const rowNode = captchaImage.closest("tr");
@@ -871,7 +876,7 @@
       if (audioControl.parentNode !== mediaRow) {
         mediaRow.append(audioControl);
       }
-    });
+    }
   }
 
   function resolveLegacyImageButtonLabel(node: Element | HTMLInputElement | null) {
@@ -1092,12 +1097,12 @@
       button.disabled = true;
     }
 
-    ["onclick", "tabindex"].forEach((attributeName) => {
+    for (const attributeName of ["onclick", "tabindex"]) {
       const value = inputNode.getAttribute(attributeName);
       if (value) {
         button.setAttribute(attributeName, value);
       }
-    });
+    }
 
     return button;
   }
@@ -1123,13 +1128,15 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M11 5 6 9H2v6h4l5 4z", "M15.5 8.5a5 5 0 0 1 0 7", "M18.5 5.5a9 9 0 0 1 0 13"].forEach(
-      (pathData) => {
-        const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", pathData);
-        icon.append(path);
-      },
-    );
+    for (const pathData of [
+      "M11 5 6 9H2v6h4l5 4z",
+      "M15.5 8.5a5 5 0 0 1 0 7",
+      "M18.5 5.5a9 9 0 0 1 0 13",
+    ]) {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      icon.append(path);
+    }
 
     return icon;
   }
@@ -1154,16 +1161,16 @@
     icon.setAttribute("aria-hidden", "true");
 
     if (visible) {
-      [
+      for (const pathData of [
         "M10.733 5.076A10.744 10.744 0 0 1 12 5c4.596 0 8.51 2.934 9.938 7a10.454 10.454 0 0 1-1.077 2.167",
         "M14.084 14.158a3 3 0 0 1-4.242-4.242",
         "M17.479 17.499A10.75 10.75 0 0 1 12 19c-4.596 0-8.51-2.934-9.938-7a10.525 10.525 0 0 1 4.423-5.29",
         "M2 2l20 20",
-      ].forEach((pathData) => {
+      ]) {
         const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
         path.setAttribute("d", pathData);
         icon.append(path);
-      });
+      }
     } else {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute(

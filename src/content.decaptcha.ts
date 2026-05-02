@@ -153,7 +153,7 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
 
     if (!model.preparedTensors) {
       const preparedTensors: Record<string, CcxpLitePreparedTensor> = {};
-      Object.entries(model.tensors || {}).forEach(([name, tensor]) => {
+      for (const [name, tensor] of Object.entries(model.tensors || {})) {
         const sourceTensor = tensor;
         preparedTensors[name] = {
           shape: isArray(sourceTensor.shape) ? [...sourceTensor.shape] : [],
@@ -162,7 +162,7 @@ function getHeadInputVectors(pooledTensor: CcxpLitePreparedTensor, digits: numbe
               ? sourceTensor.data
               : new Float32Array(sourceTensor.data || []),
         };
-      });
+      }
       model.preparedTensors = preparedTensors;
     }
 

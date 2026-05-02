@@ -150,13 +150,13 @@
   }
 
   function notifyFavoriteSubscribers() {
-    favoriteSubscribers.forEach((callback) => {
+    for (const callback of favoriteSubscribers) {
       try {
         callback();
       } catch {
         // Ignore stale subscribers from replaced frame documents.
       }
-    });
+    }
   }
 
   function getScopedFavoriteStorage() {
@@ -243,15 +243,15 @@
       return;
     }
 
-    (item.directLinks || []).forEach((linkItem) => {
+    for (const linkItem of item.directLinks || []) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
         favoriteLinks.push(linkItem);
       }
-    });
+    }
 
-    (item.sections || []).forEach((section) => {
+    for (const section of item.sections || []) {
       collectFavoriteLinks(section, favoriteIds, favoriteLinks);
-    });
+    }
   }
 
   function dedupeLinkItems(linkItems: CcxpLiteSidebarLinkItem[]) {
@@ -405,9 +405,9 @@
     try {
       const url = new URL(value, "https://www.ccxp.nthu.edu.tw/");
       const volatileParams = ["acixstore", "sid", "session", "phpsessid", "token", "_", "t"];
-      volatileParams.forEach((key) => {
+      for (const key of volatileParams) {
         url.searchParams.delete(key);
-      });
+      }
 
       const sortedEntries = [...url.searchParams.entries()].toSorted(
         ([leftKey, leftValue], [rightKey, rightValue]) => {
@@ -419,9 +419,9 @@
       );
 
       url.search = "";
-      sortedEntries.forEach(([key, entryValue]) => {
+      for (const [key, entryValue] of sortedEntries) {
         url.searchParams.append(key, entryValue);
-      });
+      }
 
       const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();

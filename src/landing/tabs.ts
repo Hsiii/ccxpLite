@@ -82,7 +82,7 @@
 
     const uniquePanels = [...new Set(buttonPanelMap.map((entry) => entry.panel))];
 
-    buttonPanelMap.forEach((entry, index) => {
+    for (const [index, entry] of buttonPanelMap.entries()) {
       const { button, panel } = entry;
       const tabId = button.id || `ccxp-lite-tab-${index + 1}`;
       button.id = tabId;
@@ -98,12 +98,12 @@
       panel.setAttribute("aria-labelledby", tabId);
       panel.hidden = true;
       panel.style.display = "none";
-    });
+    }
 
-    uniquePanels.forEach((panel) => {
+    for (const panel of uniquePanels) {
       panel.hidden = true;
       panel.style.display = "none";
-    });
+    }
 
     const getActiveIndex = () => {
       const byButtonClass = buttonPanelMap.findIndex(({ button }) =>
@@ -126,21 +126,21 @@
     const activateTabAt = (targetIndex: number, options: { focusButton?: boolean } = {}) => {
       const safeIndex = Math.max(0, Math.min(targetIndex, buttonPanelMap.length - 1));
 
-      buttonPanelMap.forEach((entry, index) => {
+      for (const [index, entry] of buttonPanelMap.entries()) {
         const isActive = index === safeIndex;
         entry.button.classList.toggle("active", isActive);
         entry.button.setAttribute("aria-selected", isActive ? "true" : "false");
         entry.button.setAttribute("tabindex", isActive ? "0" : "-1");
         entry.panel.hidden = !isActive;
         entry.panel.style.display = isActive ? "block" : "none";
-      });
+      }
 
       if (options.focusButton) {
         buttonPanelMap[safeIndex].button.focus();
       }
     };
 
-    buttonPanelMap.forEach((entry, index) => {
+    for (const [index, entry] of buttonPanelMap.entries()) {
       const { button } = entry;
 
       button.addEventListener("click", (event) => {
@@ -182,7 +182,7 @@
           // No default
         }
       });
-    });
+    }
 
     activateTabAt(getActiveIndex());
   }
@@ -203,7 +203,7 @@
 
     const fragment = targetDocument.createDocumentFragment();
 
-    buttonPanelMap.forEach((entry, index) => {
+    for (const [index, entry] of buttonPanelMap.entries()) {
       const item = targetDocument.createElement("span");
       item.className = "ccxp-lite-tab-item";
 
@@ -216,7 +216,7 @@
 
       item.append(entry.button);
       fragment.append(item);
-    });
+    }
 
     tabNavigation.replaceChildren(fragment);
   }

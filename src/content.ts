@@ -32,11 +32,11 @@
 
     // Clear frame markers so new version can re-attach
     const frames = findFrames();
-    [frames.nav, frames.main, frames.top].forEach((frame) => {
+    for (const frame of [frames.nav, frames.main, frames.top]) {
       if (frame) {
         delete frame.dataset.ccxpLiteListenerAttached;
       }
-    });
+    }
   });
 
   function attachAndApply() {

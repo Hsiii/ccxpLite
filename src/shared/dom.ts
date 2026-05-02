@@ -34,11 +34,11 @@
       if (el.nodeType !== Node.ELEMENT_NODE) {
         return;
       }
-      legacyAttrs.forEach((attr) => {
+      for (const attr of legacyAttrs) {
         if (el.hasAttribute(attr)) {
           el.removeAttribute(attr);
         }
-      });
+      }
 
       const style = el.getAttribute("style");
       if (style && /background(-image)?\s*:/i.test(style)) {
@@ -55,9 +55,9 @@
       if (doc.documentElement) {
         cleanElement(doc.documentElement);
         const legacyNodes = doc.documentElement.querySelectorAll(selector);
-        legacyNodes.forEach((el) => {
+        for (const el of legacyNodes) {
           cleanElement(el);
-        });
+        }
       }
       if (doc.body) {
         cleanElement(doc.body);
@@ -66,9 +66,9 @@
       const el = node as Element;
       cleanElement(el);
       const legacyNodes = el.querySelectorAll(selector);
-      legacyNodes.forEach((item) => {
+      for (const item of legacyNodes) {
         cleanElement(item);
-      });
+      }
     }
   }
 
@@ -136,13 +136,13 @@
 
   function triggerCleanup() {
     if (isArray(namespace.cleanupTasks)) {
-      namespace.cleanupTasks.forEach((task) => {
+      for (const task of namespace.cleanupTasks) {
         try {
           task();
         } catch {
           // Ignore cleanup errors
         }
-      });
+      }
       namespace.cleanupTasks = [];
     }
   }

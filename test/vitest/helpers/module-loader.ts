@@ -69,7 +69,7 @@ export function createTestWindow(
 
 export function loadModules(window: TestWindow, modulePaths: string[]): void {
   const context = vm.createContext(window as unknown as vm.Context);
-  modulePaths.forEach((modulePath) => {
+  for (const modulePath of modulePaths) {
     const sourcePath = path.join(repoRoot, modulePath);
     const source = fs.readFileSync(sourcePath, "utf8");
     const transpiled = ts.transpileModule(source, {
@@ -81,7 +81,7 @@ export function loadModules(window: TestWindow, modulePaths: string[]): void {
     }).outputText;
 
     new vm.Script(transpiled, { filename: sourcePath }).runInContext(context);
-  });
+  }
 }
 
 export function requireValue<T>(value: T | null | undefined, message = "Expected value"): T {

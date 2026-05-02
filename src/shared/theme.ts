@@ -197,9 +197,9 @@
   }
 
   function applyCssVariables(targetElement: HTMLElement, variables: Record<string, string>) {
-    Object.entries(variables).forEach(([name, value]) => {
+    for (const [name, value] of Object.entries(variables)) {
       targetElement.style.setProperty(name, value);
-    });
+    }
   }
 
   namespace.sharedTheme = {

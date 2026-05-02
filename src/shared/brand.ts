@@ -38,11 +38,11 @@
     titleNode.className = titleClassName;
 
     if (titleClassName === "ccxp-lite-sidebar-brand-title" && title.includes(" ")) {
-      title.split(" ").forEach((word) => {
+      for (const word of title.split(" ")) {
         const wordNode = targetDocument.createElement("span");
         wordNode.textContent = word;
         titleNode.append(wordNode);
-      });
+      }
     } else {
       titleNode.textContent = title;
     }
@@ -62,11 +62,11 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M18 6 6 18", "M6 6l12 12"].forEach((pathData) => {
+    for (const pathData of ["M18 6 6 18", "M6 6l12 12"]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }

@@ -130,10 +130,10 @@
     table.classList.add("ccxp-lite-announcement-table");
 
     const rows = [...(table.rows || [])];
-    rows.forEach((row) => {
+    for (const row of rows) {
       const cells = [...(row.cells || [])];
       if (cells.length === 0) {
-        return;
+        continue;
       }
 
       const hasOnlyDecorativeCells = cells.every((cell) => {
@@ -157,13 +157,13 @@
 
       if (hasOnlyDecorativeCells) {
         removeNode(row);
-        return;
+        continue;
       }
 
       if (hasOnlyEmptySpacerCells && hasLegacySpacerHeight) {
         removeNode(row);
       }
-    });
+    }
 
     const headerCell = rows
       .flatMap((row) => [...(row.cells || [])])
@@ -179,15 +179,15 @@
     }
 
     const entries: Array<{ date: string; topicContent: HTMLElement }> = [];
-    rows.forEach((row) => {
+    for (const row of rows) {
       const cells = [...(row.cells || [])];
       if (cells.length < 2) {
-        return;
+        continue;
       }
 
       const rawDate = (cells[0].textContent || "").replaceAll(/\s+/g, "").trim();
       if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
-        return;
+        continue;
       }
 
       const topicCell = cells[1];
@@ -199,7 +199,7 @@
         date: rawDate,
         topicContent,
       });
-    });
+    }
 
     const tbody = table.tBodies[0] || table.ownerDocument.createElement("tbody");
     if (!table.tBodies[0]) {
@@ -222,7 +222,7 @@
     const list = table.ownerDocument.createElement("div");
     list.className = "ccxp-lite-announcement-list";
 
-    entries.forEach((entry) => {
+    for (const entry of entries) {
       const item = table.ownerDocument.createElement("article");
       item.className = "ccxp-lite-announcement-row";
 
@@ -243,7 +243,7 @@
       entryRow.append(date);
       item.append(entryRow);
       list.append(item);
-    });
+    }
 
     contentCell.append(list);
     contentRow.append(contentCell);
@@ -495,7 +495,7 @@
     nav.className = "ccxp-lite-landing-utility";
     nav.setAttribute("aria-label", strings.externalLinksLabel);
 
-    anchors.forEach((sourceAnchor, index) => {
+    for (const [index, sourceAnchor] of anchors.entries()) {
       const anchor = targetDocument.createElement("a");
       anchor.href = sourceAnchor.href;
       anchor.target = "_blank";
@@ -512,7 +512,7 @@
         separator.textContent = "|";
         nav.append(separator);
       }
-    });
+    }
 
     return nav;
   }
@@ -525,7 +525,7 @@
       return;
     }
 
-    [
+    for (const name of [
       "onclick",
       "onmousedown",
       "onmouseup",
@@ -535,12 +535,12 @@
       "onmouseleave",
       "onkeydown",
       "onkeyup",
-    ].forEach((name) => {
+    ]) {
       const value = sourceAnchor.getAttribute(name);
       if (value) {
         targetAnchor.setAttribute(name, value);
       }
-    });
+    }
   }
 
   function createLandingExternalLinkIcon(targetDocument: Document) {
@@ -554,15 +554,15 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    [
+    for (const pathData of [
       "M15 3h6v6",
       "M10 14 21 3",
       "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
-    ].forEach((pathData) => {
+    ]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }
@@ -587,11 +587,11 @@
     const rowCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
     );
-    rowCells.forEach((cell) => {
+    for (const cell of rowCells) {
       if (isLegacySpacerCell(cell)) {
         removeNode(cell);
       }
-    });
+    }
 
     const remainingCells = [...sourceRow.children].filter(
       (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
@@ -661,27 +661,27 @@
 
     const rows = [...rootNode.querySelectorAll<HTMLTableRowElement>("tr")];
 
-    rows.forEach((row) => {
+    for (const row of rows) {
       if (shouldSkipLegacyRowCollapse(row)) {
-        return;
+        continue;
       }
 
       const cells = [...row.children].filter(
         (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
       );
       if (cells.length < 2) {
-        return;
+        continue;
       }
 
       const leftCell = cells.find((cell) => isLegacyWideLeftCell(cell));
       const rightCell = cells.find((cell) => isLegacyRightPanelCell(cell));
 
       if (!leftCell || !rightCell) {
-        return;
+        continue;
       }
 
       if (!isLikelyEmptyCell(leftCell)) {
-        return;
+        continue;
       }
 
       const spacerCell = cells.find(
@@ -698,14 +698,14 @@
       rightCell.style.minWidth = "0";
       rightCell.colSpan = Math.max(1, rightCell.colSpan || 1);
 
-      [...row.children]
-        .filter((node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement)
-        .forEach((cell) => {
-          if (cell !== rightCell) {
-            cell.removeAttribute("width");
-          }
-        });
-    });
+      for (const cell of [...row.children].filter(
+        (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
+      )) {
+        if (cell !== rightCell) {
+          cell.removeAttribute("width");
+        }
+      }
+    }
   }
 
   function isLegacyWideLeftCell(cell: HTMLTableCellElement | null) {

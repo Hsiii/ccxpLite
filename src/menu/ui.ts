@@ -286,12 +286,12 @@
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set();
     if (searchQuery) {
-      items.forEach((item) => {
+      for (const item of items) {
         collectClassicExpandedIds(item, searchQuery, searchExpansionIds);
-      });
-      searchExpansionIds.forEach((itemId) => {
+      }
+      for (const itemId of searchExpansionIds) {
         expandedItemIds.add(itemId);
-      });
+      }
     }
 
     if (items.length === 0) {
@@ -302,7 +302,7 @@
       return sidebarList;
     }
 
-    items.forEach((item) => {
+    for (const item of items) {
       if (item.kind === "link") {
         sidebarList.append(
           createClassicLinkButton(targetDocument, navDocument, item.linkItem, 0, strings, rerender),
@@ -321,7 +321,7 @@
           ),
         );
       }
-    });
+    }
 
     state.classicExpandedItemIds = [...expandedItemIds];
     return sidebarList;
@@ -435,7 +435,7 @@
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
 
     if (group.kind !== "link") {
-      (group.directLinks || []).forEach((linkItem) => {
+      for (const linkItem of group.directLinks || []) {
         children.append(
           createClassicLinkButton(
             targetDocument,
@@ -446,9 +446,9 @@
             rerender,
           ),
         );
-      });
+      }
 
-      (group.sections || []).forEach((section) => {
+      for (const section of group.sections || []) {
         children.append(
           createClassicSidebarNode(
             targetDocument,
@@ -461,7 +461,7 @@
             rerender,
           ),
         );
-      });
+      }
     }
 
     if (children.childElementCount > 0) {
@@ -530,17 +530,17 @@
     let hasMatch = itemMatches;
 
     if (item.kind !== "link") {
-      (item.directLinks || []).forEach((linkItem) => {
+      for (const linkItem of item.directLinks || []) {
         if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
           hasMatch = true;
         }
-      });
+      }
 
-      (item.sections || []).forEach((section) => {
+      for (const section of item.sections || []) {
         if (collectClassicExpandedIds(section, normalizedQuery, expandedItemIds)) {
           hasMatch = true;
         }
-      });
+      }
 
       if (hasMatch && (item.sections || []).length > 0) {
         expandedItemIds.add(item.id);
@@ -626,9 +626,9 @@
         ),
       );
     } else {
-      favorites.forEach((linkItem) => {
+      for (const linkItem of favorites) {
         body.append(createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
-      });
+      }
     }
 
     section.append(body);
@@ -662,7 +662,7 @@
         ),
       );
     } else {
-      categories.forEach((category) => {
+      for (const category of categories) {
         body.append(
           createCategoryCard(targetDocument, category, strings, () => {
             persistSidebarScroll(targetDocument, "root");
@@ -671,7 +671,7 @@
             rerender();
           }),
         );
-      });
+      }
     }
 
     section.append(body);
@@ -732,9 +732,9 @@
         );
       }
 
-      (filteredCategory.sections || []).forEach((group: CcxpLiteSidebarGroup) => {
+      for (const group of filteredCategory.sections || []) {
         body.append(createCategoryBlock(targetDocument, navDocument, group, strings, rerender));
-      });
+      }
 
       if (body.childElementCount === 0) {
         body.append(
@@ -809,9 +809,9 @@
       scheduleLayout();
     });
     observer.observe(body.parentElement || body);
-    detailItems.forEach((item) => {
+    for (const item of detailItems) {
       observer.observe(item);
-    });
+    }
 
     namespace.sharedDom?.addCleanupTask(() => {
       observer.disconnect();
@@ -841,7 +841,7 @@
     const columnHeights = Array.from({ length: columnCount }, () => 0);
 
     body.classList.add("is-waterfall-ready");
-    detailItems.forEach((item: HTMLElement) => {
+    for (const item of detailItems) {
       item.style.width = `${columnWidth}px`;
       const columnIndex = getShortestColumnIndex(columnHeights);
       const x = columnIndex * (columnWidth + gap);
@@ -849,7 +849,7 @@
 
       item.style.transform = `translate(${x}px, ${y}px)`;
       columnHeights[columnIndex] += item.offsetHeight + gap;
-    });
+    }
 
     body.style.height = `${Math.max(...columnHeights) - gap}px`;
   }
@@ -857,10 +857,10 @@
   function resetCategoryDetailWaterfall(body: HTMLElement, detailItems: HTMLElement[]) {
     body.classList.remove("is-waterfall-ready");
     body.style.height = "";
-    detailItems.forEach((item) => {
+    for (const item of detailItems) {
       item.style.width = "";
       item.style.transform = "";
-    });
+    }
   }
 
   function getShortestColumnIndex(columnHeights: number[]): number {
@@ -893,16 +893,16 @@
     }
 
     if ((group.directLinks || []).length > 0) {
-      group.directLinks.forEach((linkItem) => {
+      for (const linkItem of group.directLinks) {
         block.append(
           createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
         );
-      });
+      }
     }
 
-    (group.sections || []).forEach((section) => {
+    for (const section of group.sections || []) {
       block.append(createCategoryBlock(targetDocument, navDocument, section, strings, rerender));
-    });
+    }
 
     return block;
   }
@@ -917,9 +917,9 @@
     const list = targetDocument.createElement("div");
     list.className = "ccxp-lite-link-collection";
 
-    linkItems.forEach((linkItem) => {
+    for (const linkItem of linkItems) {
       list.append(createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
-    });
+    }
 
     return list;
   }
@@ -1054,11 +1054,11 @@
     const wrap = targetDocument.createElement("div");
     wrap.className = "ccxp-lite-skeleton-stack";
 
-    Array.from({ length: count }).forEach(() => {
+    for (const _ of Array.from({ length: count })) {
       const item = targetDocument.createElement("div");
       item.className = itemClassName;
       wrap.append(item);
-    });
+    }
 
     return wrap;
   }
@@ -1115,9 +1115,9 @@
         const favoriteIds = getFavoriteIds();
         const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
         if (matchingIds.length > 0) {
-          matchingIds.forEach((favoriteId) => {
+          for (const favoriteId of matchingIds) {
             favoriteIds.delete(favoriteId);
-          });
+          }
         } else {
           favoriteIds.add(linkItem.id);
         }
@@ -1533,11 +1533,11 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16", "m21 21-4.3-4.3"].forEach((pathData) => {
+    for (const pathData of ["M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16", "m21 21-4.3-4.3"]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }
@@ -1595,15 +1595,15 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    [
+    for (const pathData of [
       "M15 3h6v6",
       "M10 14 21 3",
       "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
-    ].forEach((pathData) => {
+    ]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }
@@ -1642,17 +1642,17 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    [
+    for (const pathData of [
       "M10 2v7.31",
       "M14 9.3V2",
       "M8.5 2h7",
       "M14 9.3 19.74 19a2 2 0 0 1-1.72 3H5.98a2 2 0 0 1-1.72-3L10 9.3",
       "M6 16h12",
-    ].forEach((pathData) => {
+    ]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }
@@ -1703,15 +1703,15 @@
   }
 
   function removeExistingSidebarVariantSwitches(documents: Array<Document | null | undefined>) {
-    documents.forEach((scopeDocument) => {
+    for (const scopeDocument of documents) {
       if (!scopeDocument || !("querySelectorAll" in scopeDocument)) {
-        return;
+        continue;
       }
 
-      scopeDocument.querySelectorAll("[data-ccxp-lite-sidebar-lab-switch]").forEach((node) => {
+      for (const node of scopeDocument.querySelectorAll("[data-ccxp-lite-sidebar-lab-switch]")) {
         node.remove();
-      });
-    });
+      }
+    }
   }
 
   function getOverlayMountNode(targetDocument: Document): HTMLElement {
@@ -1729,11 +1729,11 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    ["M19 12H5", "m12 7-7 5 7 5"].forEach((pathData) => {
+    for (const pathData of ["M19 12H5", "m12 7-7 5 7 5"]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);
       icon.append(path);
-    });
+    }
 
     return icon;
   }
@@ -1767,19 +1767,17 @@
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
 
-    (
-      getCategoryIconShapes(iconName) as Array<
-        string | { tag?: string; attributes: Record<string, string> }
-      >
-    ).forEach((shape) => {
+    for (const shape of getCategoryIconShapes(iconName) as Array<
+      string | { tag?: string; attributes: Record<string, string> }
+    >) {
       const tagName = typeof shape === "string" ? "path" : shape.tag || "path";
       const attributes = typeof shape === "string" ? { d: shape } : shape.attributes;
       const element = targetDocument.createElementNS("http://www.w3.org/2000/svg", tagName);
-      Object.entries(attributes).forEach(([name, value]) => {
+      for (const [name, value] of Object.entries(attributes)) {
         element.setAttribute(name, value);
-      });
+      }
       icon.append(element);
-    });
+    }
 
     return icon;
   }
