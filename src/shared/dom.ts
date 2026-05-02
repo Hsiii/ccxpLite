@@ -2,6 +2,10 @@
   const namespace = (globalScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
+  function isArray<T>(value: unknown): value is T[] {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  }
+
   function moveChildNodes(sourceNode: Node, targetNode: Node) {
     while (sourceNode.firstChild) {
       targetNode.append(sourceNode.firstChild);
@@ -131,7 +135,7 @@
   }
 
   function triggerCleanup() {
-    if (Array.isArray(namespace.cleanupTasks)) {
+    if (isArray(namespace.cleanupTasks)) {
       namespace.cleanupTasks.forEach((task) => {
         try {
           task();
@@ -153,7 +157,7 @@
       return;
     }
 
-    if (!Array.isArray(namespace.cleanupTasks)) {
+    if (!isArray(namespace.cleanupTasks)) {
       namespace.cleanupTasks = [];
     }
     namespace.cleanupTasks.push(task);

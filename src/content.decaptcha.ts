@@ -25,6 +25,10 @@
   const DIGITS = 6;
   const EPS = 1e-5;
 
+  function isArray<T>(value: unknown): value is T[] {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  }
+
   function getNamespace() {
     runtimeScope.CCXP_LITE ||= {};
 
@@ -44,7 +48,7 @@
       Object.entries(model.tensors || {}).forEach(([name, tensor]) => {
         const sourceTensor = tensor;
         preparedTensors[name] = {
-          shape: Array.isArray(sourceTensor.shape) ? sourceTensor.shape.slice() : [],
+          shape: isArray(sourceTensor.shape) ? sourceTensor.shape.slice() : [],
           data:
             sourceTensor.data instanceof Float32Array
               ? sourceTensor.data

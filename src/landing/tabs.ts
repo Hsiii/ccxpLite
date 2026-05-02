@@ -7,6 +7,10 @@
 
   const { getLocalizedStrings } = shared;
 
+  function isArray<T>(value: unknown): value is T[] {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  }
+
   function createLandingSection(targetDocument: Document, className: string) {
     const section = targetDocument.createElement("section");
     section.className = `ccxp-lite-landing-section ${className}`;
@@ -19,7 +23,7 @@
     tabContents: HTMLElement[],
     strings = getLocalizedStrings("zh"),
   ) {
-    if (!tabNavigation || !Array.isArray(tabContents) || tabContents.length === 0) {
+    if (!tabNavigation || !isArray(tabContents) || tabContents.length === 0) {
       return;
     }
 
@@ -193,7 +197,7 @@
     if (
       !targetDocument ||
       !tabNavigation ||
-      !Array.isArray(buttonPanelMap) ||
+      !isArray(buttonPanelMap) ||
       buttonPanelMap.length === 0
     ) {
       return;

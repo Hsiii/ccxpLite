@@ -18,6 +18,10 @@
   const favoriteSubscribers = new Set<() => void>();
   let favoriteStorageSyncBound = false;
 
+  function isArray<T>(value: unknown): value is T[] {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  }
+
   function getFavoriteIds(): Set<string> {
     return new Set(favoriteState.ids);
   }
@@ -80,7 +84,7 @@
           const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) || "[]") as unknown;
           resolve(
             new Set(
-              Array.isArray(storedValue)
+              isArray(storedValue)
                 ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
                 : [],
             ),
@@ -131,9 +135,7 @@
       })();
 
       favoriteState.ids = new Set(
-        Array.isArray(nextValue)
-          ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-          : [],
+        isArray(nextValue) ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean) : [],
       );
       favoriteState.hasLoaded = true;
       notifyFavoriteSubscribers();
@@ -216,7 +218,7 @@
         const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
         resolve(
           new Set(
-            Array.isArray(storedValue)
+            isArray(storedValue)
               ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
               : [],
           ),
@@ -266,7 +268,7 @@
   }
 
   function createLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
-    const pathSignature = Array.isArray(linkItem.pathSegments)
+    const pathSignature = isArray(linkItem.pathSegments)
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
     const clickSignature = linkItem.clickLinkArgs
@@ -360,7 +362,7 @@
     label: unknown,
     fallbackSegment?: string,
   ) {
-    const normalizedParentSegments = Array.isArray(parentPathSegments)
+    const normalizedParentSegments = isArray(parentPathSegments)
       ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
       : [];
     const normalizedLabel = normalizeFavoriteText(label);

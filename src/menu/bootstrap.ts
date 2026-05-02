@@ -32,6 +32,10 @@
   const { renderSidebar, createSidebarSearch, syncTopLevelFramesetLayout } = sidebarUi;
   const { captureInitialMainFrameUrl } = sidebarRuntime;
 
+  function isArray<T>(value: unknown): value is T[] {
+    return Object.prototype.toString.call(value) === "[object Array]";
+  }
+
   function simplifySidebar(
     navFrame: HTMLIFrameElement,
     retry: () => void,
@@ -54,7 +58,7 @@
     }
 
     const rawTree = parseSidebarTree(navDocument);
-    if (!rawTree || !Array.isArray(rawTree.children)) {
+    if (!rawTree || !isArray(rawTree.children)) {
       retry();
       return;
     }
