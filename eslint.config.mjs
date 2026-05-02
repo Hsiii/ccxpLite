@@ -23,7 +23,6 @@ export default defineConfig(
       "@typescript-eslint/prefer-nullish-coalescing": "off",
       "@typescript-eslint/strict-boolean-expressions": "off",
       "complete/complete-sentences-line-comments": "off",
-      "complete/format-line-comments": "off",
       "complete/no-mutable-return": "off",
       "complete/prefer-readonly-parameter-types": "off",
       "complete/require-ascii": "off",

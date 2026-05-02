@@ -1157,9 +1157,9 @@
     strings: Record<string, string>,
   ): Promise<boolean> {
     return await new Promise((resolve) => {
-      // In layered mode the nav frame is full-screen, so targetDocument works.
-      // In classic mode the nav frame is narrow (324px); mount the dialog in
-      // the main frame instead so it centers over the larger content area.
+      // In layered mode the nav frame is full-screen, so targetDocument works. In classic mode the
+      // nav frame is narrow (324px); mount the dialog in the main frame instead so it centers over
+      // the larger content area.
       let overlayDocument: Document = targetDocument;
       try {
         const mainFrame = getLegacyMainFrame();
@@ -1252,8 +1252,8 @@
       );
 
       let settled = false;
-      // Track the previously focused element in the nav frame (targetDocument),
-      // not in the top-level document where the overlay is mounted.
+      // Track the previously focused element in the nav frame (targetDocument), not in the
+      // top-level document where the overlay is mounted.
       const previousActiveElement = targetDocument.activeElement;
 
       const cleanup = (confirmed: boolean) => {
@@ -1682,8 +1682,8 @@
     const mainFrame = sidebarRuntime.getLegacyMainFrame();
     const mainDocument = mainFrame?.contentDocument;
 
-    // In classic mode, we want the button to stay at the bottom-right of the screen,
-    // which corresponds to the bottom-right of the main frame.
+    // In classic mode, we want the button to stay at the bottom-right of the screen, which
+    // corresponds to the bottom-right of the main frame.
     const isClassic = variant === "classic";
     const mountDocument =
       isClassic && mainDocument && mainDocument.body ? mainDocument : targetDocument;
