@@ -279,7 +279,7 @@
     cleanLegacyAttributes(targetDocument);
     targetDocument.body.replaceChildren(shell);
 
-    // Force style override on body as a last resort
+    // Force a style override on the body as a last resort.
     targetDocument.body.style.setProperty("background-image", "none", "important");
     targetDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
     enableLoginCaptchaAutofill(targetDocument, loginSection as ParentNode, captchaAutofillState);

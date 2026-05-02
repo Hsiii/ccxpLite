@@ -65,7 +65,7 @@
     cleanLegacyAttributes(frameDocument);
     frameDocument.body.classList.add(TOKENS.mainClass);
 
-    // Force style override as a last resort
+    // Force a style override as a last resort.
     frameDocument.body.style.setProperty("background-image", "none", "important");
     frameDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
   }

@@ -30,7 +30,7 @@
       releaseLoadingSprite(document);
     }
 
-    // Clear frame markers so new version can re-attach
+    // Clear frame markers so the new version can re-attach.
     const frames = findFrames();
     for (const frame of [frames.nav, frames.main, frames.top]) {
       if (frame) {
@@ -294,7 +294,7 @@
           }
         }
       } catch {
-        // Ignore cross-origin frame access errors
+        // Ignore cross-origin frame access errors.
       }
 
       globalThis.requestAnimationFrame(poll);
@@ -368,7 +368,7 @@
     mainDocument.body.style.setProperty("background-image", "none", "important");
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
 
-    // Mount lab button to main frame if in classic mode
+    // Mount the lab button to the main frame in classic mode.
     const {
       sidebarState,
       sidebarUi,
