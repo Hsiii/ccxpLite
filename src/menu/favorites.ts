@@ -425,7 +425,7 @@
 
       const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();
-      const normalizedHash = url.hash || "";
+      const normalizedHash = url.hash;
 
       return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
     } catch {

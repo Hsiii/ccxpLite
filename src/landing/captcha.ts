@@ -243,7 +243,7 @@
     }
 
     state.lastRequestedSrc = "";
-    state.failedSrc = captchaSrc || "";
+    state.failedSrc = captchaSrc;
     state.requestToken += 1;
     setCaptchaLoadingState(state, false);
 
