@@ -1,5 +1,5 @@
 (function bootstrapCcxpLite() {
-  const namespace = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
+  const namespace = (globalThis.CCXP_LITE ?? {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const { sidebar } = namespace;
   const { landing } = namespace;
@@ -254,28 +254,28 @@
   function findFrames() {
     const frameCandidates = [...document.querySelectorAll<HTMLIFrameElement>("frame")];
     const top = frameCandidates.find((frame) => {
-      const src = (frame.getAttribute("src") || "").toLowerCase();
-      const name = (frame.getAttribute("name") || "").toLowerCase();
+      const src = (frame.getAttribute("src") ?? "").toLowerCase();
+      const name = (frame.getAttribute("name") ?? "").toLowerCase();
       return src.includes("top.php") || src.includes("top.html") || name === "top";
     });
 
     const navBySource = frameCandidates.find((frame) => {
-      const src = (frame.getAttribute("src") || "").toLowerCase();
+      const src = (frame.getAttribute("src") ?? "").toLowerCase();
       return src.includes("in_inq_stu.php") || src.includes("in_inq_stu.html");
     });
 
     const main = frameCandidates.find((frame) => {
-      const name = (frame.getAttribute("name") || "").toLowerCase();
+      const name = (frame.getAttribute("name") ?? "").toLowerCase();
       return name === "main";
     });
 
     const navByName = frameCandidates.find((frame) => {
-      const name = (frame.getAttribute("name") || "").toLowerCase();
+      const name = (frame.getAttribute("name") ?? "").toLowerCase();
       return name === "nav" || name === "menu" || name === "left" || name === "list";
     });
 
-    const navFallback = frameCandidates.find((frame) => frame !== top && frame !== main) || null;
-    const nav = navBySource || navByName || navFallback;
+    const navFallback = frameCandidates.find((frame) => frame !== top && frame !== main) ?? null;
+    const nav = navBySource ?? navByName ?? navFallback;
 
     return { top, nav, main };
   }
@@ -297,7 +297,7 @@
       try {
         const doc = frame.contentDocument;
         if (doc && doc.documentElement && doc.head && doc.body) {
-          const isMain = (frame.getAttribute("name") || "").toLowerCase() === "main";
+          const isMain = (frame.getAttribute("name") ?? "").toLowerCase() === "main";
           const expectedScope = isMain ? "main" : "nav";
 
           if (doc.documentElement.dataset.ccxpLiteScope !== expectedScope) {
@@ -384,7 +384,7 @@
       sidebarState,
       sidebarUi,
       shared: sharedLib,
-    } = (globalThis.CCXP_LITE || {}) as CcxpLiteNamespace;
+    } = (globalThis.CCXP_LITE ?? {}) as CcxpLiteNamespace;
     if (sidebarState && sidebarUi && sharedLib) {
       const state = sidebarState.getSidebarUiState(mainDocument);
       const strings = sharedLib.getLocalizedStrings(
@@ -397,7 +397,7 @@
           strings,
           () => {
             try {
-              (window.top || globalThis).location.reload();
+              (window.top ?? globalThis).location.reload();
             } catch {
               globalThis.location.reload();
             }

@@ -1,6 +1,6 @@
 (function registerCcxpLiteSidebarState(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
   let persistedSidebarVariant: "classic" | "layered" | null = null;

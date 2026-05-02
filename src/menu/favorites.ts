@@ -1,6 +1,6 @@
 (function registerCcxpLiteSidebarFavorites(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
 
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
@@ -82,7 +82,7 @@
       const storage = getScopedFavoriteStorage();
       if (storage) {
         try {
-          const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) || "[]") as unknown;
+          const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) ?? "[]") as unknown;
           resolve(
             new Set(
               isArray(storedValue)
@@ -129,7 +129,7 @@
 
       const nextValue = (() => {
         try {
-          return JSON.parse(event.newValue || "[]") as unknown[];
+          return JSON.parse(event.newValue ?? "[]") as unknown[];
         } catch {
           return [];
         }
@@ -167,7 +167,7 @@
     }
 
     try {
-      return scopeWindow.localStorage || null;
+      return scopeWindow.localStorage ?? null;
     } catch {
       return null;
     }
@@ -180,7 +180,7 @@
     }
 
     try {
-      return scopeWindow.sessionStorage || null;
+      return scopeWindow.sessionStorage ?? null;
     } catch {
       return null;
     }
@@ -192,7 +192,7 @@
     }
 
     try {
-      return window.top || globalThis;
+      return window.top ?? globalThis;
     } catch {
       return globalThis;
     }
@@ -200,8 +200,8 @@
 
   async function readLegacyFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
     return await new Promise((resolve) => {
-      const runtime = namespace.sharedDom?.getRuntimeSafely() || null;
-      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() || null;
+      const runtime = namespace.sharedDom?.getRuntimeSafely() ?? null;
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely() ?? null;
 
       if (!storageApi) {
         resolve(new Set());
@@ -247,13 +247,13 @@
 
     const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
 
-    for (const linkItem of item.directLinks || []) {
+    for (const linkItem of item.directLinks ?? []) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
         favoriteLinks.push(linkItem);
       }
     }
 
-    for (const section of item.sections || []) {
+    for (const section of item.sections ?? []) {
       favoriteLinks.push(...collectFavoriteLinks(section, favoriteIds));
     }
 
@@ -280,7 +280,7 @@
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
 
     return [
@@ -294,7 +294,7 @@
 
   function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
 
     return [
@@ -407,7 +407,7 @@
   }
 
   function normalizeFavoriteUrl(rawValue: string | null | undefined) {
-    const value = (rawValue || "").trim();
+    const value = (rawValue ?? "").trim();
     if (!value) {
       return "";
     }

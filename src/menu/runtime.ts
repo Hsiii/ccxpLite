@@ -1,6 +1,6 @@
 (function registerCcxpLiteSidebarRuntime(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared, sidebarState, sidebarFavorites } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites) {
     return;
@@ -13,7 +13,7 @@
   const EXTERNAL_LINK_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"] as const;
 
   function shouldOpenLeafInDestination(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
-    if ((linkItem?.target || "main").toLowerCase() !== "main") {
+    if ((linkItem?.target ?? "main").toLowerCase() !== "main") {
       return false;
     }
 
@@ -110,7 +110,7 @@
       }
 
       const scopeDocument = window.top ? window.top.document : document;
-      const src = frame.getAttribute("src") || "";
+      const src = frame.getAttribute("src") ?? "";
       return src ? new URL(src, scopeDocument.location.href).toString() : "";
     } catch {
       return "";
@@ -121,8 +121,8 @@
     try {
       const scopeDocument = window.top ? window.top.document : document;
       return (
-        scopeDocument.querySelector("frame[name='main']") ||
-        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']") ||
+        scopeDocument.querySelector("frame[name='main']") ??
+        scopeDocument.querySelector("frame[name='ccxp-lite-legacy-main']") ??
         null
       );
     } catch {
@@ -153,9 +153,9 @@
     }
 
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
-    const normalizedTarget = (linkItem.target || "main").toLowerCase();
+    const normalizedTarget = (linkItem.target ?? "main").toLowerCase();
     const resolvedDestinationFrame =
-      normalizedTarget === "main" ? destinationFrame || getLegacyMainFrame() : destinationFrame;
+      normalizedTarget === "main" ? (destinationFrame ?? getLegacyMainFrame()) : destinationFrame;
 
     if (normalizedTarget === "_blank") {
       window.open(resolvedUrl, "_blank", "noopener");
@@ -179,7 +179,7 @@
     const normalizedTarget =
       typeof linkItem === "string"
         ? linkItem.toLowerCase()
-        : (linkItem?.target || "main").toLowerCase();
+        : (linkItem?.target ?? "main").toLowerCase();
     if (normalizedTarget === "_blank") {
       return true;
     }
@@ -207,7 +207,7 @@
 
   function readAcixstore(locationHref: string) {
     const url = new URL(locationHref);
-    return url.searchParams.get("ACIXSTORE") || "";
+    return url.searchParams.get("ACIXSTORE") ?? "";
   }
 
   namespace.sidebarRuntime = {

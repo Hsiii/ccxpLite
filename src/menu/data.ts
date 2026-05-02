@@ -1,6 +1,6 @@
 (function registerCcxpLiteSidebarData(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared, sidebarFavorites } = namespace;
   if (!shared || !sidebarFavorites) {
     return;
@@ -21,7 +21,7 @@
     navDocument: Document,
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarModel {
-    const normalizedItems = (root.children || [])
+    const normalizedItems = (root.children ?? [])
       .map((entry, index) => normalizeRootEntry(entry, index, navDocument))
       .filter((item): item is CcxpLiteSidebarTreeNode => item !== null);
     const favoriteIds = getFavoriteIds();
@@ -56,7 +56,7 @@
         kind: "category",
       },
       categories: SIDEBAR_CATEGORIES.map((category) => {
-        const categoryItems = buckets.get(category.id) || [];
+        const categoryItems = buckets.get(category.id) ?? [];
         if (categoryItems.length === 0) {
           return null;
         }
@@ -81,9 +81,9 @@
 
         return {
           id: `category-${category.id}`,
-          label: strings[category.labelKey] || category.fallbackLabel || category.id,
+          label: strings[category.labelKey] ?? category.fallbackLabel ?? category.id,
           icon: category.icon,
-          summary: (category.summaryLabels || []).join(" · "),
+          summary: (category.summaryLabels ?? []).join(" · "),
           directLinks: [],
           sections,
           emptyMessage: strings.emptyGroup,
@@ -104,12 +104,12 @@
             isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel),
           );
         }),
-      ) || null
+      ) ?? null
     );
   }
 
   function normalizeSidebarLabel(label: string | null | undefined): string {
-    return (label || "")
+    return (label ?? "")
       .replaceAll(/[()（）]/g, " ")
       .replaceAll(/[&,]/g, " ")
       .replaceAll(/\s*\/\s*/g, " ")
@@ -132,14 +132,14 @@
       return labels;
     }
 
-    for (const linkItem of item.directLinks || []) {
+    for (const linkItem of item.directLinks ?? []) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel) {
         labels.push(linkLabel);
       }
     }
 
-    for (const section of item.sections || []) {
+    for (const section of item.sections ?? []) {
       labels.push(...collectSidebarLabels(section));
     }
 
@@ -195,7 +195,7 @@
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
     const groupLabel = toPlainText(folderNode.desc, navDocument);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
-    for (const childNode of folderNode.children || []) {
+    for (const childNode of folderNode.children ?? []) {
       if (childNode && childNode.children) {
         directLinks.push(
           ...collectNestedLinksIntoGroup(
@@ -233,7 +233,7 @@
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
 
-    for (const childNode of folderNode.children || []) {
+    for (const childNode of folderNode.children ?? []) {
       if (childNode && childNode.children) {
         directLinks.push(
           ...collectNestedLinksIntoGroup(
@@ -272,7 +272,7 @@
       return null;
     }
 
-    const rawHtml = itemNode.desc || "";
+    const rawHtml = itemNode.desc ?? "";
     const label = toPlainText(rawHtml, navDocument);
     const clickLinkArgs = parseClickLinkArgs(rawHtml);
     const pathSegments = buildFavoritePathSegments(parentPathSegments, label);
@@ -337,7 +337,7 @@
       .replaceAll(String.raw`\"`, "&quot;")
       .replaceAll(String.raw`\'`, "&#39;")
       .replaceAll(/<br\s*\/?>/gi, " ");
-    return (scratch.textContent || "").replaceAll(/\s+/g, " ").trim();
+    return (scratch.textContent ?? "").replaceAll(/\s+/g, " ").trim();
   }
 
   function extractLegacyVisibleText(rawHtml) {
@@ -346,7 +346,7 @@
         .replaceAll(/<br\s*\/?>/gi, "\n")
         .matchAll(/>([^<>]+)/g),
     ]
-      .map((match) => (match[1] || "").replaceAll(/\s+/g, " ").trim())
+      .map((match) => (match[1] ?? "").replaceAll(/\s+/g, " ").trim())
       .filter(Boolean)
       .join(" ")
       .trim();
@@ -383,10 +383,10 @@
       return category;
     }
 
-    const directLinks = (category.directLinks || []).filter((linkItem) =>
+    const directLinks = (category.directLinks ?? []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (category.sections || [])
+    const sections = (category.sections ?? [])
       .map((section) => filterSectionTree(section, query))
       .filter((node): node is CcxpLiteSidebarSectionNode => node !== null);
 
@@ -413,10 +413,10 @@
       return section;
     }
 
-    const directLinks = (section.directLinks || []).filter((linkItem) =>
+    const directLinks = (section.directLinks ?? []).filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (section.sections || [])
+    const sections = (section.sections ?? [])
       .map((childSection) => filterSectionTree(childSection, query))
       .filter((node): node is CcxpLiteSidebarSectionNode => node !== null);
 
@@ -436,7 +436,7 @@
   }
 
   function normalizeSearchText(text: string | null | undefined) {
-    return (text || "").toLowerCase().replaceAll(/\s+/g, " ").trim();
+    return (text ?? "").toLowerCase().replaceAll(/\s+/g, " ").trim();
   }
 
   function countLinksInTree(item: CcxpLiteSidebarGroup | null): number {
@@ -445,8 +445,8 @@
     }
 
     return (
-      (item.directLinks || []).length +
-      (item.sections || []).reduce(
+      (item.directLinks ?? []).length +
+      (item.sections ?? []).reduce(
         (total: number, section: CcxpLiteSidebarGroup) => total + countLinksInTree(section),
         0,
       )
@@ -455,7 +455,7 @@
 
   function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | null {
     const statements = [...navDocument.scripts]
-      .map((script) => script.textContent || "")
+      .map((script) => script.textContent ?? "")
       .join("\n")
       .split(";")
       .map((statement) => statement.trim())

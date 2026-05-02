@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingValidation(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -90,7 +90,7 @@
       return "";
     }
 
-    const rawSrc = imageNode.getAttribute("src") || "";
+    const rawSrc = imageNode.getAttribute("src") ?? "";
 
     try {
       const parsed = new URL(
@@ -99,10 +99,10 @@
           ? targetDocument.location.href
           : globalThis.location.href,
       );
-      return parsed.searchParams.get("pwdstr") || "";
+      return parsed.searchParams.get("pwdstr") ?? "";
     } catch {
       const match = rawSrc.match(/[&?]pwdstr=([^&]+)/i);
-      return match ? decodeURIComponent(match[1] || "") : "";
+      return match ? decodeURIComponent(match[1] ?? "") : "";
     }
   }
 

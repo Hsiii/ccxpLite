@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingCaptcha(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { landingLocale } = namespace;
   if (!landingLocale) {
     return;
@@ -16,7 +16,7 @@
     existingState?: CcxpLiteCaptchaAutofillState | null,
   ) {
     const form = getLoginForm(targetDocument);
-    const state = existingState || getOrCreateCaptchaAutofillState(targetDocument, rootNode);
+    const state = existingState ?? getOrCreateCaptchaAutofillState(targetDocument, rootNode);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
@@ -105,14 +105,14 @@
     }
 
     const scope =
-      input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") || rootNode;
+      input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") ?? rootNode;
     const mediaRow =
-      scope.querySelector(".ccxp-lite-captcha-media-row") ||
+      scope.querySelector(".ccxp-lite-captcha-media-row") ??
       rootNode.querySelector(".ccxp-lite-captcha-media-row");
     const image =
       scope.querySelector(
         ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
-      ) ||
+      ) ??
       rootNode.querySelector(
         ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
       );
@@ -307,7 +307,7 @@
     captchaImage: HTMLImageElement | null,
     targetDocument: Document,
   ) {
-    const rawSource = (captchaImage?.getAttribute("src") || "").trim();
+    const rawSource = (captchaImage?.getAttribute("src") ?? "").trim();
     if (!rawSource) {
       return "";
     }
@@ -320,12 +320,12 @@
           : globalThis.location.href,
       );
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
-      const fileName = pathSegments.at(-1) || "";
+      const fileName = pathSegments.at(-1) ?? "";
       return `${fileName}${parsed.search}`;
     } catch {
       const trimmedSource = rawSource.replace(/^https?:\/\/[^/]+\//i, "");
       const sourceSegments = trimmedSource.split("/").filter(Boolean);
-      return sourceSegments.at(-1) || "";
+      return sourceSegments.at(-1) ?? "";
     }
   }
 
@@ -356,7 +356,7 @@
       return "";
     }
     return await Promise.resolve(dc.predictDigits(imageBytes)).then((answer) =>
-      (answer || "").trim(),
+      (answer ?? "").trim(),
     );
   }
 

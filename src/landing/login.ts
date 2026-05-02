@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingLogin(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const { landingLocale, landingSupport } = namespace;
   if (!shared || !landingLocale || !landingSupport) {
@@ -65,7 +65,7 @@
       return;
     }
 
-    const inlineScope = passwordField.closest("form") || passwordField.parentElement;
+    const inlineScope = passwordField.closest("form") ?? passwordField.parentElement;
     if (inlineScope) {
       const legacyInlineToggles = [
         ...inlineScope.querySelectorAll(
@@ -94,7 +94,7 @@
       return;
     }
 
-    const labelText = (labelCell.textContent || "").replaceAll(/\s+/g, " ").trim();
+    const labelText = (labelCell.textContent ?? "").replaceAll(/\s+/g, " ").trim();
     const isPasswordLabel = /(密碼|password)/i.test(labelText);
 
     if (isPasswordLabel) {
@@ -103,7 +103,7 @@
       }
 
       for (const node of labelCell.querySelectorAll("a, button, span, i")) {
-        const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
+        const text = (node.textContent ?? "").replaceAll(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
 
         if (!text && hasOnlyIconChild) {
@@ -124,7 +124,7 @@
         node.getAttribute("src"),
         node.textContent,
       ]
-        .map((value) => (value || "").toLowerCase())
+        .map((value) => (value ?? "").toLowerCase())
         .join(" ");
 
       if (hints.includes("👁") || eyePattern.test(hints)) {
@@ -193,7 +193,7 @@
     ];
 
     for (const [fieldIndex, fieldNode] of fields.entries()) {
-      const inputType = (fieldNode.getAttribute("type") || "text").toLowerCase();
+      const inputType = (fieldNode.getAttribute("type") ?? "text").toLowerCase();
       if (
         ["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].includes(
           inputType,
@@ -316,7 +316,7 @@
         continue;
       }
 
-      const fieldCell = fieldNode.closest("th, td") || cellNode;
+      const fieldCell = fieldNode.closest("th, td") ?? cellNode;
       if (usedFieldCells.has(fieldCell)) {
         continue;
       }
@@ -346,7 +346,7 @@
       return pairs;
     }
 
-    const fallbackFieldCell = fallbackFieldNode.closest("th, td") || cells.at(-1);
+    const fallbackFieldCell = fallbackFieldNode.closest("th, td") ?? cells.at(-1);
     const fallbackLabelCell = resolveLabelCellForField(cells, cells.indexOf(fallbackFieldCell));
 
     pairs.push({
@@ -380,11 +380,11 @@
       return candidate;
     }
 
-    return cells[0] || null;
+    return cells[0] ?? null;
   }
 
   function getNodeText(node: Node | null) {
-    return ((node && node.textContent) || "").replaceAll(/\s+/g, " ").trim();
+    return ((node && node.textContent) ?? "").replaceAll(/\s+/g, " ").trim();
   }
 
   function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
@@ -440,13 +440,13 @@
     fieldPair: { fieldNode: Element; labelText: string } | null,
     targetDocument: Document,
   ) {
-    const explicitLabel = ((fieldPair && fieldPair.labelText) || "").trim();
+    const explicitLabel = ((fieldPair && fieldPair.labelText) ?? "").trim();
     if (explicitLabel) {
       return explicitLabel;
     }
 
     const fieldName = (
-      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) ||
+      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) ??
       ""
     )
       .trim()
@@ -528,11 +528,11 @@
 
     return (
       candidates.find((field) => {
-        const inputType = (field.getAttribute("type") || "text").toLowerCase();
+        const inputType = (field.getAttribute("type") ?? "text").toLowerCase();
         return !["button", "checkbox", "file", "hidden", "image", "radio", "submit"].includes(
           inputType,
         );
-      }) || null
+      }) ?? null
     );
   }
 
@@ -542,7 +542,7 @@
     }
 
     const baseName =
-      (fieldNode.getAttribute("name") || "field")
+      (fieldNode.getAttribute("name") ?? "field")
         .trim()
         .replaceAll(/[^\w-]+/g, "-")
         .replaceAll(/^-+|-+$/g, "") || "field";
@@ -568,7 +568,7 @@
     const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
 
     for (const spanNode of spans) {
-      const labelText = (spanNode.textContent || "").replaceAll(/\s+/g, " ").trim();
+      const labelText = (spanNode.textContent ?? "").replaceAll(/\s+/g, " ").trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
         continue;
       }
@@ -725,7 +725,7 @@
       const primaryCandidate = allActionButtons.find((buttonNode) =>
         isPrimaryLoginActionLabel(buttonNode.textContent),
       );
-      const primaryButton = primaryCandidate || allActionButtons[0];
+      const primaryButton = primaryCandidate ?? allActionButtons[0];
       const orderedButtons = [
         primaryButton,
         ...allActionButtons.filter((buttonNode) => buttonNode !== primaryButton),
@@ -758,9 +758,9 @@
       }
 
       const label = (
-        inputNode.value ||
-        inputNode.getAttribute("value") ||
-        inputNode.textContent ||
+        inputNode.value ??
+        inputNode.getAttribute("value") ??
+        inputNode.textContent ??
         ""
       )
         .replaceAll(/\s+/g, " ")
@@ -814,7 +814,7 @@
   }
 
   function isPrimaryLoginActionLabel(rawLabel: string | null | undefined) {
-    const normalizedLabel = (rawLabel || "").replaceAll(/\s+/g, "").trim().toLowerCase();
+    const normalizedLabel = (rawLabel ?? "").replaceAll(/\s+/g, "").trim().toLowerCase();
 
     if (!normalizedLabel) {
       return false;
@@ -838,7 +838,7 @@
     }
 
     for (const textNode of textNodes) {
-      const normalized = (textNode.textContent || "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
+      const normalized = (textNode.textContent ?? "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
       if (normalized.trim()) {
         textNode.textContent = normalized;
         continue;
@@ -901,7 +901,7 @@
     if (node instanceof HTMLInputElement && node.tagName.toLowerCase() === "input") {
       const parentForm = node.form;
       const pairedImage = parentForm
-        ? parentForm.querySelector(`img[alt][src='${cssEscape(node.getAttribute("src") || "")}]`)
+        ? parentForm.querySelector(`img[alt][src='${cssEscape(node.getAttribute("src") ?? "")}]`)
         : null;
       const pairedAlt = normalizeLegacyButtonLabel(pairedImage && pairedImage.getAttribute("alt"));
       if (pairedAlt) {
@@ -918,7 +918,7 @@
   }
 
   function normalizeLegacyButtonLabel(rawLabel: string | null | undefined) {
-    return (rawLabel || "").replaceAll(/\s+/g, " ").trim();
+    return (rawLabel ?? "").replaceAll(/\s+/g, " ").trim();
   }
 
   function shouldKeepLegacyLoginImageSubmit(inputNode: HTMLInputElement) {
@@ -926,7 +926,7 @@
       return false;
     }
 
-    const action = (inputNode.form.getAttribute("action") || "").toLowerCase();
+    const action = (inputNode.form.getAttribute("action") ?? "").toLowerCase();
     const isLoginFlowForm =
       action.includes("pre_select_entry.php") || action.includes("select_entry.php");
     if (!isLoginFlowForm) {
@@ -946,7 +946,7 @@
   }
 
   function isClearActionLabel(label: string | null | undefined) {
-    const normalized = (label || "").replaceAll(/\s+/g, "").toLowerCase();
+    const normalized = (label ?? "").replaceAll(/\s+/g, "").toLowerCase();
 
     return (
       normalized.includes("清除") ||
@@ -972,7 +972,7 @@
       node.getAttribute("src"),
       node.getAttribute("onclick"),
     ]
-      .map((value) => (value || "").toLowerCase())
+      .map((value) => (value ?? "").toLowerCase())
       .join(" ");
 
     return /(voice|audio|sound|speak|listen|語音|朗讀|播放)/.test(hintText);
@@ -1022,7 +1022,7 @@
         return true;
       }
 
-      const type = (node.getAttribute("type") || "").toLowerCase();
+      const type = (node.getAttribute("type") ?? "").toLowerCase();
       if (node.tagName === "BUTTON" && !type) {
         return true;
       }
@@ -1040,7 +1040,7 @@
       return true;
     }
 
-    return (node.getAttribute("type") || "").toLowerCase() === "image";
+    return (node.getAttribute("type") ?? "").toLowerCase() === "image";
   }
 
   function isLoginLikeControl(node: Element) {
@@ -1049,7 +1049,7 @@
   }
 
   function isClearLikeControl(node: Element) {
-    const type = (node.getAttribute("type") || "").toLowerCase();
+    const type = (node.getAttribute("type") ?? "").toLowerCase();
     if (type === "reset") {
       return true;
     }
@@ -1074,7 +1074,7 @@
       anchor && anchor.getAttribute("onclick"),
       anchor && anchor.textContent,
     ]
-      .map((value) => value || "")
+      .map((value) => value ?? "")
       .join(" ")
       .toLowerCase();
   }

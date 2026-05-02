@@ -21,7 +21,7 @@ describe("sidebar favorites", () => {
     expect(loadedIds.size).toBe(1);
 
     api.writeFavoriteIds(["grades", "external"]);
-    expect(JSON.parse(window.localStorage.getItem(api.FAVORITES_STORAGE_KEY) || "[]")).toEqual([
+    expect(JSON.parse(window.localStorage.getItem(api.FAVORITES_STORAGE_KEY) ?? "[]")).toEqual([
       "grades",
       "external",
     ]);

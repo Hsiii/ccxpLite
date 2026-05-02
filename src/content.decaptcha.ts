@@ -121,7 +121,7 @@ function getHeadInputVectors(
 ) {
   const api = factory(globalScope as Window & typeof globalThis);
   const runtimeScope = globalScope as typeof globalThis & { CCXP_LITE?: CcxpLiteNamespace };
-  runtimeScope.CCXP_LITE ||= {};
+  runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
   namespace.decaptcha = api;
 
@@ -141,7 +141,7 @@ function getHeadInputVectors(
   const EPS = 1e-5;
 
   function getNamespace() {
-    runtimeScope.CCXP_LITE ||= {};
+    runtimeScope.CCXP_LITE ??= {};
 
     return runtimeScope.CCXP_LITE as CcxpLiteNamespace;
   }
@@ -156,22 +156,22 @@ function getHeadInputVectors(
 
     if (!model.preparedTensors) {
       const preparedTensors: Record<string, CcxpLitePreparedTensor> = {};
-      for (const [name, tensor] of Object.entries(model.tensors || {})) {
+      for (const [name, tensor] of Object.entries(model.tensors ?? {})) {
         const sourceTensor = tensor;
         preparedTensors[name] = {
           shape: isArray(sourceTensor.shape) ? [...sourceTensor.shape] : [],
           data:
             sourceTensor.data instanceof Float32Array
               ? sourceTensor.data
-              : new Float32Array(sourceTensor.data || []),
+              : new Float32Array(sourceTensor.data ?? []),
         };
       }
       model.preparedTensors = preparedTensors;
     }
 
     return {
-      digits: model.digits || DIGITS,
-      eps: model.eps || EPS,
+      digits: model.digits ?? DIGITS,
+      eps: model.eps ?? EPS,
       cropRight: Number.isFinite(model.cropRight) ? model.cropRight : 0,
       tensors: model.preparedTensors,
     };
@@ -239,7 +239,7 @@ function getHeadInputVectors(
     rgba: Uint8ClampedArray,
     options: { cropRight?: number } = {},
   ) {
-    const cropRight = Math.max(0, Math.trunc(options.cropRight || 0));
+    const cropRight = Math.max(0, Math.trunc(options.cropRight ?? 0));
     const usableWidth = width - cropRight;
 
     if (usableWidth <= 0) {
@@ -268,9 +268,9 @@ function getHeadInputVectors(
     bias: CcxpLitePreparedTensor | null = null,
     options: { stride?: number; padding?: number; groups?: number } = {},
   ) {
-    const stride = options.stride || 1;
-    const padding = options.padding || 0;
-    const groups = options.groups || 1;
+    const stride = options.stride ?? 1;
+    const padding = options.padding ?? 0;
+    const groups = options.groups ?? 1;
     const [, inHeight, inWidth] = inputTensor.shape;
     const [outChannels, channelsPerGroup, kernelHeight, kernelWidth] = weight.shape;
     const outHeight = Math.floor((inHeight + 2 * padding - kernelHeight) / stride) + 1;
@@ -398,7 +398,7 @@ function getHeadInputVectors(
     prefix: string,
     options: { stride?: number } = {},
   ) {
-    const stride = options.stride || 1;
+    const stride = options.stride ?? 1;
     const inputChannels = inputTensor.shape[0];
     let output = conv2d(inputTensor, tensors[`${prefix}.0.weight`], null, {
       stride,

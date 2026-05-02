@@ -1,6 +1,6 @@
 (function registerCcxpLiteSharedDom(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
 
   function isArray<T>(value: unknown): value is T[] {

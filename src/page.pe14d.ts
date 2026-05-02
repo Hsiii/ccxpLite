@@ -74,7 +74,7 @@
   }
 
   function shouldInterceptSubmission(form: HTMLFormElement | null, actionName: string) {
-    return Boolean(form && INTERCEPTED_ACTIONS.has(actionName || ""));
+    return Boolean(form && INTERCEPTED_ACTIONS.has(actionName ?? ""));
   }
 
   function submitThroughTransport(
@@ -96,7 +96,7 @@
     pendingSubmission = {
       actionName,
       snapshot,
-      originalTarget: form.getAttribute("target") || "",
+      originalTarget: form.getAttribute("target") ?? "",
       frame: transportFrame,
       cleanedUp: false,
     };
@@ -182,13 +182,13 @@
         activeElement instanceof HTMLButtonElement ||
         activeElement instanceof HTMLSelectElement ||
         activeElement instanceof HTMLTextAreaElement
-          ? activeElement.name || ""
+          ? (activeElement.name ?? "")
           : "",
-      activeId: activeElement instanceof HTMLElement ? activeElement.id || "" : "",
+      activeId: activeElement instanceof HTMLElement ? (activeElement.id ?? "") : "",
       bodyScrollTop: globalScope.document.documentElement
         ? globalScope.document.documentElement.scrollTop
         : 0,
-      formId: form.id || "",
+      formId: form.id ?? "",
     };
   }
 
@@ -209,15 +209,16 @@
     clearStoredSnapshot();
 
     const applyRestore = () => {
-      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
+      globalScope.scrollTo(snapshot.scrollX ?? 0, snapshot.scrollY ?? snapshot.bodyScrollTop ?? 0);
       const focusTarget =
-        (snapshot.activeId &&
-          globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ||
-        (snapshot.activeName &&
-          globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
-          )) ||
-        null;
+        (snapshot.activeId
+          ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
+          : null) ??
+        (snapshot.activeName
+          ? globalScope.document.querySelector(
+              `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
+            )
+          : null);
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
@@ -248,7 +249,7 @@
       if (
         !snapshot ||
         snapshot.pathname !== globalScope.location.pathname ||
-        Date.now() - (snapshot.createdAt || 0) > RESTORE_TTL_MS
+        Date.now() - (snapshot.createdAt ?? 0) > RESTORE_TTL_MS
       ) {
         return null;
       }
@@ -304,15 +305,16 @@
 
   function restoreAfterPatchedUpdate(snapshot: CcxpLitePe14dSnapshot) {
     globalScope.requestAnimationFrame(() => {
-      globalScope.scrollTo(snapshot.scrollX || 0, snapshot.scrollY || snapshot.bodyScrollTop || 0);
+      globalScope.scrollTo(snapshot.scrollX ?? 0, snapshot.scrollY ?? snapshot.bodyScrollTop ?? 0);
       const focusTarget =
-        (snapshot.activeId &&
-          globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ||
-        (snapshot.activeName &&
-          globalScope.document.querySelector(
-            `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
-          )) ||
-        null;
+        (snapshot.activeId
+          ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
+          : null) ??
+        (snapshot.activeName
+          ? globalScope.document.querySelector(
+              `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
+            )
+          : null);
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
@@ -334,6 +336,6 @@
   }
 
   function escapeAttributeValue(value: string | null | undefined): string {
-    return (value || "").replaceAll("\\", "\\\\").replaceAll('"', String.raw`\"`);
+    return (value ?? "").replaceAll("\\", "\\\\").replaceAll('"', String.raw`\"`);
   }
 })(globalThis);

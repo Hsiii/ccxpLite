@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingTabs(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   if (!shared) {
     return;
@@ -44,10 +44,10 @@
     const resolvePanelByLegacyTarget = (button: HTMLElement) => {
       const directControl = button.getAttribute("aria-controls");
       if (directControl) {
-        return tabPanels.find((candidatePanel) => candidatePanel.id === directControl) || null;
+        return tabPanels.find((candidatePanel) => candidatePanel.id === directControl) ?? null;
       }
 
-      const href = (button.getAttribute("href") || "").trim();
+      const href = (button.getAttribute("href") ?? "").trim();
       if (href.startsWith("#")) {
         const hashId = href.slice(1);
         const fromHash = tabPanels.find((candidatePanel) => candidatePanel.id === hashId);
@@ -61,12 +61,12 @@
         return null;
       }
 
-      return tabPanels.find((candidatePanel) => candidatePanel.id === legacyTarget) || null;
+      return tabPanels.find((candidatePanel) => candidatePanel.id === legacyTarget) ?? null;
     };
 
     const buttonPanelMap: Array<{ button: HTMLElement; panel: HTMLElement }> = tabButtons
       .map((button, index) => {
-        const panel = resolvePanelByLegacyTarget(button) || tabPanels[index] || null;
+        const panel = resolvePanelByLegacyTarget(button) ?? tabPanels[index] ?? null;
         return { button, panel };
       })
       .filter((entry): entry is { button: HTMLElement; panel: HTMLElement } =>
@@ -228,14 +228,14 @@
       return;
     }
 
-    const label = (button.textContent || "").replaceAll(/\s+/g, " ").trim().toLowerCase();
+    const label = (button.textContent ?? "").replaceAll(/\s+/g, " ").trim().toLowerCase();
     if (/(學生|校友|student|alumni)/i.test(label)) {
       panel.classList.add("ccxp-lite-student-alumni-panel");
     }
   }
 
   function extractLegacyTabTarget(button: HTMLElement) {
-    const onclickValue = button.getAttribute("onclick") || "";
+    const onclickValue = button.getAttribute("onclick") ?? "";
     const targetMatch = onclickValue.match(/["']([^"']+)["']/);
     return targetMatch ? targetMatch[1] : "";
   }

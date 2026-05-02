@@ -1,6 +1,6 @@
 (function registerCcxpLiteSidebarUi(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared, sidebarState, sidebarFavorites, sidebarData, sidebarRuntime } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites || !sidebarData || !sidebarRuntime) {
     return;
@@ -64,15 +64,15 @@
     }
 
     const model = typeof modelInput === "function" ? modelInput() : modelInput;
-    const filteredCategories = filterCategories(model.categories || [], state.searchQuery);
+    const filteredCategories = filterCategories(model.categories ?? [], state.searchQuery);
     const activeCategoryFromFiltered = filteredCategories.find(
       (category) => category.id === state.currentCategoryId,
     );
     const activeCategory =
-      activeCategoryFromFiltered ||
+      activeCategoryFromFiltered ??
       (state.searchQuery
         ? null
-        : model.categories.find((category) => category.id === state.currentCategoryId)) ||
+        : model.categories.find((category) => category.id === state.currentCategoryId)) ??
       null;
 
     if (state.currentCategoryId && !activeCategory) {
@@ -104,7 +104,7 @@
 
     if (state.activeLeaf) {
       const activeLeafCategory =
-        activeCategory || findCategoryContainingLeaf(model.categories || [], state.activeLeaf);
+        activeCategory ?? findCategoryContainingLeaf(model.categories ?? [], state.activeLeaf);
       content.append(
         createDestinationView(
           hostDocument,
@@ -135,7 +135,7 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        filterFavoriteLinks(model.favorites.directLinks || [], state.searchQuery),
+        filterFavoriteLinks(model.favorites.directLinks ?? [], state.searchQuery),
         filteredCategories,
         state,
         strings,
@@ -157,13 +157,13 @@
 
     return (
       categories.find((category) => {
-        const directLinks = category.directLinks || [];
-        const sections = category.sections || [];
+        const directLinks = category.directLinks ?? [];
+        const sections = category.sections ?? [];
         return (
           directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
           sections.some((section) => sectionContainsLeaf(section, activeLeaf))
         );
-      }) || null
+      }) ?? null
     );
   }
 
@@ -171,8 +171,8 @@
     section: CcxpLiteSidebarGroup,
     activeLeaf: CcxpLiteSidebarLinkItem | null,
   ): boolean {
-    const directLinks = section.directLinks || [];
-    const sections = section.sections || [];
+    const directLinks = section.directLinks ?? [];
+    const sections = section.sections ?? [];
     return (
       directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
       sections.some((childSection) => sectionContainsLeaf(childSection, activeLeaf))
@@ -283,7 +283,7 @@
     sidebarList.className = "ccxp-lite-sidebar-list";
 
     const items = createClassicSidebarItems(model, state.searchQuery);
-    const expandedItemIds = new Set<string>(state.classicExpandedItemIds || []);
+    const expandedItemIds = new Set<string>(state.classicExpandedItemIds);
 
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set();
@@ -368,10 +368,10 @@
       return itemMatches ? item : null;
     }
 
-    const directLinks = (item.directLinks || []).filter((linkItem) =>
+    const directLinks = (item.directLinks ?? []).filter((linkItem) =>
       isClassicSearchMatch(linkItem.label, normalizedQuery),
     );
-    const sections = (item.sections || [])
+    const sections = (item.sections ?? [])
       .map((section) => filterClassicSidebarItem(section, normalizedQuery))
       .filter((node): node is CcxpLiteSidebarTreeNode => node !== null);
 
@@ -381,8 +381,8 @@
 
     return {
       ...item,
-      directLinks: itemMatches ? item.directLinks || [] : directLinks,
-      sections: itemMatches ? item.sections || [] : sections,
+      directLinks: itemMatches ? (item.directLinks ?? []) : directLinks,
+      sections: itemMatches ? (item.sections ?? []) : sections,
     } as CcxpLiteSidebarTreeNode;
   }
 
@@ -443,7 +443,7 @@
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
 
     if (group.kind !== "link") {
-      for (const linkItem of group.directLinks || []) {
+      for (const linkItem of group.directLinks ?? []) {
         children.append(
           createClassicLinkButton(
             targetDocument,
@@ -456,7 +456,7 @@
         );
       }
 
-      for (const section of group.sections || []) {
+      for (const section of group.sections ?? []) {
         children.append(
           createClassicSidebarNode(
             targetDocument,
@@ -479,7 +479,7 @@
 
     const empty = targetDocument.createElement("div");
     empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
-    empty.textContent = (group as CcxpLiteSidebarGroup).emptyMessage || strings.emptyGroup;
+    empty.textContent = (group as CcxpLiteSidebarGroup).emptyMessage ?? strings.emptyGroup;
     linkList.append(empty);
     return linkList;
   }
@@ -517,7 +517,7 @@
   }
 
   function normalizeClassicSearchText(text: string | null | undefined): string {
-    return (text || "").toLowerCase().replaceAll(/\s+/g, " ").trim();
+    return (text ?? "").toLowerCase().replaceAll(/\s+/g, " ").trim();
   }
 
   function isClassicSearchMatch(text: string, normalizedQuery: string) {
@@ -541,13 +541,13 @@
     const expandedItemIds: string[] = [];
 
     if (item.kind !== "link") {
-      for (const linkItem of item.directLinks || []) {
+      for (const linkItem of item.directLinks ?? []) {
         if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
           hasMatch = true;
         }
       }
 
-      for (const section of item.sections || []) {
+      for (const section of item.sections ?? []) {
         const childState = collectClassicExpandedState(section, normalizedQuery);
         expandedItemIds.push(...childState.expandedItemIds);
         if (childState.hasMatch) {
@@ -555,7 +555,7 @@
         }
       }
 
-      if (hasMatch && (item.sections || []).length > 0) {
+      if (hasMatch && (item.sections ?? []).length > 0) {
         expandedItemIds.push(item.id);
       }
     }
@@ -736,7 +736,7 @@
     body.className = "ccxp-lite-category-detail";
 
     if (filteredCategory) {
-      if ((filteredCategory.directLinks || []).length > 0) {
+      if ((filteredCategory.directLinks ?? []).length > 0) {
         body.append(
           createLinkCollection(
             targetDocument,
@@ -748,7 +748,7 @@
         );
       }
 
-      for (const group of filteredCategory.sections || []) {
+      for (const group of filteredCategory.sections ?? []) {
         body.append(createCategoryBlock(targetDocument, navDocument, group, strings, rerender));
       }
 
@@ -777,7 +777,7 @@
   }
 
   function scheduleCategoryDetailWaterfall(targetDocument: Document, body: HTMLElement) {
-    const view = targetDocument.defaultView || globalThis;
+    const view = targetDocument.defaultView ?? globalThis;
     const supportsNativeWaterfall =
       view.CSS &&
       (view.CSS.supports("display", "grid-lanes") ||
@@ -824,7 +824,7 @@
 
       scheduleLayout();
     });
-    observer.observe(body.parentElement || body);
+    observer.observe(body.parentElement ?? body);
     for (const item of detailItems) {
       observer.observe(item);
     }
@@ -910,7 +910,7 @@
       block.append(title);
     }
 
-    if ((group.directLinks || []).length > 0) {
+    if ((group.directLinks ?? []).length > 0) {
       for (const linkItem of group.directLinks) {
         block.append(
           createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
@@ -918,7 +918,7 @@
       }
     }
 
-    for (const section of group.sections || []) {
+    for (const section of group.sections ?? []) {
       block.append(createCategoryBlock(targetDocument, navDocument, section, strings, rerender));
     }
 
@@ -1790,7 +1790,7 @@
     for (const shape of getCategoryIconShapes(iconName) as Array<
       string | { tag?: string; attributes: Record<string, string> }
     >) {
-      const tagName = typeof shape === "string" ? "path" : shape.tag || "path";
+      const tagName = typeof shape === "string" ? "path" : (shape.tag ?? "path");
       const attributes = typeof shape === "string" ? { d: shape } : shape.attributes;
       const element = targetDocument.createElementNS("http://www.w3.org/2000/svg", tagName);
       for (const [name, value] of Object.entries(attributes)) {

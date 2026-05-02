@@ -1,6 +1,6 @@
 (function registerCcxpLiteSharedBrand(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { sharedConstants, sharedLocale } = namespace;
   if (!sharedConstants || !sharedLocale) {
     return;
@@ -82,18 +82,18 @@
     } = {},
   ) {
     const mark = targetDocument.createElement("span");
-    mark.className = options.markClassName || "";
+    mark.className = options.markClassName ?? "";
     mark.append(createBrandPartnerIcon(targetDocument));
 
     const link = targetDocument.createElement("button");
     link.type = "button";
-    link.className = options.linkClassName || "";
-    link.setAttribute("aria-label", options.label || "");
-    link.setAttribute("title", options.label || "");
+    link.className = options.linkClassName ?? "";
+    link.setAttribute("aria-label", options.label ?? "");
+    link.setAttribute("title", options.label ?? "");
 
     const label = targetDocument.createElement("span");
-    label.className = options.labelClassName || "";
-    label.textContent = options.label || "";
+    label.className = options.labelClassName ?? "";
+    label.textContent = options.label ?? "";
     link.append(label);
 
     return { mark, link };

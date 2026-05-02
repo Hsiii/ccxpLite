@@ -1,11 +1,11 @@
 (function registerCcxpLiteLandingLocale(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  runtimeScope.CCXP_LITE ||= {};
+  runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
 
   function isSupportedInquirePath(targetDocument: Document) {
     const pathName = (
-      (targetDocument.location && targetDocument.location.pathname) ||
+      (targetDocument.location && targetDocument.location.pathname) ??
       ""
     ).toLowerCase();
     return /\/ccxp\/inquire\/(?:index\.php)?\/?$/.test(pathName);
@@ -16,7 +16,7 @@
       return false;
     }
 
-    return Boolean(getLoginForm(targetDocument) || hasLandingTabContent(targetDocument));
+    return Boolean(getLoginForm(targetDocument) ?? hasLandingTabContent(targetDocument));
   }
 
   function hasLandingTabContent(targetDocument: Document) {
@@ -30,7 +30,7 @@
     loginForm: HTMLFormElement | null,
   ): CcxpLiteLocale {
     const htmlLang = (
-      (targetDocument.documentElement && targetDocument.documentElement.lang) ||
+      (targetDocument.documentElement && targetDocument.documentElement.lang) ??
       ""
     ).toLowerCase();
     if (htmlLang.startsWith("en")) {
@@ -42,7 +42,7 @@
     }
 
     const search = (
-      (targetDocument.location && targetDocument.location.search) ||
+      (targetDocument.location && targetDocument.location.search) ??
       ""
     ).toLowerCase();
     const langMatch = search.match(/[&?]lang=([^&]+)/);
@@ -61,7 +61,7 @@
         ".active, .current, .selected, [aria-current='page'], strong, b",
       );
       if (currentLangNode) {
-        const currentLangText = (currentLangNode.textContent || "").toLowerCase();
+        const currentLangText = (currentLangNode.textContent ?? "").toLowerCase();
         if (currentLangText.includes("english")) {
           return "en";
         }
@@ -75,11 +75,11 @@
       ? [...loginForm.querySelectorAll("input, select, textarea, button")]
           .map((node) =>
             [
-              node.getAttribute("placeholder") || "",
-              node.getAttribute("value") || "",
-              node.getAttribute("title") || "",
-              node.getAttribute("aria-label") || "",
-              node.getAttribute("name") || "",
+              node.getAttribute("placeholder") ?? "",
+              node.getAttribute("value") ?? "",
+              node.getAttribute("title") ?? "",
+              node.getAttribute("aria-label") ?? "",
+              node.getAttribute("name") ?? "",
             ].join(" "),
           )
           .join(" ")
@@ -119,7 +119,7 @@
       return "en";
     }
 
-    const sampleText = ((loginSourceCell && loginSourceCell.textContent) || "").trim();
+    const sampleText = ((loginSourceCell && loginSourceCell.textContent) ?? "").trim();
     return /[\u3400-\u9FFF]/.test(sampleText) ? "zh" : "en";
   }
 
@@ -127,7 +127,7 @@
     const forms = [...targetDocument.querySelectorAll("form")];
 
     const candidates = forms.filter((form) => {
-      const action = (form.getAttribute("action") || "").toLowerCase();
+      const action = (form.getAttribute("action") ?? "").toLowerCase();
       const hasKnownAction =
         action.includes("pre_select_entry.php") || action.includes("select_entry.php");
       const hasPasswordField = Boolean(

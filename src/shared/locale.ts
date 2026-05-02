@@ -1,6 +1,6 @@
 (function registerCcxpLiteSharedLocale(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { sharedConstants } = namespace;
   if (!sharedConstants) {
     return;
@@ -9,7 +9,7 @@
   const { LOCALIZED_STRINGS } = sharedConstants;
 
   function normalizeLocale(locale: string | null | undefined): string {
-    const normalized = (locale || "").toLowerCase();
+    const normalized = (locale ?? "").toLowerCase();
 
     if (normalized.startsWith("en")) {
       return "en";

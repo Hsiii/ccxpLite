@@ -1,6 +1,6 @@
 (function registerCcxpLiteLandingBootstrap(globalScope: Window & typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = (runtimeScope.CCXP_LITE ||= {}) as CcxpLiteNamespace;
+  const namespace = (runtimeScope.CCXP_LITE ??= {}) as CcxpLiteNamespace;
   const { shared } = namespace;
   const {
     landingLocale,
@@ -201,7 +201,7 @@
     );
 
     removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") || null);
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? null);
 
     collapseLegacyThreeColumnRows(targetDocument.body);
 
