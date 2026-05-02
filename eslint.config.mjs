@@ -32,7 +32,6 @@ export default defineConfig(
       "complete/complete-sentences-line-comments": "off",
       "complete/format-line-comments": "off",
       "complete/no-mutable-return": "off",
-      "complete/no-object-any": "off",
       "complete/prefer-plusplus": "off",
       "complete/prefer-readonly-parameter-types": "off",
       "complete/require-ascii": "off",
