@@ -3,7 +3,7 @@ import { describe, test, expect } from "bun:test";
 import * as decaptchaModelModule from "../src/content.decaptcha.model.js";
 import * as decaptchaModule from "../src/content.decaptcha.js";
 
-globalThis.CCXP_LITE = {} as CcxpLiteNamespace;
+globalThis.CCXP_LITE ??= {} as CcxpLiteNamespace;
 interface DecaptchaTest {
   __test: {
     createTensor: (s: readonly number[], d: readonly number[]) => CcxpLitePreparedTensor;
@@ -38,10 +38,14 @@ interface DecaptchaTest {
   };
   predictDigits: (imageBytes: ArrayBuffer) => Promise<string>;
 }
-const decaptchaModel = decaptchaModelModule as unknown;
 const decaptcha = decaptchaModule as unknown as DecaptchaTest;
-// eslint-disable-next-line no-void
-void decaptchaModel;
+describe("decaptcha model bootstrap", () => {
+  test("registers the generated model on the shared namespace", () => {
+    expect(decaptchaModelModule).toEqual({});
+    expect(globalThis.CCXP_LITE.decaptchaModel).toBeDefined();
+  });
+});
+
 describe("decaptcha preprocessing", () => {
   test("converts a cropped captcha image into CHW float data", () => {
     const width = 113;

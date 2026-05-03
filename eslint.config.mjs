@@ -10,7 +10,6 @@ export default [
       "dist/**",
       "fixtures/ccxp-snapshot/**",
       "node_modules/**",
-      "src/content.decaptcha.model.ts",
     ],
   },
 

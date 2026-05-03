@@ -124,18 +124,16 @@ def to_model_payload(checkpoint):
 
 def render_model_script(payload):
     payload_json = json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
-    return """// @ts-nocheck
-(function bootstrapCcxpLiteDecaptchaModel(globalScope, factory) {
-  const model = factory();
-  const namespace = globalScope.CCXP_LITE || (globalScope.CCXP_LITE = {});
+    return """(() => {
+  const serializedModel = '%s';
+  const runtimeScope = globalThis as typeof globalThis & {
+    CCXP_LITE?: CcxpLiteNamespace;
+  };
+  runtimeScope.CCXP_LITE ??= {};
+  const namespace = runtimeScope.CCXP_LITE;
+  const model = JSON.parse(serializedModel) as CcxpLiteDecaptchaModel;
   namespace.decaptchaModel = model;
-
-  if (typeof module === "object" && module.exports) {
-    module.exports = model;
-  }
-})(typeof globalThis !== "undefined" ? globalThis : this, function createCcxpLiteDecaptchaModel() {
-  return %s;
-});
+})();
 """ % payload_json
 
 
