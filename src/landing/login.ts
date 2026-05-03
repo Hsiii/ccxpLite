@@ -60,8 +60,11 @@
       ];
       for (const node of legacyInlineToggles) {
         const relation = node.compareDocumentPosition(passwordField);
-        // eslint-disable-next-line no-bitwise
-        const isBeforeField = Boolean(relation & Node.DOCUMENT_POSITION_FOLLOWING);
+        const beforeFieldRelations = new Set([
+          Node.DOCUMENT_POSITION_FOLLOWING,
+          Node.DOCUMENT_POSITION_FOLLOWING + Node.DOCUMENT_POSITION_CONTAINED_BY,
+        ]);
+        const isBeforeField = beforeFieldRelations.has(relation);
         if (isBeforeField) {
           node.remove();
         }
