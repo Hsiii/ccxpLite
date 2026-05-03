@@ -70,7 +70,7 @@ describe("sidebar data", () => {
     expect(window.CCXP_LITE.sidebarData.filterCategories([category], "semester")[0].id).toBe(
       "category-courses",
     );
-    expect(window.CCXP_LITE.sidebarData.filterCategoryTree(category, "missing")).toBeNull();
+    expect(window.CCXP_LITE.sidebarData.filterCategoryTree(category, "missing")).toBeUndefined();
     expect(window.CCXP_LITE.sidebarData.countLinksInTree(category)).toBe(1);
   });
 });
