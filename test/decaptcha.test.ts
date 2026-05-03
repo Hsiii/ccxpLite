@@ -38,11 +38,19 @@ interface DecaptchaTest {
   };
   predictDigits: (imageBytes: ArrayBuffer) => Promise<string>;
 }
-const decaptcha = decaptchaModule as unknown as DecaptchaTest;
+const decaptcha = globalThis.CCXP_LITE.decaptcha as unknown as DecaptchaTest;
 describe("decaptcha model bootstrap", () => {
   test("registers the generated model on the shared namespace", () => {
     expect(decaptchaModelModule).toEqual({});
     expect(globalThis.CCXP_LITE.decaptchaModel).toBeDefined();
+  });
+});
+
+describe("decaptcha runtime bootstrap", () => {
+  test("registers the decaptcha API on the shared namespace", () => {
+    expect(decaptchaModule).toEqual({});
+    expect(decaptcha).toBeDefined();
+    expect(typeof decaptcha.predictDigits).toBe("function");
   });
 });
 

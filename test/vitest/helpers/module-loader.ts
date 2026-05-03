@@ -59,8 +59,8 @@ export function createTestWindow(
   };
 
   testWindow.requestAnimationFrame = ((callback: FrameRequestCallback) => {
-    // eslint-disable-next-line n/no-callback-literal
-    callback(0);
+    const frameTime = 0;
+    callback(frameTime);
     return 1;
   }) as typeof testWindow.requestAnimationFrame;
   testWindow.cancelAnimationFrame = (() => undefined) as typeof testWindow.cancelAnimationFrame;

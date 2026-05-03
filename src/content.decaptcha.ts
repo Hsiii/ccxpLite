@@ -114,11 +114,6 @@ function getHeadInputVectors(
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
   namespace.decaptcha = api;
-  // eslint-disable-next-line import-x/no-commonjs
-  if (typeof module === "object" && module.exports !== undefined) {
-    // eslint-disable-next-line import-x/no-commonjs
-    module.exports = api;
-  }
 })(globalThis, (globalScope: typeof globalThis) => {
   const runtimeScope = globalScope as typeof globalThis & {
     CCXP_LITE?: {
