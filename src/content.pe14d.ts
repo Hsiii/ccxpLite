@@ -8,7 +8,7 @@
     if (sharedDom?.getRuntimeSafely) {
       return sharedDom.getRuntimeSafely();
     }
-    if (typeof chrome !== "undefined" && chrome.runtime.id) {
+    if (typeof chrome !== "undefined" && chrome.runtime.id !== "") {
       return chrome.runtime as unknown as CcxpLiteRuntime;
     }
     return undefined;

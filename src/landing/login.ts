@@ -82,9 +82,9 @@
         node.remove();
       }
       for (const node of labelCell.querySelectorAll("a, button, span, i")) {
-        const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
+        const text = node.textContent.replaceAll(/\s+/g, " ").trim();
         const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
-        if (!text && hasOnlyIconChild) {
+        if (text === "" && hasOnlyIconChild) {
           node.remove();
         }
       }
@@ -179,7 +179,7 @@
         continue;
       }
       const labelText = getNodeText(labelSourceNode);
-      if (!labelText) {
+      if (labelText === "") {
         continue;
       }
       const fieldId = ensureFieldId(fieldNode, fieldIndex);
@@ -325,7 +325,7 @@
       if (findPrimaryFieldControl(candidate)) {
         continue;
       }
-      if (!getNodeText(candidate)) {
+      if (getNodeText(candidate) === "") {
         continue;
       }
       return candidate;
@@ -340,7 +340,7 @@
   function findLegacyInlineLabelNode(fieldNode: Node, boundaryNode: Node) {
     let currentNode = fieldNode.previousSibling;
     while (currentNode && currentNode !== boundaryNode) {
-      if (currentNode.nodeType === Node.TEXT_NODE && !getNodeText(currentNode)) {
+      if (currentNode.nodeType === Node.TEXT_NODE && getNodeText(currentNode) === "") {
         currentNode = currentNode.previousSibling;
         continue;
       }
@@ -361,7 +361,7 @@
           return undefined;
         }
       }
-      return getNodeText(currentNode) ? currentNode : undefined;
+      return getNodeText(currentNode) === "" ? undefined : currentNode;
     }
     return undefined;
   }
@@ -372,7 +372,7 @@
     fieldNode: Element,
   ) {
     const explicitLabel = getNodeText(labelCell);
-    if (explicitLabel) {
+    if (explicitLabel !== "") {
       return explicitLabel;
     }
     return getInlineLoginLabelText(fieldCell, fieldNode);
@@ -388,7 +388,7 @@
     targetDocument: Document,
   ) {
     const explicitLabel = ((fieldPair && fieldPair.labelText) ?? "").trim();
-    if (explicitLabel) {
+    if (explicitLabel !== "") {
       return explicitLabel;
     }
     const fieldName = (fieldPair?.fieldNode.getAttribute("name") ?? "").trim().toLowerCase();
@@ -405,7 +405,7 @@
     if (fieldName === "passwd2" || fieldName === "captcha" || fieldName === "code") {
       return strings.fieldVerificationCode;
     }
-    return fieldName || strings.fieldGeneric;
+    return fieldName === "" ? strings.fieldGeneric : fieldName;
   }
 
   function getInlineLoginLabelText(fieldCell: Node | undefined, fieldNode: Node | undefined) {
@@ -442,9 +442,9 @@
       const textContent = getNodeText(currentNode);
       const isBreak =
         currentNode.nodeType === Node.ELEMENT_NODE &&
-        (currentNode as Element).tagName &&
+        (currentNode as Element).tagName !== "" &&
         (currentNode as Element).tagName.toLowerCase() === "br";
-      if (textContent || isBreak) {
+      if (textContent !== "" || isBreak) {
         leadingNodes.push(currentNode);
       }
       currentNode = nextNode;
@@ -469,14 +469,14 @@
   }
 
   function ensureFieldId(fieldNode: HTMLElement, rowIndex: number, pairIndex = 0) {
-    if (fieldNode.id) {
+    if (fieldNode.id !== "") {
       return fieldNode.id;
     }
-    const baseName =
-      (fieldNode.getAttribute("name") ?? "field")
-        .trim()
-        .replaceAll(/[^\w-]+/g, "-")
-        .replaceAll(/^-+|-+$/g, "") || "field";
+    const normalizedName = (fieldNode.getAttribute("name") ?? "field")
+      .trim()
+      .replaceAll(/[^\w-]+/g, "-")
+      .replaceAll(/^-+|-+$/g, "");
+    const baseName = normalizedName === "" ? "field" : normalizedName;
     const pairSuffix = pairIndex > 0 ? `-${pairIndex + 1}` : "";
     const generatedId = `ccxp-lite-${baseName}-${rowIndex + 1}${pairSuffix}`;
     const inputField = fieldNode;
@@ -498,7 +498,7 @@
     const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
     for (const spanNode of spans) {
       const labelText = spanNode.textContent.replaceAll(/\s+/g, " ").trim();
-      if (!labelText || !captchaLabelPattern.test(labelText)) {
+      if (labelText === "" || !captchaLabelPattern.test(labelText)) {
         continue;
       }
       spanNode.style.display = "block";
@@ -527,7 +527,7 @@
         continue;
       }
       const label = resolveLegacyImageButtonLabel(inputNode);
-      if (!label) {
+      if (label === "") {
         continue;
       }
       if (isClearActionLabel(label)) {
@@ -538,16 +538,16 @@
       button.type = "submit";
       button.className = "button ccxp-lite-image-action-button";
       button.textContent = label;
-      if (inputNode.id) {
+      if (inputNode.id !== "") {
         button.id = inputNode.id;
       }
-      if (inputNode.name) {
+      if (inputNode.name !== "") {
         button.name = inputNode.name;
       }
-      if (inputNode.title) {
+      if (inputNode.title !== "") {
         button.title = inputNode.title;
       }
-      if (inputNode.className) {
+      if (inputNode.className !== "") {
         button.className = `${button.className} ${inputNode.className}`.trim();
       }
       if (inputNode.disabled) {
@@ -562,7 +562,7 @@
         "tabindex",
       ]) {
         const value = inputNode.getAttribute(attributeName);
-        if (value) {
+        if (value !== null && value !== "") {
           button.setAttribute(attributeName, value);
         }
       }
@@ -580,10 +580,10 @@
       }
       if (isVerificationAudioControl(imageNode)) {
         anchor.classList.add("ccxp-lite-audio-icon-link");
+        const imageLabel = resolveLegacyImageButtonLabel(imageNode);
         anchor.setAttribute(
           "aria-label",
-          resolveLegacyImageButtonLabel(imageNode) ||
-            getLandingStrings(targetDocument).playVerificationAudio,
+          imageLabel === "" ? getLandingStrings(targetDocument).playVerificationAudio : imageLabel,
         );
         anchor.replaceChildren(createAudioIcon(targetDocument));
         anchor.dataset.ccxpLiteImageButtonReplaced = "true";
@@ -594,7 +594,7 @@
         continue;
       }
       const label = resolveLegacyImageButtonLabel(imageNode);
-      if (!label) {
+      if (label === "") {
         continue;
       }
       if (isClearActionLabel(label)) {
@@ -657,7 +657,7 @@
         continue;
       }
       const label = inputNode.value.replaceAll(/\s+/g, " ").trim();
-      if (!label) {
+      if (label === "") {
         continue;
       }
       const button = targetDocument.createElement("button");
@@ -673,7 +673,7 @@
         }
         button.setAttribute(attribute.name, attribute.value);
       }
-      if (inputNode.className) {
+      if (inputNode.className !== "") {
         button.className = `${button.className} ${inputNode.className}`.trim();
       }
       if (inputNode.disabled) {
@@ -698,7 +698,7 @@
 
   function isPrimaryLoginActionLabel(rawLabel: string | undefined) {
     const normalizedLabel = (rawLabel ?? "").replaceAll(/\s+/g, "").trim().toLowerCase();
-    if (!normalizedLabel) {
+    if (normalizedLabel === "") {
       return false;
     }
     return /(\u767B\u5165|\u767B\u5F55|login|signin|logon|\u9001\u51FA|\u78BA\u5B9A|\u786E\u5B9A|submit)/i.test(
@@ -719,7 +719,7 @@
     }
     for (const textNode of textNodes) {
       const normalized = (textNode.textContent ?? "").replaceAll(/\u00A0|&nbsp;|&npsp;/gi, " ");
-      if (normalized.trim()) {
+      if (normalized.trim() !== "") {
         textNode.textContent = normalized;
         continue;
       }
@@ -768,7 +768,7 @@
       return "";
     }
     const explicitAlt = normalizeLegacyButtonLabel(node.getAttribute("alt") ?? undefined);
-    if (explicitAlt) {
+    if (explicitAlt !== "") {
       return explicitAlt;
     }
     if (node instanceof HTMLInputElement && node.tagName.toLowerCase() === "input") {
@@ -777,12 +777,12 @@
         ? parentForm.querySelector(`img[alt][src='${cssEscape(node.getAttribute("src") ?? "")}]`)
         : undefined;
       const pairedAlt = normalizeLegacyButtonLabel(pairedImage?.getAttribute("alt") ?? undefined);
-      if (pairedAlt) {
+      if (pairedAlt !== "") {
         return pairedAlt;
       }
     }
     const titleLabel = normalizeLegacyButtonLabel(node.getAttribute("title") ?? undefined);
-    if (titleLabel) {
+    if (titleLabel !== "") {
       return titleLabel;
     }
     return "";
@@ -878,7 +878,7 @@
         return true;
       }
       const type = (node.getAttribute("type") ?? "").toLowerCase();
-      if (node.tagName === "BUTTON" && !type) {
+      if (node.tagName === "BUTTON" && type === "") {
         return true;
       }
       return ["button", "image", "reset", "submit"].includes(type);
@@ -937,15 +937,17 @@
     button.type = "button";
     button.className = "ccxp-lite-audio-icon-button";
     button.append(createAudioIcon(targetDocument));
+    const resolvedLabel = resolveLegacyImageButtonLabel(inputNode);
     const label =
-      resolveLegacyImageButtonLabel(inputNode) ||
-      getLandingStrings(targetDocument).playVerificationAudio;
+      resolvedLabel === ""
+        ? getLandingStrings(targetDocument).playVerificationAudio
+        : resolvedLabel;
     button.setAttribute("aria-label", label);
     button.title = label;
-    if (inputNode.id) {
+    if (inputNode.id !== "") {
       button.id = inputNode.id;
     }
-    if (inputNode.className) {
+    if (inputNode.className !== "") {
       button.className = `${button.className} ${inputNode.className}`.trim();
     }
     if (inputNode.disabled) {
@@ -953,7 +955,7 @@
     }
     for (const attributeName of ["onclick", "tabindex"]) {
       const value = inputNode.getAttribute(attributeName);
-      if (value) {
+      if (value !== null && value !== "") {
         button.setAttribute(attributeName, value);
       }
     }

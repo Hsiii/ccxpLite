@@ -9,7 +9,7 @@
   const STATE_STORAGE_KEY = "ccxp-lite-pe14d-submit-state";
   const INTERCEPTED_ACTIONS: ReadonlySet<string> = new Set(["getLabInsList", "ins"]);
   const RESTORE_TTL_MS = 30_000;
-  if (runtimeScope[PAGE_FLAG]) {
+  if (runtimeScope[PAGE_FLAG] === true) {
     return;
   }
   runtimeScope[PAGE_FLAG] = true;
@@ -40,7 +40,7 @@
         globalScope.setTimeout(installAttempt, 150, undefined);
         return;
       }
-      if (currentToSubmit.__ccxpLiteWrapped) {
+      if (currentToSubmit.__ccxpLiteWrapped === true) {
         return;
       }
       const originalToSubmit = currentToSubmit;
@@ -93,18 +93,18 @@
       originalToSubmit.call(globalScope, form, actionName, actionValue);
     } catch {
       cleanupPendingSubmission();
-      if (originalTarget) {
-        form.setAttribute("target", originalTarget);
-      } else {
+      if (originalTarget === "") {
         form.removeAttribute("target");
+      } else {
+        form.setAttribute("target", originalTarget);
       }
     } finally {
       globalScope.setTimeout(
         () => {
-          if (originalTarget) {
-            form.setAttribute("target", originalTarget);
-          } else {
+          if (originalTarget === "") {
             form.removeAttribute("target");
+          } else {
+            form.setAttribute("target", originalTarget);
           }
         },
         0,
@@ -174,14 +174,14 @@
     const applyRestore = () => {
       globalScope.scrollTo(snapshot.scrollX, snapshot.scrollY);
       const focusTarget =
-        (snapshot.activeId
-          ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
-          : undefined) ??
-        (snapshot.activeName
-          ? globalScope.document.querySelector(
+        (snapshot.activeId === ""
+          ? undefined
+          : globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ??
+        (snapshot.activeName === ""
+          ? undefined
+          : globalScope.document.querySelector(
               `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
-            )
-          : undefined);
+            ));
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }
@@ -202,7 +202,7 @@
   function readStoredSnapshot() {
     try {
       const rawValue = globalScope.sessionStorage.getItem(STATE_STORAGE_KEY);
-      if (!rawValue) {
+      if (rawValue === null || rawValue === "") {
         return undefined;
       }
       const snapshot = JSON.parse(rawValue) as CcxpLitePe14dSnapshot;
@@ -257,7 +257,7 @@
   }
 
   function syncDocumentTitle(sourceDocument: Document) {
-    if (sourceDocument.title) {
+    if (sourceDocument.title !== "") {
       runtimeScope.document.title = sourceDocument.title;
     }
   }
@@ -266,14 +266,14 @@
     globalScope.requestAnimationFrame(() => {
       globalScope.scrollTo(snapshot.scrollX, snapshot.scrollY);
       const focusTarget =
-        (snapshot.activeId
-          ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
-          : undefined) ??
-        (snapshot.activeName
-          ? globalScope.document.querySelector(
+        (snapshot.activeId === ""
+          ? undefined
+          : globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)) ??
+        (snapshot.activeName === ""
+          ? undefined
+          : globalScope.document.querySelector(
               `[name="${escapeAttributeValue(snapshot.activeName)}"]`,
-            )
-          : undefined);
+            ));
       if (focusTarget instanceof HTMLElement && typeof focusTarget.focus === "function") {
         focusTarget.focus({ preventScroll: true });
       }

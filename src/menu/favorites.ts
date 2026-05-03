@@ -242,7 +242,7 @@
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${linkItem.clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
     return [
       "v2",
@@ -255,7 +255,7 @@
 
   function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${linkItem.clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
     return [
       normalizeFavoriteText(linkItem.label),
@@ -295,7 +295,7 @@
 
   function parseFavoriteClickSignature(signature: unknown): CcxpLiteClickLinkArgs | undefined {
     const normalizedSignature = normalizeFavoriteText(signature);
-    if (!normalizedSignature) {
+    if (normalizedSignature === "") {
       return undefined;
     }
     const separatorIndex = normalizedSignature.indexOf("::");
@@ -328,10 +328,10 @@
       ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
       : [];
     const normalizedLabel = normalizeFavoriteText(label);
-    if (normalizedLabel) {
+    if (normalizedLabel !== "") {
       return [...normalizedParentSegments, normalizedLabel];
     }
-    if (fallbackSegment) {
+    if (fallbackSegment !== undefined && fallbackSegment !== "") {
       return [...normalizedParentSegments, fallbackSegment];
     }
     return normalizedParentSegments;
@@ -362,7 +362,7 @@
 
   function normalizeFavoriteUrl(rawValue: string | undefined) {
     const value = (rawValue ?? "").trim();
-    if (!value) {
+    if (value === "") {
       return "";
     }
     try {
@@ -386,7 +386,7 @@
       const normalizedPath = url.pathname.replaceAll(/\/+/g, "/");
       const normalizedQuery = url.searchParams.toString();
       const normalizedHash = url.hash;
-      return `${normalizedPath}${normalizedQuery ? `?${normalizedQuery}` : ""}${normalizedHash}`;
+      return `${normalizedPath}${normalizedQuery === "" ? "" : `?${normalizedQuery}`}${normalizedHash}`;
     } catch {
       return value
         .replaceAll(/([&?])(acixstore|sid|session|phpsessid|token|_|t)=[^#&]*/gi, "$1")

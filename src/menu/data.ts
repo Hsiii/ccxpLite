@@ -44,11 +44,17 @@
     return {
       favorites: {
         id: "category-favorites",
-        label: strings.sidebarCategoryFavorites || "\u5E38\u7528\u529F\u80FD",
+        label:
+          strings.sidebarCategoryFavorites === ""
+            ? "\u5E38\u7528\u529F\u80FD"
+            : strings.sidebarCategoryFavorites,
         icon: "star",
         directLinks: dedupeLinkItems(favoriteLinks),
         sections: [],
-        emptyMessage: strings.sidebarFavoritesEmpty || "Press star at any function to save it here",
+        emptyMessage:
+          strings.sidebarFavoritesEmpty === ""
+            ? "Press star at any function to save it here"
+            : strings.sidebarFavoritesEmpty,
         kind: "category",
       },
       categories: SIDEBAR_CATEGORIES.map((category): CcxpLiteSidebarCategoryNode | undefined => {
@@ -66,7 +72,10 @@
             : [
                 {
                   id: `category-${category.id}-other`,
-                  label: strings.sidebarCategoryOtherSection || "\u5176\u4ED6",
+                  label:
+                    strings.sidebarCategoryOtherSection === ""
+                      ? "\u5176\u4ED6"
+                      : strings.sidebarCategoryOtherSection,
                   directLinks: directLinkItems,
                   sections: [],
                   kind: "group",
@@ -113,7 +122,7 @@
   function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): readonly string[] {
     const labels: string[] = [];
     const itemLabel = normalizeSidebarLabel(item.label);
-    if (itemLabel) {
+    if (itemLabel !== "") {
       labels.push(itemLabel);
     }
     if (item.kind === "link") {
@@ -121,7 +130,7 @@
     }
     for (const linkItem of item.directLinks) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
-      if (linkLabel) {
+      if (linkLabel !== "") {
         labels.push(linkLabel);
       }
     }
@@ -132,7 +141,7 @@
   }
 
   function isSidebarLabelMatch(candidateLabel: string, normalizedCategoryLabel: string) {
-    if (!candidateLabel || !normalizedCategoryLabel) {
+    if (candidateLabel === "" || normalizedCategoryLabel === "") {
       return false;
     }
     return (
@@ -219,7 +228,7 @@
       return undefined;
     }
     const parsedLink = parseLegacyLink(itemNode.link);
-    if (!parsedLink.href) {
+    if (parsedLink.href === "") {
       return undefined;
     }
     const rawHtml = itemNode.desc ?? "";
@@ -277,11 +286,11 @@
   }
 
   function toPlainText(rawHtml: unknown, navDocument: Document) {
-    if (!rawHtml) {
+    if (rawHtml === null || rawHtml === undefined || rawHtml === "") {
       return "";
     }
     const extractedVisibleText = extractLegacyVisibleText(rawHtml);
-    if (extractedVisibleText) {
+    if (extractedVisibleText !== "") {
       return extractedVisibleText;
     }
     const scratch = navDocument.createElement("div");
@@ -309,7 +318,7 @@
     linkItems: readonly CcxpLiteSidebarLinkItem[],
     query: string,
   ): readonly CcxpLiteSidebarLinkItem[] {
-    if (!query) {
+    if (query === "") {
       return linkItems;
     }
     return linkItems.filter((linkItem) => isSearchMatch(linkItem.label, query));
@@ -319,7 +328,7 @@
     categories: readonly CcxpLiteSidebarCategoryNode[],
     query: string,
   ): readonly CcxpLiteSidebarCategoryNode[] {
-    if (!query) {
+    if (query === "") {
       return categories;
     }
     return categories

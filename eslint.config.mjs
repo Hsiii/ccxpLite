@@ -16,7 +16,6 @@ export default [
 
   {
     rules: {
-      "@typescript-eslint/strict-boolean-expressions": "off",
       "import-x/no-unassigned-import": [
         "error",
         {

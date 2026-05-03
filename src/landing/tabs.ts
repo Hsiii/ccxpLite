@@ -37,7 +37,7 @@
     });
     const resolvePanelByLegacyTarget = (button: HTMLElement) => {
       const directControl = button.getAttribute("aria-controls");
-      if (directControl) {
+      if (directControl !== null && directControl !== "") {
         return tabPanels.find((candidatePanel) => candidatePanel.id === directControl) ?? undefined;
       }
       const href = (button.getAttribute("href") ?? "").trim();
@@ -49,7 +49,7 @@
         }
       }
       const legacyTarget = extractLegacyTabTarget(button);
-      if (!legacyTarget) {
+      if (legacyTarget === "") {
         return undefined;
       }
       return tabPanels.find((candidatePanel) => candidatePanel.id === legacyTarget) ?? undefined;
@@ -57,19 +57,10 @@
     const buttonPanelMap: Array<{
       button: HTMLElement;
       panel: HTMLElement;
-    }> = tabButtons
-      .map((button, index) => {
-        const panel = resolvePanelByLegacyTarget(button) ?? tabPanels[index];
-        return { button, panel };
-      })
-      .filter(
-        (
-          entry,
-        ): entry is {
-          button: HTMLElement;
-          panel: HTMLElement;
-        } => Boolean(entry.panel),
-      );
+    }> = tabButtons.map((button, index) => {
+      const panel = resolvePanelByLegacyTarget(button) ?? tabPanels[index];
+      return { button, panel };
+    });
     if (buttonPanelMap.length === 0) {
       return;
     }
@@ -79,7 +70,7 @@
     const uniquePanels = [...new Set(buttonPanelMap.map((entry) => entry.panel))];
     for (const [index, entry] of buttonPanelMap.entries()) {
       const { button, panel } = entry;
-      const tabId = button.id || `ccxp-lite-tab-${index + 1}`;
+      const tabId = button.id === "" ? `ccxp-lite-tab-${index + 1}` : button.id;
       button.id = tabId;
       applyTabPanelSemanticClass(button, panel);
       button.setAttribute("role", "tab");
@@ -127,7 +118,7 @@
         entry.panel.hidden = !isActive;
         entry.panel.style.display = isActive ? "block" : "none";
       }
-      if (options.focusButton) {
+      if (options.focusButton === true) {
         buttonPanelMap[safeIndex].button.focus();
       }
     };

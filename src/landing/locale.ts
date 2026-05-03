@@ -47,7 +47,7 @@
         ".active, .current, .selected, [aria-current='page'], strong, b",
       );
       if (currentLangNode) {
-        const currentLangText = (currentLangNode.textContent || "").toLowerCase();
+        const currentLangText = currentLangNode.textContent.toLowerCase();
         if (currentLangText.includes("english")) {
           return "en";
         }

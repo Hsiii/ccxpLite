@@ -115,7 +115,7 @@ function getHeadInputVectors(
   const namespace = runtimeScope.CCXP_LITE;
   namespace.decaptcha = api;
   // eslint-disable-next-line import-x/no-commonjs
-  if (typeof module === "object" && module.exports) {
+  if (typeof module === "object" && module.exports !== undefined) {
     // eslint-disable-next-line import-x/no-commonjs
     module.exports = api;
   }
@@ -195,8 +195,8 @@ function getHeadInputVectors(
     try {
       const image = await loadImage(objectUrl);
       const canvas = runtimeScope.document.createElement("canvas");
-      canvas.width = image.naturalWidth || image.width;
-      canvas.height = image.naturalHeight || image.height;
+      canvas.width = image.naturalWidth > 0 ? image.naturalWidth : image.width;
+      canvas.height = image.naturalHeight > 0 ? image.naturalHeight : image.height;
       const context = canvas.getContext("2d", { willReadFrequently: true });
       if (!context) {
         throw new Error("Failed to create 2d canvas context.");

@@ -191,7 +191,8 @@
     titleRow.className = "ccxp-lite-announcement-title-row";
     const titleCell = table.ownerDocument.createElement("td");
     titleCell.className = "ccxp-lite-announcement-title";
-    titleCell.textContent = titleText || strings.sidebarCategoryAnnouncementsAndVoting;
+    titleCell.textContent =
+      titleText === "" ? strings.sidebarCategoryAnnouncementsAndVoting : titleText;
     titleRow.append(titleCell);
     const contentRow = table.ownerDocument.createElement("tr");
     contentRow.className = "ccxp-lite-announcement-scroll-row";
@@ -298,10 +299,11 @@
     if (!sourceAnchor) {
       return undefined;
     }
-    const sourceLabel = (sourceAnchor.textContent || "").trim();
-    const labelText = isCannotLoginLabel(sourceLabel)
-      ? strings.cannotLogin
-      : sourceLabel || strings.cannotLogin;
+    const sourceLabel = sourceAnchor.textContent.trim();
+    let labelText = strings.cannotLogin;
+    if (!isCannotLoginLabel(sourceLabel) && sourceLabel !== "") {
+      labelText = sourceLabel;
+    }
     return buildLandingSupportLink(targetDocument, sourceAnchor, labelText);
   }
 
@@ -316,7 +318,7 @@
     const anchor = targetDocument.createElement("a");
     anchor.className = "ccxp-lite-landing-service-link";
     anchor.href = sourceAnchor.href;
-    anchor.target = sourceAnchor.target || "_blank";
+    anchor.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
     anchor.rel = "noopener noreferrer";
     copyLegacyAnchorHandlers(sourceAnchor, anchor);
     const label = targetDocument.createElement("span");
@@ -471,7 +473,7 @@
       "onkeyup",
     ]) {
       const value = sourceAnchor.getAttribute(name);
-      if (value) {
+      if (value !== null && value !== "") {
         targetAnchor.setAttribute(name, value);
       }
     }
@@ -546,7 +548,7 @@
       return false;
     }
     const text = cells
-      .map((cell) => (cell.textContent || "").replaceAll("\u00A0", " "))
+      .map((cell) => cell.textContent.replaceAll("\u00A0", " "))
       .join(" ")
       .replaceAll(/\s+/g, " ")
       .trim();
@@ -637,7 +639,7 @@
     if (!cell) {
       return false;
     }
-    const normalizedText = (cell.textContent || "")
+    const normalizedText = cell.textContent
       .replaceAll("\u00A0", " ")
       .replaceAll(/\s+/g, " ")
       .trim();

@@ -44,7 +44,7 @@
       return;
     }
 
-    const startedAt = state.startedAt || Date.now();
+    const { startedAt } = state;
     const onFieldActivity = () => {
       if (Date.now() - startedAt > 30 * 60 * 1000) {
         targetDocument.location.reload();
@@ -76,14 +76,14 @@
     const tokenFromImage = extractPwdstrFromImage(authImage ?? undefined, targetDocument);
     let fnstrField = form.querySelector<HTMLInputElement>("input[name='fnstr']");
 
-    if (!fnstrField && tokenFromImage) {
+    if (!fnstrField && tokenFromImage !== "") {
       fnstrField = targetDocument.createElement("input");
       fnstrField.type = "hidden";
       fnstrField.name = "fnstr";
       form.append(fnstrField);
     }
 
-    if (fnstrField && tokenFromImage && fnstrField.value !== tokenFromImage) {
+    if (fnstrField && tokenFromImage !== "" && fnstrField.value !== tokenFromImage) {
       fnstrField.value = tokenFromImage;
     }
   }

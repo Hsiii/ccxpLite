@@ -15,7 +15,7 @@
       return false;
     }
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
-    if (!resolvedUrl) {
+    if (resolvedUrl === "") {
       return false;
     }
     return !isExternalLinkOnlyRoute(resolvedUrl);
@@ -69,14 +69,14 @@
       return;
     }
     try {
-      if (storage.getItem(INITIAL_MAIN_URL_STORAGE_KEY)) {
+      if (storage.getItem(INITIAL_MAIN_URL_STORAGE_KEY) !== null) {
         return;
       }
     } catch {
       return;
     }
     const currentUrl = readInitialFrameHref();
-    if (!currentUrl) {
+    if (currentUrl === "") {
       return;
     }
     try {
@@ -99,7 +99,7 @@
       }
       const scopeDocument = window.top ? window.top.document : document;
       const src = frame.getAttribute("src") ?? "";
-      return src ? new URL(src, scopeDocument.location.href).toString() : "";
+      return src === "" ? "" : new URL(src, scopeDocument.location.href).toString();
     } catch {
       return "";
     }

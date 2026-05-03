@@ -66,10 +66,10 @@
     );
     const activeCategory =
       activeCategoryFromFiltered ??
-      (state.searchQuery
-        ? undefined
-        : model.categories.find((category) => category.id === state.currentCategoryId));
-    if (state.currentCategoryId && !activeCategory) {
+      (state.searchQuery === ""
+        ? model.categories.find((category) => category.id === state.currentCategoryId)
+        : undefined);
+    if (state.currentCategoryId !== "" && activeCategory === undefined) {
       state.currentCategoryId = "";
     }
     footer.textContent = "";
@@ -111,7 +111,7 @@
       restoreSidebarScroll(content, state.scrollTopByView.destination);
       return;
     }
-    if (state.currentCategoryId && activeCategory) {
+    if (state.currentCategoryId !== "" && activeCategory) {
       content.append(
         createCategoryDetailView(hostDocument, navDocument, activeCategory, state, strings, () => {
           renderSidebar(hostDocument, navDocument, modelInput, strings);
@@ -262,7 +262,7 @@
     const expandedItemIds = new Set<string>(state.classicExpandedItemIds);
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set<string>();
-    if (searchQuery) {
+    if (searchQuery !== "") {
       for (const item of items) {
         const expandedState = collectClassicExpandedState(item, searchQuery);
         for (const itemId of expandedState.expandedItemIds) {
@@ -276,7 +276,8 @@
     if (items.length === 0) {
       const empty = targetDocument.createElement("div");
       empty.className = "ccxp-lite-empty";
-      empty.textContent = state.searchQuery ? strings.sidebarSearchEmptyBody : strings.emptyGroup;
+      empty.textContent =
+        state.searchQuery === "" ? strings.emptyGroup : strings.sidebarSearchEmptyBody;
       sidebarList.append(empty);
       return sidebarList;
     }
@@ -310,7 +311,7 @@
     query: string,
   ): readonly CcxpLiteSidebarTreeNode[] {
     const items: CcxpLiteSidebarTreeNode[] = [model.favorites, ...model.categories];
-    if (!query) {
+    if (query === "") {
       return items;
     }
     return items
@@ -625,9 +626,8 @@
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
-    const filteredCategory = state.searchQuery
-      ? filterCategoryTree(category, state.searchQuery)
-      : category;
+    const filteredCategory =
+      state.searchQuery === "" ? category : filterCategoryTree(category, state.searchQuery);
     const section = targetDocument.createElement("section");
     section.className = "ccxp-lite-pane ccxp-lite-pane-detail";
     const header = targetDocument.createElement("div");
@@ -694,10 +694,12 @@
   }
 
   function scheduleCategoryDetailWaterfall(targetDocument: Document, body: HTMLElement) {
-    const view = targetDocument.defaultView ?? globalThis;
+    const view = targetDocument.defaultView;
+    if (!view) {
+      return;
+    }
     const supportsNativeWaterfall =
-      view.CSS.supports("display", "grid-lanes") ||
-      view.CSS.supports("grid-template-rows", "masonry");
+      CSS.supports("display", "grid-lanes") || CSS.supports("grid-template-rows", "masonry");
     if (supportsNativeWaterfall) {
       return;
     }
@@ -709,7 +711,7 @@
     }
     let frameId = 0;
     const scheduleLayout = () => {
-      if (frameId) {
+      if (frameId > 0) {
         view.cancelAnimationFrame(frameId);
       }
       frameId = view.requestAnimationFrame(() => {
@@ -719,12 +721,12 @@
     };
     scheduleLayout();
     view.requestAnimationFrame(scheduleLayout);
-    if (typeof view.ResizeObserver !== "function") {
+    if (typeof ResizeObserver !== "function") {
       view.addEventListener("resize", scheduleLayout, { once: true });
       return;
     }
     const sharedDom = runtimeScope.CCXP_LITE?.sharedDom;
-    const observer = new view.ResizeObserver(() => {
+    const observer = new ResizeObserver(() => {
       if (!body.isConnected || (sharedDom !== undefined && !sharedDom.ensureContextValid())) {
         observer.disconnect();
         return;
@@ -753,9 +755,13 @@
     const columnCount = 3;
     const styles = view.getComputedStyle(body);
     const fallbackGap = Number.parseFloat(
-      styles.getPropertyValue("--ccxp-lite-spacing-md") || "16",
+      styles.getPropertyValue("--ccxp-lite-spacing-md") === ""
+        ? "16"
+        : styles.getPropertyValue("--ccxp-lite-spacing-md"),
     );
-    const gap = Number.parseFloat(styles.columnGap || styles.gap) || fallbackGap;
+    const computedGap = styles.columnGap === "" ? styles.gap : styles.columnGap;
+    const parsedGap = Number.parseFloat(computedGap);
+    const gap = Number.isFinite(parsedGap) && parsedGap > 0 ? parsedGap : fallbackGap;
     const columnWidth = (body.clientWidth - gap * (columnCount - 1)) / columnCount;
     const columnHeights = Array.from({ length: columnCount }, () => 0);
     body.classList.add("is-waterfall-ready");
@@ -800,7 +806,7 @@
   ): HTMLElement {
     const block = targetDocument.createElement("div");
     block.className = "ccxp-lite-category-block";
-    if (group.label) {
+    if (group.label !== "") {
       const title = targetDocument.createElement("h3");
       title.className = "ccxp-lite-category-block-title";
       title.textContent = group.label;
@@ -865,7 +871,7 @@
     title.className = "ccxp-lite-category-card-title";
     title.textContent = category.label;
     body.append(title);
-    if (category.summary) {
+    if (category.summary !== undefined && category.summary !== "") {
       const summary = targetDocument.createElement("span");
       summary.className = "ccxp-lite-category-card-summary";
       summary.textContent = category.summary;
@@ -932,7 +938,7 @@
     titleNode.className = "ccxp-lite-empty-title";
     titleNode.textContent = title;
     empty.append(titleNode);
-    if (body) {
+    if (body !== undefined && body !== "") {
       const bodyNode = targetDocument.createElement("div");
       bodyNode.className = "ccxp-lite-empty-body";
       bodyNode.textContent = body;
@@ -1340,7 +1346,7 @@
       try {
         const legacyWindow = legacyMainFrame.contentWindow;
         const legacyHref = legacyWindow ? legacyWindow.location.href : "";
-        if (legacyHref && legacyHref !== "about:blank" && frame.src !== legacyHref) {
+        if (legacyHref !== "" && legacyHref !== "about:blank" && frame.src !== legacyHref) {
           frame.src = legacyHref;
           return;
         }

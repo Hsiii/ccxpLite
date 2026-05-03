@@ -38,7 +38,7 @@
         }
       }
       const style = el.getAttribute("style");
-      if (style && /background(-image)?\s*:/i.test(style)) {
+      if (style !== null && /background(-image)?\s*:/i.test(style)) {
         const htmlElement = el as HTMLElement;
         htmlElement.style.backgroundImage = "none";
         // If it's the body and we want to be very sure:
@@ -67,14 +67,14 @@
 
   function hasRuntimeObject() {
     try {
-      return typeof chrome !== "undefined" && Boolean(chrome.runtime);
+      return typeof chrome !== "undefined";
     } catch {
       return false;
     }
   }
 
   function invalidateContext() {
-    if (namespace.isOrphan) {
+    if (namespace.isOrphan === true) {
       return false;
     }
     namespace.isOrphan = true;
@@ -83,12 +83,12 @@
   }
 
   function getRuntimeSafely() {
-    if (namespace.isOrphan) {
+    if (namespace.isOrphan === true) {
       return undefined;
     }
     try {
       const runtime = typeof chrome === "undefined" ? undefined : chrome.runtime;
-      return runtime && runtime.id ? runtime : undefined;
+      return runtime?.id !== undefined && runtime.id !== "" ? runtime : undefined;
     } catch {
       invalidateContext();
       return undefined;
@@ -139,7 +139,7 @@
     if (typeof task !== "function") {
       return;
     }
-    if (namespace.isOrphan) {
+    if (namespace.isOrphan === true) {
       task();
       return;
     }
