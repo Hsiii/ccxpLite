@@ -71,7 +71,7 @@ describe("sidebar ui", () => {
 
     expect(state.sidebarVariant).toBe("layered");
     expect(state.currentCategoryId).toBe("");
-    expect(state.activeLeaf).toBeNull();
+    expect(state.activeLeaf).toBeUndefined();
   });
 
   test("renders classic search empty and favorites empty states", () => {

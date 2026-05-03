@@ -37,7 +37,7 @@ describe("sidebar favorites", () => {
       callback(undefined);
     });
 
-    Object.defineProperty(window, "localStorage", {
+    Object.defineProperty(window.top, "localStorage", {
       configurable: true,
       get() {
         throw new Error("blocked");

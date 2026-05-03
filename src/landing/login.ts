@@ -116,7 +116,10 @@
   function normalizeLoginFormLayout(rootNode: ParentNode) {
     const forms = [...rootNode.querySelectorAll<HTMLFormElement>("form")];
     for (const formNode of forms) {
-      const formDocument = rootNode.ownerDocument;
+      const formDocument =
+        rootNode.nodeType === Node.DOCUMENT_NODE
+          ? (rootNode as Document)
+          : (rootNode.ownerDocument ?? undefined);
       if (!formDocument) {
         continue;
       }
