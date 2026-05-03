@@ -9,7 +9,8 @@
   const sharedLib = shared;
   const sidebarLib = sidebar;
   const landingLib = landing;
-  const { TOKENS, removeNode, ensureThemeDocument, cleanLegacyAttributes } = sharedLib;
+  const { TOKENS, removeNode, ensureDocumentHead, ensureThemeDocument, cleanLegacyAttributes } =
+    sharedLib;
   const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landingLib;
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
@@ -97,7 +98,8 @@
   }
 
   function ensureLoadingSprite(targetDocument: Document) {
-    if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`)) {
+    const head = ensureDocumentHead(targetDocument);
+    if (head && !targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`)) {
       const styleNode = targetDocument.createElement("style");
       styleNode.id = LOADING_SPRITE_STYLE_ID;
       styleNode.textContent = `
@@ -138,7 +140,7 @@
           box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.08), 0 8px 24px rgba(17, 24, 39, 0.08);
         }
       `;
-      targetDocument.head.append(styleNode);
+      head.append(styleNode);
     }
     if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_ID)}`)) {
       const sprite = targetDocument.createElement("div");
@@ -154,8 +156,10 @@
     );
     const targetDocumentElement = targetDocument.documentElement;
     targetDocumentElement.dataset.ccxpLiteLoadingReady = "true";
-    const targetBody = targetDocument.body;
-    targetBody.dataset.ccxpLiteLoadingReady = "true";
+    const targetBody = targetDocument.querySelector("body");
+    if (targetBody) {
+      targetBody.dataset.ccxpLiteLoadingReady = "true";
+    }
     if (sprite) {
       sprite.style.opacity = "0";
     }

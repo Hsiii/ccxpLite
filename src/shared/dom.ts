@@ -18,6 +18,20 @@
     }
   }
 
+  function ensureDocumentHead(targetDocument: Document) {
+    const existingHead = targetDocument.querySelector("head");
+    if (existingHead) {
+      return existingHead;
+    }
+    const root = targetDocument.querySelector("html");
+    if (!root) {
+      return undefined;
+    }
+    const head = targetDocument.createElement("head");
+    root.prepend(head);
+    return head;
+  }
+
   function isDocumentComplete(targetDocument: Document) {
     return targetDocument.readyState === "complete";
   }
@@ -151,6 +165,7 @@
   namespace.sharedDom = {
     moveChildNodes,
     removeNode,
+    ensureDocumentHead,
     isDocumentComplete,
     cleanLegacyAttributes,
     isContextValid,
@@ -184,6 +199,7 @@
     createBrandPartnerLink,
     moveChildNodes,
     removeNode,
+    ensureDocumentHead,
     isDocumentComplete,
     cleanLegacyAttributes,
     isContextValid,

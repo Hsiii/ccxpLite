@@ -38,6 +38,19 @@ describe("shared theme", () => {
       "rgb(121, 36, 133)",
     );
   });
+  test("creates a head before injecting the stylesheet", () => {
+    const { window } = createTestWindow("<!doctype html><html lang='zh'><body></body></html>");
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const sharedDom = requireValue(window.CCXP_LITE.sharedDom, "sharedDom");
+    const sharedTheme = requireValue(window.CCXP_LITE.sharedTheme, "sharedTheme");
+    document.head.remove();
+    expect(document.head).toBeNull();
+    const injectedHead = sharedDom.ensureDocumentHead(document);
+    expect(injectedHead?.tagName).toBe("HEAD");
+    expect(sharedTheme.ensureThemeDocument(document, "main")).toBe(true);
+    expect(document.head.querySelector("[data-ccxp-lite-stylesheet='true']")).not.toBeNull();
+  });
   test("returns false when extension runtime is unavailable", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;

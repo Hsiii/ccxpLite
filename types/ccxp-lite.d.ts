@@ -208,6 +208,7 @@ declare global {
   interface CcxpLiteSharedDom {
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
     removeNode: (node: ChildNode | undefined) => void;
+    ensureDocumentHead: (targetDocument: Document) => HTMLHeadElement | undefined;
     isDocumentComplete: (targetDocument: Document) => boolean;
     cleanLegacyAttributes: (node: Node | undefined) => void;
     isContextValid: () => boolean;
@@ -267,6 +268,7 @@ declare global {
         label?: string;
       },
     ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
+    ensureDocumentHead: (targetDocument: Document) => HTMLHeadElement | undefined;
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
     removeNode: (node: ChildNode | undefined) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;

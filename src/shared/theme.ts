@@ -10,6 +10,10 @@
     const { documentElement } = targetDocument;
     documentElement.dataset.ccxpLiteScope = scope;
     const { sharedDom } = namespace;
+    const head = sharedDom?.ensureDocumentHead(targetDocument);
+    if (!head) {
+      return false;
+    }
     const isContextReady = (() => {
       try {
         return !sharedDom || sharedDom.ensureContextValid();
@@ -20,7 +24,7 @@
     if (!isContextReady) {
       return false;
     }
-    if (!targetDocument.head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
+    if (!head.querySelector("[data-ccxp-lite-stylesheet='true']")) {
       const runtime = (() => {
         try {
           return sharedDom?.getRuntimeSafely() ?? undefined;
@@ -35,7 +39,7 @@
       link.rel = "stylesheet";
       link.href = runtime.getURL(ASSETS.stylesheetPath);
       link.dataset.ccxpLiteStylesheet = "true";
-      targetDocument.head.append(link);
+      head.append(link);
     }
     applyCssVariables(targetDocument.documentElement, buildCssVariables());
     return true;
