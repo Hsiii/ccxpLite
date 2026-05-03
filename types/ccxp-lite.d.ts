@@ -209,6 +209,7 @@ declare global {
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
     removeNode: (node: ChildNode | undefined) => void;
     ensureDocumentHead: (targetDocument: Document) => HTMLHeadElement | undefined;
+    ensureDocumentBody: (targetDocument: Document) => HTMLBodyElement | undefined;
     isDocumentComplete: (targetDocument: Document) => boolean;
     cleanLegacyAttributes: (node: Node | undefined) => void;
     isContextValid: () => boolean;
@@ -269,6 +270,7 @@ declare global {
       },
     ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
     ensureDocumentHead: (targetDocument: Document) => HTMLHeadElement | undefined;
+    ensureDocumentBody: (targetDocument: Document) => HTMLBodyElement | undefined;
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;
     removeNode: (node: ChildNode | undefined) => void;
     isDocumentComplete: (targetDocument: Document) => boolean;

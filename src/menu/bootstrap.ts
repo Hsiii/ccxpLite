@@ -18,6 +18,7 @@
     TOKENS,
     ASSETS,
     ensureThemeDocument,
+    ensureDocumentBody,
     getLocalizedStrings,
     resolveLocaleFromDocument,
     createBrandImage,
@@ -50,11 +51,14 @@
     }
 
     const hostDocument = options.hostDocument ?? navDocument;
+    const navBody = navDocument.querySelector("body");
 
-    if (
-      navDocument.body.dataset.ccxpLiteSidebarApplied !== "true" &&
-      !isDocumentComplete(navDocument)
-    ) {
+    if (!navBody) {
+      retry();
+      return;
+    }
+
+    if (navBody.dataset.ccxpLiteSidebarApplied !== "true" && !isDocumentComplete(navDocument)) {
       retry();
       return;
     }
@@ -71,8 +75,14 @@
     const state = getSidebarUiState(hostDocument);
     captureInitialMainFrameUrl();
     syncTopLevelFramesetLayout(state.sidebarVariant);
+    const hostBody = ensureDocumentBody(hostDocument);
 
-    if (hostDocument.body.dataset.ccxpLiteSidebarApplied !== "true") {
+    if (!hostBody) {
+      retry();
+      return;
+    }
+
+    if (hostBody.dataset.ccxpLiteSidebarApplied !== "true") {
       const helperFrame = navDocument.querySelector<HTMLIFrameElement>("iframe[name='frame_7472']");
       const shell = hostDocument.createElement("div");
       shell.className = `${TOKENS.sidebarClass} ccxp-lite-app-shell`;
@@ -125,11 +135,11 @@
       shell.append(footer);
 
       cleanLegacyAttributes(shell);
-      hostDocument.body.replaceChildren(shell);
+      hostBody.replaceChildren(shell);
 
       if (helperFrame) {
         helperFrame.style.display = "none";
-        navDocument.body.append(helperFrame);
+        navBody.append(helperFrame);
       }
 
       brand.addEventListener("click", () => {
@@ -148,7 +158,7 @@
         window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
       });
 
-      hostDocument.body.dataset.ccxpLiteSidebarApplied = "true";
+      hostBody.dataset.ccxpLiteSidebarApplied = "true";
     }
 
     const rerender = () => {

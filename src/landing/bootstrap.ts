@@ -25,6 +25,7 @@
     TOKENS,
     ASSETS,
     ensureThemeDocument,
+    ensureDocumentBody,
     getLocalizedStrings,
     createBrandImage,
     createBrandCopy,
@@ -80,8 +81,14 @@
   ) {
     const retryFn = typeof options.retry === "function" ? options.retry : () => undefined;
     const onReady = typeof options.onReady === "function" ? options.onReady : () => undefined;
+    const targetBody = ensureDocumentBody(targetDocument);
 
-    if (targetDocument.body.dataset.ccxpLiteLandingApplied === "true") {
+    if (!targetBody) {
+      retryFn();
+      return;
+    }
+
+    if (targetBody.dataset.ccxpLiteLandingApplied === "true") {
       onReady();
       return;
     }
@@ -178,7 +185,7 @@
     );
     removeNode(findCalendarTable(loginSection));
     removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
-    collapseLegacyThreeColumnRows(targetDocument.body);
+    collapseLegacyThreeColumnRows(targetBody);
     headerSection.append(brandSection);
     if (languageLinks) {
       headerSection.append(langSection);
@@ -241,9 +248,8 @@
     }
     cleanLegacyAttributes(shell);
     cleanLegacyAttributes(targetDocument);
-    targetDocument.body.replaceChildren(shell);
+    targetBody.replaceChildren(shell);
     // Force a style override on the body as a last resort.
-    const targetBody = targetDocument.body;
     targetBody.style.setProperty("background-image", "none", "important");
     targetBody.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
     enableLoginCaptchaAutofill(targetDocument, loginSection as ParentNode, captchaAutofillState);

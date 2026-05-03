@@ -62,4 +62,15 @@ describe("shared theme", () => {
     expect(document.head.querySelector("[data-ccxp-lite-stylesheet='true']")).toBeNull();
     getRuntimeSafely.mockRestore();
   });
+  test("creates a body when the document is missing one", () => {
+    const { window } = createTestWindow("<!doctype html><html lang='zh'><head></head></html>");
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const sharedDom = requireValue(window.CCXP_LITE.sharedDom, "sharedDom");
+    document.body.remove();
+    expect(document.querySelector("body")).toBeNull();
+    const injectedBody = sharedDom.ensureDocumentBody(document);
+    expect(injectedBody?.tagName).toBe("BODY");
+    expect(document.querySelector("body")).toBe(injectedBody);
+  });
 });

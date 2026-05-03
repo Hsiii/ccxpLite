@@ -9,8 +9,14 @@
   const sharedLib = shared;
   const sidebarLib = sidebar;
   const landingLib = landing;
-  const { TOKENS, removeNode, ensureDocumentHead, ensureThemeDocument, cleanLegacyAttributes } =
-    sharedLib;
+  const {
+    TOKENS,
+    removeNode,
+    ensureDocumentHead,
+    ensureDocumentBody,
+    ensureThemeDocument,
+    cleanLegacyAttributes,
+  } = sharedLib;
   const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landingLib;
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
@@ -178,7 +184,8 @@
       return;
     }
     const navDocument = navFrame && navFrame.contentDocument;
-    if (navDocument && navDocument.body.dataset.ccxpLiteSidebarApplied === "true") {
+    const navBody = navDocument?.querySelector("body");
+    if (navBody?.dataset.ccxpLiteSidebarApplied === "true") {
       loadingState.navReady = true;
     }
     tryReleaseLoadingSprite();
@@ -305,12 +312,17 @@
       retry();
       return;
     }
-    if (topDocument.body.dataset.ccxpLiteHeaderRemoved === "true") {
+    const topBody = ensureDocumentBody(topDocument);
+    if (!topBody) {
+      retry();
+      return;
+    }
+    if (topBody.dataset.ccxpLiteHeaderRemoved === "true") {
       return;
     }
     topDocument.documentElement.style.display = "none";
-    topDocument.body.textContent = "";
-    topDocument.body.dataset.ccxpLiteHeaderRemoved = "true";
+    topBody.textContent = "";
+    topBody.dataset.ccxpLiteHeaderRemoved = "true";
     topFrame.setAttribute("scrolling", "no");
   }
 

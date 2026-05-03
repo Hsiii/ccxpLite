@@ -32,6 +32,20 @@
     return head;
   }
 
+  function ensureDocumentBody(targetDocument: Document) {
+    const existingBody = targetDocument.querySelector("body");
+    if (existingBody) {
+      return existingBody;
+    }
+    const root = targetDocument.querySelector("html");
+    if (!root) {
+      return undefined;
+    }
+    const body = targetDocument.createElement("body");
+    root.append(body);
+    return body;
+  }
+
   function isDocumentComplete(targetDocument: Document) {
     return targetDocument.readyState === "complete";
   }
@@ -166,6 +180,7 @@
     moveChildNodes,
     removeNode,
     ensureDocumentHead,
+    ensureDocumentBody,
     isDocumentComplete,
     cleanLegacyAttributes,
     isContextValid,
@@ -200,6 +215,7 @@
     moveChildNodes,
     removeNode,
     ensureDocumentHead,
+    ensureDocumentBody,
     isDocumentComplete,
     cleanLegacyAttributes,
     isContextValid,
