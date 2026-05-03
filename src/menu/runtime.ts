@@ -11,7 +11,7 @@
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
   const EXTERNAL_LINK_PATH_PREFIXES = ["/ccxp/INQUIRE/PE/1/14D/"] as const;
   function shouldOpenLeafInDestination(linkItem: CcxpLiteSidebarLinkItem, navDocument: Document) {
-    if ((linkItem?.target ?? "main").toLowerCase() !== "main") {
+    if ((linkItem.target ?? "main").toLowerCase() !== "main") {
       return false;
     }
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
@@ -52,7 +52,7 @@
 
   function simplifyEmbeddedFrame(frame: HTMLIFrameElement) {
     const frameDocument = frame.contentDocument;
-    if (!frameDocument || !frameDocument.body || !frameDocument.head) {
+    if (!frameDocument) {
       return;
     }
     ensureThemeDocument(frameDocument, "main");
@@ -131,9 +131,7 @@
       helperUrl.searchParams.set("url", linkItem.clickLinkArgs.url);
       if (helperFrame && helperFrame.contentWindow) {
         const helperWindow = helperFrame.contentWindow;
-        if (helperWindow) {
-          helperWindow.location.replace(helperUrl.toString());
-        }
+        helperWindow.location.replace(helperUrl.toString());
       } else if (helperFrame) {
         helperFrame.setAttribute("src", helperUrl.toString());
       }
@@ -165,11 +163,11 @@
     const normalizedTarget =
       typeof linkItem === "string"
         ? linkItem.toLowerCase()
-        : (linkItem?.target ?? "main").toLowerCase();
+        : (linkItem.target ?? "main").toLowerCase();
     if (normalizedTarget === "_blank") {
       return true;
     }
-    if (!linkItem || typeof linkItem === "string" || !navDocument) {
+    if (typeof linkItem === "string") {
       return false;
     }
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);

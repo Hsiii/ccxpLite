@@ -51,12 +51,12 @@
       : [];
     const fallbackTables = [...targetDocument.querySelectorAll<HTMLTableElement>("table")];
     const isAnnouncementTable = (table: HTMLTableElement) => {
-      const rows = [...(table.rows ?? [])];
+      const rows = [...table.rows];
       if (rows.length === 0) {
         return false;
       }
       const headingCell = rows
-        .flatMap((row) => [...(row.cells ?? [])])
+        .flatMap((row) => [...row.cells])
         .find((cell) => cell.classList.contains("board_item"));
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
       const hasNoticeHeading =
@@ -65,14 +65,14 @@
         return false;
       }
       const boardHeaderRow = rows.find((row) => {
-        const cells = [...(row.cells ?? [])];
+        const cells = [...row.cells];
         return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
       });
       if (!boardHeaderRow) {
         return false;
       }
       const dateRows = rows.filter((row) => {
-        const cells = [...(row.cells ?? [])];
+        const cells = [...row.cells];
         if (cells.length < 2) {
           return false;
         }
@@ -86,11 +86,11 @@
         if (!isBoardPair) {
           return false;
         }
-        const rawDate = (firstCell.textContent ?? "").replaceAll(/\s+/g, "").trim();
+        const rawDate = firstCell.textContent.replaceAll(/\s+/g, "").trim();
         if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
           return false;
         }
-        const topicText = (secondCell.textContent ?? "").replaceAll(/\s+/g, " ").trim();
+        const topicText = secondCell.textContent.replaceAll(/\s+/g, " ").trim();
         return topicText.length > 8;
       });
       return dateRows.length >= 3;
@@ -119,19 +119,19 @@
       return;
     }
     table.classList.add("ccxp-lite-announcement-table");
-    const rows = [...(table.rows ?? [])];
+    const rows = [...table.rows];
     for (const row of rows) {
-      const cells = [...(row.cells ?? [])];
+      const cells = [...row.cells];
       if (cells.length === 0) {
         continue;
       }
       const hasOnlyDecorativeCells = cells.every((cell) => {
         const hasBgColor = (cell.getAttribute("bgcolor") ?? "").trim() !== "";
-        const text = (cell.textContent ?? "").replaceAll(/\s+/g, "").trim();
+        const text = cell.textContent.replaceAll(/\s+/g, "").trim();
         return hasBgColor && text === "";
       });
       const hasOnlyEmptySpacerCells = cells.every((cell) => {
-        const text = (cell.textContent ?? "").replaceAll(/\s+/g, "").trim();
+        const text = cell.textContent.replaceAll(/\s+/g, "").trim();
         if (text !== "") {
           return false;
         }
@@ -149,11 +149,11 @@
       }
     }
     const headerCell = rows
-      .flatMap((row) => [...(row.cells ?? [])])
+      .flatMap((row) => [...row.cells])
       .find((cell) => cell.classList.contains("board_item"));
     const titleText = (headerCell ? headerCell.textContent : "").replaceAll(/\s+/g, " ").trim();
     const headerRow = rows.find((row) => {
-      const cells = [...(row.cells ?? [])];
+      const cells = [...row.cells];
       return cells.filter((cell) => cell.classList.contains("board_subject")).length >= 2;
     });
     if (headerRow) {
@@ -164,11 +164,11 @@
       topicContent: HTMLElement;
     }> = [];
     for (const row of rows) {
-      const cells = [...(row.cells ?? [])];
+      const cells = [...row.cells];
       if (cells.length < 2) {
         continue;
       }
-      const rawDate = (cells[0].textContent ?? "").replaceAll(/\s+/g, "").trim();
+      const rawDate = cells[0].textContent.replaceAll(/\s+/g, "").trim();
       if (!/^\d{4}(?:\/\d{2}){2}$/.test(rawDate)) {
         continue;
       }
@@ -182,8 +182,8 @@
         topicContent,
       });
     }
-    const tbody = table.tBodies[0] || table.ownerDocument.createElement("tbody");
-    if (!table.tBodies[0]) {
+    const tbody = table.tBodies[0];
+    if (table.tBodies.length === 0) {
       table.append(tbody);
     }
     tbody.textContent = "";
@@ -298,7 +298,7 @@
     if (!sourceAnchor) {
       return undefined;
     }
-    const sourceLabel = (sourceAnchor.textContent ?? "").trim();
+    const sourceLabel = (sourceAnchor.textContent || "").trim();
     const labelText = isCannotLoginLabel(sourceLabel)
       ? strings.cannotLogin
       : sourceLabel || strings.cannotLogin;
@@ -424,7 +424,7 @@
           href !== "" && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html")
         );
       })
-      .filter((anchor) => anchor.textContent !== undefined && anchor.textContent.trim() !== "")
+      .filter((anchor) => anchor.textContent.trim() !== "")
       .slice(0, 3);
     if (anchors.length === 0) {
       return undefined;
@@ -540,14 +540,13 @@
       return false;
     }
     const hasInteractiveContent = cells.some(
-      (cell) =>
-        cell.querySelector("a, button, input, select, textarea, table, iframe") !== undefined,
+      (cell) => cell.querySelector("a, button, input, select, textarea, table, iframe") !== null,
     );
     if (hasInteractiveContent) {
       return false;
     }
     const text = cells
-      .map((cell) => (cell.textContent ?? "").replaceAll("\u00A0", " "))
+      .map((cell) => (cell.textContent || "").replaceAll("\u00A0", " "))
       .join(" ")
       .replaceAll(/\s+/g, " ")
       .trim();
@@ -564,13 +563,12 @@
       return false;
     }
     const widthText = (cell.getAttribute("width") ?? "").trim().toLowerCase();
-    const normalizedText = (cell.textContent ?? "").replaceAll("\u00A0", " ").trim();
+    const normalizedText = cell.textContent.replaceAll("\u00A0", " ").trim();
     if ((widthText === "3%" || widthText === "3") && normalizedText === "") {
       return true;
     }
     return (
-      normalizedText === "" &&
-      cell.querySelector("table, iframe, form, input, button, a") === undefined
+      normalizedText === "" && cell.querySelector("table, iframe, form, input, button, a") === null
     );
   }
 
@@ -607,7 +605,7 @@
       rightCell.removeAttribute("width");
       rightCell.style.width = "100%";
       rightCell.style.minWidth = "0";
-      rightCell.colSpan = Math.max(1, rightCell.colSpan ?? 1);
+      rightCell.colSpan = Math.max(1, rightCell.colSpan);
       for (const cell of [...row.children].filter(
         (node): node is HTMLTableCellElement => node instanceof HTMLTableCellElement,
       )) {
@@ -639,7 +637,7 @@
     if (!cell) {
       return false;
     }
-    const normalizedText = (cell.textContent ?? "")
+    const normalizedText = (cell.textContent || "")
       .replaceAll("\u00A0", " ")
       .replaceAll(/\s+/g, " ")
       .trim();
@@ -649,7 +647,7 @@
     return (
       cell.querySelector(
         "img, iframe, form, input, button, select, textarea, a, object, embed, video, audio, table, div, span, ul, ol, p",
-      ) === undefined
+      ) === null
     );
   }
 

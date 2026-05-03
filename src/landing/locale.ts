@@ -3,10 +3,7 @@
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
   function isSupportedInquirePath(targetDocument: Document) {
-    const pathName = (
-      (targetDocument.location && targetDocument.location.pathname) ??
-      ""
-    ).toLowerCase();
+    const pathName = targetDocument.location.pathname.toLowerCase();
     return /\/ccxp\/inquire\/(?:index\.php)?\/?$/.test(pathName);
   }
 
@@ -27,20 +24,14 @@
     loginSourceCell: ParentNode | undefined,
     loginForm: HTMLFormElement | undefined,
   ): CcxpLiteLocale {
-    const htmlLang = (
-      (targetDocument.documentElement && targetDocument.documentElement.lang) ??
-      ""
-    ).toLowerCase();
+    const htmlLang = targetDocument.documentElement.lang.toLowerCase();
     if (htmlLang.startsWith("en")) {
       return "en";
     }
     if (htmlLang.startsWith("zh")) {
       return "zh";
     }
-    const search = (
-      (targetDocument.location && targetDocument.location.search) ??
-      ""
-    ).toLowerCase();
+    const search = targetDocument.location.search.toLowerCase();
     const langMatch = search.match(/[&?]lang=([^&]+)/);
     if (langMatch) {
       const langValue = decodeURIComponent(langMatch[1]);
@@ -56,7 +47,7 @@
         ".active, .current, .selected, [aria-current='page'], strong, b",
       );
       if (currentLangNode) {
-        const currentLangText = (currentLangNode.textContent ?? "").toLowerCase();
+        const currentLangText = (currentLangNode.textContent || "").toLowerCase();
         if (currentLangText.includes("english")) {
           return "en";
         }
@@ -142,13 +133,10 @@
   }
 
   function isLikelyVisibleForm(formNode: HTMLFormElement) {
-    if (!formNode) {
-      return false;
-    }
     if (formNode.hidden) {
       return false;
     }
-    let node: HTMLElement | undefined = formNode ?? undefined;
+    let node: HTMLElement | undefined = formNode;
     while (node && node !== document.body) {
       if (node.nodeType !== Node.ELEMENT_NODE) {
         node = node.parentElement ?? undefined;

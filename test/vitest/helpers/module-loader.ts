@@ -91,7 +91,7 @@ export function loadModules(window: TestWindow, modulePaths: readonly string[]):
 }
 
 export function requireValue<T>(value: T | undefined, message = "Expected value"): T {
-  if (value === undefined || value === undefined) {
+  if (value === undefined) {
     throw new Error(message);
   }
 

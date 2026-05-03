@@ -44,7 +44,7 @@
   ) {
     const navDocument = navFrame.contentDocument;
 
-    if (!navDocument || !navDocument.body || !navDocument.head) {
+    if (!navDocument) {
       retry();
       return;
     }

@@ -19,7 +19,7 @@
     navDocument: Document,
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarModel {
-    const normalizedItems = (root.children ?? [])
+    const normalizedItems = root.children
       .map((entry, index) => normalizeRootEntry(entry, index, navDocument))
       .filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
     const favoriteIds = getFavoriteIds();
@@ -75,9 +75,9 @@
               ];
         return {
           id: `category-${category.id}`,
-          label: strings[category.labelKey] ?? category.fallbackLabel ?? category.id,
+          label: strings[category.labelKey] ?? category.fallbackLabel,
           icon: category.icon,
-          summary: (category.summaryLabels ?? []).join(" \u00B7 "),
+          summary: category.summaryLabels.join(" \u00B7 "),
           directLinks: [],
           sections,
           emptyMessage: strings.emptyGroup,
@@ -111,9 +111,6 @@
   }
 
   function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): readonly string[] {
-    if (!item) {
-      return [];
-    }
     const labels: string[] = [];
     const itemLabel = normalizeSidebarLabel(item.label);
     if (itemLabel) {
@@ -122,13 +119,13 @@
     if (item.kind === "link") {
       return labels;
     }
-    for (const linkItem of item.directLinks ?? []) {
+    for (const linkItem of item.directLinks) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel) {
         labels.push(linkLabel);
       }
     }
-    for (const section of item.sections ?? []) {
+    for (const section of item.sections) {
       labels.push(...collectSidebarLabels(section));
     }
     return labels;
@@ -150,10 +147,7 @@
     index: number,
     navDocument: Document,
   ): CcxpLiteSidebarTreeNode | undefined {
-    if (!entryNode) {
-      return undefined;
-    }
-    if ("children" in entryNode && entryNode.children) {
+    if ("children" in entryNode) {
       return normalizeTopLevelGroup(entryNode, index, navDocument);
     }
     const linkItem = normalizeLinkItem(entryNode, navDocument, []);
@@ -176,8 +170,8 @@
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
     const groupLabel = toPlainText(folderNode.desc, navDocument);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
-    for (const childNode of folderNode.children ?? []) {
-      if (childNode && "children" in childNode) {
+    for (const childNode of folderNode.children) {
+      if ("children" in childNode) {
         directLinks.push(...collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments));
         continue;
       }
@@ -201,8 +195,8 @@
     parentPathSegments: readonly string[],
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-    for (const childNode of folderNode.children ?? []) {
-      if (childNode && "children" in childNode) {
+    for (const childNode of folderNode.children) {
+      if ("children" in childNode) {
         directLinks.push(
           ...collectNestedLinksIntoGroup(childNode, navDocument, parentPathSegments),
         );
@@ -296,7 +290,7 @@
       .replaceAll(String.raw`\"`, "&quot;")
       .replaceAll(String.raw`\'`, "&#39;")
       .replaceAll(/<br\s*\/?>/gi, " ");
-    return (scratch.textContent ?? "").replaceAll(/\s+/g, " ").trim();
+    return scratch.textContent.replaceAll(/\s+/g, " ").trim();
   }
 
   function extractLegacyVisibleText(rawHtml: unknown) {
@@ -305,7 +299,7 @@
         .replaceAll(/<br\s*\/?>/gi, "\n")
         .matchAll(/>([^<>]+)/g),
     ]
-      .map((match) => (match[1] ?? "").replaceAll(/\s+/g, " ").trim())
+      .map((match) => match[1].replaceAll(/\s+/g, " ").trim())
       .filter(Boolean)
       .join(" ")
       .trim();
@@ -340,10 +334,10 @@
     if (isSearchMatch(category.label, query)) {
       return category;
     }
-    const directLinks = (category.directLinks ?? []).filter((linkItem) =>
+    const directLinks = category.directLinks.filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (category.sections ?? [])
+    const sections = category.sections
       .map((section) => filterSectionTree(section, query))
       .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
     if (directLinks.length === 0 && sections.length === 0) {
@@ -366,10 +360,10 @@
     if (isSearchMatch(section.label, query)) {
       return section;
     }
-    const directLinks = (section.directLinks ?? []).filter((linkItem) =>
+    const directLinks = section.directLinks.filter((linkItem) =>
       isSearchMatch(linkItem.label, query),
     );
-    const sections = (section.sections ?? [])
+    const sections = section.sections
       .map((childSection) => filterSectionTree(childSection, query))
       .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
     if (directLinks.length === 0 && sections.length === 0) {
@@ -398,8 +392,8 @@
       return 1;
     }
     return (
-      (item.directLinks ?? []).length +
-      (item.sections ?? []).reduce(
+      item.directLinks.length +
+      item.sections.reduce(
         (total: number, section: CcxpLiteSidebarGroup) => total + countLinksInTree(section),
         0,
       )
@@ -408,7 +402,7 @@
 
   function parseSidebarTree(navDocument: Document): CcxpLiteLegacySidebarFolderNode | undefined {
     const statements = [...navDocument.scripts]
-      .map((script) => script.textContent ?? "")
+      .map((script) => script.textContent)
       .join("\n")
       .split(";")
       .map((statement) => statement.trim())

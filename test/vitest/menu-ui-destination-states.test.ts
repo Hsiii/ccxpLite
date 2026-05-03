@@ -60,7 +60,7 @@ describe("sidebar destination states", () => {
       (button) => button.textContent === "\u91CD\u8A66",
     );
     retryButton.click();
-    expect(state.activeLeaf?.nonce).not.toBe(1);
+    expect(state.activeLeaf.nonce).not.toBe(1);
   });
   test("open in new tab delegates to window.open", () => {
     const { window } = createTestWindow(createSidebarShellHtml());

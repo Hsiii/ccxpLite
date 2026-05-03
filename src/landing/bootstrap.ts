@@ -80,10 +80,7 @@
   ) {
     const retryFn = typeof options.retry === "function" ? options.retry : () => undefined;
     const onReady = typeof options.onReady === "function" ? options.onReady : () => undefined;
-    if (!targetDocument.body || !targetDocument.head) {
-      retryFn();
-      return;
-    }
+
     if (targetDocument.body.dataset.ccxpLiteLandingApplied === "true") {
       onReady();
       return;
@@ -164,7 +161,7 @@
     loginSection.append(loginHeaderLabel);
     if (loginForm) {
       loginSection.append(loginForm);
-    } else if (loginSourceCell) {
+    } else {
       moveChildNodes(loginSourceCell, loginSection);
     }
     normalizeLoginFormLayout(loginSection);
@@ -180,7 +177,7 @@
       loginSection as ParentNode,
     );
     removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
     collapseLegacyThreeColumnRows(targetDocument.body);
     headerSection.append(brandSection);
     if (languageLinks) {

@@ -7,9 +7,6 @@
   }
   const { TOKENS, ASSETS } = sharedConstants;
   function ensureThemeDocument(targetDocument: Document, scope: string) {
-    if (!targetDocument.head || !targetDocument.documentElement) {
-      return false;
-    }
     const { documentElement } = targetDocument;
     documentElement.dataset.ccxpLiteScope = scope;
     const { sharedDom } = namespace;

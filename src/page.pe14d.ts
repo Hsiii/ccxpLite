@@ -47,13 +47,13 @@
       const wrappedToSubmit = function wrappedToSubmit(
         this: unknown,
         form: HTMLFormElement,
-        actionName?: string,
+        actionName: string,
         actionValue?: string,
       ) {
-        if (!shouldInterceptSubmission(form, actionName ?? "")) {
+        if (!shouldInterceptSubmission(form, actionName)) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
-        return submitThroughTransport(originalToSubmit, form, actionName ?? "", actionValue);
+        return submitThroughTransport(originalToSubmit, form, actionName, actionValue);
       };
       wrappedToSubmit.__ccxpLiteWrapped = true;
       wrappedToSubmit.__ccxpLiteOriginal = originalToSubmit;
@@ -63,8 +63,8 @@
     installAttempt();
   }
 
-  function shouldInterceptSubmission(form: HTMLFormElement | undefined, actionName: string) {
-    return Boolean(form && INTERCEPTED_ACTIONS.has(actionName ?? ""));
+  function shouldInterceptSubmission(_form: HTMLFormElement, actionName: string) {
+    return INTERCEPTED_ACTIONS.has(actionName);
   }
 
   function submitThroughTransport(
@@ -77,9 +77,6 @@
       return false;
     }
     const transportFrame = ensureTransportFrame();
-    if (!transportFrame) {
-      return originalToSubmit.call(globalScope, form, actionName, actionValue);
-    }
     const snapshot = captureSnapshot(form, actionName);
     pendingSubmission = {
       actionName,
@@ -101,13 +98,9 @@
       } else {
         form.removeAttribute("target");
       }
-      return originalToSubmit.call(globalScope, form, actionName, actionValue);
     } finally {
       globalScope.setTimeout(
         () => {
-          if (!form) {
-            return;
-          }
           if (originalTarget) {
             form.setAttribute("target", originalTarget);
           } else {
@@ -132,20 +125,13 @@
     frame.id = TRANSPORT_FRAME_ID;
     frame.name = TRANSPORT_FRAME_NAME;
     frame.setAttribute("aria-hidden", "true");
-    Object.assign(
-      frame.style,
-      {
-        display: "none",
-        width: "0",
-        height: "0",
-        border: "0",
-      },
-      0,
-    );
-    const host = globalScope.document.documentElement || globalScope.document.body;
-    if (!host) {
-      return undefined;
-    }
+    Object.assign(frame.style, {
+      display: "none",
+      width: "0",
+      height: "0",
+      border: "0",
+    });
+    const host = globalScope.document.documentElement;
     host.append(frame);
     return frame;
   }
@@ -163,13 +149,11 @@
         activeElement instanceof HTMLButtonElement ||
         activeElement instanceof HTMLSelectElement ||
         activeElement instanceof HTMLTextAreaElement
-          ? (activeElement.name ?? "")
+          ? activeElement.name
           : "",
-      activeId: activeElement instanceof HTMLElement ? (activeElement.id ?? "") : "",
-      bodyScrollTop: globalScope.document.documentElement
-        ? globalScope.document.documentElement.scrollTop
-        : 0,
-      formId: form.id ?? "",
+      activeId: activeElement instanceof HTMLElement ? activeElement.id : "",
+      bodyScrollTop: globalScope.document.documentElement.scrollTop,
+      formId: form.id,
     };
   }
 
@@ -188,7 +172,7 @@
     }
     clearStoredSnapshot();
     const applyRestore = () => {
-      globalScope.scrollTo(snapshot.scrollX ?? 0, snapshot.scrollY ?? snapshot.bodyScrollTop ?? 0);
+      globalScope.scrollTo(snapshot.scrollX, snapshot.scrollY);
       const focusTarget =
         (snapshot.activeId
           ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)
@@ -223,9 +207,8 @@
       }
       const snapshot = JSON.parse(rawValue) as CcxpLitePe14dSnapshot;
       if (
-        !snapshot ||
         snapshot.pathname !== globalScope.location.pathname ||
-        Date.now() - (snapshot.createdAt ?? 0) > RESTORE_TTL_MS
+        Date.now() - snapshot.createdAt > RESTORE_TTL_MS
       ) {
         return undefined;
       }
@@ -244,11 +227,11 @@
   }
 
   function processTransportResponse() {
-    if (!pendingSubmission || pendingSubmission.cleanedUp) {
+    if (pendingSubmission.cleanedUp) {
       return;
     }
     const responseDocument = pendingSubmission.frame.contentDocument;
-    if (!responseDocument || !responseDocument.body || !globalScope.document.body) {
+    if (!responseDocument) {
       fallbackToHardReload();
       return;
     }
@@ -277,7 +260,7 @@
 
   function restoreAfterPatchedUpdate(snapshot: CcxpLitePe14dSnapshot) {
     globalScope.requestAnimationFrame(() => {
-      globalScope.scrollTo(snapshot.scrollX ?? 0, snapshot.scrollY ?? snapshot.bodyScrollTop ?? 0);
+      globalScope.scrollTo(snapshot.scrollX, snapshot.scrollY);
       const focusTarget =
         (snapshot.activeId
           ? globalScope.document.querySelector(`#${CSS.escape(snapshot.activeId)}`)

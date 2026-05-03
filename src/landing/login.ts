@@ -18,7 +18,7 @@
     const seen = new Set<HTMLInputElement>();
     const strings = getLandingStrings(targetDocument);
     for (const field of passwordFields) {
-      if (!field || seen.has(field) || field.dataset.ccxpLitePasswordToggle === "true") {
+      if (seen.has(field) || field.dataset.ccxpLitePasswordToggle === "true") {
         continue;
       }
       seen.add(field);
@@ -51,9 +51,6 @@
   }
 
   function removeRedundantPasswordLabelEyeIcon(passwordField: HTMLInputElement) {
-    if (!passwordField) {
-      return;
-    }
     const inlineScope = passwordField.closest("form") ?? passwordField.parentElement;
     if (inlineScope) {
       const legacyInlineToggles = [
@@ -78,15 +75,15 @@
     if (!labelCell) {
       return;
     }
-    const labelText = (labelCell.textContent ?? "").replaceAll(/\s+/g, " ").trim();
+    const labelText = labelCell.textContent.replaceAll(/\s+/g, " ").trim();
     const isPasswordLabel = /(\u5BC6\u78BC|password)/i.test(labelText);
     if (isPasswordLabel) {
       for (const node of labelCell.querySelectorAll("svg")) {
         node.remove();
       }
       for (const node of labelCell.querySelectorAll("a, button, span, i")) {
-        const text = (node.textContent ?? "").replaceAll(/\s+/g, " ").trim();
-        const hasOnlyIconChild = node.querySelector("svg, img, i") !== undefined;
+        const text = (node.textContent || "").replaceAll(/\s+/g, " ").trim();
+        const hasOnlyIconChild = node.querySelector("svg, img, i") !== null;
         if (!text && hasOnlyIconChild) {
           node.remove();
         }
@@ -133,7 +130,7 @@
   function structureLoginFormRows(targetDocument: Document, formNode: HTMLFormElement) {
     const rows = [...formNode.querySelectorAll<HTMLTableRowElement>("tr")];
     for (const [rowIndex, rowNode] of rows.entries()) {
-      if (!rowNode || rowNode.dataset.ccxpLiteLoginRow === "true") {
+      if (rowNode.dataset.ccxpLiteLoginRow === "true") {
         continue;
       }
       const cells = [...rowNode.querySelectorAll<HTMLElement>(":scope > th, :scope > td")];
@@ -227,7 +224,7 @@
   }
 
   function groupLoginFieldRows(targetDocument: Document, formNode: HTMLFormElement) {
-    if (!formNode || formNode.dataset.ccxpLiteFieldRowsGrouped === "true") {
+    if (formNode.dataset.ccxpLiteFieldRowsGrouped === "true") {
       return;
     }
     const fieldRows = [
@@ -325,9 +322,6 @@
   function resolveLabelCellForField(cells: readonly HTMLElement[], fieldCellIndex: number) {
     for (let index = fieldCellIndex - 1; index >= 0; index--) {
       const candidate = cells[index];
-      if (!candidate) {
-        continue;
-      }
       if (findPrimaryFieldControl(candidate)) {
         continue;
       }
@@ -336,7 +330,7 @@
       }
       return candidate;
     }
-    return cells[0] ?? undefined;
+    return cells[0];
   }
 
   function getNodeText(node: Node | undefined) {
@@ -397,12 +391,7 @@
     if (explicitLabel) {
       return explicitLabel;
     }
-    const fieldName = (
-      (fieldPair && fieldPair.fieldNode && fieldPair.fieldNode.getAttribute("name")) ??
-      ""
-    )
-      .trim()
-      .toLowerCase();
+    const fieldName = (fieldPair?.fieldNode.getAttribute("name") ?? "").trim().toLowerCase();
     const strings = getLandingStrings(targetDocument);
     if (fieldName === "account") {
       return strings.fieldAccount;
@@ -508,7 +497,7 @@
     const captchaLabelPattern = /(\u9A57\u8B49\u78BC|captcha)/i;
     const spans = [...rootNode.querySelectorAll<HTMLSpanElement>("span")];
     for (const spanNode of spans) {
-      const labelText = (spanNode.textContent ?? "").replaceAll(/\s+/g, " ").trim();
+      const labelText = spanNode.textContent.replaceAll(/\s+/g, " ").trim();
       if (!labelText || !captchaLabelPattern.test(labelText)) {
         continue;
       }
@@ -667,14 +656,7 @@
       if (inputNode.dataset.ccxpLiteSubmitRebuilt === "true") {
         continue;
       }
-      const label = (
-        inputNode.value ??
-        inputNode.getAttribute("value") ??
-        inputNode.textContent ??
-        ""
-      )
-        .replaceAll(/\s+/g, " ")
-        .trim();
+      const label = inputNode.value.replaceAll(/\s+/g, " ").trim();
       if (!label) {
         continue;
       }
@@ -811,7 +793,7 @@
   }
 
   function shouldKeepLegacyLoginImageSubmit(inputNode: HTMLInputElement) {
-    if (!inputNode || !inputNode.form) {
+    if (!inputNode.form) {
       return false;
     }
     const action = (inputNode.form.getAttribute("action") ?? "").toLowerCase();

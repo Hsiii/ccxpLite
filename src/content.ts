@@ -97,9 +97,6 @@
   }
 
   function ensureLoadingSprite(targetDocument: Document) {
-    if (!targetDocument || !targetDocument.documentElement) {
-      return;
-    }
     if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`)) {
       const styleNode = targetDocument.createElement("style");
       styleNode.id = LOADING_SPRITE_STYLE_ID;
@@ -141,11 +138,7 @@
           box-shadow: 0 0 0 1px rgba(17, 24, 39, 0.08), 0 8px 24px rgba(17, 24, 39, 0.08);
         }
       `;
-      if (targetDocument.head) {
-        targetDocument.head.append(styleNode);
-      } else {
-        targetDocument.documentElement.append(styleNode);
-      }
+      targetDocument.head.append(styleNode);
     }
     if (!targetDocument.querySelector(`#${CSS.escape(LOADING_SPRITE_ID)}`)) {
       const sprite = targetDocument.createElement("div");
@@ -160,13 +153,9 @@
       `#${CSS.escape(LOADING_SPRITE_STYLE_ID)}`,
     );
     const targetDocumentElement = targetDocument.documentElement;
-    if (targetDocumentElement) {
-      targetDocumentElement.dataset.ccxpLiteLoadingReady = "true";
-    }
+    targetDocumentElement.dataset.ccxpLiteLoadingReady = "true";
     const targetBody = targetDocument.body;
-    if (targetBody) {
-      targetBody.dataset.ccxpLiteLoadingReady = "true";
-    }
+    targetBody.dataset.ccxpLiteLoadingReady = "true";
     if (sprite) {
       sprite.style.opacity = "0";
     }
@@ -185,11 +174,7 @@
       return;
     }
     const navDocument = navFrame && navFrame.contentDocument;
-    if (
-      navDocument &&
-      navDocument.body &&
-      navDocument.body.dataset.ccxpLiteSidebarApplied === "true"
-    ) {
+    if (navDocument && navDocument.body.dataset.ccxpLiteSidebarApplied === "true") {
       loadingState.navReady = true;
     }
     tryReleaseLoadingSprite();
@@ -263,7 +248,7 @@
       }
       try {
         const doc = frame.contentDocument;
-        if (doc && doc.documentElement && doc.head && doc.body) {
+        if (doc && doc.readyState !== "loading") {
           const isMain = (frame.getAttribute("name") ?? "").toLowerCase() === "main";
           const expectedScope = isMain ? "main" : "nav";
           if (doc.documentElement.dataset.ccxpLiteScope !== expectedScope) {
@@ -312,7 +297,7 @@
 
   function removeHeader(topFrame: HTMLIFrameElement) {
     const topDocument = topFrame.contentDocument;
-    if (!topDocument || !topDocument.body || !topDocument.head) {
+    if (!topDocument) {
       retry();
       return;
     }
@@ -327,7 +312,7 @@
 
   function simplifyMainFrame(mainFrame: HTMLIFrameElement | undefined) {
     const mainDocument = mainFrame && mainFrame.contentDocument;
-    if (!mainDocument || !mainDocument.body || !mainDocument.head) {
+    if (!mainDocument) {
       return;
     }
     ensureThemeDocument(mainDocument, "main");

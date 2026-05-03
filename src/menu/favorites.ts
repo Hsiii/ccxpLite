@@ -102,7 +102,7 @@
 
   function ensureFavoriteStorageSync() {
     const scopeWindow = getFavoriteScopeWindow();
-    if (favoriteStorageSyncBound || !scopeWindow) {
+    if (favoriteStorageSyncBound) {
       return;
     }
     const onStorage = (event: StorageEvent) => {
@@ -111,7 +111,7 @@
         scopeWindow.removeEventListener("storage", onStorage);
         return;
       }
-      if (!event || event.key !== FAVORITES_STORAGE_KEY) {
+      if (event.key !== FAVORITES_STORAGE_KEY) {
         return;
       }
       const nextValue = (() => {
@@ -146,11 +146,8 @@
 
   function getScopedFavoriteStorage() {
     const scopeWindow = getFavoriteScopeWindow();
-    if (!scopeWindow) {
-      return undefined;
-    }
     try {
-      return scopeWindow.localStorage ?? undefined;
+      return scopeWindow.localStorage;
     } catch {
       return undefined;
     }
@@ -158,20 +155,14 @@
 
   function getScopedSessionStorage() {
     const scopeWindow = getFavoriteScopeWindow();
-    if (!scopeWindow) {
-      return undefined;
-    }
     try {
-      return scopeWindow.sessionStorage ?? undefined;
+      return scopeWindow.sessionStorage;
     } catch {
       return undefined;
     }
   }
 
   function getFavoriteScopeWindow() {
-    if (globalThis.window === undefined) {
-      return undefined;
-    }
     try {
       return window.top ?? globalThis;
     } catch {
@@ -199,7 +190,7 @@
           resolve(new Set<string>());
           return;
         }
-        const storedValue = (result ? result["ccxp-lite-sidebar-favorites"] : []) as unknown[];
+        const storedValue = result["ccxp-lite-sidebar-favorites"] as unknown[];
         resolve(
           new Set(
             isArray(storedValue)
@@ -219,15 +210,15 @@
       return [];
     }
     if (item.kind === "link") {
-      return item.linkItem && isFavoriteLink(item.linkItem, favoriteIds) ? [item.linkItem] : [];
+      return isFavoriteLink(item.linkItem, favoriteIds) ? [item.linkItem] : [];
     }
     const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
-    for (const linkItem of item.directLinks ?? []) {
+    for (const linkItem of item.directLinks) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
         favoriteLinks.push(linkItem);
       }
     }
-    for (const section of item.sections ?? []) {
+    for (const section of item.sections) {
       favoriteLinks.push(...collectFavoriteLinks(section, favoriteIds));
     }
     return favoriteLinks;
@@ -238,7 +229,7 @@
   ): readonly CcxpLiteSidebarLinkItem[] {
     const seen = new Set();
     return linkItems.filter((linkItem) => {
-      if (!linkItem || seen.has(linkItem.id)) {
+      if (seen.has(linkItem.id)) {
         return false;
       }
       seen.add(linkItem.id);
@@ -251,7 +242,7 @@
       ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
       : "";
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
     return [
       "v2",
@@ -264,7 +255,7 @@
 
   function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
     const clickSignature = linkItem.clickLinkArgs
-      ? `${(linkItem.clickLinkArgs.name ?? "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
+      ? `${(linkItem.clickLinkArgs.name || "").trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
       : "";
     return [
       normalizeFavoriteText(linkItem.label),
@@ -357,7 +348,7 @@
     linkItem: CcxpLiteSidebarLinkItem | undefined,
     favoriteIds: ReadonlySet<string>,
   ): readonly string[] {
-    if (!linkItem || !favoriteIds) {
+    if (!linkItem) {
       return [];
     }
     return [...new Set([linkItem.id, linkItem.legacyId].filter(isDefinedString))].filter(

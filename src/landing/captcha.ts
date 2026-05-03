@@ -121,11 +121,9 @@
     if (!state) {
       return;
     }
-    if (state.input) {
-      state.input.setAttribute("aria-busy", isLoading ? "true" : "false");
-      if (isLoading) {
-        clearCaptchaTimeoutFlash(state);
-      }
+    state.input.setAttribute("aria-busy", isLoading ? "true" : "false");
+    if (isLoading) {
+      clearCaptchaTimeoutFlash(state);
     }
   }
 
@@ -152,9 +150,6 @@
     captchaState.input.dataset.timeoutFlash = "true";
     captchaState.timeoutFlashTimer = globalThis.setTimeout(
       () => {
-        if (!captchaState.input) {
-          return;
-        }
         delete captchaState.input.dataset.timeoutFlash;
         captchaState.timeoutFlashTimer = undefined;
       },
@@ -203,7 +198,7 @@
     targetDocument: Document,
     state: CcxpLiteCaptchaAutofillState | undefined,
   ) {
-    if (!state || !state.image) {
+    if (!state) {
       return;
     }
     const captchaSrc = getCaptchaRequestSource(state.image, targetDocument);
@@ -235,9 +230,7 @@
     captchaState.failedSrc = captchaSrc;
     captchaState.requestToken++;
     setCaptchaLoadingState(captchaState, false);
-    if (captchaState.input) {
-      captchaState.input.removeAttribute("aria-busy");
-    }
+    captchaState.input.removeAttribute("aria-busy");
     if (options.didTimeout) {
       flashCaptchaTimeout(captchaState);
     }
@@ -284,12 +277,7 @@
       return "";
     }
     try {
-      const parsed = new URL(
-        rawSource,
-        targetDocument.location && targetDocument.location.href
-          ? targetDocument.location.href
-          : globalThis.location.href,
-      );
+      const parsed = new URL(rawSource, targetDocument.location.href);
       const pathSegments = parsed.pathname.split("/").filter(Boolean);
       const fileName = pathSegments.at(-1) ?? "";
       return `${fileName}${parsed.search}`;
@@ -301,12 +289,7 @@
   }
 
   async function downloadCaptchaImageBytes(targetDocument: Document, captchaSrc: string) {
-    const captchaUrl = new URL(
-      captchaSrc,
-      targetDocument.location && targetDocument.location.href
-        ? targetDocument.location.href
-        : globalThis.location.href,
-    );
+    const captchaUrl = new URL(captchaSrc, targetDocument.location.href);
     return await fetchWithTimeout(
       captchaUrl.toString(),
       { credentials: "include" },
@@ -324,9 +307,7 @@
     if (!dc) {
       return "";
     }
-    return await Promise.resolve(dc.predictDigits(imageBytes)).then((answer) =>
-      (answer ?? "").trim(),
-    );
+    return await Promise.resolve(dc.predictDigits(imageBytes)).then((answer) => answer.trim());
   }
   interface CcxpLiteCaptchaError extends Error {
     code?: string;

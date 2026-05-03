@@ -49,16 +49,12 @@
     };
     if (node.nodeType === Node.DOCUMENT_NODE) {
       const doc = node as Document;
-      if (doc.documentElement) {
-        cleanElement(doc.documentElement);
-        const legacyNodes = doc.documentElement.querySelectorAll(selector);
-        for (const el of legacyNodes) {
-          cleanElement(el);
-        }
+      cleanElement(doc.documentElement);
+      const legacyNodes = doc.documentElement.querySelectorAll(selector);
+      for (const el of legacyNodes) {
+        cleanElement(el);
       }
-      if (doc.body) {
-        cleanElement(doc.body);
-      }
+      cleanElement(doc.body);
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       const el = node as Element;
       cleanElement(el);
@@ -119,7 +115,7 @@
       return undefined;
     }
     try {
-      return chrome.storage ? chrome.storage.local : undefined;
+      return chrome.storage.local;
     } catch {
       invalidateContext();
       return undefined;

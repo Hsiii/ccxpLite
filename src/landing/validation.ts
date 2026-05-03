@@ -33,7 +33,7 @@
   ) {
     const fields = ["account", "passwd", "passwd2"]
       .map((name) => targetDocument.querySelector<HTMLInputElement>(`input[name='${name}']`))
-      .filter((field): field is HTMLInputElement => field !== undefined);
+      .filter((field): field is HTMLInputElement => field !== null);
 
     if (fields.length === 0) {
       return;
@@ -44,7 +44,7 @@
       return;
     }
 
-    const startedAt = (state && state.startedAt) || Date.now();
+    const startedAt = state.startedAt || Date.now();
     const onFieldActivity = () => {
       if (Date.now() - startedAt > 30 * 60 * 1000) {
         targetDocument.location.reload();
@@ -99,16 +99,11 @@
     const rawSrc = imageNode.getAttribute("src") ?? "";
 
     try {
-      const parsed = new URL(
-        rawSrc,
-        targetDocument.location && targetDocument.location.href
-          ? targetDocument.location.href
-          : globalThis.location.href,
-      );
+      const parsed = new URL(rawSrc, targetDocument.location.href);
       return parsed.searchParams.get("pwdstr") ?? "";
     } catch {
       const match = rawSrc.match(/[&?]pwdstr=([^&]+)/i);
-      return match ? decodeURIComponent(match[1] ?? "") : "";
+      return match ? decodeURIComponent(match[1]) : "";
     }
   }
 

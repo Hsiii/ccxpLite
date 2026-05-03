@@ -6,9 +6,6 @@
     return;
   }
   const { getLocalizedStrings } = shared;
-  function isArray<T>(value: unknown): value is T[] {
-    return value !== null && typeof value === "object" && value.constructor === Array;
-  }
 
   function createLandingSection(targetDocument: Document, className: string) {
     const section = targetDocument.createElement("section");
@@ -22,7 +19,7 @@
     tabContents: readonly HTMLElement[],
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
-    if (!tabNavigation || !isArray(tabContents) || tabContents.length === 0) {
+    if (tabContents.length === 0) {
       return;
     }
     const tabButtons = [
@@ -62,7 +59,7 @@
       panel: HTMLElement;
     }> = tabButtons
       .map((button, index) => {
-        const panel = resolvePanelByLegacyTarget(button) ?? tabPanels[index] ?? undefined;
+        const panel = resolvePanelByLegacyTarget(button) ?? tabPanels[index];
         return { button, panel };
       })
       .filter(
@@ -181,12 +178,7 @@
       button: HTMLElement;
     }>,
   ) {
-    if (
-      !targetDocument ||
-      !tabNavigation ||
-      !isArray(buttonPanelMap) ||
-      buttonPanelMap.length === 0
-    ) {
+    if (buttonPanelMap.length === 0) {
       return;
     }
     const fragment = targetDocument.createDocumentFragment();
@@ -206,10 +198,7 @@
   }
 
   function applyTabPanelSemanticClass(button: HTMLElement, panel: HTMLElement) {
-    if (!button || !panel) {
-      return;
-    }
-    const label = (button.textContent ?? "").replaceAll(/\s+/g, " ").trim().toLowerCase();
+    const label = button.textContent.replaceAll(/\s+/g, " ").trim().toLowerCase();
     if (/(\u5B78\u751F|\u6821\u53CB|student|alumni)/i.test(label)) {
       panel.classList.add("ccxp-lite-student-alumni-panel");
     }

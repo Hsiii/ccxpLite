@@ -190,9 +190,7 @@ function getHeadInputVectors(
         }
       }
     }
-    if (!runtimeScope.document) {
-      throw new Error("Document is not available for captcha decoding.");
-    }
+
     const objectUrl = URL.createObjectURL(new Blob([blobBytes]));
     try {
       const image = await loadImage(objectUrl);

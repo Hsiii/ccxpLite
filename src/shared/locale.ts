@@ -23,7 +23,7 @@
   }
 
   function resolveLocaleFromDocument(targetDocument: Document | undefined): string {
-    if (!targetDocument || !targetDocument.documentElement) {
+    if (!targetDocument) {
       return "zh";
     }
 
@@ -31,7 +31,7 @@
   }
 
   function getLocalizedStrings(locale: string | undefined): Record<string, string> {
-    return LOCALIZED_STRINGS[normalizeLocale(locale)] || LOCALIZED_STRINGS.zh;
+    return LOCALIZED_STRINGS[normalizeLocale(locale)];
   }
 
   namespace.sharedLocale = {

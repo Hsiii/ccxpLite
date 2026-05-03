@@ -1,6 +1,9 @@
 (function registerCcxpLiteSidebarUi(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
-  const namespace = runtimeScope.CCXP_LITE ?? {};
+  const namespace = runtimeScope.CCXP_LITE;
+  if (!namespace) {
+    return;
+  }
   const { shared, sidebarState, sidebarFavorites, sidebarData, sidebarRuntime } = namespace;
   if (!shared || !sidebarState || !sidebarFavorites || !sidebarData || !sidebarRuntime) {
     return;
@@ -53,11 +56,11 @@
       });
       searchInput.dataset.ccxpLiteSearchBound = "true";
     }
-    if (searchInput && searchInput.value !== state.searchQuery) {
+    if (searchInput.value !== state.searchQuery) {
       searchInput.value = state.searchQuery;
     }
     const model = typeof modelInput === "function" ? modelInput() : modelInput;
-    const filteredCategories = filterCategories(model.categories ?? [], state.searchQuery);
+    const filteredCategories = filterCategories(model.categories, state.searchQuery);
     const activeCategoryFromFiltered = filteredCategories.find(
       (category) => category.id === state.currentCategoryId,
     );
@@ -92,7 +95,7 @@
     }
     if (state.activeLeaf) {
       const activeLeafCategory =
-        activeCategory ?? findCategoryContainingLeaf(model.categories ?? [], state.activeLeaf);
+        activeCategory ?? findCategoryContainingLeaf(model.categories, state.activeLeaf);
       content.append(
         createDestinationView(
           hostDocument,
@@ -121,7 +124,7 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        filterFavoriteLinks(model.favorites.directLinks ?? [], state.searchQuery),
+        filterFavoriteLinks(model.favorites.directLinks, state.searchQuery),
         filteredCategories,
         state,
         strings,
@@ -140,24 +143,20 @@
     if (!activeLeaf) {
       return undefined;
     }
-    return (
-      categories.find((category) => {
-        const directLinks = category.directLinks ?? [];
-        const sections = category.sections ?? [];
-        return (
-          directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
-          sections.some((section) => sectionContainsLeaf(section, activeLeaf))
-        );
-      }) ?? undefined
-    );
+    return categories.find((category) => {
+      const { directLinks, sections } = category;
+      return (
+        directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
+        sections.some((section) => sectionContainsLeaf(section, activeLeaf))
+      );
+    });
   }
 
   function sectionContainsLeaf(
     section: CcxpLiteSidebarGroup,
     activeLeaf: CcxpLiteSidebarLinkItem | undefined,
   ): boolean {
-    const directLinks = section.directLinks ?? [];
-    const sections = section.sections ?? [];
+    const { directLinks, sections } = section;
     return (
       directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
       sections.some((childSection) => sectionContainsLeaf(childSection, activeLeaf))
@@ -310,15 +309,9 @@
     model: CcxpLiteSidebarModel,
     query: string,
   ): readonly CcxpLiteSidebarTreeNode[] {
-    const items: CcxpLiteSidebarTreeNode[] = [];
-    if (model?.favorites) {
-      items.push(model.favorites);
-    }
-    if (model?.categories) {
-      items.push(...model.categories);
-    }
+    const items: CcxpLiteSidebarTreeNode[] = [model.favorites, ...model.categories];
     if (!query) {
-      return items.filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
+      return items;
     }
     return items
       .map((item) => filterClassicSidebarItem(item, query))
@@ -329,19 +322,16 @@
     item: CcxpLiteSidebarTreeNode,
     query: string,
   ): CcxpLiteSidebarTreeNode | undefined {
-    if (!item) {
-      return undefined;
-    }
     const normalizedQuery = normalizeClassicSearchText(query);
     const itemLabel = item.kind === "link" ? item.linkItem.label : item.label;
     const itemMatches = isClassicSearchMatch(itemLabel, normalizedQuery);
     if (item.kind === "link") {
       return itemMatches ? item : undefined;
     }
-    const directLinks = (item.directLinks ?? []).filter((linkItem) =>
+    const directLinks = item.directLinks.filter((linkItem) =>
       isClassicSearchMatch(linkItem.label, normalizedQuery),
     );
-    const sections = (item.sections ?? [])
+    const sections = item.sections
       .map((section) => filterClassicSidebarItem(section, normalizedQuery))
       .filter((node): node is CcxpLiteSidebarTreeNode => node !== undefined);
     if (!itemMatches && directLinks.length === 0 && sections.length === 0) {
@@ -349,9 +339,9 @@
     }
     return {
       ...item,
-      directLinks: itemMatches ? (item.directLinks ?? []) : directLinks,
-      sections: itemMatches ? (item.sections ?? []) : sections,
-    } as CcxpLiteSidebarTreeNode;
+      directLinks: itemMatches ? item.directLinks : directLinks,
+      sections: itemMatches ? item.sections : sections,
+    };
   }
 
   function createClassicSidebarNode(
@@ -405,7 +395,7 @@
     children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
     if (group.kind !== "link") {
-      for (const linkItem of group.directLinks ?? []) {
+      for (const linkItem of group.directLinks) {
         children.append(
           createClassicLinkButton(
             targetDocument,
@@ -417,7 +407,7 @@
           ),
         );
       }
-      for (const section of group.sections ?? []) {
+      for (const section of group.sections) {
         children.append(
           createClassicSidebarNode(
             targetDocument,
@@ -487,30 +477,24 @@
     hasMatch: boolean;
     expandedItemIds: readonly string[];
   } {
-    if (!item) {
-      return {
-        hasMatch: false,
-        expandedItemIds: [],
-      };
-    }
     const itemLabel = item.kind === "link" ? item.linkItem.label : item.label;
     const itemMatches = isClassicSearchMatch(itemLabel, normalizedQuery);
     let hasMatch = itemMatches;
     const expandedItemIds: string[] = [];
     if (item.kind !== "link") {
-      for (const linkItem of item.directLinks ?? []) {
+      for (const linkItem of item.directLinks) {
         if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
           hasMatch = true;
         }
       }
-      for (const section of item.sections ?? []) {
+      for (const section of item.sections) {
         const childState = collectClassicExpandedState(section, normalizedQuery);
         expandedItemIds.push(...childState.expandedItemIds);
         if (childState.hasMatch) {
           hasMatch = true;
         }
       }
-      if (hasMatch && (item.sections ?? []).length > 0) {
+      if (hasMatch && item.sections.length > 0) {
         expandedItemIds.push(item.id);
       }
     }
@@ -672,7 +656,7 @@
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-category-detail";
     if (filteredCategory) {
-      if ((filteredCategory.directLinks ?? []).length > 0) {
+      if (filteredCategory.directLinks.length > 0) {
         body.append(
           createLinkCollection(
             targetDocument,
@@ -683,7 +667,7 @@
           ),
         );
       }
-      for (const group of filteredCategory.sections ?? []) {
+      for (const group of filteredCategory.sections) {
         body.append(createCategoryBlock(targetDocument, navDocument, group, strings, rerender));
       }
       if (body.childElementCount === 0) {
@@ -710,11 +694,10 @@
   }
 
   function scheduleCategoryDetailWaterfall(targetDocument: Document, body: HTMLElement) {
-    const view = targetDocument.defaultView ?? globalThis.window;
+    const view = targetDocument.defaultView ?? globalThis;
     const supportsNativeWaterfall =
-      view.CSS &&
-      (view.CSS.supports("display", "grid-lanes") ||
-        view.CSS.supports("grid-template-rows", "masonry"));
+      view.CSS.supports("display", "grid-lanes") ||
+      view.CSS.supports("grid-template-rows", "masonry");
     if (supportsNativeWaterfall) {
       return;
     }
@@ -741,8 +724,12 @@
       return;
     }
     const observer = new view.ResizeObserver(() => {
-      const { sharedDom } = namespace;
-      if (!body.isConnected || (sharedDom && !sharedDom.ensureContextValid())) {
+      const sharedDom = namespace.sharedDom as
+        | {
+            ensureContextValid: () => boolean;
+          }
+        | undefined;
+      if (!body.isConnected || (sharedDom !== undefined && !sharedDom.ensureContextValid())) {
         observer.disconnect();
         return;
       }
@@ -823,14 +810,14 @@
       title.textContent = group.label;
       block.append(title);
     }
-    if ((group.directLinks ?? []).length > 0) {
+    if (group.directLinks.length > 0) {
       for (const linkItem of group.directLinks) {
         block.append(
           createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
         );
       }
     }
-    for (const section of group.sections ?? []) {
+    for (const section of group.sections) {
       block.append(createCategoryBlock(targetDocument, navDocument, section, strings, rerender));
     }
     return block;
@@ -1356,7 +1343,7 @@
       }
       try {
         const legacyWindow = legacyMainFrame.contentWindow;
-        const legacyHref = legacyWindow && legacyWindow.location ? legacyWindow.location.href : "";
+        const legacyHref = legacyWindow ? legacyWindow.location.href : "";
         if (legacyHref && legacyHref !== "about:blank" && frame.src !== legacyHref) {
           frame.src = legacyHref;
           return;
@@ -1533,8 +1520,7 @@
     // In classic mode, we want the button to stay at the bottom-right of the screen, which
     // corresponds to the bottom-right of the main frame.
     const isClassic = variant === "classic";
-    const mountDocument =
-      isClassic && mainDocument && mainDocument.body ? mainDocument : targetDocument;
+    const mountDocument = isClassic && mainDocument ? mainDocument : targetDocument;
     const button = createSidebarVariantSwitch(mountDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
     removeExistingSidebarVariantSwitches([
@@ -1553,7 +1539,7 @@
 
   function removeExistingSidebarVariantSwitches(documents: ReadonlyArray<Document | undefined>) {
     for (const scopeDocument of documents) {
-      if (!scopeDocument || !("querySelectorAll" in scopeDocument)) {
+      if (!scopeDocument) {
         continue;
       }
       for (const node of scopeDocument.querySelectorAll("[data-ccxp-lite-sidebar-lab-switch]")) {
@@ -1563,7 +1549,7 @@
   }
 
   function getOverlayMountNode(targetDocument: Document): HTMLElement {
-    return targetDocument.body || targetDocument.documentElement;
+    return targetDocument.body;
   }
 
   function createBackIcon(targetDocument: Document) {
@@ -1610,14 +1596,8 @@
     icon.setAttribute("stroke-linecap", "round");
     icon.setAttribute("stroke-linejoin", "round");
     icon.setAttribute("aria-hidden", "true");
-    for (const shape of getCategoryIconShapes(iconName) as Array<
-      | string
-      | {
-          tag?: string;
-          attributes: Record<string, string>;
-        }
-    >) {
-      const tagName = typeof shape === "string" ? "path" : (shape.tag ?? "path");
+    for (const shape of getCategoryIconShapes(iconName)) {
+      const tagName = typeof shape === "string" ? "path" : shape.tag;
       const attributes = typeof shape === "string" ? { d: shape } : shape.attributes;
       const element = targetDocument.createElementNS("http://www.w3.org/2000/svg", tagName);
       for (const [name, value] of Object.entries(attributes)) {
@@ -1711,7 +1691,7 @@
         "M2 10h20",
       ],
     };
-    return iconShapeMap[iconName] || iconShapeMap.folders;
+    return iconShapeMap[iconName] ?? iconShapeMap.folders;
   }
   namespace.sidebarUi = {
     renderSidebar,
