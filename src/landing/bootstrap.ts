@@ -177,7 +177,7 @@
       loginSection as ParentNode,
     );
     removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table"));
+    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
     collapseLegacyThreeColumnRows(targetDocument.body);
     headerSection.append(brandSection);
     if (languageLinks) {

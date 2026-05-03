@@ -56,7 +56,7 @@
       });
       searchInput.dataset.ccxpLiteSearchBound = "true";
     }
-    if (searchInput.value !== state.searchQuery) {
+    if (searchInput && searchInput.value !== state.searchQuery) {
       searchInput.value = state.searchQuery;
     }
     const model = typeof modelInput === "function" ? modelInput() : modelInput;
@@ -333,7 +333,7 @@
     );
     const sections = item.sections
       .map((section) => filterClassicSidebarItem(section, normalizedQuery))
-      .filter((node): node is CcxpLiteSidebarTreeNode => node !== undefined);
+      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined && node.kind !== "link");
     if (!itemMatches && directLinks.length === 0 && sections.length === 0) {
       return undefined;
     }
@@ -723,12 +723,8 @@
       view.addEventListener("resize", scheduleLayout, { once: true });
       return;
     }
+    const sharedDom = runtimeScope.CCXP_LITE?.sharedDom;
     const observer = new view.ResizeObserver(() => {
-      const sharedDom = namespace.sharedDom as
-        | {
-            ensureContextValid: () => boolean;
-          }
-        | undefined;
       if (!body.isConnected || (sharedDom !== undefined && !sharedDom.ensureContextValid())) {
         observer.disconnect();
         return;
@@ -739,7 +735,7 @@
     for (const item of detailItems) {
       observer.observe(item);
     }
-    namespace.sharedDom?.addCleanupTask(() => {
+    sharedDom?.addCleanupTask(() => {
       observer.disconnect();
     });
   }

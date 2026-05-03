@@ -47,13 +47,13 @@
       const wrappedToSubmit = function wrappedToSubmit(
         this: unknown,
         form: HTMLFormElement,
-        actionName: string,
+        actionName?: string,
         actionValue?: string,
       ) {
-        if (!shouldInterceptSubmission(form, actionName)) {
+        if (!shouldInterceptSubmission(form, actionName ?? "")) {
           return originalToSubmit.call(this, form, actionName, actionValue);
         }
-        return submitThroughTransport(originalToSubmit, form, actionName, actionValue);
+        return submitThroughTransport(originalToSubmit, form, actionName ?? "", actionValue);
       };
       wrappedToSubmit.__ccxpLiteWrapped = true;
       wrappedToSubmit.__ccxpLiteOriginal = originalToSubmit;
@@ -227,10 +227,14 @@
   }
 
   function processTransportResponse() {
-    if (pendingSubmission.cleanedUp) {
+    const currentSubmission = pendingSubmission;
+    if (!currentSubmission) {
       return;
     }
-    const responseDocument = pendingSubmission.frame.contentDocument;
+    if (currentSubmission.cleanedUp) {
+      return;
+    }
+    const responseDocument = currentSubmission.frame.contentDocument;
     if (!responseDocument) {
       fallbackToHardReload();
       return;
@@ -238,7 +242,7 @@
     try {
       replaceVisibleBody(responseDocument);
       syncDocumentTitle(responseDocument);
-      restoreAfterPatchedUpdate(pendingSubmission.snapshot);
+      restoreAfterPatchedUpdate(currentSubmission.snapshot);
       clearStoredSnapshot();
     } catch {
       fallbackToHardReload();
