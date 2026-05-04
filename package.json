@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
+    "release": "bun run scripts/release.ts",
     "test": "bunx vitest run",
     "test:unit": "bunx vitest run",
     "test:vitest": "bunx vitest run",

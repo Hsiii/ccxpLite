@@ -5,18 +5,21 @@ import {
   mkdtempSync,
   mkdirSync,
   readdirSync,
-  rmSync,
+  rmSync, readFileSync 
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const projectRoot = process.cwd();
+const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
+  version: string;
+};
 const srcDir = path.join(projectRoot, "src");
 const compiledSrcDir = path.join(projectRoot, ".build", "src");
 const distDir = path.join(projectRoot, "dist");
 const unpackedDir = path.join(distDir, "unpacked");
-const outputZip = path.join(distDir, "ccxpLite.zip");
+const outputZip = path.join(distDir, `ccxpLite-v${version}.zip`);
 const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
 const checkpointPath = path.resolve(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
@@ -128,7 +131,9 @@ try {
     throw new Error("zip command failed");
   }
 
-  process.stdout.write(`Built ${outputZip}\nUnpacked extension: ${unpackedDir}\n`);
+  process.stdout.write(
+    `Built ${outputZip}\nUnpacked extension: ${unpackedDir}\nVersion: ${version}\n`,
+  );
 } finally {
   rmSync(stagingDir, { recursive: true, force: true });
 }
