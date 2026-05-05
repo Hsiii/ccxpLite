@@ -1,26 +1,27 @@
 import { describe, expect, test, vi } from "vitest";
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  menuModulePaths,
+  requireValue,
+} from "./helpers/module-loader.js";
 
 describe("sidebar runtime", () => {
   test("detects external-only routes and opens them in a new tab", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
-    const openSpy = vi.spyOn(window, "open").mockImplementation(() => undefined);
-    const linkItem = {
+    const sidebarRuntime = requireValue(window.CCXP_LITE.sidebarRuntime, "sidebarRuntime");
+    const openSpy = vi
+      .spyOn(window, "open")
+      .mockImplementation((() => undefined) as unknown as typeof window.open);
+    const linkItem: CcxpLiteSidebarLinkItem = {
       id: "external",
       label: "External Inquiry",
       href: "/ccxp/INQUIRE/PE/1/14D/report",
       target: "main",
     };
-    expect(window.CCXP_LITE.sidebarRuntime.isExternalLinkTarget(linkItem, window.document)).toBe(
-      true,
-    );
-    window.CCXP_LITE.sidebarRuntime.openLeafDestination(
-      window.document,
-      window.document,
-      linkItem,
-      () => undefined,
-    );
+    expect(sidebarRuntime.isExternalLinkTarget(linkItem, window.document)).toBe(true);
+    sidebarRuntime.openLeafDestination(window.document, window.document, linkItem, () => undefined);
     expect(openSpy).toHaveBeenCalledWith(
       "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/report",
       "_blank",
@@ -32,10 +33,12 @@ describe("sidebar runtime", () => {
       "<!doctype html><html><body><div class='ccxp-lite-sidebar-content'></div></body></html>",
     );
     loadModules(window, menuModulePaths);
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(window.document);
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarRuntime = requireValue(window.CCXP_LITE.sidebarRuntime, "sidebarRuntime");
+    const state = sidebarState.getSidebarUiState(window.document);
     state.sidebarVariant = "layered";
     const rerender = vi.fn();
-    window.CCXP_LITE.sidebarRuntime.openLeafDestination(
+    sidebarRuntime.openLeafDestination(
       window.document,
       window.document,
       {
@@ -58,8 +61,10 @@ describe("sidebar runtime", () => {
     );
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
+    const sidebarRuntime = requireValue(window.CCXP_LITE.sidebarRuntime, "sidebarRuntime");
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
     const destinationFrame = document.createElement("iframe");
-    window.CCXP_LITE.sidebarRuntime.activateLegacyLink(
+    sidebarRuntime.activateLegacyLink(
       {
         id: "grades",
         label: "Semester Grades",
@@ -70,10 +75,10 @@ describe("sidebar runtime", () => {
       destinationFrame,
     );
     expect(destinationFrame.src).toBe("https://www.ccxp.nthu.edu.tw/grades");
-    window.CCXP_LITE.sidebarRuntime.captureInitialMainFrameUrl();
-    window.CCXP_LITE.sidebarRuntime.captureInitialMainFrameUrl();
-    expect(
-      window.sessionStorage.getItem(window.CCXP_LITE.sidebarFavorites.INITIAL_MAIN_URL_STORAGE_KEY),
-    ).toBe("https://www.ccxp.nthu.edu.tw/start");
+    sidebarRuntime.captureInitialMainFrameUrl();
+    sidebarRuntime.captureInitialMainFrameUrl();
+    expect(window.sessionStorage.getItem(sidebarFavorites.INITIAL_MAIN_URL_STORAGE_KEY)).toBe(
+      "https://www.ccxp.nthu.edu.tw/start",
+    );
   });
 });

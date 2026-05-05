@@ -3,6 +3,7 @@ import {
   createTestWindow,
   landingModulePaths,
   loadModules,
+  requireElement,
   requireValue,
 } from "./helpers/module-loader.js";
 import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
@@ -17,7 +18,10 @@ describe("landing validation", () => {
       fnstrDate: "20260428",
       fnstrSeed: "777",
     });
-    document.querySelector("input[name='fnstr']").value = "invalid";
+    requireElement(
+      document.querySelector<HTMLInputElement>("input[name='fnstr']"),
+      "fnstr input",
+    ).value = "invalid";
     expect(validation.captureLoginValidationState(document)).toHaveProperty("startedAt");
   });
   test("reloads the page when a guarded field is touched after expiry", () => {
@@ -33,7 +37,10 @@ describe("landing validation", () => {
     landingValidation.restoreLoginValidationGuards(document, {
       startedAt: Date.now() - 31 * 60 * 1000,
     });
-    const account = document.querySelector("input[name='account']");
+    const account = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='account']"),
+      "account input",
+    );
     account.dispatchEvent(new Event("click"));
     expect(reloadSpy).toHaveBeenCalled();
   });
@@ -44,16 +51,19 @@ describe("landing validation", () => {
     const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
     const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
     const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
-    const image = form.querySelector("img");
+    const image = requireElement(form.querySelector<HTMLImageElement>("img"), "captcha image");
     image.setAttribute("src", "auth_img.php?pwdstr=20260501-123");
     landingValidation.ensureLoginSubmissionPayload(form, document);
-    expect(form.querySelector("input[name='fnstr']").value).toBe("20260501-123");
+    expect(
+      requireElement(form.querySelector<HTMLInputElement>("input[name='fnstr']"), "fnstr input")
+        .value,
+    ).toBe("20260501-123");
     expect(
       landingValidation.extractPwdstrFromImage(
         {
           getAttribute: () => "auth_img.php?pwdstr=20260502-456",
-        },
-        { location: undefined },
+        } as unknown as HTMLImageElement,
+        {} as Document,
       ),
     ).toBe("20260502-456");
   });

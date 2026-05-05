@@ -16,7 +16,7 @@
   const favoriteSubscribers = new Set<() => void>();
   let favoriteStorageSyncBound = false;
   function isArray<T>(value: unknown): value is T[] {
-    return isArray(value);
+    return value !== null && typeof value === "object" && value.constructor === Array;
   }
 
   function getFavoriteIds(): ReadonlySet<string> {

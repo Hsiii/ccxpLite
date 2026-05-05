@@ -4,27 +4,13 @@ import vm from "node:vm";
 import { Window } from "happy-dom";
 import ts from "typescript";
 
-const repoRoot = path.resolve(import.meta.dirname, "..", "..", "..");
+const repoRoot = process.cwd();
 
 export type TestWindow = Window &
   typeof globalThis & {
     CCXP_LITE: CcxpLiteNamespace;
     document: Document;
-    chrome: {
-      runtime: {
-        id: string;
-        getURL: (assetPath: string) => string;
-        lastError: unknown;
-      };
-      storage: {
-        local: {
-          get: (
-            keys: readonly string[] | undefined,
-            callback: (result: Readonly<Record<string, unknown>>) => void,
-          ) => void;
-        };
-      };
-    };
+    chrome: typeof chrome;
   };
 
 export function createTestWindow(
@@ -56,7 +42,7 @@ export function createTestWindow(
         },
       },
     },
-  };
+  } as unknown as typeof chrome;
 
   testWindow.requestAnimationFrame = ((callback: FrameRequestCallback) => {
     const frameTime = 0;
@@ -92,6 +78,17 @@ export function loadModules(window: TestWindow, modulePaths: readonly string[]):
 
 export function requireValue<T>(value: T | undefined, message = "Expected value"): T {
   if (value === undefined) {
+    throw new Error(message);
+  }
+
+  return value;
+}
+
+export function requireElement<T extends Element>(
+  value: T | null,
+  message = "Expected element",
+): T {
+  if (value === null) {
     throw new Error(message);
   }
 

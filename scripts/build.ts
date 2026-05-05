@@ -5,7 +5,8 @@ import {
   mkdtempSync,
   mkdirSync,
   readdirSync,
-  rmSync, readFileSync 
+  rmSync,
+  readFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";

@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 
-import { createTestWindow, loadModules, menuModulePaths } from "./helpers/module-loader.js";
+import {
+  createTestWindow,
+  loadModules,
+  menuModulePaths,
+  requireValue,
+} from "./helpers/module-loader.js";
 
 function createSidebarTreeDocument() {
   return `
@@ -24,8 +29,10 @@ describe("sidebar data", () => {
     const { window } = createTestWindow(createSidebarTreeDocument());
     loadModules(window, menuModulePaths);
 
-    const root = window.CCXP_LITE.sidebarData.parseSidebarTree(window.document);
-    const model = window.CCXP_LITE.sidebarData.buildSidebarModel(root, window.document);
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
 
     expect(root.children).toHaveLength(2);
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
@@ -40,8 +47,9 @@ describe("sidebar data", () => {
   test("filters favorites and categories by normalized search text", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
 
-    const category = {
+    const category: CcxpLiteSidebarCategoryNode = {
       id: "category-courses",
       label: "Courses & Grades",
       kind: "category",
@@ -58,7 +66,7 @@ describe("sidebar data", () => {
     };
 
     expect(
-      window.CCXP_LITE.sidebarData.filterFavoriteLinks(
+      sidebarData.filterFavoriteLinks(
         [
           { id: "grades", label: "Semester Grades" },
           { id: "calendar", label: "Calendar" },
@@ -67,10 +75,8 @@ describe("sidebar data", () => {
       ),
     ).toHaveLength(1);
 
-    expect(window.CCXP_LITE.sidebarData.filterCategories([category], "semester")[0].id).toBe(
-      "category-courses",
-    );
-    expect(window.CCXP_LITE.sidebarData.filterCategoryTree(category, "missing")).toBeUndefined();
-    expect(window.CCXP_LITE.sidebarData.countLinksInTree(category)).toBe(1);
+    expect(sidebarData.filterCategories([category], "semester")[0]?.id).toBe("category-courses");
+    expect(sidebarData.filterCategoryTree(category, "missing")).toBeUndefined();
+    expect(sidebarData.countLinksInTree(category)).toBe(1);
   });
 });

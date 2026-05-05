@@ -5,6 +5,7 @@ import * as decaptchaModelModule from "../../src/content.decaptcha.model.js";
 import * as decaptchaModule from "../../src/content.decaptcha.js";
 
 globalThis.CCXP_LITE ??= {} as CcxpLiteNamespace;
+const namespace = globalThis.CCXP_LITE;
 
 interface DecaptchaTest {
   __test: {
@@ -12,7 +13,7 @@ interface DecaptchaTest {
     extractImageTensorFromRgba: (
       w: number,
       h: number,
-      r: Float32Array,
+      r: Uint8ClampedArray,
       o: unknown,
     ) => CcxpLitePreparedTensor;
     conv2d: (
@@ -32,21 +33,21 @@ interface DecaptchaTest {
       e: number,
     ) => CcxpLitePreparedTensor;
     relu: (i: CcxpLitePreparedTensor) => CcxpLitePreparedTensor;
-    adaptiveAvgPool2d: (i: CcxpLitePreparedTensor, s: readonly number[]) => CcxpLitePreparedTensor;
+    adaptiveAvgPool2d: (i: CcxpLitePreparedTensor, h: number, w: number) => CcxpLitePreparedTensor;
     linear: (i: Float32Array, w: CcxpLitePreparedTensor, b: CcxpLitePreparedTensor) => Float32Array;
     argmax: (i: Float32Array) => number;
-    predictDigitsFromTensor: (t: CcxpLitePreparedTensor, m: unknown) => string;
+    predictDigitsFromTensor: (t: CcxpLitePreparedTensor) => string;
     getPreparedModel: () => CcxpLitePreparedModel;
   };
   predictDigits: (imageBytes: ArrayBuffer) => Promise<string>;
 }
 
-const decaptcha = globalThis.CCXP_LITE.decaptcha as unknown as DecaptchaTest;
+const decaptcha = namespace.decaptcha as unknown as DecaptchaTest;
 
 describe("decaptcha model bootstrap", () => {
   test("registers the generated model on the shared namespace", () => {
     expect(Object.keys(decaptchaModelModule)).toEqual([]);
-    expect(globalThis.CCXP_LITE.decaptchaModel).toBeDefined();
+    expect(namespace.decaptchaModel).toBeDefined();
   });
 });
 

@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
 
 import {
+  requireElement,
   createTestWindow,
   loadModules,
   requireValue,
@@ -35,9 +36,12 @@ describe("landing captcha", () => {
         await new Promise((resolve) => {
           resolveFetch = resolve;
         }),
-    ) as typeof window.fetch;
+    ) as unknown as typeof window.fetch;
 
-    const input = document.querySelector<HTMLInputElement>("input[name='passwd2']");
+    const input = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd2']"),
+      "captcha input",
+    );
     const inputSpy = vi.fn();
     const changeSpy = vi.fn();
     input.addEventListener("input", (event) => {
@@ -66,7 +70,7 @@ describe("landing captcha", () => {
     expect(changeSpy).toHaveBeenCalled();
 
     landingCaptcha.enableLoginCaptchaAutofill(document, document);
-    expect((window.fetch as ReturnType<typeof vi.fn>).mock.calls.length).toBeGreaterThan(0);
+    expect(vi.mocked(window.fetch).mock.calls.length).toBeGreaterThan(0);
   });
 
   test("falls back to manual entry and flashes timeout on timeout-style failures", async () => {
@@ -81,9 +85,12 @@ describe("landing captcha", () => {
       const error = new Error("captcha-timeout");
       error.name = "TimeoutError";
       throw error;
-    }) as typeof window.fetch;
+    }) as unknown as typeof window.fetch;
 
-    const input = document.querySelector<HTMLInputElement>("input[name='passwd2']");
+    const input = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd2']"),
+      "captcha input",
+    );
     landingCaptcha.enableLoginCaptchaAutofill(document, document);
     await flushPromises();
     await flushPromises();

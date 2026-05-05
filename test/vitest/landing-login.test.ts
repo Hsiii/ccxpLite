@@ -4,6 +4,7 @@ import {
   createTestWindow,
   landingModulePaths,
   loadModules,
+  requireElement,
   requireValue,
 } from "./helpers/module-loader.js";
 import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
@@ -18,8 +19,14 @@ describe("landing login ui", () => {
     landingLogin.enhancePasswordVisibilityToggle(document, document);
     landingLogin.enhancePasswordVisibilityToggle(document, document);
 
-    const passwordField = document.querySelector("input[name='passwd']");
-    const toggle = document.querySelector<HTMLButtonElement>(".ccxp-lite-password-toggle");
+    const passwordField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd']"),
+      "password input",
+    );
+    const toggle = requireElement(
+      document.querySelector<HTMLButtonElement>(".ccxp-lite-password-toggle"),
+      "password toggle",
+    );
 
     expect(document.querySelectorAll(".ccxp-lite-password-field")).toHaveLength(1);
     expect(toggle.getAttribute("aria-label")).toBe("\u986F\u793A\u5BC6\u78BC");

@@ -3,6 +3,7 @@ import {
   createTestWindow,
   loadModules,
   menuModulePaths,
+  requireElement,
   requireValue,
 } from "./helpers/module-loader.js";
 
@@ -35,7 +36,11 @@ describe("sidebar state", () => {
     );
     expect(setPersistedSidebarVariant("layered")).toBe("layered");
     expect(window.localStorage.getItem("ccxp-lite-sidebar-variant")).toBe("layered");
-    expect(setPersistedSidebarVariant("unexpected")).toBe("layered");
+    expect(
+      (setPersistedSidebarVariant as unknown as (value: string) => "classic" | "layered")(
+        "unexpected",
+      ),
+    ).toBe("layered");
     expect(getPersistedSidebarVariant()).toBe("layered");
     Object.defineProperty(window, "localStorage", {
       configurable: true,
@@ -43,8 +48,14 @@ describe("sidebar state", () => {
         throw new Error("storage blocked");
       },
     });
-    expect(window.CCXP_LITE.sidebarState.getPersistedSidebarVariant()).toBe("layered");
-    expect(window.CCXP_LITE.sidebarState.setPersistedSidebarVariant("classic")).toBe("classic");
+    expect(
+      requireValue(window.CCXP_LITE.sidebarState, "sidebarState").getPersistedSidebarVariant(),
+    ).toBe("layered");
+    expect(
+      requireValue(window.CCXP_LITE.sidebarState, "sidebarState").setPersistedSidebarVariant(
+        "classic",
+      ),
+    ).toBe("classic");
   });
   test("persists and restores scroll positions by view", () => {
     const { window } = createTestWindow(
@@ -52,7 +63,10 @@ describe("sidebar state", () => {
     );
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
-    const content = document.querySelector<HTMLElement>(".ccxp-lite-sidebar-content");
+    const content = requireElement(
+      document.querySelector<HTMLElement>(".ccxp-lite-sidebar-content"),
+      "sidebar content",
+    );
     content.scrollTop = 48;
     const { getSidebarUiState, persistSidebarScroll, restoreSidebarScroll } = requireValue(
       window.CCXP_LITE.sidebarState,

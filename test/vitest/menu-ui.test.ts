@@ -4,6 +4,7 @@ import {
   createTestWindow,
   loadModules,
   menuModulePaths,
+  requireElement,
   requireValue,
 } from "./helpers/module-loader.js";
 import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
@@ -25,7 +26,10 @@ describe("sidebar ui", () => {
 
     requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(document, document, model);
 
-    const searchInput = document.querySelector(".ccxp-lite-sidebar-search-input");
+    const searchInput = requireElement(
+      document.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input"),
+      "sidebar search input",
+    );
     expect(searchInput.value).toBe("Semester");
     expect(document.querySelector(".ccxp-lite-dashboard")).not.toBeNull();
     expect(document.querySelector(".ccxp-lite-pane-pinned .ccxp-lite-link-card")).not.toBeNull();
@@ -36,12 +40,14 @@ describe("sidebar ui", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(document);
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const state = sidebarState.getSidebarUiState(document);
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-missing";
     state.searchQuery = "zzzzz";
 
-    window.CCXP_LITE.sidebarUi.renderSidebar(document, document, createSidebarModel());
+    sidebarUi.renderSidebar(document, document, createSidebarModel());
 
     expect(state.currentCategoryId).toBe("");
     expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
@@ -54,19 +60,24 @@ describe("sidebar ui", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(document);
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const state = sidebarState.getSidebarUiState(document);
     state.sidebarVariant = "classic";
     state.currentCategoryId = "category-courses";
-    state.activeLeaf = { id: "grades" };
+    state.activeLeaf = { id: "grades", label: "Semester Grades" };
 
-    requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").mountSidebarVariantSwitch(
+    sidebarUi.mountSidebarVariantSwitch(
       document,
       state,
       requireValue(window.CCXP_LITE.shared, "shared").LOCALIZED_STRINGS.zh,
       () => undefined,
     );
 
-    const switcherNode = document.querySelector<HTMLElement>("[data-ccxp-lite-sidebar-lab-switch]");
+    const switcherNode = requireElement(
+      document.querySelector<HTMLElement>("[data-ccxp-lite-sidebar-lab-switch]"),
+      "variant switcher",
+    );
     switcherNode.click();
 
     expect(state.sidebarVariant).toBe("layered");
@@ -79,21 +90,24 @@ describe("sidebar ui", () => {
     const document = window.document as Document;
     loadModules(window, menuModulePaths);
 
-    const state = window.CCXP_LITE.sidebarState.getSidebarUiState(document);
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const state = sidebarState.getSidebarUiState(document);
     state.sidebarVariant = "classic";
     state.searchQuery = "missing";
-    window.CCXP_LITE.sidebarFavorites.favoriteState.hasLoaded = true;
+    sidebarFavorites.favoriteState.hasLoaded = true;
 
     const model = createSidebarModel();
     model.favorites.directLinks = [];
 
-    window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
+    sidebarUi.renderSidebar(document, document, model);
     expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain(
       "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57",
     );
 
     state.searchQuery = "";
-    window.CCXP_LITE.sidebarUi.renderSidebar(document, document, model);
+    sidebarUi.renderSidebar(document, document, model);
     expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain("No favorites yet");
   });
 });
