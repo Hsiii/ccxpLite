@@ -16,6 +16,7 @@ function createSidebarTreeDocument() {
           foldersTree = gFld("root", "");
           aux0 = insFld(foldersTree, gFld("\u8AB2\u7A0B\u3001\u6210\u7E3E Courses, transcript", ""));
           insDoc(aux0, gLnk(0, "\u5B78\u671F\u6210\u7E3E", "/grades?sid=1&keep=yes"));
+          insDoc(foldersTree, gLnk(0, "\u5B78\u5206&\u62B5\u514D\u5B78\u5206", "/credits"));
           aux1 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
           insDoc(aux1, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
         </script>
@@ -34,14 +35,18 @@ describe("sidebar data", () => {
     const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
     const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
 
-    expect(root.children).toHaveLength(2);
+    expect(root.children).toHaveLength(3);
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
       "\u8AB2\u7A0B\u6210\u7E3E",
     );
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
       "\u6821\u5712\u7CFB\u7D71",
     );
-    expect(model.categories[0].sections[0].directLinks[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
+    expect(model.categories[0].sections[0].label).toBe("\u4E3B\u8981\u529F\u80FD");
+    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+      "\u5B78\u5206&\u62B5\u514D\u5B78\u5206",
+    );
+    expect(model.categories[0].sections[1].directLinks[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
   });
 
   test("filters favorites and categories by normalized search text", () => {
