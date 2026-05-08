@@ -1040,7 +1040,7 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
   .ccxp-lite-empty-row
-  .ccxp-lite-row-label-wrap {
+  .ccxp-lite-row-label {
   color: var(--ccxp-lite-text-muted);
 }
 
