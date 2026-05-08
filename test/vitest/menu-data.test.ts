@@ -139,4 +139,59 @@ describe("sidebar data", () => {
     expect(sidebarData.filterCategoryTree(category, "missing")).toBeUndefined();
     expect(sidebarData.countLinksInTree(category)).toBe(1);
   });
+
+  test("keeps unmatched links visible in a fallback category", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            insDoc(foldersTree, gLnk(0, "\u5168\u65B0\u529F\u80FD\u6E2C\u8A66", "/brand-new"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+
+    expect(model.categories).toHaveLength(1);
+    expect(model.categories[0].label).toBe("\u65B0\u589E\u8207\u672A\u5206\u985E");
+    expect(model.categories[0].sections[0].label).toBe("\u5168\u65B0\u529F\u80FD\u6E2C\u8A66");
+    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+      "\u5168\u65B0\u529F\u80FD\u6E2C\u8A66",
+    );
+  });
+
+  test("keeps unmatched groups visible in a fallback category", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("\u7814\u7A76\u5BA4\u5DE5\u5177", ""));
+            insDoc(aux0, gLnk(0, "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB", "/lab-storage"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+
+    expect(model.categories).toHaveLength(1);
+    expect(model.categories[0].label).toBe("\u65B0\u589E\u8207\u672A\u5206\u985E");
+    expect(model.categories[0].sections[0].label).toBe("\u7814\u7A76\u5BA4\u5DE5\u5177");
+    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+      "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB",
+    );
+  });
 });
