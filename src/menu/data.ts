@@ -34,12 +34,27 @@
     const buckets = new Map<string, CcxpLiteSidebarTreeNode[]>(
       SIDEBAR_CATEGORIES.map((category) => [category.id, [] as CcxpLiteSidebarTreeNode[]]),
     );
+    const unmatchedItems: CcxpLiteSidebarTreeNode[] = [];
     const favoriteLinks = items.flatMap((item) => collectFavoriteLinks(item, favoriteIds));
     for (const item of items) {
       const category = findCategoryForItem(item);
       if (category) {
         buckets.get(category.id)?.push(item);
+        continue;
       }
+      unmatchedItems.push(item);
+    }
+    const categories: CcxpLiteSidebarCategoryNode[] = SIDEBAR_CATEGORIES.map(
+      (category): CcxpLiteSidebarCategoryNode | undefined => {
+        const categoryItems = buckets.get(category.id) ?? [];
+        if (categoryItems.length === 0) {
+          return undefined;
+        }
+        return buildSidebarCategoryNode(category, categoryItems, strings);
+      },
+    ).filter((item): item is CcxpLiteSidebarCategoryNode => item !== undefined);
+    if (unmatchedItems.length > 0) {
+      categories.push(buildSidebarCategoryNode(UNCATEGORIZED_CATEGORY, unmatchedItems, strings));
     }
     return {
       favorites: {
@@ -57,39 +72,44 @@
             : strings.sidebarFavoritesEmpty,
         kind: "category",
       },
-      categories: SIDEBAR_CATEGORIES.map((category): CcxpLiteSidebarCategoryNode | undefined => {
-        const categoryItems = buckets.get(category.id) ?? [];
-        if (categoryItems.length === 0) {
-          return undefined;
-        }
-        const directLinkItems = categoryItems
-          .filter((item) => item.kind === "link")
-          .map((item) => item.linkItem);
-        const groupedSections = categoryItems.filter((item) => item.kind !== "link");
-        const sections: readonly CcxpLiteSidebarGroup[] =
-          directLinkItems.length === 0
-            ? groupedSections
-            : [
-                {
-                  id: `category-${category.id}-other`,
-                  label: deriveSyntheticSectionLabel(category, directLinkItems, strings),
-                  directLinks: directLinkItems,
-                  sections: [],
-                  kind: "group",
-                } as CcxpLiteSidebarSectionNode,
-                ...groupedSections,
-              ];
-        return {
-          id: `category-${category.id}`,
-          label: strings[category.labelKey] ?? category.fallbackLabel,
-          icon: category.icon,
-          summary: (category.summaryLabels ?? []).join(" \u00B7 "),
-          directLinks: [],
-          sections,
-          emptyMessage: strings.emptyGroup,
-          kind: "category",
-        };
-      }).filter((item): item is CcxpLiteSidebarCategoryNode => item !== undefined),
+      categories,
+    };
+  }
+
+  function buildSidebarCategoryNode(
+    category: CcxpLiteSidebarCategoryDefinition,
+    categoryItems: readonly CcxpLiteSidebarTreeNode[],
+    strings: Readonly<Record<string, string>>,
+  ): CcxpLiteSidebarCategoryNode {
+    const directLinkItems = categoryItems
+      .filter((item) => item.kind === "link")
+      .map((item) => item.linkItem);
+    const groupedSections = categoryItems.filter((item) => item.kind !== "link");
+    const sections: readonly CcxpLiteSidebarGroup[] =
+      directLinkItems.length === 0
+        ? groupedSections
+        : [
+            {
+              id: `category-${category.id}-other`,
+              label: deriveSyntheticSectionLabel(category, directLinkItems, strings),
+              directLinks: directLinkItems,
+              sections: [],
+              kind: "group",
+            } as CcxpLiteSidebarSectionNode,
+            ...groupedSections,
+          ];
+    return {
+      id: `category-${category.id}`,
+      label:
+        strings[category.labelKey] === ""
+          ? (category.fallbackLabel ?? "")
+          : strings[category.labelKey],
+      icon: category.icon,
+      summary: (category.summaryLabels ?? []).join(" \u00B7 "),
+      directLinks: [],
+      sections,
+      emptyMessage: strings.emptyGroup,
+      kind: "category",
     };
   }
 
@@ -346,6 +366,15 @@
     "campus-systems": ["Systems", "Courses"],
     "announcements-and-voting": ["Notices", "Voting", "Meetings"],
   } as const satisfies Readonly<Record<string, readonly string[]>>;
+
+  const UNCATEGORIZED_CATEGORY = {
+    id: "uncategorized",
+    labelKey: "sidebarCategoryUncategorized",
+    fallbackLabel: "\u65B0\u589E\u8207\u672A\u5206\u985E",
+    icon: "folder",
+    summaryLabels: [],
+    itemLabels: [],
+  } as const satisfies CcxpLiteSidebarCategoryDefinition;
 
   function normalizeRootEntry(
     entryNode: CcxpLiteLegacySidebarNode,
