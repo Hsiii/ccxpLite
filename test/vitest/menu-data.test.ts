@@ -42,11 +42,11 @@ describe("sidebar data", () => {
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
       "\u6821\u5712\u7CFB\u7D71",
     );
-    expect(model.categories[0].sections[0].label).toBe("\u5B78\u5206");
-    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+    expect(model.categories[0].blocks[0].label).toBe("\u5B78\u5206");
+    expect(model.categories[0].blocks[0].links[0].label).toBe(
       "\u5B78\u5206&\u62B5\u514D\u5B78\u5206",
     );
-    expect(model.categories[0].sections[1].directLinks[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
+    expect(model.categories[0].blocks[1].links[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
   });
 
   test("uses the single direct-link label when only one synthetic item exists", () => {
@@ -73,7 +73,7 @@ describe("sidebar data", () => {
       (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
     );
 
-    expect(campusCategory?.sections[0]?.label).toBe("\u660E\u71C8\u5E73\u53F0");
+    expect(campusCategory?.blocks[0]?.label).toBe("\u660E\u71C8\u5E73\u53F0");
   });
 
   test("combines the strongest keywords when multiple synthetic items share a category", () => {
@@ -101,7 +101,7 @@ describe("sidebar data", () => {
       (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
     );
 
-    expect(campusCategory?.sections[0]?.label).toBe("\u5B78\u7FD2\u8207\u8A08\u901A");
+    expect(campusCategory?.blocks[0]?.label).toBe("\u5B78\u7FD2\u8207\u8A08\u901A");
   });
 
   test("filters favorites and categories by normalized search text", () => {
@@ -113,14 +113,12 @@ describe("sidebar data", () => {
       id: "category-courses",
       label: "Courses & Grades",
       kind: "category",
-      directLinks: [],
-      sections: [
+      blocks: [
         {
           id: "section-academic",
           label: "Academic",
-          kind: "group",
-          directLinks: [{ id: "grades", label: "Semester Grades" }],
-          sections: [],
+          kind: "block",
+          links: [{ id: "grades", label: "Semester Grades" }],
         },
       ],
     };
@@ -161,8 +159,8 @@ describe("sidebar data", () => {
 
     expect(model.categories).toHaveLength(1);
     expect(model.categories[0].label).toBe("\u65B0\u589E\u8207\u672A\u5206\u985E");
-    expect(model.categories[0].sections[0].label).toBe("\u5168\u65B0\u529F\u80FD\u6E2C\u8A66");
-    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+    expect(model.categories[0].blocks[0].label).toBe("\u5168\u65B0\u529F\u80FD\u6E2C\u8A66");
+    expect(model.categories[0].blocks[0].links[0].label).toBe(
       "\u5168\u65B0\u529F\u80FD\u6E2C\u8A66",
     );
   });
@@ -189,8 +187,8 @@ describe("sidebar data", () => {
 
     expect(model.categories).toHaveLength(1);
     expect(model.categories[0].label).toBe("\u65B0\u589E\u8207\u672A\u5206\u985E");
-    expect(model.categories[0].sections[0].label).toBe("\u7814\u7A76\u5BA4\u5DE5\u5177");
-    expect(model.categories[0].sections[0].directLinks[0].label).toBe(
+    expect(model.categories[0].blocks[0].label).toBe("\u7814\u7A76\u5BA4\u5DE5\u5177");
+    expect(model.categories[0].blocks[0].links[0].label).toBe(
       "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB",
     );
   });

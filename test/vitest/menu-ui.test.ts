@@ -99,7 +99,7 @@ describe("sidebar ui", () => {
     sidebarFavorites.favoriteState.hasLoaded = true;
 
     const model = createSidebarModel();
-    model.favorites.directLinks = [];
+    model.favorites.blocks = [];
 
     sidebarUi.renderSidebar(document, document, model);
     expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain(

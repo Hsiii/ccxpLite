@@ -64,8 +64,17 @@
             ? "\u5E38\u7528\u529F\u80FD"
             : strings.sidebarCategoryFavorites,
         icon: "star",
-        directLinks: dedupeLinkItems(favoriteLinks),
-        sections: [],
+        blocks:
+          favoriteLinks.length === 0
+            ? []
+            : [
+                {
+                  id: "category-favorites-block",
+                  label: "",
+                  links: dedupeLinkItems(favoriteLinks),
+                  kind: "block",
+                },
+              ],
         emptyMessage:
           strings.sidebarFavoritesEmpty === ""
             ? "Press star at any function to save it here"
@@ -84,19 +93,20 @@
     const directLinkItems = categoryItems
       .filter((item) => item.kind === "link")
       .map((item) => item.linkItem);
-    const groupedSections = categoryItems.filter((item) => item.kind !== "link");
-    const sections: readonly CcxpLiteSidebarGroup[] =
+    const groupedBlocks = categoryItems.filter(
+      (item): item is CcxpLiteSidebarBlock => item.kind === "block",
+    );
+    const blocks: readonly CcxpLiteSidebarBlock[] =
       directLinkItems.length === 0
-        ? groupedSections
+        ? groupedBlocks
         : [
             {
               id: `category-${category.id}-other`,
               label: deriveSyntheticSectionLabel(category, directLinkItems, strings),
-              directLinks: directLinkItems,
-              sections: [],
-              kind: "group",
-            } as CcxpLiteSidebarSectionNode,
-            ...groupedSections,
+              links: directLinkItems,
+              kind: "block",
+            },
+            ...groupedBlocks,
           ];
     return {
       id: `category-${category.id}`,
@@ -106,8 +116,7 @@
           : strings[category.labelKey],
       icon: category.icon,
       summary: (category.summaryLabels ?? []).join(" \u00B7 "),
-      directLinks: [],
-      sections,
+      blocks,
       emptyMessage: strings.emptyGroup,
       kind: "category",
     };
@@ -138,21 +147,23 @@
 
   function collectSidebarLabels(item: CcxpLiteSidebarTreeNode): readonly string[] {
     const labels: string[] = [];
+    if (item.kind === "link") {
+      const itemLabel = normalizeSidebarLabel(item.label);
+      if (itemLabel !== "") {
+        labels.push(itemLabel);
+      }
+      return labels;
+    }
     const itemLabel = normalizeSidebarLabel(item.label);
     if (itemLabel !== "") {
       labels.push(itemLabel);
     }
-    if (item.kind === "link") {
-      return labels;
-    }
-    for (const linkItem of item.directLinks) {
+    const links = item.kind === "block" ? item.links : item.blocks.flatMap((block) => block.links);
+    for (const linkItem of links) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel !== "") {
         labels.push(linkLabel);
       }
-    }
-    for (const section of item.sections) {
-      labels.push(...collectSidebarLabels(section));
     }
     return labels;
   }
@@ -400,7 +411,7 @@
     folderNode: CcxpLiteLegacySidebarFolderNode,
     index: number,
     navDocument: Document,
-  ): CcxpLiteSidebarSectionNode {
+  ): CcxpLiteSidebarBlock {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
     const groupLabel = toPlainText(folderNode.desc, navDocument);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
@@ -417,9 +428,8 @@
     return {
       id: `group-${index}`,
       label: groupLabel,
-      directLinks,
-      sections: [],
-      kind: "group",
+      links: directLinks,
+      kind: "block",
     };
   }
 
@@ -568,45 +578,35 @@
     if (isSearchMatch(category.label, query)) {
       return category;
     }
-    const directLinks = category.directLinks.filter((linkItem) =>
-      isSearchMatch(linkItem.label, query),
-    );
-    const sections = category.sections
-      .map((section) => filterSectionTree(section, query))
-      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
-    if (directLinks.length === 0 && sections.length === 0) {
+    const blocks = category.blocks
+      .map((block) => filterBlock(block, query))
+      .filter((node): node is CcxpLiteSidebarBlock => node !== undefined);
+    if (blocks.length === 0) {
       return undefined;
     }
     return {
       ...category,
-      directLinks,
-      sections,
+      blocks,
     };
   }
 
-  function filterSectionTree(
-    section: CcxpLiteSidebarGroup | undefined,
+  function filterBlock(
+    block: CcxpLiteSidebarBlock | undefined,
     query: string,
-  ): CcxpLiteSidebarGroup | undefined {
-    if (!section) {
+  ): CcxpLiteSidebarBlock | undefined {
+    if (!block) {
       return undefined;
     }
-    if (isSearchMatch(section.label, query)) {
-      return section;
+    if (isSearchMatch(block.label, query)) {
+      return block;
     }
-    const directLinks = section.directLinks.filter((linkItem) =>
-      isSearchMatch(linkItem.label, query),
-    );
-    const sections = section.sections
-      .map((childSection) => filterSectionTree(childSection, query))
-      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined);
-    if (directLinks.length === 0 && sections.length === 0) {
+    const links = block.links.filter((linkItem) => isSearchMatch(linkItem.label, query));
+    if (links.length === 0) {
       return undefined;
     }
     return {
-      ...section,
-      directLinks,
-      sections,
+      ...block,
+      links,
     };
   }
 
@@ -625,12 +625,12 @@
     if (item.kind === "link") {
       return 1;
     }
-    return (
-      item.directLinks.length +
-      item.sections.reduce(
-        (total: number, section: CcxpLiteSidebarGroup) => total + countLinksInTree(section),
-        0,
-      )
+    if (item.kind === "block") {
+      return item.links.length;
+    }
+    return item.blocks.reduce(
+      (total: number, block: CcxpLiteSidebarBlock) => total + block.links.length,
+      0,
     );
   }
 
