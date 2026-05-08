@@ -1032,11 +1032,18 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-empty-row {
   cursor: default;
   color: var(--ccxp-lite-text-muted);
-  border: 1px dashed var(--ccxp-lite-border);
-  background: var(--ccxp-lite-surface-muted);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-empty-row:hover {
+  background: transparent;
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  .ccxp-lite-empty-row
+  .ccxp-lite-row-label-wrap {
+  padding: 0 var(--ccxp-lite-spacing-inline-sm);
+  border: 1px dashed var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
   background: var(--ccxp-lite-surface-muted);
 }
 
