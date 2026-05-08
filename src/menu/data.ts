@@ -72,10 +72,7 @@
             : [
                 {
                   id: `category-${category.id}-other`,
-                  label:
-                    strings.sidebarCategoryOtherSection === ""
-                      ? "\u5176\u4ED6"
-                      : strings.sidebarCategoryOtherSection,
+                  label: deriveSyntheticSectionLabel(category, directLinkItems, strings),
                   directLinks: directLinkItems,
                   sections: [],
                   kind: "group",
@@ -150,6 +147,205 @@
       normalizedCategoryLabel.includes(candidateLabel)
     );
   }
+
+  function deriveSyntheticSectionLabel(
+    category: CcxpLiteSidebarCategoryDefinition,
+    linkItems: readonly CcxpLiteSidebarLinkItem[],
+    strings: Readonly<Record<string, string>>,
+  ) {
+    const labels = linkItems
+      .map((linkItem) => linkItem.label.trim())
+      .filter((label) => label !== "");
+    if (labels.length === 0) {
+      return strings.sidebarCategoryOtherSection === ""
+        ? "\u5176\u4ED6"
+        : strings.sidebarCategoryOtherSection;
+    }
+    if (labels.length === 1) {
+      return summarizeSingleLabel(labels[0], strings);
+    }
+    const locale = detectLabelLocale(labels);
+    const topKeywords = [
+      ...new Set(scoreSyntheticSectionKeywords(labels, category.id, locale)),
+    ].slice(0, 2);
+    if (topKeywords.length === 0) {
+      return strings.sidebarCategoryOtherSection === ""
+        ? "\u5176\u4ED6"
+        : strings.sidebarCategoryOtherSection;
+    }
+    return topKeywords.join(locale === "en" ? " & " : "\u8207");
+  }
+
+  function summarizeSingleLabel(label: string, strings: Readonly<Record<string, string>>) {
+    const normalizedLabel = normalizeSidebarLabel(label);
+    if (normalizedLabel === "") {
+      return strings.sidebarCategoryOtherSection === ""
+        ? "\u5176\u4ED6"
+        : strings.sidebarCategoryOtherSection;
+    }
+    const locale = detectLabelLocale([normalizedLabel]);
+    const parts = normalizedLabel
+      .split(/\s+/)
+      .map((part) => part.trim())
+      .filter((part) => part !== "");
+    if (locale === "en") {
+      return parts.slice(0, 3).join(" ");
+    }
+    return parts[0] ?? normalizedLabel;
+  }
+
+  function detectLabelLocale(labels: readonly string[]): CcxpLiteLocale {
+    return labels.some((label) => /[A-Za-z]/.test(label) && !/[\u4E00-\u9FFF]/.test(label))
+      ? "en"
+      : "zh";
+  }
+
+  function scoreSyntheticSectionKeywords(
+    labels: readonly string[],
+    categoryId: string,
+    locale: CcxpLiteLocale,
+  ): readonly string[] {
+    const keywordCatalog = locale === "en" ? EN_SECTION_KEYWORDS : ZH_SECTION_KEYWORDS;
+    const categoryBoosts: Readonly<Record<string, readonly string[]>> =
+      locale === "en" ? EN_CATEGORY_KEYWORDS : ZH_CATEGORY_KEYWORDS;
+    const categoryPriority = categoryBoosts[categoryId] ?? [];
+    const scores = new Map<string, number>();
+    for (const label of labels) {
+      const normalizedLabel = normalizeSidebarLabel(label).toLowerCase();
+      for (const keyword of keywordCatalog) {
+        if (keyword.patterns.some((pattern) => normalizedLabel.includes(pattern))) {
+          scores.set(keyword.label, (scores.get(keyword.label) ?? 0) + keyword.weight);
+        }
+      }
+    }
+    for (const keyword of categoryBoosts[categoryId] ?? []) {
+      if (scores.has(keyword)) {
+        scores.set(keyword, (scores.get(keyword) ?? 0) + 1);
+      }
+    }
+    return [...scores.entries()]
+      .toSorted((left, right) => {
+        if (right[1] !== left[1]) {
+          return right[1] - left[1];
+        }
+        const leftPriority = categoryPriority.indexOf(left[0]);
+        const rightPriority = categoryPriority.indexOf(right[0]);
+        if (leftPriority !== rightPriority) {
+          if (leftPriority === -1) {
+            return 1;
+          }
+          if (rightPriority === -1) {
+            return -1;
+          }
+          return leftPriority - rightPriority;
+        }
+        return left[0].localeCompare(right[0], locale === "en" ? "en" : "zh-Hant");
+      })
+      .map(([label]) => label);
+  }
+
+  const ZH_SECTION_KEYWORDS = [
+    { label: "\u5E33\u865F", patterns: ["\u5E33\u865F"], weight: 3 },
+    { label: "\u500B\u8CC7", patterns: ["\u500B\u4EBA\u8CC7\u6599", "\u500B\u8CC7"], weight: 3 },
+    { label: "\u5C0E\u5E2B", patterns: ["\u5C0E\u5E2B"], weight: 3 },
+    { label: "\u5B78\u5206", patterns: ["\u5B78\u5206", "\u62B5\u514D"], weight: 3 },
+    { label: "\u6210\u7E3E", patterns: ["\u6210\u7E3E", "\u6210\u7E3E\u55AE"], weight: 3 },
+    { label: "\u8AB2\u7A0B", patterns: ["\u8AB2\u7A0B"], weight: 2 },
+    { label: "\u9078\u8AB2", patterns: ["\u9078\u8AB2"], weight: 3 },
+    { label: "\u9810\u6392", patterns: ["\u9810\u6392"], weight: 3 },
+    { label: "\u8DE8\u7CFB", patterns: ["\u8DE8\u7CFB", "\u6821\u969B"], weight: 2 },
+    { label: "\u66F8\u9762", patterns: ["\u66F8\u9762"], weight: 2 },
+    { label: "\u8A55\u91CF", patterns: ["\u8A55\u91CF", "\u554F\u5377"], weight: 3 },
+    { label: "\u7968\u9078", patterns: ["\u7968\u9078", "\u6295\u7968"], weight: 3 },
+    { label: "\u5FA9\u5B78", patterns: ["\u5FA9\u5B78"], weight: 3 },
+    { label: "\u8F49\u7CFB", patterns: ["\u8F49\u7CFB", "\u8F49\u6240"], weight: 3 },
+    { label: "\u5175\u5F79", patterns: ["\u5175\u5F79"], weight: 3 },
+    { label: "\u7562\u696D", patterns: ["\u7562\u696D"], weight: 3 },
+    { label: "\u53E3\u8A66", patterns: ["\u53E3\u8A66", "\u5B78\u4F4D\u8003\u8A66"], weight: 3 },
+    { label: "\u5B78\u4F4D", patterns: ["\u5B78\u4F4D"], weight: 3 },
+    { label: "\u96E2\u6821", patterns: ["\u96E2\u6821"], weight: 3 },
+    { label: "\u7E73\u8CBB", patterns: ["\u7E73\u8CBB"], weight: 3 },
+    { label: "\u9000\u8CBB", patterns: ["\u9000\u8CBB"], weight: 3 },
+    { label: "\u50B3\u7968", patterns: ["\u50B3\u7968"], weight: 3 },
+    { label: "\u6240\u5F97", patterns: ["\u6240\u5F97"], weight: 3 },
+    { label: "\u8CB8\u6B3E", patterns: ["\u8CB8\u6B3E"], weight: 3 },
+    { label: "\u6E1B\u514D", patterns: ["\u6E1B\u514D"], weight: 3 },
+    { label: "\u52A9\u5B78", patterns: ["\u52A9\u5B78"], weight: 3 },
+    { label: "\u5BBF\u820D", patterns: ["\u5BBF\u820D", "\u4F4F\u5BBF"], weight: 3 },
+    { label: "\u5076\u5BBF", patterns: ["\u5916\u5BBF"], weight: 3 },
+    { label: "\u5065\u5EB7", patterns: ["\u5065\u5EB7", "\u7167\u8B77"], weight: 3 },
+    { label: "\u8077\u6DAF", patterns: ["\u8077\u6DAF"], weight: 3 },
+    { label: "\u8ACB\u5047", patterns: ["\u8ACB\u5047"], weight: 3 },
+    { label: "\u8868\u55AE", patterns: ["\u8868\u55AE"], weight: 3 },
+    { label: "\u51FA\u570B", patterns: ["\u51FA\u570B"], weight: 3 },
+    { label: "\u5BE6\u7FD2", patterns: ["\u5BE6\u7FD2"], weight: 3 },
+    { label: "\u5B78\u7FD2", patterns: ["\u5B78\u7FD2\u5E73\u53F0"], weight: 3 },
+    { label: "\u8A08\u901A", patterns: ["\u8A08\u901A"], weight: 3 },
+    { label: "\u7814\u767C", patterns: ["\u7814\u767C"], weight: 3 },
+    { label: "\u6821\u5167\u7CFB\u7D71", patterns: ["\u6821\u5167", "\u7CFB\u7D71"], weight: 2 },
+    { label: "\u516C\u544A", patterns: ["\u516C\u544A", "\u901A\u5831"], weight: 3 },
+    { label: "\u6703\u8B70", patterns: ["\u6703\u8B70"], weight: 3 },
+  ] as const;
+
+  const EN_SECTION_KEYWORDS = [
+    { label: "Account", patterns: ["account"], weight: 3 },
+    { label: "Profile", patterns: ["profile", "personal"], weight: 3 },
+    { label: "Advisor", patterns: ["advisor"], weight: 3 },
+    { label: "Credits", patterns: ["credit"], weight: 3 },
+    { label: "Grades", patterns: ["grade", "transcript"], weight: 3 },
+    { label: "Courses", patterns: ["course"], weight: 2 },
+    { label: "Enrollment", patterns: ["enroll", "select course"], weight: 3 },
+    { label: "Schedule", patterns: ["schedule"], weight: 3 },
+    { label: "Feedback", patterns: ["feedback", "comment"], weight: 3 },
+    { label: "Survey", patterns: ["survey", "questionnaire"], weight: 3 },
+    { label: "Voting", patterns: ["vote", "voting"], weight: 3 },
+    { label: "Graduation", patterns: ["graduat"], weight: 3 },
+    { label: "Defense", patterns: ["defense"], weight: 3 },
+    { label: "Tuition", patterns: ["tuition", "payment"], weight: 3 },
+    { label: "Refund", patterns: ["refund"], weight: 3 },
+    { label: "Aid", patterns: ["aid", "grant"], weight: 3 },
+    { label: "Loan", patterns: ["loan"], weight: 3 },
+    { label: "Housing", patterns: ["housing", "dorm"], weight: 3 },
+    { label: "Health", patterns: ["health", "care"], weight: 3 },
+    { label: "Career", patterns: ["career"], weight: 3 },
+    { label: "Forms", patterns: ["form"], weight: 3 },
+    { label: "Leave", patterns: ["leave"], weight: 3 },
+    { label: "Travel", patterns: ["travel"], weight: 3 },
+    { label: "Internship", patterns: ["internship"], weight: 3 },
+    { label: "Systems", patterns: ["system", "platform"], weight: 2 },
+    { label: "Notices", patterns: ["notice", "announcement"], weight: 3 },
+    { label: "Meetings", patterns: ["meeting"], weight: 3 },
+  ] as const;
+
+  const ZH_CATEGORY_KEYWORDS = {
+    profile: ["\u5E33\u865F", "\u500B\u8CC7", "\u5C0E\u5E2B"],
+    "planning-and-enrollment": ["\u9078\u8AB2", "\u9810\u6392", "\u8DE8\u7CFB"],
+    "courses-and-grades": ["\u6210\u7E3E", "\u5B78\u5206", "\u8AB2\u7A0B"],
+    "teaching-feedback": ["\u8A55\u91CF", "\u7968\u9078"],
+    "status-changes": ["\u5FA9\u5B78", "\u8F49\u7CFB", "\u5175\u5F79"],
+    "graduation-and-defense": ["\u7562\u696D", "\u53E3\u8A66", "\u5B78\u4F4D"],
+    "payments-and-aid": ["\u7E73\u8CBB", "\u9000\u8CBB", "\u50B3\u7968"],
+    "financial-aid": ["\u52A9\u5B78", "\u6E1B\u514D", "\u8CB8\u6B3E"],
+    "housing-and-life": ["\u5BBF\u820D", "\u5065\u5EB7", "\u8077\u6DAF"],
+    forms: ["\u8868\u55AE", "\u8ACB\u5047", "\u51FA\u570B"],
+    "campus-systems": ["\u5B78\u7FD2", "\u8A08\u901A", "\u6821\u5167\u7CFB\u7D71"],
+    "announcements-and-voting": ["\u516C\u544A", "\u7968\u9078", "\u6703\u8B70"],
+  } as const satisfies Readonly<Record<string, readonly string[]>>;
+
+  const EN_CATEGORY_KEYWORDS = {
+    profile: ["Account", "Profile", "Advisor"],
+    "planning-and-enrollment": ["Enrollment", "Schedule", "Courses"],
+    "courses-and-grades": ["Grades", "Credits", "Courses"],
+    "teaching-feedback": ["Feedback", "Survey", "Voting"],
+    "status-changes": ["Enrollment"],
+    "graduation-and-defense": ["Graduation", "Defense"],
+    "payments-and-aid": ["Tuition", "Refund", "Aid"],
+    "financial-aid": ["Aid", "Loan"],
+    "housing-and-life": ["Housing", "Health", "Career"],
+    forms: ["Forms", "Leave", "Travel"],
+    "campus-systems": ["Systems", "Courses"],
+    "announcements-and-voting": ["Notices", "Voting", "Meetings"],
+  } as const satisfies Readonly<Record<string, readonly string[]>>;
 
   function normalizeRootEntry(
     entryNode: CcxpLiteLegacySidebarNode,

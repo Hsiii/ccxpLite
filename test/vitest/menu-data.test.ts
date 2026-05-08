@@ -42,11 +42,66 @@ describe("sidebar data", () => {
     expect(model.categories.map((category: { label: string }) => category.label)).toContain(
       "\u6821\u5712\u7CFB\u7D71",
     );
-    expect(model.categories[0].sections[0].label).toBe("\u4E3B\u8981\u529F\u80FD");
+    expect(model.categories[0].sections[0].label).toBe("\u5B78\u5206");
     expect(model.categories[0].sections[0].directLinks[0].label).toBe(
       "\u5B78\u5206&\u62B5\u514D\u5B78\u5206",
     );
     expect(model.categories[0].sections[1].directLinks[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
+  });
+
+  test("uses the single direct-link label when only one synthetic item exists", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
+            insDoc(aux0, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
+            insDoc(foldersTree, gLnk(0, "\u660E\u71C8\u5E73\u53F0", "/portal"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const campusCategory = model.categories.find(
+      (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
+    );
+
+    expect(campusCategory?.sections[0]?.label).toBe("\u660E\u71C8\u5E73\u53F0");
+  });
+
+  test("combines the strongest keywords when multiple synthetic items share a category", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
+            insDoc(aux0, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
+            insDoc(foldersTree, gLnk(0, "\u5B78\u7FD2\u5E73\u53F0", "/learn"));
+            insDoc(foldersTree, gLnk(0, "\u8A08\u901A\u4E2D\u5FC3\u76F8\u95DC\u670D\u52D9", "/cc"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const campusCategory = model.categories.find(
+      (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
+    );
+
+    expect(campusCategory?.sections[0]?.label).toBe("\u5B78\u7FD2\u8207\u8A08\u901A");
   });
 
   test("filters favorites and categories by normalized search text", () => {
