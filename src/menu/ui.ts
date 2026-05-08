@@ -420,17 +420,12 @@
         );
       }
     }
-    if (children.childElementCount > 0) {
-      linkList.append(children);
-      return linkList;
+    if (children.childElementCount === 0) {
+      const emptyText =
+        group.kind === "category" ? (group.emptyMessage ?? strings.emptyGroup) : strings.emptyGroup;
+      children.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
     }
-    const emptyText =
-      group.kind === "category" ? (group.emptyMessage ?? strings.emptyGroup) : strings.emptyGroup;
-    const emptyList = targetDocument.createElement("div");
-    emptyList.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
-    emptyList.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
-    emptyList.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
-    linkList.append(emptyList);
+    linkList.append(children);
     return linkList;
   }
 
