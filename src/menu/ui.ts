@@ -124,7 +124,10 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        filterFavoriteLinks(model.favorites.directLinks, state.searchQuery),
+        filterFavoriteLinks(
+          model.favorites.blocks.flatMap((block) => block.links),
+          state.searchQuery,
+        ),
         filteredCategories,
         state,
         strings,
@@ -143,23 +146,10 @@
     if (!activeLeaf) {
       return undefined;
     }
-    return categories.find((category) => {
-      const { directLinks, sections } = category;
-      return (
-        directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
-        sections.some((section) => sectionContainsLeaf(section, activeLeaf))
-      );
-    });
-  }
-
-  function sectionContainsLeaf(
-    section: CcxpLiteSidebarGroup,
-    activeLeaf: CcxpLiteSidebarLinkItem | undefined,
-  ): boolean {
-    const { directLinks, sections } = section;
-    return (
-      directLinks.some((linkItem) => isSameLeaf(linkItem, activeLeaf)) ||
-      sections.some((childSection) => sectionContainsLeaf(childSection, activeLeaf))
+    return categories.find((category) =>
+      category.blocks.some((block) =>
+        block.links.some((linkItem) => isSameLeaf(linkItem, activeLeaf)),
+      ),
     );
   }
 
@@ -282,24 +272,18 @@
       return sidebarList;
     }
     for (const item of items) {
-      if (item.kind === "link") {
-        sidebarList.append(
-          createClassicLinkButton(targetDocument, navDocument, item.linkItem, 0, strings, rerender),
-        );
-      } else {
-        sidebarList.append(
-          createClassicSidebarNode(
-            targetDocument,
-            navDocument,
-            item,
-            expandedItemIds,
-            0,
-            strings,
-            state,
-            rerender,
-          ),
-        );
-      }
+      sidebarList.append(
+        createClassicSidebarNode(
+          targetDocument,
+          navDocument,
+          item,
+          expandedItemIds,
+          0,
+          strings,
+          state,
+          rerender,
+        ),
+      );
     }
     const nextState = state;
     nextState.classicExpandedItemIds = [...expandedItemIds];
@@ -309,46 +293,57 @@
   function createClassicSidebarItems(
     model: CcxpLiteSidebarModel,
     query: string,
-  ): readonly CcxpLiteSidebarTreeNode[] {
-    const items: CcxpLiteSidebarTreeNode[] = [model.favorites, ...model.categories];
+  ): readonly CcxpLiteSidebarCategoryNode[] {
+    const items: CcxpLiteSidebarCategoryNode[] = [model.favorites, ...model.categories];
     if (query === "") {
       return items;
     }
     return items
       .map((item) => filterClassicSidebarItem(item, query))
-      .filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
+      .filter((item): item is CcxpLiteSidebarCategoryNode => item !== undefined);
   }
 
   function filterClassicSidebarItem(
-    item: CcxpLiteSidebarTreeNode,
+    item: CcxpLiteSidebarCategoryNode,
     query: string,
-  ): CcxpLiteSidebarTreeNode | undefined {
+  ): CcxpLiteSidebarCategoryNode | undefined {
     const normalizedQuery = normalizeClassicSearchText(query);
-    const itemLabel = item.kind === "link" ? item.linkItem.label : item.label;
-    const itemMatches = isClassicSearchMatch(itemLabel, normalizedQuery);
-    if (item.kind === "link") {
-      return itemMatches ? item : undefined;
-    }
-    const directLinks = item.directLinks.filter((linkItem) =>
-      isClassicSearchMatch(linkItem.label, normalizedQuery),
-    );
-    const sections = item.sections
-      .map((section) => filterClassicSidebarItem(section, normalizedQuery))
-      .filter((node): node is CcxpLiteSidebarGroup => node !== undefined && node.kind !== "link");
-    if (!itemMatches && directLinks.length === 0 && sections.length === 0) {
+    const itemMatches = isClassicSearchMatch(item.label, normalizedQuery);
+    const blocks = item.blocks
+      .map((block) => filterClassicSidebarBlock(block, normalizedQuery))
+      .filter((node): node is CcxpLiteSidebarBlock => node !== undefined);
+    if (!itemMatches && blocks.length === 0) {
       return undefined;
     }
     return {
       ...item,
-      directLinks: itemMatches ? item.directLinks : directLinks,
-      sections: itemMatches ? item.sections : sections,
+      blocks: itemMatches ? item.blocks : blocks,
+    };
+  }
+
+  function filterClassicSidebarBlock(
+    block: CcxpLiteSidebarBlock,
+    normalizedQuery: string,
+  ): CcxpLiteSidebarBlock | undefined {
+    if (isClassicSearchMatch(block.label, normalizedQuery)) {
+      return block;
+    }
+    const links = block.links.filter((linkItem) =>
+      isClassicSearchMatch(linkItem.label, normalizedQuery),
+    );
+    if (links.length === 0) {
+      return undefined;
+    }
+    return {
+      ...block,
+      links,
     };
   }
 
   function createClassicSidebarNode(
     targetDocument: Document,
     navDocument: Document,
-    group: CcxpLiteSidebarTreeNode,
+    group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
     expandedItemIds: ReadonlySet<string>,
     depth: number,
     strings: Readonly<Record<string, string>>,
@@ -395,8 +390,23 @@
     const children = targetDocument.createElement("div");
     children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
-    if (group.kind !== "link") {
-      for (const linkItem of group.directLinks) {
+    if (group.kind === "category") {
+      for (const block of group.blocks) {
+        children.append(
+          createClassicSidebarNode(
+            targetDocument,
+            navDocument,
+            block,
+            expandedItemIds,
+            depth + 1,
+            strings,
+            state,
+            rerender,
+          ),
+        );
+      }
+    } else {
+      for (const linkItem of group.links) {
         children.append(
           createClassicLinkButton(
             targetDocument,
@@ -408,20 +418,6 @@
           ),
         );
       }
-      for (const section of group.sections) {
-        children.append(
-          createClassicSidebarNode(
-            targetDocument,
-            navDocument,
-            section as unknown as CcxpLiteSidebarTreeNode,
-            expandedItemIds,
-            depth + 1,
-            strings,
-            state,
-            rerender,
-          ),
-        );
-      }
     }
     if (children.childElementCount > 0) {
       linkList.append(children);
@@ -429,7 +425,8 @@
     }
     const empty = targetDocument.createElement("div");
     empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
-    empty.textContent = (group as CcxpLiteSidebarGroup).emptyMessage ?? strings.emptyGroup;
+    empty.textContent =
+      group.kind === "category" ? (group.emptyMessage ?? strings.emptyGroup) : strings.emptyGroup;
     linkList.append(empty);
     return linkList;
   }
@@ -472,30 +469,33 @@
   }
 
   function collectClassicExpandedState(
-    item: CcxpLiteSidebarTreeNode,
+    item: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
     normalizedQuery: string,
   ): {
     hasMatch: boolean;
     expandedItemIds: readonly string[];
   } {
-    const itemLabel = item.kind === "link" ? item.linkItem.label : item.label;
-    const itemMatches = isClassicSearchMatch(itemLabel, normalizedQuery);
+    const itemMatches = isClassicSearchMatch(item.label, normalizedQuery);
     let hasMatch = itemMatches;
     const expandedItemIds: string[] = [];
-    if (item.kind !== "link") {
-      for (const linkItem of item.directLinks) {
-        if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
-          hasMatch = true;
-        }
-      }
-      for (const section of item.sections) {
-        const childState = collectClassicExpandedState(section, normalizedQuery);
+    if (item.kind === "category") {
+      for (const block of item.blocks) {
+        const childState = collectClassicExpandedState(block, normalizedQuery);
         expandedItemIds.push(...childState.expandedItemIds);
         if (childState.hasMatch) {
           hasMatch = true;
         }
       }
-      if (hasMatch && item.sections.length > 0) {
+      if (hasMatch && item.blocks.length > 0) {
+        expandedItemIds.push(item.id);
+      }
+    } else {
+      for (const linkItem of item.links) {
+        if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
+          hasMatch = true;
+        }
+      }
+      if (hasMatch && item.links.length > 0) {
         expandedItemIds.push(item.id);
       }
     }
@@ -656,19 +656,8 @@
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-category-detail";
     if (filteredCategory) {
-      if (filteredCategory.directLinks.length > 0) {
-        body.append(
-          createLinkCollection(
-            targetDocument,
-            navDocument,
-            filteredCategory.directLinks,
-            strings,
-            rerender,
-          ),
-        );
-      }
-      for (const group of filteredCategory.sections) {
-        body.append(createCategoryBlock(targetDocument, navDocument, group, strings, rerender));
+      for (const block of filteredCategory.blocks) {
+        body.append(createCategoryBlock(targetDocument, navDocument, block, strings, rerender));
       }
       if (body.childElementCount === 0) {
         body.append(
@@ -800,44 +789,26 @@
   function createCategoryBlock(
     targetDocument: Document,
     navDocument: Document,
-    group: CcxpLiteSidebarGroup,
+    blockItem: CcxpLiteSidebarBlock,
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
     const block = targetDocument.createElement("div");
     block.className = "ccxp-lite-category-block";
-    if (group.label !== "") {
+    if (blockItem.label !== "") {
       const title = targetDocument.createElement("h3");
       title.className = "ccxp-lite-category-block-title";
-      title.textContent = group.label;
+      title.textContent = blockItem.label;
       block.append(title);
     }
-    if (group.directLinks.length > 0) {
-      for (const linkItem of group.directLinks) {
+    if (blockItem.links.length > 0) {
+      for (const linkItem of blockItem.links) {
         block.append(
           createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender),
         );
       }
     }
-    for (const section of group.sections) {
-      block.append(createCategoryBlock(targetDocument, navDocument, section, strings, rerender));
-    }
     return block;
-  }
-
-  function createLinkCollection(
-    targetDocument: Document,
-    navDocument: Document,
-    linkItems: readonly CcxpLiteSidebarLinkItem[],
-    strings: Readonly<Record<string, string>>,
-    rerender: () => void,
-  ): HTMLElement {
-    const list = targetDocument.createElement("div");
-    list.className = "ccxp-lite-link-collection";
-    for (const linkItem of linkItems) {
-      list.append(createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
-    }
-    return list;
   }
 
   function createSectionHeading(targetDocument: Document, text: string): HTMLElement {

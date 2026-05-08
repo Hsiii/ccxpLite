@@ -18,7 +18,7 @@ describe("sidebar destination states", () => {
     );
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
-    state.activeLeaf = createSidebarModel().categories[0].sections[0].directLinks[0];
+    state.activeLeaf = createSidebarModel().categories[0].blocks[0].links[0];
     window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
     requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(
       window.document,
@@ -54,7 +54,7 @@ describe("sidebar destination states", () => {
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
     state.activeLeaf = {
-      ...rerenderModel.categories[0].sections[0].directLinks[0],
+      ...rerenderModel.categories[0].blocks[0].links[0],
       nonce: 1,
     };
     window.setTimeout = ((callback: TimerHandler) => {
@@ -95,7 +95,7 @@ describe("sidebar destination states", () => {
     );
     state.sidebarVariant = "layered";
     state.currentCategoryId = "category-courses";
-    state.activeLeaf = model.categories[0].sections[0].directLinks[0];
+    state.activeLeaf = model.categories[0].blocks[0].links[0];
     window.setTimeout = vi.fn(() => 1) as unknown as typeof window.setTimeout;
     requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi").renderSidebar(document, document, model);
     const openButton = requireValue(

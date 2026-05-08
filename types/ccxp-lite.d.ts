@@ -57,15 +57,11 @@ declare global {
     nonce?: number;
   }
 
-  interface CcxpLiteSidebarGroup {
+  interface CcxpLiteSidebarBlock {
     id: string;
     label: string;
-    directLinks: readonly CcxpLiteSidebarLinkItem[];
-    sections: readonly CcxpLiteSidebarGroup[];
-    kind: "group" | "category";
-    emptyMessage?: string;
-    icon?: string;
-    summary?: string;
+    links: readonly CcxpLiteSidebarLinkItem[];
+    kind: "block";
   }
 
   interface CcxpLiteSidebarLinkNode {
@@ -75,17 +71,19 @@ declare global {
     kind: "link";
   }
 
-  interface CcxpLiteSidebarSectionNode extends CcxpLiteSidebarGroup {
-    kind: "group";
-  }
-
-  interface CcxpLiteSidebarCategoryNode extends CcxpLiteSidebarGroup {
+  interface CcxpLiteSidebarCategoryNode {
+    id: string;
+    label: string;
+    blocks: readonly CcxpLiteSidebarBlock[];
     kind: "category";
+    emptyMessage?: string;
+    icon?: string;
+    summary?: string;
   }
 
   type CcxpLiteSidebarTreeNode =
     | CcxpLiteSidebarLinkNode
-    | CcxpLiteSidebarSectionNode
+    | CcxpLiteSidebarBlock
     | CcxpLiteSidebarCategoryNode;
 
   interface CcxpLiteSidebarModel {
