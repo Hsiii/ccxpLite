@@ -373,6 +373,7 @@
     button.append(createRowLabel(targetDocument, group.label, false));
     button.append(createClassicChevronIcon(targetDocument, isExpanded));
     button.addEventListener("click", () => {
+      persistSidebarScroll(targetDocument, "root");
       const nextExpandedItemIds = new Set(expandedItemIds);
       if (nextExpandedItemIds.has(group.id)) {
         nextExpandedItemIds.delete(group.id);
