@@ -1029,6 +1029,15 @@ html[data-ccxp-lite-scope="nav"] body {
   font: var(--ccxp-lite-type-nav);
 }
 
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-empty-row {
+  cursor: default;
+  color: var(--ccxp-lite-text-muted);
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-empty-row:hover {
+  background: transparent;
+}
+
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-leading {
   display: inline-flex;
   flex: 0 0 var(--ccxp-lite-size-sidebar-category-leading);
