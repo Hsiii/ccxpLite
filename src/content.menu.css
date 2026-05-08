@@ -1042,9 +1042,7 @@ html[data-ccxp-lite-scope="nav"] body {
   .ccxp-lite-empty-row
   .ccxp-lite-row-label-wrap {
   padding: 0 var(--ccxp-lite-spacing-inline-sm);
-  border: 1px dashed var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-sm);
-  background: var(--ccxp-lite-surface-muted);
+  color: var(--ccxp-lite-text-muted);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-leading {
