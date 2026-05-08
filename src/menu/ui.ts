@@ -424,11 +424,13 @@
       linkList.append(children);
       return linkList;
     }
-    const empty = targetDocument.createElement("div");
-    empty.className = `ccxp-lite-empty${group.id === "category-favorites" ? " ccxp-lite-empty-favorites" : ""}`;
-    empty.textContent =
+    const emptyText =
       group.kind === "category" ? (group.emptyMessage ?? strings.emptyGroup) : strings.emptyGroup;
-    linkList.append(empty);
+    const emptyList = targetDocument.createElement("div");
+    emptyList.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
+    emptyList.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
+    emptyList.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
+    linkList.append(emptyList);
     return linkList;
   }
 
@@ -515,6 +517,24 @@
     spacer.className = "ccxp-lite-row-leading";
     spacer.setAttribute("aria-hidden", "true");
     return spacer;
+  }
+
+  function createClassicEmptyRow(
+    targetDocument: Document,
+    text: string,
+    depth: number,
+  ): HTMLElement {
+    const row = targetDocument.createElement("div");
+    row.className = "ccxp-lite-row-button ccxp-lite-item ccxp-lite-empty-row";
+    row.style.setProperty(
+      "--ccxp-lite-row-depth",
+      String(getClassicSidebarIndentLevel("link", depth)),
+    );
+    if (depth > 0) {
+      row.append(createClassicRowLeadingSpacer(targetDocument));
+    }
+    row.append(createRowLabel(targetDocument, text, false));
+    return row;
   }
 
   function createClassicChevronIcon(targetDocument: Document, isExpanded: boolean): SVGElement {
