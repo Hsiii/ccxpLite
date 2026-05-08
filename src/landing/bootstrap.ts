@@ -160,7 +160,7 @@
       langSection.append(languageLinks);
     }
     repoLink.addEventListener("click", () => {
-      window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
+      window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
     });
     const loginHeaderLabel = targetDocument.createElement("h1");
     loginHeaderLabel.className = "ccxp-lite-landing-login-label";

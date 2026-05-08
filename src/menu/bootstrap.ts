@@ -155,7 +155,7 @@
       });
 
       repoLink.addEventListener("click", () => {
-        window.open("https://github.com/Hsiii/ccxpLite", "_blank", "noopener,noreferrer");
+        window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
       });
 
       hostBody.dataset.ccxpLiteSidebarApplied = "true";
