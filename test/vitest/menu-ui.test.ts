@@ -102,12 +102,21 @@ describe("sidebar ui", () => {
     model.favorites.blocks = [];
 
     sidebarUi.renderSidebar(document, document, model);
-    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain(
+    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
+      "\u627E\u4E0D\u5230\u7B26\u5408\u9805\u76EE",
+    );
+    expect(document.querySelector(".ccxp-lite-empty-body")?.textContent).toContain(
       "\u8A66\u8A66\u5176\u4ED6\u95DC\u9375\u5B57",
     );
 
     state.searchQuery = "";
+    state.classicExpandedItemIds = ["category-favorites"];
     sidebarUi.renderSidebar(document, document, model);
-    expect(document.querySelector(".ccxp-lite-empty")?.textContent).toContain("No favorites yet");
+    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
+      "\u5C1A\u672A\u91D8\u9078\u529F\u80FD",
+    );
+    expect(document.querySelector(".ccxp-lite-empty-body")?.textContent).toContain(
+      "\u5373\u53EF\u5C07\u5B83\u56FA\u5B9A\u5728\u9019\u88E1",
+    );
   });
 });

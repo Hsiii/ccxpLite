@@ -45,7 +45,7 @@ export function createSidebarModel(): CcxpLiteSidebarModel {
       label: "Favorite",
       icon: "star",
       blocks: [{ id: "favorites-block", label: "", links: [gradesLink], kind: "block" }],
-      emptyMessage: "No favorites yet",
+      emptyMessage: "Press star at any function to save it here",
       kind: "category",
     },
     categories: [
