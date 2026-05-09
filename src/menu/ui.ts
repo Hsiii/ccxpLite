@@ -264,11 +264,13 @@
       }
     }
     if (items.length === 0) {
-      const empty = targetDocument.createElement("div");
-      empty.className = "ccxp-lite-empty";
-      empty.textContent =
-        state.searchQuery === "" ? strings.emptyGroup : strings.sidebarSearchEmptyBody;
-      sidebarList.append(empty);
+      sidebarList.append(
+        createEmptyState(
+          targetDocument,
+          strings.sidebarSearchEmptyTitle,
+          strings.sidebarSearchEmptyBody,
+        ),
+      );
       return sidebarList;
     }
     for (const item of items) {
@@ -421,9 +423,21 @@
       }
     }
     if (children.childElementCount === 0) {
-      const emptyText =
-        group.kind === "category" ? (group.emptyMessage ?? strings.emptyGroup) : strings.emptyGroup;
-      children.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
+      if (group.kind === "category" && group.id === "category-favorites") {
+        children.append(
+          createEmptyState(
+            targetDocument,
+            strings.sidebarFavoritesEmptyTitle,
+            strings.sidebarFavoritesEmptyBody,
+          ),
+        );
+      } else {
+        const emptyText =
+          group.kind === "category"
+            ? (group.emptyMessage ?? strings.emptyGroup)
+            : strings.emptyGroup;
+        children.append(createClassicEmptyRow(targetDocument, emptyText, depth + 1));
+      }
     }
     linkList.append(children);
     return linkList;
