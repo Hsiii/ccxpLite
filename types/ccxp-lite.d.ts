@@ -45,7 +45,7 @@ declare global {
   }
 
   interface CcxpLiteCaptchaPredictor {
-    predictDigits: (imageBytes: unknown) => Promise<string> | string;
+    predictDigits: (imageSource: unknown) => Promise<string> | string;
   }
 
   interface CcxpLiteClickLinkArgs {

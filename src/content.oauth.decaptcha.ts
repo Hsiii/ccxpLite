@@ -86,6 +86,10 @@ function oauthArgmax(values: Float32Array | readonly number[]) {
   return bestIndex;
 }
 
+function isOauthImageElement(value: unknown): value is HTMLImageElement {
+  return typeof HTMLImageElement !== "undefined" && value instanceof HTMLImageElement;
+}
+
 function flattenOauthFeatureTokens(featureTensor: CcxpLitePreparedTensor): readonly Float32Array[] {
   const [channels, height, width] = featureTensor.shape;
   const tokenCount = height * width;
@@ -202,8 +206,33 @@ function oauthSoftmax(values: Float32Array) {
     };
   }
 
-  async function decodeImageData(imageBytes: unknown) {
-    const bytes = toOauthUint8Array(imageBytes);
+  async function decodeImageData(imageSource: unknown) {
+    if (isOauthImageElement(imageSource)) {
+      const image = imageSource;
+      const width = image.naturalWidth > 0 ? image.naturalWidth : image.width;
+      const height = image.naturalHeight > 0 ? image.naturalHeight : image.height;
+      const canvas =
+        typeof OffscreenCanvas === "undefined"
+          ? runtimeScope.document.createElement("canvas")
+          : new OffscreenCanvas(width, height);
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { willReadFrequently: true }) as
+        | OffscreenCanvasRenderingContext2D
+        | CanvasRenderingContext2D
+        | null;
+      if (!context) {
+        throw new Error("Failed to create 2d canvas context.");
+      }
+      context.drawImage(image, 0, 0);
+      return {
+        width,
+        height,
+        data: context.getImageData(0, 0, width, height).data,
+      };
+    }
+
+    const bytes = toOauthUint8Array(imageSource);
     const blobBytes = new Uint8Array(bytes);
     if (typeof Blob === "undefined") {
       throw new TypeError("Blob is not available for captcha decoding.");
