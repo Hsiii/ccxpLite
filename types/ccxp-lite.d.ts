@@ -29,6 +29,8 @@ declare global {
     digits: number;
     eps: number;
     cropRight: number;
+    featureHeight?: number;
+    featureWidth?: number;
     tensors: Record<string, CcxpLitePreparedTensor>;
   }
 
@@ -36,8 +38,13 @@ declare global {
     digits?: number;
     eps?: number;
     cropRight?: number;
+    featureHeight?: number;
+    featureWidth?: number;
     tensors?: Record<string, CcxpLiteTensorSource>;
     preparedTensors?: Record<string, CcxpLitePreparedTensor>;
+  }
+
+  interface CcxpLiteCaptchaPredictor {
     predictDigits: (imageBytes: unknown) => Promise<string> | string;
   }
 
@@ -107,6 +114,7 @@ declare global {
     image: HTMLImageElement;
     mediaRow: HTMLElement;
     scope: ParentNode;
+    kind: "legacy" | "oauth";
   }
 
   interface CcxpLiteCaptchaAutofillState extends CcxpLiteCaptchaField {
@@ -552,8 +560,10 @@ declare global {
     menuRuntime?: Record<string, unknown>;
     menuState?: Record<string, unknown>;
     menuUi?: Record<string, unknown>;
-    decaptcha?: CcxpLiteDecaptchaModel;
+    decaptcha?: CcxpLiteCaptchaPredictor;
     decaptchaModel?: CcxpLiteDecaptchaModel;
+    oauthDecaptcha?: CcxpLiteCaptchaPredictor;
+    oauthDecaptchaModel?: CcxpLiteDecaptchaModel;
     isOrphan?: boolean;
     cleanupTasks?: Array<() => void>;
   }

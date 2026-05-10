@@ -87,10 +87,13 @@
   }
 
   function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | undefined {
-    const input = rootNode.querySelector("input[name='passwd2']");
+    const input = rootNode.querySelector<HTMLInputElement>(
+      "input[name='passwd2'], input[name='captcha']",
+    );
     if (!input) {
       return undefined;
     }
+    const kind = input.name === "captcha" ? "oauth" : "legacy";
     const scope =
       input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") ?? rootNode;
     const mediaRow =
@@ -98,19 +101,21 @@
       rootNode.querySelector(".ccxp-lite-captcha-media-row");
     const image =
       scope.querySelector(
-        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
+        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php'], img[src*='captchaimg.php'], img[alt='CAPTCHA Image']",
       ) ??
       rootNode.querySelector(
-        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php']",
+        ".ccxp-lite-captcha-media-row > img, .ccxp-lite-captcha-image-shell > img, img[src*='auth_img.php'], img[src*='captchaimg.php'], img[alt='CAPTCHA Image']",
       );
-    if (!image || !mediaRow) {
+    const resolvedMediaRow = (mediaRow ?? image?.parentElement) as HTMLElement | null;
+    if (!image || !resolvedMediaRow) {
       return undefined;
     }
     return {
-      input: input as HTMLInputElement,
+      input,
       image: image as HTMLImageElement,
-      mediaRow: mediaRow as HTMLElement,
+      mediaRow: resolvedMediaRow,
       scope,
+      kind,
     };
   }
 
@@ -253,7 +258,7 @@
       return await captchaState.pendingRequest;
     }
     const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
-      .then(async (imageBytes) => await requestCaptchaAnswer(captchaSrc, imageBytes))
+      .then(async (imageBytes) => await requestCaptchaAnswer(captchaState, captchaSrc, imageBytes))
       .then((answer) => {
         if (answer !== "") {
           captchaState.cachedSrc = captchaSrc;
@@ -306,12 +311,21 @@
     });
   }
 
-  async function requestCaptchaAnswer(_captchaSrc: string, imageBytes: ArrayBuffer) {
-    const dc = namespace.decaptcha;
-    if (!dc) {
+  async function requestCaptchaAnswer(
+    state: CcxpLiteCaptchaAutofillState,
+    captchaSrc: string,
+    imageBytes: ArrayBuffer,
+  ) {
+    const predictor =
+      state.kind === "oauth" || captchaSrc.includes("captchaimg.php")
+        ? namespace.oauthDecaptcha
+        : namespace.decaptcha;
+    if (!predictor) {
       return "";
     }
-    return await Promise.resolve(dc.predictDigits(imageBytes)).then((answer) => answer.trim());
+    return await Promise.resolve(predictor.predictDigits(imageBytes)).then((answer) =>
+      answer.trim(),
+    );
   }
   interface CcxpLiteCaptchaError extends Error {
     code?: string;
