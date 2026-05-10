@@ -9,8 +9,64 @@
     return;
   }
 
+  const MAX_BIND_ATTEMPTS = 40;
+  const RETRY_DELAY_MS = 250;
+  let bindAttempts = 0;
+  let retryTimerId: number | undefined;
+  let fieldObserver: MutationObserver | undefined;
+
+  const isAutofillBound = () =>
+    targetDocument.querySelector("form")?.dataset.ccxpLiteCaptchaAutofillBound === "true";
+
+  const stopRetry = () => {
+    if (retryTimerId !== undefined) {
+      globalThis.clearTimeout(retryTimerId);
+      retryTimerId = undefined;
+    }
+    fieldObserver?.disconnect();
+    fieldObserver = undefined;
+  };
+
+  const tryBindAutofill = () => {
+    if (isAutofillBound()) {
+      stopRetry();
+      return true;
+    }
+    const state = landingCaptcha.getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
+    if (!state) {
+      return false;
+    }
+    landingCaptcha.enableLoginCaptchaAutofill(targetDocument, targetDocument, state);
+    if (isAutofillBound()) {
+      stopRetry();
+      return true;
+    }
+    return false;
+  };
+
+  const scheduleRetry = () => {
+    if (bindAttempts >= MAX_BIND_ATTEMPTS) {
+      stopRetry();
+      return;
+    }
+    retryTimerId = globalThis.setTimeout(
+      () => {
+        retryTimerId = undefined;
+        bindAttempts++;
+        if (!tryBindAutofill()) {
+          scheduleRetry();
+        }
+      },
+      RETRY_DELAY_MS,
+      undefined,
+    );
+  };
+
   const bindAutofill = () => {
-    landingCaptcha.enableLoginCaptchaAutofill(targetDocument, targetDocument);
+    bindAttempts++;
+    if (!tryBindAutofill()) {
+      scheduleRetry();
+    }
   };
 
   if (targetDocument.readyState === "loading") {
@@ -20,6 +76,18 @@
   } else {
     bindAutofill();
   }
+
+  fieldObserver = new MutationObserver(() => {
+    if (isAutofillBound()) {
+      stopRetry();
+      return;
+    }
+    tryBindAutofill();
+  });
+  fieldObserver.observe(targetDocument.documentElement, {
+    childList: true,
+    subtree: true,
+  });
 
   globalThis.requestAnimationFrame(bindAutofill);
   globalThis.setTimeout(bindAutofill, 0, undefined);
