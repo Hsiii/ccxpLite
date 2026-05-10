@@ -354,13 +354,39 @@
     );
   }
 
+  async function waitForCaptchaImageLoad(image: HTMLImageElement) {
+    if (image.complete && image.naturalWidth > 0 && image.naturalHeight > 0) {
+      return image;
+    }
+    await new Promise<void>((resolve, reject) => {
+      const cleanup = () => {
+        image.removeEventListener("load", handleLoad);
+        image.removeEventListener("error", handleError);
+      };
+      const handleLoad = () => {
+        cleanup();
+        resolve();
+      };
+      const handleError = () => {
+        cleanup();
+        reject(new Error("captcha-image-load-failed"));
+      };
+      image.addEventListener("load", handleLoad, { once: true });
+      image.addEventListener("error", handleError, { once: true });
+    });
+    if (image.naturalWidth <= 0 || image.naturalHeight <= 0) {
+      throw new Error("captcha-image-size-unavailable");
+    }
+    return image;
+  }
+
   async function resolveCaptchaPredictionSource(
     targetDocument: Document,
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
   ) {
     if (state.kind === "oauth") {
-      return state.image;
+      return await waitForCaptchaImageLoad(state.image);
     }
     return await downloadCaptchaImageBytes(targetDocument, captchaSrc);
   }
