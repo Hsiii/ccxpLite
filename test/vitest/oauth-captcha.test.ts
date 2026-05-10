@@ -34,13 +34,7 @@ describe("oauth captcha", () => {
     window.CCXP_LITE.decaptcha = { predictDigits: legacyPredictDigits };
     window.CCXP_LITE.oauthDecaptcha = { predictDigits: oauthPredictDigits };
 
-    let resolveFetch: ((value: Response) => void) | undefined;
-    window.fetch = vi.fn(
-      async () =>
-        await new Promise((resolve) => {
-          resolveFetch = resolve;
-        }),
-    ) as unknown as typeof window.fetch;
+    window.fetch = vi.fn() as unknown as typeof window.fetch;
 
     loadModules(window, oauthCaptchaModulePaths);
 
@@ -53,15 +47,15 @@ describe("oauth captcha", () => {
     );
     expect(input.getAttribute("aria-busy")).toBe("true");
 
-    resolveFetch?.({
-      ok: true,
-      arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
-    } as Response);
     await flushPromises();
     await flushPromises();
 
     expect(input.value).toBe("7688");
     expect(oauthPredictDigits).toHaveBeenCalledTimes(1);
+    expect(oauthPredictDigits.mock.calls[0]?.[0]).toBe(
+      document.querySelector<HTMLImageElement>("img[alt='CAPTCHA Image']"),
+    );
     expect(legacyPredictDigits).not.toHaveBeenCalled();
+    expect(window.fetch).not.toHaveBeenCalled();
   });
 });

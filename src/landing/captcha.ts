@@ -257,8 +257,11 @@
     if (captchaState.pendingSrc === captchaSrc && captchaState.pendingRequest !== undefined) {
       return await captchaState.pendingRequest;
     }
-    const request = downloadCaptchaImageBytes(targetDocument, captchaSrc)
-      .then(async (imageBytes) => await requestCaptchaAnswer(captchaState, captchaSrc, imageBytes))
+    const request = resolveCaptchaPredictionSource(targetDocument, captchaState, captchaSrc)
+      .then(
+        async (predictionSource) =>
+          await requestCaptchaAnswer(captchaState, captchaSrc, predictionSource),
+      )
       .then((answer) => {
         if (answer !== "") {
           captchaState.cachedSrc = captchaSrc;
@@ -314,7 +317,7 @@
   async function requestCaptchaAnswer(
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
-    imageBytes: ArrayBuffer,
+    predictionSource: ArrayBuffer | HTMLImageElement,
   ) {
     const predictor =
       state.kind === "oauth" || captchaSrc.includes("captchaimg.php")
@@ -323,9 +326,20 @@
     if (!predictor) {
       return "";
     }
-    return await Promise.resolve(predictor.predictDigits(imageBytes)).then((answer) =>
+    return await Promise.resolve(predictor.predictDigits(predictionSource)).then((answer) =>
       answer.trim(),
     );
+  }
+
+  async function resolveCaptchaPredictionSource(
+    targetDocument: Document,
+    state: CcxpLiteCaptchaAutofillState,
+    captchaSrc: string,
+  ) {
+    if (state.kind === "oauth") {
+      return state.image;
+    }
+    return await downloadCaptchaImageBytes(targetDocument, captchaSrc);
   }
   interface CcxpLiteCaptchaError extends Error {
     code?: string;
