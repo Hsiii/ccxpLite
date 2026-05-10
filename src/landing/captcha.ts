@@ -18,22 +18,37 @@
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
-    const { input: captchaInput, image: captchaImage } = state;
     const triggerAutofill = () => {
-      autofillCaptchaInput(targetDocument, captchaImage, captchaInput, state);
+      syncCaptchaAutofillState(targetDocument, state, rootNode);
+      autofillCaptchaInput(targetDocument, state.image, state.input, state);
     };
-    captchaImage.addEventListener("load", triggerAutofill);
+    state.image.addEventListener("load", triggerAutofill);
     const observer = new MutationObserver((mutations: readonly MutationRecord[]) => {
       if (namespace.sharedDom?.ensureContextValid() === false) {
         observer.disconnect();
         return;
       }
-      if (mutations.some((mutation) => mutation.attributeName === "src")) {
+      const shouldRefresh = mutations.some((mutation) => {
+        if (mutation.type === "attributes" && mutation.attributeName === "src") {
+          return true;
+        }
+        if (mutation.type !== "childList") {
+          return false;
+        }
+        return (
+          [...mutation.addedNodes, ...mutation.removedNodes].some(
+            (node) => node instanceof HTMLImageElement,
+          ) || mutation.target instanceof HTMLImageElement
+        );
+      });
+      if (shouldRefresh) {
         triggerAutofill();
       }
     });
-    observer.observe(captchaImage, {
+    observer.observe(state.mediaRow, {
       attributes: true,
+      childList: true,
+      subtree: true,
       attributeFilter: ["src"],
     });
     triggerAutofill();
@@ -76,13 +91,21 @@
     rootNode: ParentNode,
   ) {
     const captchaState = state;
+    const previousImage = captchaState.image;
     const latestField = resolveCaptchaField(rootNode);
     if (!latestField) {
       return captchaState;
     }
     captchaState.input = latestField.input;
     captchaState.image = latestField.image;
-    primeCaptchaAutofill(targetDocument, captchaState);
+    captchaState.mediaRow = latestField.mediaRow;
+    captchaState.scope = latestField.scope;
+    captchaState.kind = latestField.kind;
+    if (captchaState.image !== previousImage) {
+      captchaState.image.addEventListener("load", () => {
+        autofillCaptchaInput(targetDocument, captchaState.image, captchaState.input, captchaState);
+      });
+    }
     return captchaState;
   }
 
@@ -166,7 +189,7 @@
   function autofillCaptchaInput(
     targetDocument: Document,
     captchaImage: HTMLImageElement,
-    captchaInput: HTMLInputElement,
+    _captchaInput: HTMLInputElement,
     state: CcxpLiteCaptchaAutofillState,
   ) {
     const captchaSrc = getCaptchaRequestSource(captchaImage, targetDocument);
@@ -187,7 +210,7 @@
         if (requestToken !== captchaState.requestToken || answer === "") {
           return;
         }
-        const resolvedInput = captchaInput;
+        const resolvedInput = state.input;
         resolvedInput.value = answer;
         resolvedInput.dispatchEvent(new Event("input", { bubbles: true }));
         resolvedInput.dispatchEvent(new Event("change", { bubbles: true }));
