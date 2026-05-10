@@ -63,6 +63,18 @@
       ],
       "run_at": "document_start",
       "js": ["content.pe14d.js"]
+    },
+    {
+      "matches": ["https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php*"],
+      "run_at": "document_start",
+      "js": [
+        "shared/dom.js",
+        "content.oauth.decaptcha.model.js",
+        "content.oauth.decaptcha.js",
+        "landing/locale.js",
+        "landing/captcha.js",
+        "oauth/captcha.js"
+      ]
     }
   ]
 }

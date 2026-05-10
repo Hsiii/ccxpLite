@@ -38,3 +38,38 @@ export function createLandingLoginHtml(): string {
     </html>
   `;
 }
+
+export function createOauthLoginHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="zh">
+      <head></head>
+      <body>
+        <form method="post" action="/v1.1/authorize.php">
+          <label>
+            <span>\u5B78\u865F\u3001\u54E1\u5DE5\u7DE8\u865F</span>
+            <input type="text" name="id" value="" />
+          </label>
+          <label>
+            <span>\u5BC6\u78BC</span>
+            <input type="password" name="password" value="" />
+          </label>
+          <label>
+            <span>\u9A57\u8B49\u78BC</span>
+            <input type="number" name="captcha" value="" />
+          </label>
+          <div class="oauth-captcha-shell">
+            <img alt="CAPTCHA Image" src="captchaimg.php?id=demo-20260511" />
+            <a href="#" onclick="securimageRefreshCaptcha('captcha_image', 'captcha_image_audioObj'); return false">
+              <img alt="Refresh Image" src="refresh.png" />
+            </a>
+            <a href="captchaplay.php?id=demo-20260511">
+              <img alt="Play CAPTCHA Audio" src="audio.png" />
+            </a>
+          </div>
+          <button type="submit">\u767B\u5165</button>
+        </form>
+      </body>
+    </html>
+  `;
+}

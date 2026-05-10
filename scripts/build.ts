@@ -23,9 +23,25 @@ const unpackedDir = path.join(distDir, "unpacked");
 const outputZip = path.join(distDir, `ccxpLite-v${version}.zip`);
 const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
-const checkpointPath = path.resolve(projectRoot, "..", "ccxpDecaptcha", "out", "best.pt");
+const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_decaptcha_model.py");
 const generatedModelPath = path.join(srcDir, "content.decaptcha.model.ts");
+const generatedOauthModelPath = path.join(srcDir, "content.oauth.decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
+
+function resolveCheckpointPath(relativeSegments: readonly string[]) {
+  const repoCandidates = [
+    path.resolve(projectRoot, "..", "ccxpDecaptcha"),
+    path.resolve(projectRoot, "..", "..", "Archive", "ccxpDecaptcha"),
+  ];
+  for (const candidate of repoCandidates) {
+    const resolved = path.join(candidate, ...relativeSegments);
+    if (existsSync(resolved)) {
+      return resolved;
+    }
+  }
+  return undefined;
+}
+
 function copyTree(
   sourceDir: string,
   targetDir: string,
@@ -60,7 +76,8 @@ try {
   rmSync(outputZip, { force: true });
   mkdirSync(unpackedDir, { recursive: true });
 
-  if (existsSync(exportScriptPath) && existsSync(checkpointPath)) {
+  const checkpointPath = resolveCheckpointPath(["out", "best.pt"]);
+  if (existsSync(exportScriptPath) && checkpointPath !== undefined) {
     const exportResult = spawnSync(
       "python3",
       [exportScriptPath, "--checkpoint", checkpointPath, "--output", generatedModelPath],
@@ -75,8 +92,47 @@ try {
     }
   }
 
+  const oauthCheckpointPath = resolveCheckpointPath(["out", "oauth", "best.pt"]);
+  if (existsSync(exportOauthScriptPath) && oauthCheckpointPath !== undefined) {
+    const exportResult = spawnSync(
+      "python3",
+      [
+        exportOauthScriptPath,
+        "--checkpoint",
+        oauthCheckpointPath,
+        "--output",
+        generatedOauthModelPath,
+      ],
+      {
+        cwd: projectRoot,
+        stdio: "inherit",
+      },
+    );
+
+    if (exportResult.status !== 0) {
+      throw new Error("oauth decaptcha model export failed");
+    }
+  }
+
   if (!existsSync(generatedModelPath)) {
     throw new Error(`Missing generated decaptcha model file: ${generatedModelPath}`);
+  }
+
+  if (!existsSync(generatedOauthModelPath)) {
+    throw new Error(`Missing generated OAuth decaptcha model file: ${generatedOauthModelPath}`);
+  }
+
+  const prettierResult = spawnSync(
+    "bunx",
+    ["prettier", "--write", generatedModelPath, generatedOauthModelPath],
+    {
+      cwd: projectRoot,
+      stdio: "inherit",
+    },
+  );
+
+  if (prettierResult.status !== 0) {
+    throw new Error("Generated model formatting failed");
   }
 
   const compileResult = spawnSync(
