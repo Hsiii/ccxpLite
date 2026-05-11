@@ -544,7 +544,10 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   align-items: center;
 }
 
-.ccxp-lite-landing-lang ul.links a {
+.ccxp-lite-landing-lang ul.links a,
+.ccxp-lite-landing-lang ul.links a:link,
+.ccxp-lite-landing-lang ul.links a:visited,
+.ccxp-lite-landing-lang ul.links a:active {
   background: var(--ccxp-lite-surface);
   border-radius: var(--ccxp-lite-radius-full);
   border: 1px solid var(--ccxp-lite-border);
@@ -555,14 +558,34 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
+  transform: none !important;
   text-decoration: none;
 }
 
+.ccxp-lite-landing-lang ul.links a *,
+.ccxp-lite-landing-lang ul.links a:link *,
+.ccxp-lite-landing-lang ul.links a:visited *,
+.ccxp-lite-landing-lang ul.links a:hover *,
+.ccxp-lite-landing-lang ul.links a:active *,
+.ccxp-lite-landing-lang ul.links a:focus-visible * {
+  color: inherit !important;
+  font: inherit !important;
+  font-weight: inherit !important;
+  text-decoration: none !important;
+}
+
 .ccxp-lite-landing-lang ul.links a:hover,
+.ccxp-lite-landing-lang ul.links a:active,
 .ccxp-lite-landing-lang ul.links a:focus-visible {
   background: var(--ccxp-lite-primary-hover-surface);
+  border-color: var(--ccxp-lite-border);
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: none;
   color: var(--ccxp-lite-type-utility-color);
   font: var(--ccxp-lite-type-utility) !important;
+  transform: none !important;
   text-decoration: none;
 }
 
