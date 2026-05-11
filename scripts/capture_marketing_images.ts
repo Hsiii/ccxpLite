@@ -8,12 +8,13 @@ import { chromium } from "playwright";
 
 const projectRoot = process.cwd();
 const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const extensionDir = path.join(projectRoot, "dist", "unpacked");
 const outputReadmeDir = path.join(projectRoot, "assets", "showcase", "readme");
 const outputStoreDir = path.join(projectRoot, "assets", "showcase", "store");
+const captureProfileDir = path.join(projectRoot, ".capture-profile", "marketing");
 const viewport = { width: 1600, height: 1000 };
 const storeSize = { width: 1280, height: 800 };
 const loginUrl = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/";
-const chromeDebugUrl = "http://127.0.0.1:9222";
 
 type StageId = "login" | "main" | "main-expanded" | "select-courses-selected";
 type ModeId = "menu" | "sidebar";
@@ -106,135 +107,6 @@ function ensureOutputDirectories() {
   mkdirSync(outputStoreDir, { recursive: true });
 }
 
-async function hasChromeDebugEndpoint() {
-  try {
-    const response = await fetch(`${chromeDebugUrl}/json/version`);
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-async function delay(ms: number) {
-  await new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-}
-
-function isChromeRunning() {
-  const result = spawnSync("ps", ["-ax"], {
-    cwd: projectRoot,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "ignore"],
-  });
-  return result.status === 0 && result.stdout.includes("/Applications/Google Chrome.app/");
-}
-
-function quitChrome() {
-  spawnSync("osascript", ["-e", 'tell application "Google Chrome" to quit'], {
-    cwd: projectRoot,
-    stdio: "ignore",
-  });
-}
-
-function openChromeWithDebugPort() {
-  const child = spawnSync(
-    "open",
-    ["-a", "Google Chrome", "--args", "--remote-debugging-port=9222"],
-    {
-      cwd: projectRoot,
-      stdio: "ignore",
-    },
-  );
-  return child.status === 0;
-}
-
-function launchChromeBinaryWithDebugPort() {
-  const child = Bun.spawn([chromePath, "--remote-debugging-port=9222"], {
-    cwd: projectRoot,
-    stdin: "ignore",
-    stdout: "ignore",
-    stderr: "ignore",
-    detached: true,
-  });
-  child.unref();
-}
-
-async function waitForChromeToExit() {
-  for (let attempt = 0; attempt < 40; attempt++) {
-    // eslint-disable-next-line no-await-in-loop
-    await delay(500);
-    if (!isChromeRunning()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-async function waitForChromeDebugEndpoint() {
-  for (let attempt = 0; attempt < 20; attempt++) {
-    // eslint-disable-next-line no-await-in-loop
-    await delay(500);
-    // eslint-disable-next-line no-await-in-loop
-    if (await hasChromeDebugEndpoint()) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-async function ensureChromeDebugEndpoint(readline: ReturnType<typeof createInterface>) {
-  if (await hasChromeDebugEndpoint()) {
-    return;
-  }
-
-  openChromeWithDebugPort();
-  if (await waitForChromeDebugEndpoint()) {
-    return;
-  }
-
-  const answer = await readline.question(
-    `${[
-      "",
-      "Chrome is already running without remote debugging.",
-      "Allow this script to quit and relaunch your normal Google Chrome once with --remote-debugging-port=9222? [y/N]",
-    ].join("\n")}\n`,
-  );
-
-  if (!/^y(es)?$/i.test(answer.trim())) {
-    throw new Error(
-      [
-        "Chrome remote debugging is not available.",
-        "Rerun `bun run capture` and allow the relaunch prompt, or manually relaunch Google Chrome with `--remote-debugging-port=9222`.",
-      ].join(" "),
-    );
-  }
-
-  quitChrome();
-  if (!(await waitForChromeToExit())) {
-    throw new Error(
-      [
-        "Chrome did not exit cleanly.",
-        "Quit Google Chrome completely, then rerun `bun run capture`.",
-      ].join(" "),
-    );
-  }
-
-  launchChromeBinaryWithDebugPort();
-  if (await waitForChromeDebugEndpoint()) {
-    return;
-  }
-
-  throw new Error(
-    [
-      "Chrome remote debugging is not available.",
-      "Quit Google Chrome completely, relaunch it with `--remote-debugging-port=9222`, keep the extension installed in that profile, then rerun `bun run capture`.",
-    ].join(" "),
-  );
-}
-
 function resolveCapturePage(context: BrowserContext, fallbackPage: Page) {
   return (
     [...context.pages()]
@@ -263,10 +135,18 @@ async function main() {
   ensureOutputDirectories();
   runOrThrow("bun", ["run", "build"], "extension build");
   const readline = createInterface({ input, output });
-  await ensureChromeDebugEndpoint(readline);
-
-  const browser = await chromium.connectOverCDP(chromeDebugUrl);
-  const context = browser.contexts()[0];
+  mkdirSync(captureProfileDir, { recursive: true });
+  const context = await chromium.launchPersistentContext(captureProfileDir, {
+    executablePath: chromePath,
+    headless: false,
+    viewport,
+    args: [
+      `--disable-extensions-except=${extensionDir}`,
+      `--load-extension=${extensionDir}`,
+      "--no-first-run",
+      "--no-default-browser-check",
+    ],
+  });
 
   try {
     const initialPage = context.pages()[0] ?? (await context.newPage());
@@ -276,7 +156,7 @@ async function main() {
     output.write(
       `${[
         "",
-        "Connected to your existing Chrome session.",
+        "Opened the dedicated marketing capture Chrome profile.",
         `Use the page at ${loginUrl} and keep working in that browser window while the script prompts for each capture.`,
       ].join("\n")}\n`,
     );
@@ -303,7 +183,7 @@ async function main() {
     /* eslint-enable no-await-in-loop */
   } finally {
     readline.close();
-    await browser.close();
+    await context.close();
   }
 
   output.write(
