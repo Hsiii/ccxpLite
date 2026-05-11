@@ -19,7 +19,7 @@
         "landing/content.css",
         "main/content.css",
         "menu/content.css",
-        "page.pe14d.js"
+        "pe14d/page.js"
       ],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
     }
@@ -44,8 +44,8 @@
         "menu/runtime.js",
         "menu/ui.js",
         "menu/bootstrap.js",
-        "content.decaptcha.model.js",
-        "content.decaptcha.js",
+        "landing/decaptcha.model.js",
+        "landing/decaptcha.js",
         "landing/locale.js",
         "landing/support.js",
         "landing/validation.js",
@@ -56,7 +56,7 @@
         "landing/rewrite.js",
         "landing/style.js",
         "landing/bootstrap.js",
-        "content.js"
+        "main/bootstrap.js"
       ]
     },
     {
@@ -65,15 +65,15 @@
         "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/PE/1/14D/*"
       ],
       "run_at": "document_start",
-      "js": ["content.pe14d.js"]
+      "js": ["pe14d/content.js"]
     },
     {
       "matches": ["https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php*"],
       "run_at": "document_start",
       "js": [
         "shared/dom.js",
-        "content.oauth.decaptcha.model.js",
-        "content.oauth.decaptcha.js",
+        "oauth/decaptcha.model.js",
+        "oauth/decaptcha.js",
         "landing/locale.js",
         "landing/captcha.js",
         "oauth/captcha.js"

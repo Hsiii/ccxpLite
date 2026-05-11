@@ -19,7 +19,7 @@
   }
   const script = document.createElement("script");
   script.id = pageScriptId;
-  script.src = runtimeApi.getURL("page.pe14d.js");
+  script.src = runtimeApi.getURL("pe14d/page.js");
   script.async = false;
   script.addEventListener("load", () => {
     if (script.parentNode) {

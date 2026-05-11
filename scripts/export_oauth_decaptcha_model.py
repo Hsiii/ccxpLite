@@ -150,7 +150,7 @@ def main():
     )
     parser.add_argument(
         "--output",
-        default=str(project_root / "src" / "content.oauth.decaptcha.model.ts"),
+        default=str(project_root / "src" / "oauth" / "decaptcha.model.ts"),
         help="Path to the generated TS file.",
     )
     args = parser.parse_args()
