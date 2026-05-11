@@ -1,0 +1,199 @@
+html[data-ccxp-lite-scope="landing"],
+html[data-ccxp-lite-scope="landing"] body {
+  background: var(--ccxp-lite-bg) !important;
+  background-image: none !important;
+  color: var(--ccxp-lite-type-body-color) !important;
+  max-width: 100vw;
+  overflow-x: clip;
+}
+
+html[data-ccxp-lite-scope="landing"] [background] {
+  background-image: none !important;
+}
+
+html[data-ccxp-lite-scope="landing"] [bgcolor] {
+  background-color: transparent !important;
+}
+
+html[data-ccxp-lite-scope="landing"] body {
+  padding: 0;
+  font: var(--ccxp-lite-type-body);
+}
+
+html[data-ccxp-lite-scope="landing"] body,
+html[data-ccxp-lite-scope="landing"] table,
+html[data-ccxp-lite-scope="landing"] tbody,
+html[data-ccxp-lite-scope="landing"] tr,
+html[data-ccxp-lite-scope="landing"] td,
+html[data-ccxp-lite-scope="landing"] th,
+html[data-ccxp-lite-scope="landing"] input,
+html[data-ccxp-lite-scope="landing"] select,
+html[data-ccxp-lite-scope="landing"] textarea,
+html[data-ccxp-lite-scope="landing"] button,
+html[data-ccxp-lite-scope="landing"] a,
+html[data-ccxp-lite-scope="landing"] font,
+html[data-ccxp-lite-scope="landing"] div,
+html[data-ccxp-lite-scope="landing"] span,
+html[data-ccxp-lite-scope="landing"] p,
+html[data-ccxp-lite-scope="landing"] li {
+  font-family: var(--ccxp-lite-font-sans) !important;
+}
+
+html[data-ccxp-lite-scope="landing"] a {
+  color: var(--ccxp-lite-type-primary-link-color);
+  text-decoration: none;
+}
+
+html[data-ccxp-lite-scope="landing"] a:hover {
+  transform: none !important;
+  text-decoration: underline;
+}
+
+html[data-ccxp-lite-scope="landing"] td[style*="color:#032274" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #032274" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#00f" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #00f" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:navy" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: navy" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:blue" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: blue" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:rgb(0, 0, 255)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: rgb(0, 0, 255)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#032274" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #032274" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#00f" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #00f" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:navy" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: navy" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:blue" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: blue" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:rgb(0, 0, 255)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: rgb(0, 0, 255)" i],
+html[data-ccxp-lite-scope="landing"] font[color="#032274" i],
+html[data-ccxp-lite-scope="landing"] font[color="#0000ff" i],
+html[data-ccxp-lite-scope="landing"] font[color="#00f" i],
+html[data-ccxp-lite-scope="landing"] font[color="navy" i],
+html[data-ccxp-lite-scope="landing"] font[color="blue" i],
+html[data-ccxp-lite-scope="landing"] [color="#032274" i],
+html[data-ccxp-lite-scope="landing"] [color="#0000ff" i],
+html[data-ccxp-lite-scope="landing"] [color="#00f" i],
+html[data-ccxp-lite-scope="landing"] [color="navy" i],
+html[data-ccxp-lite-scope="landing"] [color="blue" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#032274" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #032274" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#0000ff" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #0000ff" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#00f" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #00f" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:navy" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: navy" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:blue" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: blue" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: rgb(0,0,255)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:rgb(0, 0, 255)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: rgb(0, 0, 255)" i] {
+  color: var(--ccxp-lite-type-info-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-strong) !important;
+}
+
+html[data-ccxp-lite-scope="landing"] td[style*="color:#ff0000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #ff0000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#900000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #900000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #dd0000" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#f00" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #f00" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:#ff4444" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: #ff4444" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:red" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: red" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color:rgb(255, 0, 0)" i],
+html[data-ccxp-lite-scope="landing"] td[style*="color: rgb(255, 0, 0)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#ff4444" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #ff4444" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#ff0000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #ff0000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#900000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #900000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #dd0000" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:#f00" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: #f00" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:red" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: red" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color:rgb(255, 0, 0)" i],
+html[data-ccxp-lite-scope="landing"] a[style*="color: rgb(255, 0, 0)" i],
+html[data-ccxp-lite-scope="landing"] font[color="#ff4444" i],
+html[data-ccxp-lite-scope="landing"] font[color="#ff0000" i],
+html[data-ccxp-lite-scope="landing"] font[color="#900000" i],
+html[data-ccxp-lite-scope="landing"] font[color="#dd0000" i],
+html[data-ccxp-lite-scope="landing"] font[color="#f00" i],
+html[data-ccxp-lite-scope="landing"] font[color="red" i],
+html[data-ccxp-lite-scope="landing"] [color="#ff4444" i],
+html[data-ccxp-lite-scope="landing"] [color="#ff0000" i],
+html[data-ccxp-lite-scope="landing"] [color="#900000" i],
+html[data-ccxp-lite-scope="landing"] [color="#dd0000" i],
+html[data-ccxp-lite-scope="landing"] [color="#f00" i],
+html[data-ccxp-lite-scope="landing"] [color="red" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#ff4444" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #ff4444" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#ff0000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #ff0000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#900000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #900000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#dd0000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #dd0000" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:#f00" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: #f00" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:red" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: red" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: rgb(255,0,0)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color:rgb(255, 0, 0)" i],
+html[data-ccxp-lite-scope="landing"] [style*="color: rgb(255, 0, 0)" i] {
+  color: var(--ccxp-lite-type-danger-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-strong) !important;
+}
+
+html[data-ccxp-lite-scope="landing"] font[size="2" i],
+html[data-ccxp-lite-scope="landing"] [size="2" i] {
+  color: var(--ccxp-lite-type-caption-color) !important;
+  font: var(--ccxp-lite-type-caption) !important;
+}
+
+.ccxp-lite-landing-section img,
+.ccxp-lite-landing-section table,
+.ccxp-lite-landing-section iframe {
+  max-width: 100%;
+}
+
+.ccxp-lite-landing-login table[border="1"] {
+  border-color: var(--ccxp-lite-border);
+}
+
+.ccxp-lite-landing-login td,
+.ccxp-lite-landing-section td,
+.ccxp-lite-landing-section th,
+.ccxp-lite-landing-section font,
+.ccxp-lite-landing-section span,
+.ccxp-lite-landing-section div,
+.ccxp-lite-landing-section p,
+.ccxp-lite-landing-section li,
+.ccxp-lite-landing-section button,
+.ccxp-lite-landing-section input {
+  font-family: var(--ccxp-lite-font-sans) !important;
+}

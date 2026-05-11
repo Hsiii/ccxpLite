@@ -1,0 +1,507 @@
+.ccxp-lite-landing-login .td26 {
+  color: var(--ccxp-lite-type-page-title-color);
+  font: var(--ccxp-lite-type-page-title);
+  font-weight: var(--ccxp-lite-font-weight-regular);
+}
+
+.ccxp-lite-landing-login .td17 {
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login .td15,
+.ccxp-lite-landing-login .opt,
+.ccxp-lite-landing-login .opt1,
+.ccxp-lite-landing-login li.td15,
+.ccxp-lite-landing-login td[style*="color:#333344" i],
+.ccxp-lite-landing-login td[style*="color: #333344" i] {
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login .td_item,
+.ccxp-lite-landing-login b,
+.ccxp-lite-landing-login strong {
+  color: var(--ccxp-lite-type-body-color);
+  font-weight: var(--ccxp-lite-font-weight-regular);
+}
+
+.ccxp-lite-landing-login .td_item {
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login font {
+  color: inherit !important;
+  font: inherit !important;
+}
+
+.ccxp-lite-landing-login td[style*="color:navy" i],
+.ccxp-lite-landing-login td[style*="color: navy" i],
+.ccxp-lite-landing-login a[style*="color:#032274" i],
+.ccxp-lite-landing-login a[style*="color: #032274" i],
+.ccxp-lite-landing-login a[style*="color:navy" i],
+.ccxp-lite-landing-login a[style*="color: navy" i],
+.ccxp-lite-landing-login font[color="#032274" i],
+.ccxp-lite-landing-login font[color="navy" i],
+.ccxp-lite-landing-login [color="#032274" i],
+.ccxp-lite-landing-login [color="navy" i],
+.ccxp-lite-landing-login [style*="color:#032274" i],
+.ccxp-lite-landing-login [style*="color: #032274" i],
+.ccxp-lite-landing-login [style*="color:navy" i],
+.ccxp-lite-landing-login [style*="color: navy" i] {
+  color: var(--ccxp-lite-type-info-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
+}
+
+.ccxp-lite-landing-login td[style*="color:#ff0000" i],
+.ccxp-lite-landing-login td[style*="color: #ff0000" i],
+.ccxp-lite-landing-login td[style*="color:#900000" i],
+.ccxp-lite-landing-login td[style*="color: #900000" i],
+.ccxp-lite-landing-login td[style*="color:#ff4444" i],
+.ccxp-lite-landing-login td[style*="color: #ff4444" i],
+.ccxp-lite-landing-login td[style*="color:red" i],
+.ccxp-lite-landing-login td[style*="color: red" i],
+.ccxp-lite-landing-login a[style*="color:#ff4444" i],
+.ccxp-lite-landing-login a[style*="color: #ff4444" i],
+.ccxp-lite-landing-login a[style*="color:#ff0000" i],
+.ccxp-lite-landing-login a[style*="color: #ff0000" i],
+.ccxp-lite-landing-login a[style*="color:#900000" i],
+.ccxp-lite-landing-login a[style*="color: #900000" i],
+.ccxp-lite-landing-login a[style*="color:red" i],
+.ccxp-lite-landing-login a[style*="color: red" i],
+.ccxp-lite-landing-login font[color="#ff4444" i],
+.ccxp-lite-landing-login font[color="#ff0000" i],
+.ccxp-lite-landing-login font[color="#900000" i],
+.ccxp-lite-landing-login font[color="red" i],
+.ccxp-lite-landing-login [color="#ff4444" i],
+.ccxp-lite-landing-login [color="#ff0000" i],
+.ccxp-lite-landing-login [color="#900000" i],
+.ccxp-lite-landing-login [color="red" i],
+.ccxp-lite-landing-login [style*="color:#ff4444" i],
+.ccxp-lite-landing-login [style*="color: #ff4444" i],
+.ccxp-lite-landing-login [style*="color:#ff0000" i],
+.ccxp-lite-landing-login [style*="color: #ff0000" i],
+.ccxp-lite-landing-login [style*="color:#900000" i],
+.ccxp-lite-landing-login [style*="color: #900000" i],
+.ccxp-lite-landing-login [style*="color:red" i],
+.ccxp-lite-landing-login [style*="color: red" i] {
+  color: var(--ccxp-lite-type-danger-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
+}
+
+.ccxp-lite-landing-login font[size="2" i],
+.ccxp-lite-landing-login [size="2" i] {
+  color: var(--ccxp-lite-type-caption-color) !important;
+  font: var(--ccxp-lite-type-caption) !important;
+}
+
+.ccxp-lite-landing-login > table:first-of-type {
+  display: none;
+}
+
+.ccxp-lite-landing-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-inline: var(--ccxp-lite-spacing-sm);
+  padding-top: var(--ccxp-lite-spacing-lg);
+}
+
+.ccxp-lite-landing-login form {
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  min-width: 0;
+}
+
+.ccxp-lite-landing-login form.ccxp-lite-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+}
+
+.ccxp-lite-landing-login form.ccxp-lite-login-form,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-fields,
+.ccxp-lite-landing-login form.ccxp-lite-login-form table.ccxp-lite-login-form-table,
+.ccxp-lite-landing-login form.ccxp-lite-login-form table.ccxp-lite-login-form-table tbody,
+.ccxp-lite-landing-login form.ccxp-lite-login-form tr.ccxp-lite-login-field-row,
+.ccxp-lite-landing-login form.ccxp-lite-login-form td.ccxp-lite-login-field-cell,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-field,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-label,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-control,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-label,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-control,
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-password-field {
+  margin: 0 !important;
+}
+
+.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-label {
+  margin-bottom: calc(-1 * var(--ccxp-lite-spacing-2xs)) !important;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+  width: 100%;
+}
+
+.ccxp-lite-landing-login table.ccxp-lite-login-form-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.ccxp-lite-landing-login table.ccxp-lite-login-form-table tbody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+}
+
+.ccxp-lite-landing-login tr.ccxp-lite-login-field-row > td {
+  display: block;
+  vertical-align: middle;
+}
+
+.ccxp-lite-landing-login td.ccxp-lite-login-field-cell {
+  width: 100%;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+}
+
+.ccxp-lite-landing-login tr.ccxp-lite-login-field-row {
+  display: block;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--ccxp-lite-spacing-2xs);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-inline-field {
+  width: 100%;
+  min-width: 0;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-inline-label {
+  display: block;
+  width: 100%;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label,
+.ccxp-lite-landing-login .ccxp-lite-login-inline-label,
+.ccxp-lite-landing-login .ccxp-lite-login-field-label *,
+.ccxp-lite-landing-login .ccxp-lite-login-inline-label * {
+  color: var(--ccxp-lite-type-body-color) !important;
+  font: var(--ccxp-lite-type-body) !important;
+  font-size: var(--ccxp-lite-font-size-utility) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-inline-label > * {
+  display: block;
+  width: 100%;
+  color: inherit;
+  font: inherit;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-inline-control {
+  width: 100%;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label {
+  display: block;
+  width: 100%;
+  text-align: left;
+  white-space: normal;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+  min-width: 0;
+}
+
+.ccxp-lite-landing-login div[style*="login_mid.png"] {
+  padding: 0 !important;
+  background-image: none !important;
+}
+
+.ccxp-lite-landing-login div[style*="margin-left:1em"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+}
+
+.ccxp-lite-landing-login .inputtext {
+  width: min(100%, var(--ccxp-lite-size-form-control-width)) !important;
+  height: var(--ccxp-lite-size-login-control-height);
+  max-width: 100% !important;
+  min-width: 0;
+  padding: 0 var(--ccxp-lite-spacing-inset-sm) !important;
+  border: 1px solid var(--ccxp-lite-border) !important;
+  border-radius: var(--ccxp-lite-radius-input);
+  outline: none;
+  background: var(--ccxp-lite-surface);
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+  line-height: 1.2;
+}
+
+.ccxp-lite-landing-login .inputtext:focus {
+  outline: none;
+}
+
+.ccxp-lite-landing-login .inputtext:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary);
+  outline-offset: 1px;
+}
+
+.ccxp-lite-password-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  height: var(--ccxp-lite-size-login-control-height);
+  max-width: 100%;
+  min-width: 0;
+}
+
+.ccxp-lite-password-field .inputtext {
+  width: 100% !important;
+  padding-right: var(--ccxp-lite-size-password-toggle-offset) !important;
+}
+
+.ccxp-lite-password-toggle {
+  position: absolute;
+  right: var(--ccxp-lite-spacing-sm);
+  top: 50%;
+  transform: translateY(-55%);
+  border: 0;
+  padding: 0;
+  width: var(--ccxp-lite-size-icon-button-sm);
+  height: var(--ccxp-lite-size-icon-button-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--ccxp-lite-type-body-muted-color);
+  cursor: pointer;
+}
+
+.ccxp-lite-password-toggle svg {
+  width: var(--ccxp-lite-font-size-body);
+  height: var(--ccxp-lite-font-size-body);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-image-action-button,
+.ccxp-lite-landing-login .ccxp-lite-image-link-button {
+  min-width: var(--ccxp-lite-size-control-min-width);
+  height: var(--ccxp-lite-size-login-control-height);
+  max-width: 100%;
+  padding: 0 var(--ccxp-lite-spacing-inset-lg);
+  border-radius: var(--ccxp-lite-radius-full);
+  border: 1px solid var(--ccxp-lite-border);
+  background: transparent;
+  color: var(--ccxp-lite-type-utility-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+  font-weight: var(--ccxp-lite-font-weight-strong);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-primary-button {
+  border: 0;
+  background: var(--ccxp-lite-primary);
+  color: var(--ccxp-lite-bg);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+  font-weight: var(--ccxp-lite-font-weight-strong);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-action-group {
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  max-width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  margin-top: var(--ccxp-lite-spacing-inset-sm);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-action-group > .ccxp-lite-image-action-button,
+.ccxp-lite-landing-login .ccxp-lite-login-action-group > .ccxp-lite-image-link-button {
+  width: 100%;
+  min-width: 0;
+  justify-content: center;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-button,
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-link {
+  position: relative;
+  width: var(--ccxp-lite-size-icon-button-md);
+  height: var(--ccxp-lite-size-icon-button-md);
+  min-width: var(--ccxp-lite-size-icon-button-md);
+  padding: 0;
+  line-height: 0;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-full);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  color: var(--ccxp-lite-type-utility-color);
+  vertical-align: middle;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-button {
+  cursor: pointer;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-link {
+  text-decoration: none;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-button svg,
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-link svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--ccxp-lite-font-size-body);
+  height: var(--ccxp-lite-font-size-body);
+  display: block;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-captcha-media-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  vertical-align: middle;
+}
+
+.ccxp-lite-landing-login .inputtext[name="passwd2"][aria-busy="true"] {
+  color: transparent;
+  caret-color: transparent;
+  background:
+    linear-gradient(
+      100deg,
+      var(--ccxp-lite-skeleton-highlight-start) 14%,
+      var(--ccxp-lite-skeleton-highlight-soft) 34%,
+      var(--ccxp-lite-skeleton-highlight-strong) 50%,
+      var(--ccxp-lite-skeleton-highlight-soft) 66%,
+      var(--ccxp-lite-skeleton-highlight-start) 86%
+    ),
+    linear-gradient(
+      180deg,
+      var(--ccxp-lite-skeleton-surface-start),
+      var(--ccxp-lite-skeleton-surface-end)
+    );
+  background-size:
+    210% 100%,
+    100% 100%;
+  background-position:
+    160% 0,
+    0 0;
+  animation: ccxp-lite-captcha-shimmer 1s linear infinite;
+}
+
+.ccxp-lite-landing-login .inputtext[name="passwd2"][data-timeout-flash="true"] {
+  animation: ccxp-lite-captcha-timeout-outline 1.4s ease-out 1;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-captcha-row .ccxp-lite-image-action-button,
+.ccxp-lite-landing-login .ccxp-lite-captcha-row .ccxp-lite-image-link-button {
+  margin-inline: auto;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-captcha-media-row > img,
+.ccxp-lite-landing-login .ccxp-lite-captcha-media-row > .ccxp-lite-audio-icon-button,
+.ccxp-lite-landing-login .ccxp-lite-captcha-media-row > .ccxp-lite-audio-icon-link {
+  display: block;
+  align-self: center;
+}
+
+@keyframes ccxp-lite-captcha-shimmer {
+  from {
+    background-position:
+      160% 0,
+      0 0;
+  }
+
+  to {
+    background-position:
+      -40% 0,
+      0 0;
+  }
+}
+
+@keyframes ccxp-lite-captcha-timeout-outline {
+  0% {
+    outline: 1px solid var(--ccxp-lite-danger-flash-transparent);
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 var(--ccxp-lite-danger-flash-transparent);
+  }
+
+  18% {
+    outline: 2px solid var(--ccxp-lite-danger-flash-outline);
+    outline-offset: 1px;
+    box-shadow: 0 0 0 4px var(--ccxp-lite-danger-flash-shadow);
+  }
+
+  100% {
+    outline: 1px solid var(--ccxp-lite-danger-flash-transparent);
+    outline-offset: 0;
+    box-shadow: 0 0 0 0 var(--ccxp-lite-danger-flash-transparent);
+  }
+}
+
+@media (max-width: 380px) {
+  .ccxp-lite-landing-login {
+    padding-inline: var(--ccxp-lite-spacing-xs);
+  }
+
+  .ccxp-lite-landing-login form,
+  .ccxp-lite-landing-login .inputtext,
+  .ccxp-lite-password-field,
+  .ccxp-lite-landing-login .ccxp-lite-login-action-group {
+    width: 100% !important;
+  }
+
+  .ccxp-lite-landing-login .ccxp-lite-captcha-media-row {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .ccxp-lite-landing-login .ccxp-lite-image-action-button,
+  .ccxp-lite-landing-login .ccxp-lite-image-link-button {
+    min-width: 0;
+  }
+}

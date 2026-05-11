@@ -1,0 +1,262 @@
+.ccxp-lite-landing-notices {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--ccxp-lite-spacing-3xs);
+  width: 100%;
+  min-width: 0;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table {
+  width: 60% !important;
+  max-width: 60%;
+  margin-inline: auto;
+  display: block;
+  background: var(--ccxp-lite-surface);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+  overflow: hidden;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table th,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table div,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table span,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table p,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table b,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a {
+  font-family: var(--ccxp-lite-font-sans) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font {
+  color: inherit !important;
+  font: inherit !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #032274" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #0000ff" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: navy" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:blue" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: blue" i] {
+  color: var(--ccxp-lite-type-info-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:#ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: #ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color:red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td[style*="color: red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:#dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: #dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color:red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table a[style*="color: red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="#dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[color="red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="#dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [color="red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #ff4444" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #ff0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #900000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:#dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: #dd0000" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color:red" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [style*="color: red" i] {
+  color: var(--ccxp-lite-type-danger-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table font[size="2" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table [size="2" i] {
+  color: var(--ccxp-lite-type-caption-color) !important;
+  font: var(--ccxp-lite-type-caption) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table td,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table th {
+  width: auto !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-table > tbody {
+  display: flex;
+  flex-direction: column;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-title {
+  display: block;
+  padding: var(--ccxp-lite-spacing-inset-sm) var(--ccxp-lite-spacing-inset-md);
+  border-bottom: 1px solid var(--ccxp-lite-border);
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+  font-weight: var(--ccxp-lite-font-weight-strong);
+  letter-spacing: 0.01em;
+  background: var(--ccxp-lite-surface);
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-title-row,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-scroll-row {
+  display: block;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-scroll-row {
+  flex: 0 0 auto;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-content-cell {
+  display: block;
+  padding: 0;
+  vertical-align: top;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-list {
+  display: block;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-row {
+  display: block;
+  margin: 0;
+  padding: var(--ccxp-lite-spacing-inset-sm) var(--ccxp-lite-spacing-inset-md);
+  border-top: 1px solid var(--ccxp-lite-border);
+  background: var(--ccxp-lite-surface);
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-date {
+  grid-column: 2;
+  white-space: nowrap;
+  text-align: right;
+  color: var(--ccxp-lite-type-caption-color);
+  font: var(--ccxp-lite-type-caption);
+  font-size: var(--ccxp-lite-font-size-utility);
+  font-variant-numeric: var(--ccxp-lite-font-variant-numeric-tabular);
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
+  font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: flex-end;
+  column-gap: var(--ccxp-lite-spacing-inset-sm);
+  row-gap: var(--ccxp-lite-spacing-inline-sm);
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic * {
+  color: var(--ccxp-lite-type-body-color) !important;
+  border-bottom: 0 !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic [style*="color" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic [color] {
+  color: var(--ccxp-lite-type-body-color) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a *,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a [style*="color" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a[color] {
+  color: var(--ccxp-lite-type-info-color) !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic [style*="border-bottom" i],
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic [style*="border-bottom:" i] {
+  border-bottom: 0 !important;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic p,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic ul,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic ol {
+  margin: 0;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a {
+  color: var(--ccxp-lite-type-primary-link-color) !important;
+  font-weight: var(--ccxp-lite-font-weight-regular);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a:hover,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic a:focus-visible {
+  text-decoration: underline;
+}
+
+.ccxp-lite-landing-notices td {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 960px) {
+  .ccxp-lite-landing-notices .ccxp-lite-announcement-table {
+    width: 100% !important;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 720px) {
+  .ccxp-lite-landing-notices .ccxp-lite-announcement-entry {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    row-gap: var(--ccxp-lite-spacing-inline-sm);
+  }
+
+  .ccxp-lite-landing-notices .ccxp-lite-announcement-date {
+    grid-column: 1;
+    text-align: left;
+  }
+}
