@@ -8,12 +8,12 @@ import { chromium } from "playwright";
 
 const projectRoot = process.cwd();
 const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const extensionDir = path.join(projectRoot, "dist", "unpacked");
 const outputReadmeDir = path.join(projectRoot, "assets", "showcase", "readme");
 const outputStoreDir = path.join(projectRoot, "assets", "showcase", "store");
 const viewport = { width: 1600, height: 1000 };
 const storeSize = { width: 1280, height: 800 };
 const loginUrl = "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/";
+const chromeDebugUrl = "http://127.0.0.1:9222";
 
 type StageId = "login" | "main" | "main-expanded" | "select-courses-selected";
 type ModeId = "menu" | "sidebar";
@@ -106,6 +106,44 @@ function ensureOutputDirectories() {
   mkdirSync(outputStoreDir, { recursive: true });
 }
 
+async function hasChromeDebugEndpoint() {
+  try {
+    const response = await fetch(`${chromeDebugUrl}/json/version`);
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function ensureChromeDebugEndpoint() {
+  if (await hasChromeDebugEndpoint()) {
+    return;
+  }
+
+  spawnSync("open", ["-a", "Google Chrome", "--args", "--remote-debugging-port=9222"], {
+    cwd: projectRoot,
+    stdio: "ignore",
+  });
+
+  for (let attempt = 0; attempt < 20; attempt++) {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise((resolve) => {
+      setTimeout(resolve, 500);
+    });
+    // eslint-disable-next-line no-await-in-loop
+    if (await hasChromeDebugEndpoint()) {
+      return;
+    }
+  }
+
+  throw new Error(
+    [
+      "Chrome remote debugging is not available.",
+      "Relaunch your normal Google Chrome with `--remote-debugging-port=9222`, keep the extension installed in that profile, then rerun `bun run capture`.",
+    ].join(" "),
+  );
+}
+
 function resolveCapturePage(context: BrowserContext, fallbackPage: Page) {
   return (
     [...context.pages()]
@@ -133,22 +171,10 @@ async function main() {
   assertPrerequisites();
   ensureOutputDirectories();
   runOrThrow("bun", ["run", "build"], "extension build");
+  await ensureChromeDebugEndpoint();
 
-  const userDataDir = path.join(projectRoot, ".tmp", "playwright-marketing-profile");
-  rmSync(userDataDir, { recursive: true, force: true });
-  mkdirSync(userDataDir, { recursive: true });
-
-  const context = await chromium.launchPersistentContext(userDataDir, {
-    executablePath: chromePath,
-    headless: false,
-    viewport,
-    args: [
-      `--disable-extensions-except=${extensionDir}`,
-      `--load-extension=${extensionDir}`,
-      "--no-first-run",
-      "--no-default-browser-check",
-    ],
-  });
+  const browser = await chromium.connectOverCDP(chromeDebugUrl);
+  const context = browser.contexts()[0];
 
   const readline = createInterface({ input, output });
 
@@ -160,7 +186,7 @@ async function main() {
     output.write(
       `${[
         "",
-        "Chrome is open with the unpacked extension loaded.",
+        "Connected to your existing Chrome session.",
         `Use the page at ${loginUrl} and keep working in that browser window while the script prompts for each capture.`,
       ].join("\n")}\n`,
     );
@@ -187,8 +213,7 @@ async function main() {
     /* eslint-enable no-await-in-loop */
   } finally {
     readline.close();
-    await context.close();
-    rmSync(userDataDir, { recursive: true, force: true });
+    await browser.close();
   }
 
   output.write(
