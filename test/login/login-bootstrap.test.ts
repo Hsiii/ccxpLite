@@ -2,23 +2,23 @@ import { describe, expect, test, vi } from "vitest";
 
 import {
   createTestWindow,
-  landingModulePaths,
+  loginModulePaths,
   loadModules,
   requireElement,
   requireValue,
   sharedModulePaths,
 } from "../helpers/module-loader.js";
-import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
+import { createLoginHtml } from "../helpers/login-fixtures.js";
 
-const landingBootstrapModulePaths = [
+const loginBootstrapModulePaths = [
   ...sharedModulePaths,
-  ...landingModulePaths.slice(sharedModulePaths.length),
-  "src/landing/pipeline/bootstrap.ts",
+  ...loginModulePaths.slice(sharedModulePaths.length),
+  "src/login/pipeline/bootstrap.ts",
 ];
 
-describe("landing bootstrap", () => {
+describe("login bootstrap", () => {
   test("runs the identify, rewrite, and style pipeline through simplifyLandingPage", async () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = {
       predictDigits: vi.fn().mockResolvedValue("654321"),
@@ -30,7 +30,7 @@ describe("landing bootstrap", () => {
           arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
         } as Response),
     ) as unknown as typeof window.fetch;
-    loadModules(window, landingBootstrapModulePaths);
+    loadModules(window, loginBootstrapModulePaths);
     const landing = requireValue(window.CCXP_LITE.landing, "landing");
 
     landing.simplifyLandingPage(document);

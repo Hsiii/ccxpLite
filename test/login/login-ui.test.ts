@@ -2,18 +2,18 @@ import { describe, expect, test } from "vitest";
 
 import {
   createTestWindow,
-  landingModulePaths,
+  loginModulePaths,
   loadModules,
   requireElement,
   requireValue,
 } from "../helpers/module-loader.js";
-import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
+import { createLoginHtml } from "../helpers/login-fixtures.js";
 
-describe("landing login ui", () => {
+describe("login ui", () => {
   test("wraps the password field once and toggles visibility with localized labels", () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
 
     landingLogin.enhancePasswordVisibilityToggle(document, document);
@@ -37,9 +37,9 @@ describe("landing login ui", () => {
   });
 
   test("marks the login form as structured without duplicating work", () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
     const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
 

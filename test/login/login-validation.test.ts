@@ -1,18 +1,18 @@
 import { describe, expect, test, vi } from "vitest";
 import {
   createTestWindow,
-  landingModulePaths,
+  loginModulePaths,
   loadModules,
   requireElement,
   requireValue,
 } from "../helpers/module-loader.js";
-import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
+import { createLoginHtml } from "../helpers/login-fixtures.js";
 
-describe("landing validation", () => {
+describe("login validation", () => {
   test("captures parsed fnstr state and falls back to startedAt for malformed values", () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const validation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
     expect(validation.captureLoginValidationState(document)).toMatchObject({
       fnstrDate: "20260428",
@@ -25,9 +25,9 @@ describe("landing validation", () => {
     expect(validation.captureLoginValidationState(document)).toHaveProperty("startedAt");
   });
   test("reloads the page when a guarded field is touched after expiry", () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
     const reloadSpy = vi.fn();
     Object.defineProperty(document, "location", {
@@ -45,9 +45,9 @@ describe("landing validation", () => {
     expect(reloadSpy).toHaveBeenCalled();
   });
   test("keeps fnstr in sync with the captcha image on submit and extracts with regex fallback", () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
     const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
     const form = requireValue(landingLocale.getLoginForm(document), "loginForm");

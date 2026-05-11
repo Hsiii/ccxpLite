@@ -7,12 +7,12 @@ import {
   requireValue,
   sharedModulePaths,
 } from "../helpers/module-loader.js";
-import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
+import { createLoginHtml } from "../helpers/login-fixtures.js";
 
-const landingCaptchaModulePaths = [
+const loginCaptchaModulePaths = [
   ...sharedModulePaths,
-  "src/landing/locale.ts",
-  "src/landing/auth/captcha.ts",
+  "src/login/locale.ts",
+  "src/login/auth/captcha.ts",
 ];
 
 async function flushPromises() {
@@ -21,13 +21,13 @@ async function flushPromises() {
   });
 }
 
-describe("landing captcha", () => {
+describe("login captcha", () => {
   test("binds once, shows loading, fills the input, and emits input/change events on success", async () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     const predictDigits = vi.fn().mockResolvedValue("654321");
     window.CCXP_LITE.decaptcha = { predictDigits };
-    loadModules(window, landingCaptchaModulePaths);
+    loadModules(window, loginCaptchaModulePaths);
     const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
     let resolveFetch: ((value: Response) => void) | undefined;
@@ -74,10 +74,10 @@ describe("landing captcha", () => {
   });
 
   test("falls back to manual entry and flashes timeout on timeout-style failures", async () => {
-    const { window } = createTestWindow(createLandingLoginHtml());
+    const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = { predictDigits: vi.fn() };
-    loadModules(window, landingCaptchaModulePaths);
+    loadModules(window, loginCaptchaModulePaths);
     const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
 
     window.fetch = vi.fn(async () => {

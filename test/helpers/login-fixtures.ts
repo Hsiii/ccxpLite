@@ -1,4 +1,4 @@
-export function createLandingLoginHtml(): string {
+export function createLoginHtml(): string {
   return `
     <!doctype html>
     <html lang="zh">
@@ -74,7 +74,7 @@ export function createOauthLoginHtml(): string {
   `;
 }
 
-export function createEnglishLandingAnnouncementHtml(): string {
+export function createEnglishLoginAnnouncementHtml(): string {
   return `
     <!doctype html>
     <html lang="en">

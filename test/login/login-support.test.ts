@@ -2,17 +2,17 @@ import { describe, expect, test } from "vitest";
 
 import {
   createTestWindow,
-  landingModulePaths,
+  loginModulePaths,
   loadModules,
   requireValue,
 } from "../helpers/module-loader.js";
-import { createEnglishLandingAnnouncementHtml } from "../helpers/landing-fixtures.js";
+import { createEnglishLoginAnnouncementHtml } from "../helpers/login-fixtures.js";
 
-describe("landing support", () => {
+describe("login support", () => {
   test("finds and prepares the English system news table from the right rail", () => {
-    const { window } = createTestWindow(createEnglishLandingAnnouncementHtml());
+    const { window } = createTestWindow(createEnglishLoginAnnouncementHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingSupport = requireValue(window.CCXP_LITE.landingSupport, "landingSupport");
 
     const announcementTable = landingSupport.findAnnouncementTable(document);
@@ -30,9 +30,9 @@ describe("landing support", () => {
   });
 
   test("detects English support-link equivalents for cannot sign in and information", () => {
-    const { window } = createTestWindow(createEnglishLandingAnnouncementHtml());
+    const { window } = createTestWindow(createEnglishLoginAnnouncementHtml());
     const document = window.document as Document;
-    loadModules(window, landingModulePaths);
+    loadModules(window, loginModulePaths);
     const landingSupport = requireValue(window.CCXP_LITE.landingSupport, "landingSupport");
 
     const cannotLoginLink = landingSupport.findCannotLoginLink(document, undefined);

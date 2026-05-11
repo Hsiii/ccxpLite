@@ -7,12 +7,12 @@ import {
   requireValue,
   sharedModulePaths,
 } from "../helpers/module-loader.js";
-import { createOauthLoginHtml } from "../helpers/landing-fixtures.js";
+import { createOauthLoginHtml } from "../helpers/login-fixtures.js";
 
 const oauthCaptchaModulePaths = [
   ...sharedModulePaths,
-  "src/landing/locale.ts",
-  "src/landing/auth/captcha.ts",
+  "src/login/locale.ts",
+  "src/login/auth/captcha.ts",
   "src/oauth/captcha.ts",
 ];
 

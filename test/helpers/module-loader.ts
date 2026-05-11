@@ -112,15 +112,15 @@ export const menuModulePaths = [
   "src/menu/ui/index.ts",
 ];
 
-export const landingModulePaths = [
+export const loginModulePaths = [
   ...sharedModulePaths,
-  "src/landing/locale.ts",
-  "src/landing/ui/support.ts",
-  "src/landing/ui/tabs.ts",
-  "src/landing/auth/validation.ts",
-  "src/landing/ui/login.ts",
-  "src/landing/auth/captcha.ts",
-  "src/landing/pipeline/identify.ts",
-  "src/landing/pipeline/rewrite.ts",
-  "src/landing/pipeline/style.ts",
+  "src/login/locale.ts",
+  "src/login/ui/support.ts",
+  "src/login/ui/tabs.ts",
+  "src/login/auth/validation.ts",
+  "src/login/ui/login.ts",
+  "src/login/auth/captcha.ts",
+  "src/login/pipeline/identify.ts",
+  "src/login/pipeline/rewrite.ts",
+  "src/login/pipeline/style.ts",
 ];
