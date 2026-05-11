@@ -80,11 +80,13 @@ export function createEnglishLandingAnnouncementHtml(): string {
     <html lang="en">
       <head></head>
       <body>
+        <a href="forget_en.php?lang=E">Cannot sign in?</a>
         <table>
           <tr>
             <td width="60%" style="min-width: 30em;" valign="top" align="center"></td>
             <td width="3%"></td>
             <td width="35%" valign="top">
+              <div align="right"><a href="inquire_cpr_en.html" target="_blank">&gt;&gt; <u>Information</u> &lt;&lt;</a></div>
               <table width="95%" border="0" cellpadding="3" cellspacing="0">
                 <tr>
                   <td colspan="2" class="board_item">System News</td>
