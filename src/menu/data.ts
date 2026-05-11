@@ -124,16 +124,63 @@
 
   function findCategoryForItem(item: CcxpLiteSidebarTreeNode) {
     const candidateLabels = collectSidebarLabels(item);
-    return (
-      SIDEBAR_CATEGORIES.find((category) =>
-        category.itemLabels.some((label: string) => {
-          const normalizedCategoryLabel = normalizeSidebarLabel(label);
-          return candidateLabels.some((candidateLabel) =>
-            isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel),
-          );
-        }),
-      ) ?? undefined
+    const exactCategory = SIDEBAR_CATEGORIES.find((category) =>
+      category.itemLabels.some((label: string) => {
+        const normalizedCategoryLabel = normalizeSidebarLabel(label);
+        return candidateLabels.some((candidateLabel) =>
+          isSidebarLabelMatch(candidateLabel, normalizedCategoryLabel),
+        );
+      }),
     );
+    if (exactCategory) {
+      return exactCategory;
+    }
+    return inferCategoryFromKeywords(candidateLabels);
+  }
+
+  function inferCategoryFromKeywords(candidateLabels: readonly string[]) {
+    const locale = detectLabelLocale(candidateLabels);
+    const keywordCatalog = locale === "en" ? EN_SECTION_KEYWORDS : ZH_SECTION_KEYWORDS;
+    const categoryKeywords = locale === "en" ? EN_CATEGORY_KEYWORDS : ZH_CATEGORY_KEYWORDS;
+    const keywordEntries = new Map<string, (typeof keywordCatalog)[number]>(
+      keywordCatalog.map((keyword) => [keyword.label, keyword]),
+    );
+    let bestCategory: CcxpLiteSidebarCategoryDefinition | undefined;
+    let bestScore = 0;
+    let bestMatches = 0;
+    for (const category of SIDEBAR_CATEGORIES) {
+      const categoryLabels = getCategoryKeywordLabels(categoryKeywords, category.id);
+      let score = 0;
+      let matches = 0;
+      for (const categoryLabel of categoryLabels) {
+        const keyword = keywordEntries.get(categoryLabel);
+        if (!keyword) {
+          continue;
+        }
+        const hasMatch = candidateLabels.some((candidateLabel) => {
+          const normalizedCandidateLabel = normalizeSidebarLabel(candidateLabel).toLowerCase();
+          return keyword.patterns.some((pattern) => normalizedCandidateLabel.includes(pattern));
+        });
+        if (!hasMatch) {
+          continue;
+        }
+        score += keyword.weight;
+        matches++;
+      }
+      if (score > bestScore || (score === bestScore && matches > bestMatches)) {
+        bestCategory = category;
+        bestScore = score;
+        bestMatches = matches;
+      }
+    }
+    return bestScore > 0 ? bestCategory : undefined;
+  }
+
+  function getCategoryKeywordLabels(
+    categoryKeywords: Readonly<Record<string, readonly string[]>>,
+    categoryId: string,
+  ) {
+    return categoryKeywords[categoryId] ?? [];
   }
 
   function normalizeSidebarLabel(label: string | undefined): string {
@@ -330,10 +377,15 @@
     { label: "Feedback", patterns: ["feedback", "comment"], weight: 3 },
     { label: "Survey", patterns: ["survey", "questionnaire"], weight: 3 },
     { label: "Voting", patterns: ["vote", "voting"], weight: 3 },
+    { label: "Readmission", patterns: ["readmission", "resume study"], weight: 3 },
+    { label: "Transfer", patterns: ["transfer"], weight: 3 },
+    { label: "Military", patterns: ["military"], weight: 3 },
     { label: "Graduation", patterns: ["graduat"], weight: 3 },
     { label: "Defense", patterns: ["defense"], weight: 3 },
+    { label: "Degree", patterns: ["degree"], weight: 3 },
     { label: "Tuition", patterns: ["tuition", "payment"], weight: 3 },
     { label: "Refund", patterns: ["refund"], weight: 3 },
+    { label: "Income", patterns: ["income"], weight: 3 },
     { label: "Aid", patterns: ["aid", "grant"], weight: 3 },
     { label: "Loan", patterns: ["loan"], weight: 3 },
     { label: "Housing", patterns: ["housing", "dorm"], weight: 3 },
@@ -343,6 +395,9 @@
     { label: "Leave", patterns: ["leave"], weight: 3 },
     { label: "Travel", patterns: ["travel"], weight: 3 },
     { label: "Internship", patterns: ["internship"], weight: 3 },
+    { label: "Learning", patterns: ["learning"], weight: 3 },
+    { label: "IT", patterns: ["computer center", "it service", "it services"], weight: 3 },
+    { label: "Research", patterns: ["research"], weight: 3 },
     { label: "Systems", patterns: ["system", "platform"], weight: 2 },
     { label: "Notices", patterns: ["notice", "announcement"], weight: 3 },
     { label: "Meetings", patterns: ["meeting"], weight: 3 },
@@ -368,13 +423,13 @@
     "planning-and-enrollment": ["Enrollment", "Schedule", "Courses"],
     "courses-and-grades": ["Grades", "Credits", "Courses"],
     "teaching-feedback": ["Feedback", "Survey", "Voting"],
-    "status-changes": ["Enrollment"],
-    "graduation-and-defense": ["Graduation", "Defense"],
-    "payments-and-aid": ["Tuition", "Refund", "Aid"],
+    "status-changes": ["Readmission", "Transfer", "Military"],
+    "graduation-and-defense": ["Graduation", "Defense", "Degree"],
+    "payments-and-aid": ["Tuition", "Refund", "Income"],
     "financial-aid": ["Aid", "Loan"],
     "housing-and-life": ["Housing", "Health", "Career"],
-    forms: ["Forms", "Leave", "Travel"],
-    "campus-systems": ["Systems", "Courses"],
+    forms: ["Forms", "Leave", "Travel", "Internship"],
+    "campus-systems": ["Learning", "IT", "Research", "Systems"],
     "announcements-and-voting": ["Notices", "Voting", "Meetings"],
   } as const satisfies Readonly<Record<string, readonly string[]>>;
 

@@ -192,4 +192,43 @@ describe("sidebar data", () => {
       "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB",
     );
   });
+
+  test("categorizes english-only groups instead of dropping them into new and unsorted", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("Select courses", ""));
+            insDoc(aux0, gLnk(0, "Add / Drop Courses", "/courses"));
+            aux1 = insFld(foldersTree, gFld("Learning platform", ""));
+            insDoc(aux1, gLnk(0, "Course materials", "/learning"));
+            aux2 = insFld(foldersTree, gFld("Student leave system", ""));
+            insDoc(aux2, gLnk(0, "Leave application", "/leave"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+
+    expect(model.categories.map((category: { label: string }) => category.label)).toContain(
+      "Planning & Enrollment",
+    );
+    expect(model.categories.map((category: { label: string }) => category.label)).toContain(
+      "Campus Systems",
+    );
+    expect(model.categories.map((category: { label: string }) => category.label)).toContain(
+      "Forms",
+    );
+    expect(model.categories.map((category: { label: string }) => category.label)).not.toContain(
+      "New & Unsorted",
+    );
+  });
 });
