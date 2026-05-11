@@ -108,6 +108,36 @@ describe("sidebar ui", () => {
     expect(state.activeLeaf).toBeUndefined();
   });
 
+  test("renders the lab switch with explicit off state in classic mode", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
+    loadModules(window, menuModulePaths);
+
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const strings = requireValue(window.CCXP_LITE.shared, "shared").LOCALIZED_STRINGS.en;
+    const state = sidebarState.getSidebarUiState(document);
+    state.sidebarVariant = "classic";
+
+    sidebarUi.mountSidebarVariantSwitch(document, state, strings, () => undefined);
+
+    const switcherNode = requireElement(
+      document.querySelector<HTMLElement>("[data-ccxp-lite-sidebar-lab-switch]"),
+      "variant switcher",
+    );
+
+    expect(switcherNode.dataset.ccxpLiteSidebarVariantMode).toBe("classic");
+    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-label")?.textContent).toBe(
+      "Lab",
+    );
+    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-detail")?.textContent).toBe(
+      "Classic",
+    );
+    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-state")?.textContent).toBe(
+      "Off",
+    );
+  });
+
   test("renders classic search empty and favorites empty states", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
     const document = window.document as Document;

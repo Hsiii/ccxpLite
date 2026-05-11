@@ -194,21 +194,18 @@
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
+    const isLayered = state.sidebarVariant === "layered";
     const button = targetDocument.createElement("button");
     button.type = "button";
     button.className = "ccxp-lite-sidebar-experiment-switch";
     button.dataset.ccxpLiteSidebarVariantMode = state.sidebarVariant;
     button.setAttribute(
       "aria-label",
-      state.sidebarVariant === "classic"
-        ? strings.sidebarSwitchToLayered
-        : strings.sidebarSwitchToClassic,
+      isLayered ? strings.sidebarSwitchToClassic : strings.sidebarSwitchToLayered,
     );
     button.setAttribute(
       "title",
-      state.sidebarVariant === "classic"
-        ? strings.sidebarSwitchToLayered
-        : strings.sidebarSwitchToClassic,
+      isLayered ? strings.sidebarSwitchToClassic : strings.sidebarSwitchToLayered,
     );
     const iconWrap = targetDocument.createElement("span");
     iconWrap.className = "ccxp-lite-sidebar-experiment-icon";
@@ -222,9 +219,20 @@
     iconWrap.append(createLabIcon(targetDocument));
     const textWrap = targetDocument.createElement("span");
     textWrap.className = "ccxp-lite-sidebar-experiment-copy";
-    textWrap.textContent = `${strings.sidebarExperimentCaption}\uFF1A${strings.sidebarVariantLayered}`;
+    const label = targetDocument.createElement("span");
+    label.className = "ccxp-lite-sidebar-experiment-label";
+    label.textContent = strings.sidebarExperimentLabel;
+    const detail = targetDocument.createElement("span");
+    detail.className = "ccxp-lite-sidebar-experiment-detail";
+    detail.textContent = isLayered ? strings.sidebarVariantLayered : strings.sidebarVariantClassic;
+    textWrap.append(label);
+    textWrap.append(detail);
+    const status = targetDocument.createElement("span");
+    status.className = "ccxp-lite-sidebar-experiment-state";
+    status.textContent = isLayered ? strings.sidebarExperimentOn : strings.sidebarExperimentOff;
     button.append(iconWrap);
     button.append(textWrap);
+    button.append(status);
     button.addEventListener("click", () => {
       const nextState = state;
       nextState.sidebarVariant = setPersistedSidebarVariant(

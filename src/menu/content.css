@@ -736,37 +736,34 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-experiment-switch {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  width: auto;
-  min-width: var(--ccxp-lite-size-control-height-sm);
-  max-width: var(--ccxp-lite-size-control-height-sm);
+  justify-content: flex-start;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  inline-size: var(--ccxp-lite-size-sidebar-experiment-switch);
   height: var(--ccxp-lite-size-control-height-sm);
-  padding: 0;
+  padding: var(--ccxp-lite-spacing-sidebar-experiment-inset-y)
+    var(--ccxp-lite-spacing-sidebar-experiment-inset-x);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
   background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
-  box-shadow: none;
-  overflow: hidden;
-  white-space: nowrap;
+  box-shadow: 0 12px 24px -18px var(--ccxp-lite-lab-switch-shadow);
   transition:
-    max-width 240ms cubic-bezier(0.4, 0, 0.2, 1),
-    gap 240ms cubic-bezier(0.4, 0, 0.2, 1),
-    padding 240ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 120ms ease,
-    background-color 120ms ease;
+    inline-size 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 220ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 .ccxp-lite-sidebar-experiment-switch:hover {
-  justify-content: flex-start;
-  max-width: 300px;
-  gap: var(--ccxp-lite-spacing-xs);
-  padding-left: var(--ccxp-lite-spacing-sm);
-  padding-right: var(--ccxp-lite-spacing-inset-sm);
+  inline-size: var(--ccxp-lite-size-sidebar-experiment-switch-expanded);
   border-color: var(--ccxp-lite-primary-focus-border);
   background: var(--ccxp-lite-primary-hover-surface);
+  color: var(--ccxp-lite-text);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 32px -20px var(--ccxp-lite-lab-switch-shadow);
 }
 
 .ccxp-lite-sidebar-experiment-switch:focus-visible {
@@ -776,6 +773,7 @@ html[data-ccxp-lite-scope="nav"] body {
 
 .ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"] {
   border-color: var(--ccxp-lite-brand);
+  background: color-mix(in srgb, var(--ccxp-lite-surface) 80%, var(--ccxp-lite-accent));
   color: var(--ccxp-lite-text);
 }
 
@@ -786,37 +784,77 @@ html[data-ccxp-lite-scope="nav"] body {
   justify-content: center;
   width: var(--ccxp-lite-size-icon-button-sm);
   height: var(--ccxp-lite-size-icon-button-sm);
+  border-radius: var(--ccxp-lite-radius-full);
   color: var(--ccxp-lite-text-muted);
-  transition: all 120ms ease;
+  background: color-mix(in srgb, var(--ccxp-lite-surface) 84%, var(--ccxp-lite-accent));
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
   .ccxp-lite-sidebar-experiment-icon {
   color: var(--ccxp-lite-brand);
+  background: color-mix(in srgb, var(--ccxp-lite-lab-active-surface) 88%, var(--ccxp-lite-surface));
+}
+
+.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-icon {
+  transform: scale(1.04);
 }
 
 .ccxp-lite-sidebar-experiment-copy {
-  opacity: 0;
-  visibility: hidden;
-  width: 0;
-  max-width: 0;
-  overflow: hidden;
+  display: grid;
   min-width: 0;
-  line-height: 1;
-  white-space: nowrap;
-  font: var(--ccxp-lite-type-utility);
-  transition:
-    opacity 160ms ease,
-    max-width 240ms cubic-bezier(0.4, 0, 0.2, 1),
-    width 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.1;
 }
 
-.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-copy {
+.ccxp-lite-sidebar-experiment-label {
+  color: var(--ccxp-lite-text);
+  font: var(--ccxp-lite-type-utility);
+}
+
+.ccxp-lite-sidebar-experiment-detail {
+  color: var(--ccxp-lite-text-muted);
+  font: var(--ccxp-lite-type-caption);
+  opacity: 0.76;
+  transition:
+    opacity 160ms ease,
+    color 160ms ease;
+}
+
+.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-detail {
   opacity: 1;
-  visibility: visible;
-  width: auto;
-  max-width: 200px;
-  transition-delay: 60ms;
+}
+
+.ccxp-lite-sidebar-experiment-state {
+  flex: 0 0 auto;
+  min-width: 44px;
+  margin-left: auto;
+  padding: 4px 8px;
+  border: 1px solid var(--ccxp-lite-lab-inactive-border);
+  border-radius: var(--ccxp-lite-radius-full);
+  background: var(--ccxp-lite-lab-inactive-surface);
+  color: var(--ccxp-lite-lab-inactive-text);
+  font: var(--ccxp-lite-type-caption);
+  text-align: center;
+  letter-spacing: 0.02em;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
+  .ccxp-lite-sidebar-experiment-state {
+  border-color: var(--ccxp-lite-lab-active-border);
+  background: var(--ccxp-lite-lab-active-surface);
+  color: var(--ccxp-lite-lab-active-text);
+}
+
+.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-state {
+  transform: translateX(1px);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] {
