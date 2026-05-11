@@ -424,7 +424,9 @@
     }
     if (children.childElementCount === 0) {
       if (group.kind === "category" && group.id === "category-favorites") {
-        children.append(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
+        children.append(
+          createClassicEmptyRow(targetDocument, strings.sidebarFavoritesEmpty, depth + 1),
+        );
       } else {
         const emptyText =
           group.kind === "category"
