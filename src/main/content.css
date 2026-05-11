@@ -3,7 +3,6 @@ html[data-ccxp-lite-scope="main"] body {
   background: var(--ccxp-lite-bg) !important;
   background-image: none !important;
   color: var(--ccxp-lite-type-body-color) !important;
-  scrollbar-gutter: stable both-edges;
 }
 
 html[data-ccxp-lite-scope="main"] [background] {
