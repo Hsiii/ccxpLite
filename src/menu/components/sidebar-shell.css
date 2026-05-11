@@ -87,6 +87,10 @@
   display: none;
 }
 
+.ccxp-lite-sidebar-experiment-copy {
+  display: none !important;
+}
+
 .ccxp-lite-sidebar-experiment-switch {
   display: inline-flex;
   align-items: center;

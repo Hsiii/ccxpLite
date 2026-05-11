@@ -1569,6 +1569,9 @@
       for (const node of scopeDocument.querySelectorAll("[data-ccxp-lite-sidebar-lab-switch]")) {
         node.remove();
       }
+      for (const node of scopeDocument.querySelectorAll(".ccxp-lite-sidebar-experiment-copy")) {
+        node.remove();
+      }
     }
   }
 
