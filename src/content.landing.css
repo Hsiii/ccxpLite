@@ -558,6 +558,14 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   text-decoration: none;
 }
 
+.ccxp-lite-landing-lang ul.links a:hover,
+.ccxp-lite-landing-lang ul.links a:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
+  color: var(--ccxp-lite-type-utility-color);
+  font: var(--ccxp-lite-type-utility) !important;
+  text-decoration: none;
+}
+
 .ccxp-lite-landing-lang a {
   color: var(--ccxp-lite-type-utility-color);
   font: var(--ccxp-lite-type-utility);
