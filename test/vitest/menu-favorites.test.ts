@@ -97,4 +97,36 @@ describe("sidebar favorites", () => {
     );
     expect([...api.getFavoriteIds()]).toEqual([]);
   });
+
+  test("matches versioned favorites even when menu depth changes", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+
+    const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const currentLink = {
+      id: api.createLinkId({
+        label: "Apply now",
+        pathSegments: ["Student services", "Select courses", "Apply now"],
+        target: "main",
+      }),
+      legacyId: api.createLegacyLinkId({
+        label: "Apply now",
+        href: "/courses/apply",
+        target: "main",
+      }),
+      label: "Apply now",
+      pathSegments: ["Student services", "Select courses", "Apply now"],
+      href: "/courses/apply",
+      target: "main",
+    };
+    const savedFavoriteId = api.createLinkId({
+      label: "Apply now",
+      pathSegments: ["Student services", "Apply now"],
+      target: "main",
+    });
+
+    expect(api.getMatchingFavoriteIds(currentLink, new Set([savedFavoriteId]))).toEqual([
+      savedFavoriteId,
+    ]);
+  });
 });

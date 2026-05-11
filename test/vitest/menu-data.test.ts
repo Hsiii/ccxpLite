@@ -264,6 +264,50 @@ describe("sidebar data", () => {
     ]);
   });
 
+  test("keeps favorites visible when a nested menu gains an intermediate layer", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("Student services", ""));
+            aux1 = insFld(aux0, gFld("Select courses", ""));
+            insDoc(aux1, gLnk(0, "Apply now", "/courses/apply"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+
+    sidebarFavorites.favoriteState.ids = new Set([
+      sidebarFavorites.createLinkId({
+        label: "Apply now",
+        pathSegments: ["Student services", "Apply now"],
+        target: "main",
+      }),
+    ]);
+    sidebarFavorites.favoriteState.hasLoaded = true;
+
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+
+    expect(model.favorites.blocks).toHaveLength(1);
+    expect(model.favorites.blocks[0].label).toBe("");
+    expect(model.favorites.blocks[0].links).toHaveLength(1);
+    expect(model.favorites.blocks[0].links[0].label).toBe("Apply now");
+    expect(model.favorites.blocks[0].links[0].pathSegments).toEqual([
+      "Student services",
+      "Select courses",
+      "Apply now",
+    ]);
+  });
+
   test("applies manual english translations to unmatched chinese sidebar labels", () => {
     const { window } = createTestWindow(`
       <!doctype html>

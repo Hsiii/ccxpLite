@@ -236,12 +236,8 @@
   }
 
   function createLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
-    const pathSignature = isArray(linkItem.pathSegments)
-      ? linkItem.pathSegments.map(normalizeFavoriteText).filter(Boolean).join(">")
-      : "";
-    const clickSignature = linkItem.clickLinkArgs
-      ? `${linkItem.clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
-      : "";
+    const pathSignature = normalizeFavoritePathSegments(linkItem.pathSegments).join(">");
+    const clickSignature = createFavoriteClickSignature(linkItem.clickLinkArgs);
     return [
       "v2",
       pathSignature,
@@ -252,9 +248,7 @@
   }
 
   function createLegacyLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
-    const clickSignature = linkItem.clickLinkArgs
-      ? `${linkItem.clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(linkItem.clickLinkArgs.url)}`
-      : "";
+    const clickSignature = createFavoriteClickSignature(linkItem.clickLinkArgs);
     return [
       normalizeFavoriteText(linkItem.label),
       normalizeFavoriteUrl(linkItem.href),
@@ -322,9 +316,7 @@
     label: unknown,
     fallbackSegment?: string,
   ): readonly string[] {
-    const normalizedParentSegments = isArray(parentPathSegments)
-      ? parentPathSegments.map(normalizeFavoriteText).filter(Boolean)
-      : [];
+    const normalizedParentSegments = normalizeFavoritePathSegments(parentPathSegments);
     const normalizedLabel = normalizeFavoriteText(label);
     if (normalizedLabel !== "") {
       return [...normalizedParentSegments, normalizedLabel];
@@ -349,13 +341,95 @@
     if (!linkItem) {
       return [];
     }
-    return [...new Set([linkItem.id, linkItem.legacyId].filter(isDefinedString))].filter(
-      (favoriteId) => favoriteIds.has(favoriteId),
+    return [...favoriteIds].filter((favoriteId) => isFavoriteIdMatch(linkItem, favoriteId));
+  }
+
+  function isFavoriteIdMatch(linkItem: CcxpLiteSidebarLinkItem, favoriteId: string) {
+    if (favoriteId === linkItem.id || favoriteId === linkItem.legacyId) {
+      return true;
+    }
+    const parsedFavoriteId = parseVersionedFavoriteId(favoriteId);
+    if (!parsedFavoriteId) {
+      return false;
+    }
+    if (
+      parsedFavoriteId.label !== normalizeFavoriteText(linkItem.label) ||
+      parsedFavoriteId.target !== normalizeFavoriteText(linkItem.target) ||
+      parsedFavoriteId.clickSignature !== createFavoriteClickSignature(linkItem.clickLinkArgs)
+    ) {
+      return false;
+    }
+    const currentPathSegments = normalizeFavoritePathSegments(linkItem.pathSegments);
+    if (parsedFavoriteId.pathSegments.length === 0 || currentPathSegments.length === 0) {
+      return true;
+    }
+    return areFavoritePathSegmentsCompatible(parsedFavoriteId.pathSegments, currentPathSegments);
+  }
+
+  function parseVersionedFavoriteId(favoriteId: string):
+    | {
+        pathSegments: readonly string[];
+        label: string;
+        target: string;
+        clickSignature: string;
+      }
+    | undefined {
+    const parts = favoriteId.split("||");
+    if (parts.length !== 5 || parts[0] !== "v2") {
+      return undefined;
+    }
+    return {
+      pathSegments: parseFavoritePathSignature(parts[1]),
+      label: normalizeFavoriteText(parts[2]),
+      target: normalizeFavoriteText(parts[3]),
+      clickSignature: normalizeFavoriteText(parts[4]),
+    };
+  }
+
+  function areFavoritePathSegmentsCompatible(
+    leftPathSegments: readonly string[],
+    rightPathSegments: readonly string[],
+  ) {
+    if (leftPathSegments.length === rightPathSegments.length) {
+      return leftPathSegments.every(
+        (pathSegment, index) => pathSegment === rightPathSegments[index],
+      );
+    }
+    return (
+      isFavoritePathSubsequence(leftPathSegments, rightPathSegments) ||
+      isFavoritePathSubsequence(rightPathSegments, leftPathSegments)
     );
   }
 
-  function isDefinedString(value: string | undefined): value is string {
-    return typeof value === "string" && value !== "";
+  function isFavoritePathSubsequence(
+    candidatePathSegments: readonly string[],
+    referencePathSegments: readonly string[],
+  ) {
+    if (candidatePathSegments.length > referencePathSegments.length) {
+      return false;
+    }
+    let candidateIndex = 0;
+    for (const pathSegment of referencePathSegments) {
+      if (pathSegment === candidatePathSegments[candidateIndex]) {
+        candidateIndex++;
+        if (candidateIndex === candidatePathSegments.length) {
+          return true;
+        }
+      }
+    }
+    return candidateIndex === candidatePathSegments.length;
+  }
+
+  function normalizeFavoritePathSegments(
+    pathSegments: readonly string[] | undefined,
+  ): readonly string[] {
+    return isArray(pathSegments) ? pathSegments.map(normalizeFavoriteText).filter(Boolean) : [];
+  }
+
+  function createFavoriteClickSignature(clickLinkArgs: CcxpLiteClickLinkArgs | undefined) {
+    return clickLinkArgs
+      ? `${clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(clickLinkArgs.url)}`
+      : "";
   }
 
   function normalizeFavoriteUrl(rawValue: string | undefined) {
