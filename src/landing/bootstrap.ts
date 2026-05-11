@@ -27,6 +27,7 @@
     ensureThemeDocument,
     ensureDocumentBody,
     getLocalizedStrings,
+    rememberLocale,
     createBrandImage,
     createBrandCopy,
     createBrandPartnerLink,
@@ -111,6 +112,7 @@
       loginSourceCell as ParentNode | undefined,
       loginForm,
     );
+    rememberLocale(locale, targetDocument);
     const strings = getLocalizedStrings(locale);
     if (!loginSourceCell) {
       retryFn();
