@@ -352,6 +352,12 @@ html[data-ccxp-lite-scope="landing"] [size="2" i] {
   letter-spacing: 0.01em !important;
 }
 
+.ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-sidebar-brand-word-gap);
+}
+
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title,
 .ccxp-lite-landing-brand .ccxp-lite-sidebar-brand-title span,
 .ccxp-lite-landing-brand-partner-mark,
