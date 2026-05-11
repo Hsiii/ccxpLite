@@ -231,4 +231,36 @@ describe("sidebar data", () => {
       "New & Unsorted",
     );
   });
+
+  test("uses nested english folder labels to classify the first layer node", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("Student services", ""));
+            aux1 = insFld(aux0, gFld("Select courses", ""));
+            insDoc(aux1, gLnk(0, "Apply now", "/courses/apply"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+
+    expect(model.categories).toHaveLength(1);
+    expect(model.categories[0].label).toBe("Planning & Enrollment");
+    expect(model.categories[0].blocks[0].label).toBe("Student services");
+    expect(model.categories[0].blocks[0].links[0].pathSegments).toEqual([
+      "Student services",
+      "Select courses",
+      "Apply now",
+    ]);
+  });
 });

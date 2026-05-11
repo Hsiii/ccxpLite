@@ -199,6 +199,12 @@
       if (itemLabel !== "") {
         labels.push(itemLabel);
       }
+      for (const pathSegment of item.linkItem.pathSegments ?? []) {
+        const normalizedPathSegment = normalizeSidebarLabel(pathSegment);
+        if (normalizedPathSegment !== "") {
+          labels.push(normalizedPathSegment);
+        }
+      }
       return labels;
     }
     const itemLabel = normalizeSidebarLabel(item.label);
@@ -210,6 +216,12 @@
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel !== "") {
         labels.push(linkLabel);
+      }
+      for (const pathSegment of linkItem.pathSegments ?? []) {
+        const normalizedPathSegment = normalizeSidebarLabel(pathSegment);
+        if (normalizedPathSegment !== "") {
+          labels.push(normalizedPathSegment);
+        }
       }
     }
     return labels;
@@ -494,14 +506,16 @@
     parentPathSegments: readonly string[],
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
+    const folderLabel = toPlainText(folderNode.desc, navDocument);
+    const nestedPathSegments = buildFavoritePathSegments(parentPathSegments, folderLabel);
     for (const childNode of folderNode.children) {
       if ("children" in childNode) {
         directLinks.push(
-          ...collectNestedLinksIntoGroup(childNode, navDocument, parentPathSegments),
+          ...collectNestedLinksIntoGroup(childNode, navDocument, nestedPathSegments),
         );
         continue;
       }
-      const linkItem = normalizeLinkItem(childNode, navDocument, parentPathSegments);
+      const linkItem = normalizeLinkItem(childNode, navDocument, nestedPathSegments);
       if (linkItem) {
         directLinks.push(linkItem);
       }
