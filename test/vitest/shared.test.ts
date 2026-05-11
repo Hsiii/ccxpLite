@@ -11,16 +11,31 @@ describe("shared locale", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;
     loadModules(window, sharedModulePaths);
-    const { normalizeLocale, resolveLocaleFromDocument, getLocalizedStrings } = requireValue(
-      window.CCXP_LITE.sharedLocale,
-      "sharedLocale",
-    );
+    const { normalizeLocale, resolveLocaleFromDocument, getLocalizedStrings, rememberLocale } =
+      requireValue(window.CCXP_LITE.sharedLocale, "sharedLocale");
     expect(normalizeLocale("en-US")).toBe("en");
     expect(normalizeLocale("ch")).toBe("zh");
     expect(normalizeLocale("")).toBe("zh");
     document.documentElement.lang = "en-GB";
     expect(resolveLocaleFromDocument(document)).toBe("en");
+    rememberLocale("zh", document);
+    document.documentElement.lang = "";
+    expect(resolveLocaleFromDocument(document)).toBe("zh");
     expect(getLocalizedStrings("fr").sidebarTitle).toBe("\u6821\u52D9\u8CC7\u8A0A\u7CFB\u7D71");
+  });
+
+  test("reuses the remembered locale when the authenticated page omits lang", () => {
+    const { window } = createTestWindow("<!doctype html><html><head></head><body></body></html>");
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const { rememberLocale, resolveLocaleFromDocument } = requireValue(
+      window.CCXP_LITE.sharedLocale,
+      "sharedLocale",
+    );
+    expect(rememberLocale("en", document)).toBe("en");
+    document.documentElement.lang = "";
+    expect(resolveLocaleFromDocument(document)).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
   });
 });
 describe("shared theme", () => {

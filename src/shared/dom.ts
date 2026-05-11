@@ -195,7 +195,8 @@
   }
   const { TOKENS, LOCALIZED_STRINGS, SIDEBAR_CATEGORIES, ASSETS } = sharedConstants;
   const { ensureThemeDocument } = sharedTheme;
-  const { getLocalizedStrings, normalizeLocale, resolveLocaleFromDocument } = sharedLocale;
+  const { getLocalizedStrings, normalizeLocale, rememberLocale, resolveLocaleFromDocument } =
+    sharedLocale;
   const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
     sharedBrand;
   namespace.shared = {
@@ -207,6 +208,7 @@
     ensureThemeDocument,
     getLocalizedStrings,
     normalizeLocale,
+    rememberLocale,
     resolveLocaleFromDocument,
     createBrandImage,
     createBrandCopy,

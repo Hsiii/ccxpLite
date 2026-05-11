@@ -177,6 +177,7 @@ declare global {
 
   interface CcxpLiteSharedLocale {
     getLocalizedStrings: (locale: string) => Readonly<Record<string, string>>;
+    rememberLocale: (locale: string | undefined, targetDocument: Document | undefined) => string;
     normalizeLocale: (locale: string) => string;
     resolveLocaleFromDocument: (targetDocument: Document) => string;
   }
@@ -252,6 +253,7 @@ declare global {
     ASSETS: Record<string, string>;
     ensureThemeDocument: (targetDocument: Document, scope: string) => boolean;
     getLocalizedStrings: (locale: string) => Readonly<Record<string, string>>;
+    rememberLocale: (locale: string | undefined, targetDocument: Document | undefined) => string;
     normalizeLocale: (locale: string) => string;
     resolveLocaleFromDocument: (targetDocument: Document) => string;
     createBrandImage: (
