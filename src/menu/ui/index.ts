@@ -1544,10 +1544,19 @@
       mainDocument ?? undefined,
       mountDocument,
     ]);
+    const switchPosition =
+      variant === "classic"
+        ? {
+            right: TOKENS.spacingLg,
+            bottom: TOKENS.spacingLg,
+          }
+        : {
+            right: TOKENS.spacingLg,
+            bottom: TOKENS.spacingMd,
+          };
     Object.assign(button.style, {
       position: "fixed",
-      right: "24px",
-      bottom: "24px",
+      ...switchPosition,
       zIndex: "2147483646",
     });
     getOverlayMountNode(mountDocument).append(button);
