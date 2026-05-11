@@ -24,7 +24,7 @@ const outputZip = path.join(distDir, `ccxpLite-v${version}.zip`);
 const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
 const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_decaptcha_model.py");
-const generatedModelPath = path.join(srcDir, "landing", "decaptcha.model.ts");
+const generatedModelPath = path.join(srcDir, "landing", "auth", "decaptcha.model.ts");
 const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
 

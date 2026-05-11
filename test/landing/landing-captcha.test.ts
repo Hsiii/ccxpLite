@@ -12,7 +12,7 @@ import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
 const landingCaptchaModulePaths = [
   ...sharedModulePaths,
   "src/landing/locale.ts",
-  "src/landing/captcha.ts",
+  "src/landing/auth/captcha.ts",
 ];
 
 async function flushPromises() {

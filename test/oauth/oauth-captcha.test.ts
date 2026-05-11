@@ -12,7 +12,7 @@ import { createOauthLoginHtml } from "../helpers/landing-fixtures.js";
 const oauthCaptchaModulePaths = [
   ...sharedModulePaths,
   "src/landing/locale.ts",
-  "src/landing/captcha.ts",
+  "src/landing/auth/captcha.ts",
   "src/oauth/captcha.ts",
 ];
 

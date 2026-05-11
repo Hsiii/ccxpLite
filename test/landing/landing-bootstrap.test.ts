@@ -13,7 +13,7 @@ import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
 const landingBootstrapModulePaths = [
   ...sharedModulePaths,
   ...landingModulePaths.slice(sharedModulePaths.length),
-  "src/landing/bootstrap.ts",
+  "src/landing/pipeline/bootstrap.ts",
 ];
 
 describe("landing bootstrap", () => {

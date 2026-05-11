@@ -105,22 +105,22 @@ export const sharedModulePaths = [
 
 export const menuModulePaths = [
   ...sharedModulePaths,
-  "src/menu/state.ts",
-  "src/menu/favorites.ts",
-  "src/menu/data.ts",
+  "src/menu/model/state.ts",
+  "src/menu/model/favorites.ts",
+  "src/menu/model/data.ts",
   "src/menu/runtime.ts",
-  "src/menu/ui.ts",
+  "src/menu/ui/index.ts",
 ];
 
 export const landingModulePaths = [
   ...sharedModulePaths,
   "src/landing/locale.ts",
-  "src/landing/support.ts",
-  "src/landing/tabs.ts",
-  "src/landing/validation.ts",
-  "src/landing/login.ts",
-  "src/landing/captcha.ts",
-  "src/landing/identify.ts",
-  "src/landing/rewrite.ts",
-  "src/landing/style.ts",
+  "src/landing/ui/support.ts",
+  "src/landing/ui/tabs.ts",
+  "src/landing/auth/validation.ts",
+  "src/landing/ui/login.ts",
+  "src/landing/auth/captcha.ts",
+  "src/landing/pipeline/identify.ts",
+  "src/landing/pipeline/rewrite.ts",
+  "src/landing/pipeline/style.ts",
 ];
