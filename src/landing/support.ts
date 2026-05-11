@@ -59,9 +59,7 @@
         .flatMap((row) => [...row.cells])
         .find((cell) => cell.classList.contains("board_item"));
       const headingText = normalizeAnnouncementHeading(headingCell && headingCell.textContent);
-      const hasNoticeHeading =
-        headingText.includes("\u7CFB\u7D71\u516C\u544A") || headingText.includes("system notice");
-      if (!hasNoticeHeading) {
+      if (!hasAnnouncementHeading(headingText)) {
         return false;
       }
       const boardHeaderRow = rows.find((row) => {
@@ -109,6 +107,16 @@
 
   function normalizeAnnouncementHeading(rawText: string | undefined) {
     return (rawText ?? "").replaceAll(/\s+/g, " ").trim().toLowerCase();
+  }
+
+  function hasAnnouncementHeading(headingText: string) {
+    return [
+      "\u7CFB\u7D71\u516C\u544A",
+      "notice",
+      "system notice",
+      "system announcement",
+      "announcement",
+    ].some((pattern) => headingText.includes(pattern));
   }
 
   function prepareAnnouncementTable(
