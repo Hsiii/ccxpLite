@@ -4,7 +4,7 @@ import {
   loadModules,
   menuModulePaths,
   requireValue,
-} from "./helpers/module-loader.js";
+} from "../helpers/module-loader.js";
 
 describe("sidebar runtime", () => {
   test("detects external-only routes and opens them in a new tab", () => {

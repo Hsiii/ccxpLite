@@ -5,8 +5,8 @@ import {
   menuModulePaths,
   requireElement,
   requireValue,
-} from "./helpers/module-loader.js";
-import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createSidebarModel, createSidebarShellHtml } from "../helpers/menu-fixtures.js";
 
 describe("sidebar destination states", () => {
   test("shows loading first and settles into success on iframe load", () => {

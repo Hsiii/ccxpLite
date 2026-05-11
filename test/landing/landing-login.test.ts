@@ -6,8 +6,8 @@ import {
   loadModules,
   requireElement,
   requireValue,
-} from "./helpers/module-loader.js";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
 
 describe("landing login ui", () => {
   test("wraps the password field once and toggles visibility with localized labels", () => {

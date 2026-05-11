@@ -6,8 +6,8 @@ import {
   menuModulePaths,
   requireElement,
   requireValue,
-} from "./helpers/module-loader.js";
-import { createSidebarModel, createSidebarShellHtml } from "./helpers/menu-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createSidebarModel, createSidebarShellHtml } from "../helpers/menu-fixtures.js";
 
 describe("sidebar ui", () => {
   test("renders dashboard root state and keeps search input synchronized", () => {

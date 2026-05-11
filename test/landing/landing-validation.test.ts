@@ -5,8 +5,8 @@ import {
   loadModules,
   requireElement,
   requireValue,
-} from "./helpers/module-loader.js";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
 
 describe("landing validation", () => {
   test("captures parsed fnstr state and falls back to startedAt for malformed values", () => {

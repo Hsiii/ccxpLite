@@ -6,8 +6,8 @@ import {
   requireElement,
   requireValue,
   sharedModulePaths,
-} from "./helpers/module-loader.js";
-import { createOauthLoginHtml } from "./helpers/landing-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createOauthLoginHtml } from "../helpers/landing-fixtures.js";
 
 const oauthCaptchaModulePaths = [
   ...sharedModulePaths,

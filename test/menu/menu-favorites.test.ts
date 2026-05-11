@@ -5,7 +5,7 @@ import {
   loadModules,
   menuModulePaths,
   requireValue,
-} from "./helpers/module-loader.js";
+} from "../helpers/module-loader.js";
 
 describe("sidebar favorites", () => {
   test("loads favorites from scoped localStorage and writes normalized updates", async () => {

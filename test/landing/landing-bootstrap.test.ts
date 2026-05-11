@@ -7,8 +7,8 @@ import {
   requireElement,
   requireValue,
   sharedModulePaths,
-} from "./helpers/module-loader.js";
-import { createLandingLoginHtml } from "./helpers/landing-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createLandingLoginHtml } from "../helpers/landing-fixtures.js";
 
 const landingBootstrapModulePaths = [
   ...sharedModulePaths,

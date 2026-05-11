@@ -5,8 +5,8 @@ import {
   landingModulePaths,
   loadModules,
   requireValue,
-} from "./helpers/module-loader.js";
-import { createEnglishLandingAnnouncementHtml } from "./helpers/landing-fixtures.js";
+} from "../helpers/module-loader.js";
+import { createEnglishLandingAnnouncementHtml } from "../helpers/landing-fixtures.js";
 
 describe("landing support", () => {
   test("finds and prepares the English system news table from the right rail", () => {

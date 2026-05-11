@@ -5,7 +5,7 @@ import {
   loadModules,
   menuModulePaths,
   requireValue,
-} from "./helpers/module-loader.js";
+} from "../helpers/module-loader.js";
 
 function createSidebarTreeDocument() {
   return `

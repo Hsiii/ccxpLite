@@ -5,7 +5,7 @@ import {
   menuModulePaths,
   requireElement,
   requireValue,
-} from "./helpers/module-loader.js";
+} from "../helpers/module-loader.js";
 
 describe("sidebar state", () => {
   test("returns a stable state object per document with the expected defaults", () => {

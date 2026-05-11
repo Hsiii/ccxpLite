@@ -4,7 +4,7 @@ import {
   loadModules,
   requireValue,
   sharedModulePaths,
-} from "./helpers/module-loader.js";
+} from "../helpers/module-loader.js";
 
 describe("shared locale", () => {
   test("normalizes locale families and defaults to zh", () => {
