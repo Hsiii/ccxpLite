@@ -9,7 +9,7 @@ import {
 import { createEnglishLandingAnnouncementHtml } from "./helpers/landing-fixtures.js";
 
 describe("landing support", () => {
-  test("finds and prepares the English notice table from tab content", () => {
+  test("finds and prepares the English system news table from the right rail", () => {
     const { window } = createTestWindow(createEnglishLandingAnnouncementHtml());
     const document = window.document as Document;
     loadModules(window, landingModulePaths);
@@ -24,7 +24,7 @@ describe("landing support", () => {
 
     expect(announcementTable?.dataset.ccxpLiteAnnouncementPrepared).toBe("true");
     expect(announcementTable?.querySelector(".ccxp-lite-announcement-title")?.textContent).toBe(
-      "Notice",
+      "System News",
     );
     expect(announcementTable?.querySelectorAll(".ccxp-lite-announcement-row")).toHaveLength(3);
   });
