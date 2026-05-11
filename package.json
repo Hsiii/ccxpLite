@@ -9,7 +9,7 @@
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "capture:marketing": "bun run scripts/capture_marketing_images.ts",
+    "capture": "bun run scripts/capture_marketing_images.ts",
     "release": "bun run scripts/release.ts",
     "test": "bunx vitest run",
     "test:unit": "bunx vitest run",
