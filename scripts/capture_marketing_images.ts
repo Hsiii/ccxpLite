@@ -7,7 +7,6 @@ import type { BrowserContext, Page } from "playwright";
 import { chromium } from "playwright";
 
 const projectRoot = process.cwd();
-const chromePath = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const extensionDir = path.join(projectRoot, "dist", "unpacked");
 const outputReadmeDir = path.join(projectRoot, "assets", "showcase", "readme");
 const outputStoreDir = path.join(projectRoot, "assets", "showcase", "store");
@@ -91,10 +90,6 @@ function resizeOrThrow(sourcePath: string, targetPath: string, width: number, he
 }
 
 function assertPrerequisites() {
-  if (!existsSync(chromePath)) {
-    throw new Error(`Chrome not found at ${chromePath}`);
-  }
-
   if (!existsSync(path.join(projectRoot, "node_modules", "playwright"))) {
     throw new Error("playwright is not installed");
   }
@@ -137,7 +132,7 @@ async function main() {
   const readline = createInterface({ input, output });
   mkdirSync(captureProfileDir, { recursive: true });
   const context = await chromium.launchPersistentContext(captureProfileDir, {
-    executablePath: chromePath,
+    channel: "chromium",
     headless: false,
     viewport,
     args: [
@@ -156,7 +151,7 @@ async function main() {
     output.write(
       `${[
         "",
-        "Opened the dedicated marketing capture Chrome profile.",
+        "Opened the dedicated marketing capture Chromium profile.",
         `Use the page at ${loginUrl} and keep working in that browser window while the script prompts for each capture.`,
       ].join("\n")}\n`,
     );
