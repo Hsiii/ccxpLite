@@ -135,9 +135,9 @@ describe("sidebar ui", () => {
     state.searchQuery = "";
     state.classicExpandedItemIds = ["category-favorites"];
     sidebarUi.renderSidebar(document, document, model);
-    expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
+    expect(document.querySelector(".ccxp-lite-empty-row .ccxp-lite-row-label")?.textContent).toBe(
       "\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58",
     );
-    expect(document.querySelector(".ccxp-lite-empty-body")).toBeNull();
+    expect(document.querySelector(".ccxp-lite-empty-title")).toBeNull();
   });
 });
