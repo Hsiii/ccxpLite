@@ -35,6 +35,29 @@ describe("sidebar ui", () => {
     expect(document.querySelector(".ccxp-lite-pane-pinned .ccxp-lite-link-card")).not.toBeNull();
   });
 
+  test("renders the sidebar favorites empty copy in layered mode", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
+    loadModules(window, menuModulePaths);
+
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const state = sidebarState.getSidebarUiState(document);
+    state.sidebarVariant = "layered";
+    sidebarFavorites.favoriteState.hasLoaded = true;
+
+    const model = createSidebarModel();
+    model.favorites.blocks = [];
+
+    sidebarUi.renderSidebar(document, document, model);
+
+    expect(
+      document.querySelector(".ccxp-lite-pane-pinned .ccxp-lite-empty-title")?.textContent,
+    ).toBe("\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58");
+    expect(document.querySelector(".ccxp-lite-pane-pinned .ccxp-lite-empty-body")).toBeNull();
+  });
+
   test("clears invalid currentCategoryId and shows search empty state when nothing matches", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
     const document = window.document as Document;
@@ -113,10 +136,8 @@ describe("sidebar ui", () => {
     state.classicExpandedItemIds = ["category-favorites"];
     sidebarUi.renderSidebar(document, document, model);
     expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(
-      "\u5C1A\u672A\u91D8\u9078\u529F\u80FD",
+      "\u6309\u4E0B\u4EFB\u610F\u529F\u80FD\u65C1\u7684\u661F\u865F\u4EE5\u5132\u5B58",
     );
-    expect(document.querySelector(".ccxp-lite-empty-body")?.textContent).toContain(
-      "\u5373\u53EF\u5C07\u5B83\u56FA\u5B9A\u5728\u9019\u88E1",
-    );
+    expect(document.querySelector(".ccxp-lite-empty-body")).toBeNull();
   });
 });

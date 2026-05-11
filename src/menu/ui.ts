@@ -424,13 +424,7 @@
     }
     if (children.childElementCount === 0) {
       if (group.kind === "category" && group.id === "category-favorites") {
-        children.append(
-          createEmptyState(
-            targetDocument,
-            strings.sidebarFavoritesEmptyTitle,
-            strings.sidebarFavoritesEmptyBody,
-          ),
-        );
+        children.append(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
       } else {
         const emptyText =
           group.kind === "category"
@@ -592,13 +586,7 @@
     if (!favoriteState.hasLoaded) {
       body.append(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
     } else if (favorites.length === 0) {
-      body.append(
-        createEmptyState(
-          targetDocument,
-          strings.sidebarFavoritesEmptyTitle,
-          strings.sidebarFavoritesEmptyBody,
-        ),
-      );
+      body.append(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
     } else {
       for (const linkItem of favorites) {
         body.append(createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
