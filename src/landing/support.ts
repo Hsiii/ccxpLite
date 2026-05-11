@@ -113,6 +113,8 @@
     return [
       "\u7CFB\u7D71\u516C\u544A",
       "notice",
+      "system news",
+      "academic system news",
       "system notice",
       "system announcement",
       "announcement",
