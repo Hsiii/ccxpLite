@@ -17,8 +17,15 @@
         "content.css",
         "shared/content.css",
         "login/content.css",
+        "login/host/*.css",
+        "login/primitives/*.css",
+        "login/components/*.css",
         "main/content.css",
         "menu/content.css",
+        "menu/host/*.css",
+        "menu/primitives/*.css",
+        "menu/components/*.css",
+        "menu/variants/*.css",
         "pe14d/page.js"
       ],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]
