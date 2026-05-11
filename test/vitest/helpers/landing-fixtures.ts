@@ -73,3 +73,46 @@ export function createOauthLoginHtml(): string {
     </html>
   `;
 }
+
+export function createEnglishLandingAnnouncementHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head></head>
+      <body>
+        <table>
+          <tr>
+            <td width="60%" style="min-width: 30em;" valign="top" align="center">
+              <div class="tab">
+                <button class="tablinks active">Students</button>
+              </div>
+              <div class="tabcontent" style="display:block;">
+                <table>
+                  <tr>
+                    <td class="board_item">Notice</td>
+                  </tr>
+                  <tr>
+                    <td class="board_subject">Date</td>
+                    <td class="board_subject">Topic</td>
+                  </tr>
+                  <tr>
+                    <td class="board_0">2026/05/11</td>
+                    <td class="board_0">English announcement item number one</td>
+                  </tr>
+                  <tr>
+                    <td class="board_1">2026/05/10</td>
+                    <td class="board_1">English announcement item number two</td>
+                  </tr>
+                  <tr>
+                    <td class="board_0">2026/05/09</td>
+                    <td class="board_0">English announcement item number three</td>
+                  </tr>
+                </table>
+              </div>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
