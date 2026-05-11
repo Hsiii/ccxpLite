@@ -219,7 +219,6 @@
     iconWrap.append(createLabIcon(targetDocument));
     const status = targetDocument.createElement("span");
     status.className = "ccxp-lite-sidebar-experiment-state";
-    status.textContent = isLayered ? strings.sidebarExperimentOn : strings.sidebarExperimentOff;
     status.setAttribute("aria-hidden", "true");
     button.append(iconWrap);
     button.append(status);

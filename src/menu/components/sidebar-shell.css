@@ -143,9 +143,12 @@
   border: 1px solid var(--ccxp-lite-lab-inactive-border);
   border-radius: var(--ccxp-lite-radius-full);
   background: var(--ccxp-lite-lab-inactive-surface);
+  font-size: 0;
+  line-height: 0;
   color: transparent;
   overflow: hidden;
   white-space: nowrap;
+  text-indent: -9999px;
 }
 
 .ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
