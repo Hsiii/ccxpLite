@@ -23,11 +23,12 @@ describe("landing bootstrap", () => {
     window.CCXP_LITE.decaptcha = {
       predictDigits: vi.fn().mockResolvedValue("654321"),
     };
-    window.fetch = vi.fn(async () =>
-      await Promise.resolve({
-        ok: true,
-        arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
-      } as Response),
+    window.fetch = vi.fn(
+      async () =>
+        await Promise.resolve({
+          ok: true,
+          arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
+        } as Response),
     ) as unknown as typeof window.fetch;
     loadModules(window, landingBootstrapModulePaths);
     const landing = requireValue(window.CCXP_LITE.landing, "landing");

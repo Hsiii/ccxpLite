@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-restricted-imports */
 import { describe, expect, test } from "vitest";
 
-import * as decaptchaModelModule from "../../src/content.decaptcha.model.js";
-import * as decaptchaModule from "../../src/content.decaptcha.js";
+import * as decaptchaModelModule from "../src/content.decaptcha.model.js";
+import * as decaptchaModule from "../src/content.decaptcha.js";
 
 globalThis.CCXP_LITE ??= {} as CcxpLiteNamespace;
 const namespace = globalThis.CCXP_LITE;
