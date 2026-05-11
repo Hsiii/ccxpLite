@@ -121,6 +121,15 @@ async function delay(ms: number) {
   });
 }
 
+function isChromeRunning() {
+  const result = spawnSync("ps", ["-ax"], {
+    cwd: projectRoot,
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "ignore"],
+  });
+  return result.status === 0 && result.stdout.includes("/Applications/Google Chrome.app/");
+}
+
 function quitChrome() {
   spawnSync("osascript", ["-e", 'tell application "Google Chrome" to quit'], {
     cwd: projectRoot,
@@ -129,10 +138,38 @@ function quitChrome() {
 }
 
 function openChromeWithDebugPort() {
-  spawnSync("open", ["-a", "Google Chrome", "--args", "--remote-debugging-port=9222"], {
+  const child = spawnSync(
+    "open",
+    ["-a", "Google Chrome", "--args", "--remote-debugging-port=9222"],
+    {
+      cwd: projectRoot,
+      stdio: "ignore",
+    },
+  );
+  return child.status === 0;
+}
+
+function launchChromeBinaryWithDebugPort() {
+  const child = Bun.spawn([chromePath, "--remote-debugging-port=9222"], {
     cwd: projectRoot,
-    stdio: "ignore",
+    stdin: "ignore",
+    stdout: "ignore",
+    stderr: "ignore",
+    detached: true,
   });
+  child.unref();
+}
+
+async function waitForChromeToExit() {
+  for (let attempt = 0; attempt < 40; attempt++) {
+    // eslint-disable-next-line no-await-in-loop
+    await delay(500);
+    if (!isChromeRunning()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 async function waitForChromeDebugEndpoint() {
@@ -176,8 +213,16 @@ async function ensureChromeDebugEndpoint(readline: ReturnType<typeof createInter
   }
 
   quitChrome();
-  await delay(1500);
-  openChromeWithDebugPort();
+  if (!(await waitForChromeToExit())) {
+    throw new Error(
+      [
+        "Chrome did not exit cleanly.",
+        "Quit Google Chrome completely, then rerun `bun run capture`.",
+      ].join(" "),
+    );
+  }
+
+  launchChromeBinaryWithDebugPort();
   if (await waitForChromeDebugEndpoint()) {
     return;
   }
