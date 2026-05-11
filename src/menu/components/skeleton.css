@@ -1,0 +1,52 @@
+.ccxp-lite-skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-md);
+}
+
+.ccxp-lite-skeleton-card,
+.ccxp-lite-skeleton-frame-line,
+.ccxp-lite-skeleton-progress {
+  position: relative;
+  overflow: hidden;
+  background: var(--ccxp-lite-skeleton-surface-start);
+}
+
+.ccxp-lite-skeleton-card::after,
+.ccxp-lite-skeleton-frame-line::after,
+.ccxp-lite-skeleton-progress::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--ccxp-lite-skeleton-highlight-start),
+    var(--ccxp-lite-skeleton-highlight-soft),
+    var(--ccxp-lite-skeleton-highlight-strong),
+    var(--ccxp-lite-skeleton-highlight-start)
+  );
+  transform: translateX(-100%);
+  animation: ccxp-lite-skeleton-shimmer 1.25s ease-in-out infinite;
+}
+
+.ccxp-lite-skeleton-card {
+  min-height: var(--ccxp-lite-size-sidebar-section-card-min-height);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+}
+
+.ccxp-lite-skeleton-progress {
+  height: 4px;
+  border-radius: var(--ccxp-lite-radius-full);
+}
+
+.ccxp-lite-skeleton-frame-line {
+  height: 14px;
+  border-radius: var(--ccxp-lite-radius-xs);
+}
+
+@keyframes ccxp-lite-skeleton-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}

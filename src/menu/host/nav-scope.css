@@ -1,0 +1,8 @@
+html[data-ccxp-lite-scope="nav"],
+html[data-ccxp-lite-scope="nav"] body {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: var(--ccxp-lite-bg);
+  scrollbar-gutter: stable both-edges;
+}
