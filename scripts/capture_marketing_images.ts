@@ -115,31 +115,77 @@ async function hasChromeDebugEndpoint() {
   }
 }
 
-async function ensureChromeDebugEndpoint() {
-  if (await hasChromeDebugEndpoint()) {
-    return;
-  }
+async function delay(ms: number) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
 
+function quitChrome() {
+  spawnSync("osascript", ["-e", 'tell application "Google Chrome" to quit'], {
+    cwd: projectRoot,
+    stdio: "ignore",
+  });
+}
+
+function openChromeWithDebugPort() {
   spawnSync("open", ["-a", "Google Chrome", "--args", "--remote-debugging-port=9222"], {
     cwd: projectRoot,
     stdio: "ignore",
   });
+}
 
+async function waitForChromeDebugEndpoint() {
   for (let attempt = 0; attempt < 20; attempt++) {
     // eslint-disable-next-line no-await-in-loop
-    await new Promise((resolve) => {
-      setTimeout(resolve, 500);
-    });
+    await delay(500);
     // eslint-disable-next-line no-await-in-loop
     if (await hasChromeDebugEndpoint()) {
-      return;
+      return true;
     }
+  }
+
+  return false;
+}
+
+async function ensureChromeDebugEndpoint(readline: ReturnType<typeof createInterface>) {
+  if (await hasChromeDebugEndpoint()) {
+    return;
+  }
+
+  openChromeWithDebugPort();
+  if (await waitForChromeDebugEndpoint()) {
+    return;
+  }
+
+  const answer = await readline.question(
+    `${[
+      "",
+      "Chrome is already running without remote debugging.",
+      "Allow this script to quit and relaunch your normal Google Chrome once with --remote-debugging-port=9222? [y/N]",
+    ].join("\n")}\n`,
+  );
+
+  if (!/^y(es)?$/i.test(answer.trim())) {
+    throw new Error(
+      [
+        "Chrome remote debugging is not available.",
+        "Rerun `bun run capture` and allow the relaunch prompt, or manually relaunch Google Chrome with `--remote-debugging-port=9222`.",
+      ].join(" "),
+    );
+  }
+
+  quitChrome();
+  await delay(1500);
+  openChromeWithDebugPort();
+  if (await waitForChromeDebugEndpoint()) {
+    return;
   }
 
   throw new Error(
     [
       "Chrome remote debugging is not available.",
-      "Relaunch your normal Google Chrome with `--remote-debugging-port=9222`, keep the extension installed in that profile, then rerun `bun run capture`.",
+      "Quit Google Chrome completely, relaunch it with `--remote-debugging-port=9222`, keep the extension installed in that profile, then rerun `bun run capture`.",
     ].join(" "),
   );
 }
@@ -171,12 +217,11 @@ async function main() {
   assertPrerequisites();
   ensureOutputDirectories();
   runOrThrow("bun", ["run", "build"], "extension build");
-  await ensureChromeDebugEndpoint();
+  const readline = createInterface({ input, output });
+  await ensureChromeDebugEndpoint(readline);
 
   const browser = await chromium.connectOverCDP(chromeDebugUrl);
   const context = browser.contexts()[0];
-
-  const readline = createInterface({ input, output });
 
   try {
     const initialPage = context.pages()[0] ?? (await context.newPage());
