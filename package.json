@@ -9,6 +9,7 @@
   },
   "scripts": {
     "build": "bun run scripts/build.ts",
+    "capture:marketing": "bun run scripts/capture_marketing_images.ts",
     "release": "bun run scripts/release.ts",
     "test": "bunx vitest run",
     "test:unit": "bunx vitest run",
@@ -39,6 +40,7 @@
     "happy-dom": "^18.0.1",
     "husky": "^9.1.7",
     "lint-staged": "^15.5.0",
+    "playwright": "^1.59.1",
     "prettier": "^3.5.3",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
