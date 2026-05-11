@@ -203,3 +203,7 @@ html[data-ccxp-lite-scope="main"] [size="2" i] {
 body.ccxp-lite-main-skin {
   padding: var(--ccxp-lite-spacing-lg);
 }
+
+body.ccxp-lite-main-skin[data-ccxp-lite-sidebar-variant="classic"] {
+  scrollbar-gutter: stable both-edges;
+}

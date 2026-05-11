@@ -27,6 +27,7 @@
   const LOADING_SPRITE_STYLE_ID = "ccxp-lite-loading-sprite-style";
   const LOADING_SPRITE_TIMEOUT_MS = 8000;
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
+  const SIDEBAR_VARIANT_DATASET_KEY = "ccxpLiteSidebarVariant";
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
   sharedLib.addCleanupTask(() => {
@@ -340,6 +341,7 @@
     const { sidebarState, sidebarUi, shared: sharedNamespace } = globalThis.CCXP_LITE ?? {};
     if (sidebarState && sidebarUi && sharedNamespace) {
       const state = sidebarState.getSidebarUiState(mainDocument);
+      mainDocument.body.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
       const strings = sharedNamespace.getLocalizedStrings(
         sharedNamespace.resolveLocaleFromDocument(mainDocument),
       );
