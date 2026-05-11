@@ -236,12 +236,11 @@
   }
 
   function createLinkId(linkItem: Partial<CcxpLiteSidebarLinkItem>) {
-    const pathSignature = normalizeFavoritePathSegments(linkItem.pathSegments).join(">");
     const clickSignature = createFavoriteClickSignature(linkItem.clickLinkArgs);
     return [
-      "v2",
-      pathSignature,
+      "v3",
       normalizeFavoriteText(linkItem.label),
+      normalizeFavoriteUrl(linkItem.href),
       normalizeFavoriteText(linkItem.target),
       clickSignature,
     ].join("||");
@@ -270,11 +269,18 @@
         clickLinkArgs: parseFavoriteClickSignature(parts[3]),
       });
     }
+    if (parts.length === 5 && parts[0] === "v3") {
+      return createLinkId({
+        label: parts[1],
+        href: parts[2],
+        target: parts[3],
+        clickLinkArgs: parseFavoriteClickSignature(parts[4]),
+      });
+    }
     if (parts.length !== 5 || parts[0] !== "v2") {
       return normalizeFavoriteText(value);
     }
     return createLinkId({
-      pathSegments: parseFavoritePathSignature(parts[1]),
       label: parts[2],
       target: parts[3],
       clickLinkArgs: parseFavoriteClickSignature(parts[4]),
@@ -352,6 +358,14 @@
     if (!parsedFavoriteId) {
       return false;
     }
+    if (parsedFavoriteId.version === "v3") {
+      return (
+        parsedFavoriteId.label === normalizeFavoriteText(linkItem.label) &&
+        parsedFavoriteId.href === normalizeFavoriteUrl(linkItem.href) &&
+        parsedFavoriteId.target === normalizeFavoriteText(linkItem.target) &&
+        parsedFavoriteId.clickSignature === createFavoriteClickSignature(linkItem.clickLinkArgs)
+      );
+    }
     if (
       parsedFavoriteId.label !== normalizeFavoriteText(linkItem.label) ||
       parsedFavoriteId.target !== normalizeFavoriteText(linkItem.target) ||
@@ -368,17 +382,38 @@
 
   function parseVersionedFavoriteId(favoriteId: string):
     | {
+        version: "v2";
         pathSegments: readonly string[];
         label: string;
         target: string;
         clickSignature: string;
       }
+    | {
+        version: "v3";
+        label: string;
+        href: string;
+        target: string;
+        clickSignature: string;
+      }
     | undefined {
     const parts = favoriteId.split("||");
-    if (parts.length !== 5 || parts[0] !== "v2") {
+    if (parts.length !== 5) {
+      return undefined;
+    }
+    if (parts[0] === "v3") {
+      return {
+        version: "v3",
+        label: normalizeFavoriteText(parts[1]),
+        href: normalizeFavoriteUrl(parts[2]),
+        target: normalizeFavoriteText(parts[3]),
+        clickSignature: normalizeFavoriteText(parts[4]),
+      };
+    }
+    if (parts[0] !== "v2") {
       return undefined;
     }
     return {
+      version: "v2",
       pathSegments: parseFavoritePathSignature(parts[1]),
       label: normalizeFavoriteText(parts[2]),
       target: normalizeFavoriteText(parts[3]),

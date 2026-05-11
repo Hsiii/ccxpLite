@@ -129,4 +129,27 @@ describe("sidebar favorites", () => {
       savedFavoriteId,
     ]);
   });
+
+  test("creates the same favorite id regardless of tree depth for the same route", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+
+    const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+
+    expect(
+      api.createLinkId({
+        label: "Apply now",
+        href: "/courses/apply",
+        pathSegments: ["Student services", "Apply now"],
+        target: "main",
+      }),
+    ).toBe(
+      api.createLinkId({
+        label: "Apply now",
+        href: "/courses/apply",
+        pathSegments: ["Student services", "Select courses", "Apply now"],
+        target: "main",
+      }),
+    );
+  });
 });

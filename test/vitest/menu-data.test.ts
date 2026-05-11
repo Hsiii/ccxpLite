@@ -289,6 +289,7 @@ describe("sidebar data", () => {
     sidebarFavorites.favoriteState.ids = new Set([
       sidebarFavorites.createLinkId({
         label: "Apply now",
+        href: "/courses/apply",
         pathSegments: ["Student services", "Apply now"],
         target: "main",
       }),
