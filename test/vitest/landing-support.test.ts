@@ -28,4 +28,30 @@ describe("landing support", () => {
     );
     expect(announcementTable?.querySelectorAll(".ccxp-lite-announcement-row")).toHaveLength(3);
   });
+
+  test("detects English support-link equivalents for cannot sign in and information", () => {
+    const { window } = createTestWindow(createEnglishLandingAnnouncementHtml());
+    const document = window.document as Document;
+    loadModules(window, landingModulePaths);
+    const landingSupport = requireValue(window.CCXP_LITE.landingSupport, "landingSupport");
+
+    const cannotLoginLink = landingSupport.findCannotLoginLink(document, undefined);
+    const serviceLink = landingSupport.findServiceLink(document);
+    const supportLinks = landingSupport.buildLandingSupportLinks(
+      document,
+      serviceLink,
+      cannotLoginLink,
+      {
+        cannotLogin: "Cannot sign in?",
+        servicePhone: "Service Phone",
+      },
+    );
+
+    expect(cannotLoginLink?.getAttribute("href")).toContain("forget_en.php");
+    expect(
+      serviceLink?.querySelector("a")?.getAttribute("href") ?? serviceLink?.getAttribute("href"),
+    ).toContain("inquire_cpr_en.html");
+    expect(supportLinks?.textContent).toContain("Cannot sign in?");
+    expect(supportLinks?.textContent).toContain("Information");
+  });
 });

@@ -244,7 +244,9 @@
   }
 
   function findServiceLink(targetDocument: Document): HTMLElement | undefined {
-    const anchor = targetDocument.querySelector<HTMLAnchorElement>("a[href*='inquire_cpr.html']");
+    const anchor = targetDocument.querySelector<HTMLAnchorElement>(
+      "a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html']",
+    );
     return anchor?.closest<HTMLElement>("div") ?? anchor ?? undefined;
   }
 
@@ -254,14 +256,19 @@
         return false;
       }
       const href = (anchor.getAttribute("href") ?? "").toLowerCase();
-      if (href.includes("inquire_cpr.html") || href.includes("forget.php")) {
+      if (
+        href.includes("inquire_cpr.html") ||
+        href.includes("inquire_cpr_en.html") ||
+        href.includes("forget.php") ||
+        href.includes("forget_en.php")
+      ) {
         return true;
       }
       return isCannotLoginLabel(anchor.textContent);
     };
     if (!utilityLinksTable) {
       const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
-        "a[href*='forget.php'], a[href*='inquire_cpr.html']",
+        "a[href*='forget.php'], a[href*='forget_en.php'], a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html']",
       );
       return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
     }
@@ -271,7 +278,7 @@
       return fromUtility;
     }
     const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
-      "a[href*='forget.php'], a[href*='inquire_cpr.html']",
+      "a[href*='forget.php'], a[href*='forget_en.php'], a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html']",
     );
     return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
   }
@@ -298,7 +305,12 @@
     const sourceAnchor = serviceLinkNode.matches("a[href]")
       ? (serviceLinkNode as HTMLAnchorElement)
       : serviceLinkNode.querySelector<HTMLAnchorElement>("a[href]");
-    return buildLandingSupportLink(targetDocument, sourceAnchor ?? undefined, strings.servicePhone);
+    const sourceLabel = sourceAnchor?.textContent.trim() ?? "";
+    return buildLandingSupportLink(
+      targetDocument,
+      sourceAnchor ?? undefined,
+      sourceLabel === "" ? strings.servicePhone : sourceLabel,
+    );
   }
 
   function buildCannotLoginLink(
@@ -366,7 +378,9 @@
     }
     const sourceAnchor = serviceLinkNode.matches("a[href]")
       ? serviceLinkNode
-      : serviceLinkNode.querySelector("a[href*='inquire_cpr.html'], a[href]");
+      : serviceLinkNode.querySelector(
+          "a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html'], a[href]",
+        );
     if (!sourceAnchor) {
       return;
     }
