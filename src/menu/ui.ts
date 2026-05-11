@@ -394,19 +394,34 @@
     children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
     if (group.kind === "category") {
-      for (const block of group.blocks) {
-        children.append(
-          createClassicSidebarNode(
-            targetDocument,
-            navDocument,
-            block,
-            expandedItemIds,
-            depth + 1,
-            strings,
-            state,
-            rerender,
-          ),
-        );
+      if (group.id === "category-favorites") {
+        for (const linkItem of group.blocks.flatMap((block) => block.links)) {
+          children.append(
+            createClassicLinkButton(
+              targetDocument,
+              navDocument,
+              linkItem,
+              depth + 1,
+              strings,
+              rerender,
+            ),
+          );
+        }
+      } else {
+        for (const block of group.blocks) {
+          children.append(
+            createClassicSidebarNode(
+              targetDocument,
+              navDocument,
+              block,
+              expandedItemIds,
+              depth + 1,
+              strings,
+              state,
+              rerender,
+            ),
+          );
+        }
       }
     } else {
       for (const linkItem of group.links) {

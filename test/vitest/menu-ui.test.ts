@@ -140,4 +140,30 @@ describe("sidebar ui", () => {
     );
     expect(document.querySelector(".ccxp-lite-empty-title")).toBeNull();
   });
+
+  test("renders favorite links directly in classic mode without a blank intermediate layer", () => {
+    const { window } = createTestWindow(createSidebarShellHtml());
+    const document = window.document as Document;
+    loadModules(window, menuModulePaths);
+
+    const sidebarState = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const sidebarUi = requireValue(window.CCXP_LITE.sidebarUi, "sidebarUi");
+    const state = sidebarState.getSidebarUiState(document);
+    state.sidebarVariant = "classic";
+    state.classicExpandedItemIds = ["category-favorites"];
+    sidebarFavorites.favoriteState.hasLoaded = true;
+
+    sidebarUi.renderSidebar(document, document, createSidebarModel());
+
+    const blankExpandable = [
+      ...document.querySelectorAll<HTMLButtonElement>(".ccxp-lite-expandable"),
+    ].find((button) => button.getAttribute("title") === "");
+    expect(blankExpandable).toBeUndefined();
+    expect(
+      [
+        ...document.querySelectorAll<HTMLButtonElement>(".ccxp-lite-row-button.ccxp-lite-item"),
+      ].some((button) => button.getAttribute("title") === "Semester Grades"),
+    ).toBe(true);
+  });
 });
