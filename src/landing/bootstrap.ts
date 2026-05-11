@@ -3,69 +3,31 @@
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   const {
+    landingIdentify,
+    landingRewrite,
+    landingStyle,
     landingLocale,
     landingValidation,
     landingCaptcha,
-    landingTabs,
-    landingSupport,
-    landingLogin,
   } = namespace;
   if (
     !shared ||
+    !landingIdentify ||
+    !landingRewrite ||
+    !landingStyle ||
     !landingLocale ||
     !landingValidation ||
-    !landingCaptcha ||
-    !landingTabs ||
-    !landingSupport ||
-    !landingLogin
+    !landingCaptcha
   ) {
     return;
   }
-  const {
-    TOKENS,
-    ASSETS,
-    ensureThemeDocument,
-    ensureDocumentBody,
-    getLocalizedStrings,
-    rememberLocale,
-    createBrandImage,
-    createBrandCopy,
-    createBrandPartnerLink,
-    moveChildNodes,
-    removeNode,
-    isDocumentComplete,
-    cleanLegacyAttributes,
-  } = shared;
-  const { isSupportedInquirePath, isLandingPage, resolveLandingLocale, getLoginForm } =
-    landingLocale;
-  const { captureLoginValidationState, restoreLoginValidationGuards } = landingValidation;
+  const identifyLib = landingIdentify;
+  const rewriteLib = landingRewrite;
+  const styleLib = landingStyle;
+  const { ensureDocumentBody, isDocumentComplete } = shared;
+  const { isSupportedInquirePath, isLandingPage } = landingLocale;
+  const { restoreLoginValidationGuards } = landingValidation;
   const { enableLoginCaptchaAutofill, getOrCreateCaptchaAutofillState } = landingCaptcha;
-  const { createLandingSection, wireLandingTabs } = landingTabs;
-  const {
-    findLoginSourceCell,
-    findAnnouncementTable,
-    findUtilityLinksTable,
-    findCannotLoginLink,
-    findServiceLink,
-    buildHeaderUtilityLinks,
-    buildLandingSupportLinks,
-    collapseLegacyServiceRow,
-    collapseLegacyCannotLoginLink,
-    collapseLegacyUtilityRow,
-    collapseLegacyThreeColumnRows,
-    findCalendarTable,
-    prepareAnnouncementTable,
-  } = landingSupport;
-  const {
-    normalizeLoginFormLayout,
-    removeLoginResetControls,
-    forceCaptchaLabelDisplay,
-    replaceLoginFormImageButtons,
-    wrapPrimaryLoginButtons,
-    removeLoginSpacingArtifacts,
-    alignCaptchaMediaRow,
-    enhancePasswordVisibilityToggle,
-  } = landingLogin;
   function preloadLandingCaptcha(targetDocument: Document) {
     if (!isLandingPage(targetDocument)) {
       return;
@@ -97,166 +59,20 @@
       retryFn();
       return;
     }
-    const loginForm = getLoginForm(targetDocument);
-    const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
-    const tabNavigation = targetDocument.querySelector(".tab");
-    const tabContents = [...targetDocument.querySelectorAll<HTMLElement>(".tabcontent")];
-    const languageLinks = targetDocument.querySelector("ul.links");
-    const announcementTable = findAnnouncementTable(targetDocument);
-    const utilityLinks = findUtilityLinksTable(targetDocument);
-    const cannotLoginLink = findCannotLoginLink(targetDocument, utilityLinks);
-    const serviceLink = findServiceLink(targetDocument);
-    const locale = resolveLandingLocale(
-      targetDocument,
-      languageLinks as ParentNode | undefined,
-      loginSourceCell as ParentNode | undefined,
-      loginForm,
-    );
-    rememberLocale(locale, targetDocument);
-    const strings = getLocalizedStrings(locale);
-    if (!loginSourceCell) {
+    const identifiedSurface = identifyLib.identifyLandingSurface(targetDocument);
+    if (!identifiedSurface) {
       retryFn();
       return;
     }
-    const loginValidationState = captureLoginValidationState(targetDocument);
-    ensureThemeDocument(targetDocument, "landing");
-    const shell = targetDocument.createElement("main");
-    shell.className = TOKENS.landingClass;
-    const topSection = createLandingSection(targetDocument, "ccxp-lite-landing-top");
-    const headerSection = createLandingSection(targetDocument, "ccxp-lite-landing-header");
-    const brandSection = createLandingSection(
+
+    const rewriteResult = rewriteLib.rewriteLandingSurface(targetDocument, identifiedSurface);
+    styleLib.applyLandingTheme(targetDocument, rewriteResult);
+    enableLoginCaptchaAutofill(
       targetDocument,
-      "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
+      rewriteResult.loginSection as ParentNode,
+      rewriteResult.captchaAutofillState,
     );
-    const langSection = createLandingSection(targetDocument, "ccxp-lite-landing-lang");
-    const loginSection = createLandingSection(targetDocument, "ccxp-lite-landing-login");
-    const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
-    const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
-    const brandLockup = targetDocument.createElement("div");
-    brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
-    brandLockup.append(
-      createBrandImage(
-        targetDocument,
-        "ccxp-lite-landing-brand-logo ccxp-lite-sidebar-brand-logo",
-        ASSETS.sidebarBrandLogoPath,
-      ),
-    );
-    brandLockup.append(
-      createBrandCopy(
-        targetDocument,
-        "ccxp-lite-landing-brand-copy ccxp-lite-sidebar-brand-copy",
-        "ccxp-lite-sidebar-brand-title",
-        strings.sidebarTitle,
-      ),
-    );
-    brandSection.append(brandLockup);
-    const { mark: repoMark, link: repoLink } = createBrandPartnerLink(targetDocument, {
-      markClassName: "ccxp-lite-landing-brand-partner-mark",
-      linkClassName: "ccxp-lite-landing-brand-partner-link",
-      labelClassName: "ccxp-lite-landing-brand-partner-label",
-      label: strings.sidebarGitHubLink,
-    });
-    brandSection.append(repoMark);
-    brandSection.append(repoLink);
-    if (languageLinks) {
-      langSection.append(languageLinks);
-    }
-    repoLink.addEventListener("click", () => {
-      window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
-    });
-    const loginHeaderLabel = targetDocument.createElement("h1");
-    loginHeaderLabel.className = "ccxp-lite-landing-login-label";
-    loginHeaderLabel.textContent = strings.loginTitle;
-    loginSection.append(loginHeaderLabel);
-    if (loginForm) {
-      loginSection.append(loginForm);
-    } else {
-      moveChildNodes(loginSourceCell, loginSection);
-    }
-    normalizeLoginFormLayout(loginSection);
-    removeLoginResetControls(loginSection);
-    forceCaptchaLabelDisplay(loginSection);
-    replaceLoginFormImageButtons(targetDocument, loginSection);
-    wrapPrimaryLoginButtons(targetDocument, loginSection);
-    removeLoginSpacingArtifacts(targetDocument, loginSection);
-    alignCaptchaMediaRow(targetDocument, loginSection);
-    enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    const captchaAutofillState = getOrCreateCaptchaAutofillState(
-      targetDocument,
-      loginSection as ParentNode,
-    );
-    removeNode(findCalendarTable(loginSection));
-    removeNode(loginSection.querySelector("#twcaseal")?.closest("table") ?? undefined);
-    collapseLegacyThreeColumnRows(targetBody);
-    headerSection.append(brandSection);
-    if (languageLinks) {
-      headerSection.append(langSection);
-    }
-    const utilityHeaderLinks = buildHeaderUtilityLinks(
-      targetDocument,
-      utilityLinks,
-      cannotLoginLink,
-      strings,
-    );
-    if (utilityHeaderLinks) {
-      if (languageLinks) {
-        langSection.before(utilityHeaderLinks);
-      } else {
-        headerSection.append(utilityHeaderLinks);
-      }
-    }
-    if (utilityLinks) {
-      collapseLegacyUtilityRow(utilityLinks);
-      removeNode(utilityLinks);
-    }
-    topSection.append(headerSection);
-    topSection.append(loginSection);
-    shell.append(topSection);
-    const supportLinks = buildLandingSupportLinks(
-      targetDocument,
-      serviceLink,
-      cannotLoginLink,
-      strings,
-    );
-    if (serviceLink) {
-      collapseLegacyServiceRow(serviceLink);
-    }
-    if (cannotLoginLink) {
-      collapseLegacyCannotLoginLink(cannotLoginLink);
-    }
-    if (tabNavigation && tabContents.length > 0) {
-      const tabsHeader = targetDocument.createElement("div");
-      tabsHeader.className = "ccxp-lite-landing-tabs-header";
-      tabsHeader.append(tabNavigation);
-      if (supportLinks) {
-        tabsHeader.append(supportLinks);
-      }
-      tabsSection.append(tabsHeader);
-      for (const tabContent of tabContents) {
-        collapseLegacyThreeColumnRows(tabContent);
-        tabsSection.append(tabContent);
-      }
-      wireLandingTabs(targetDocument, tabNavigation as HTMLElement, tabContents, strings);
-      shell.append(tabsSection);
-    } else if (supportLinks) {
-      const supportSection = createLandingSection(targetDocument, "ccxp-lite-landing-support-only");
-      supportSection.append(supportLinks);
-      shell.append(supportSection);
-    }
-    if (announcementTable) {
-      prepareAnnouncementTable(announcementTable, strings);
-      noticesSection.append(announcementTable);
-      shell.append(noticesSection);
-    }
-    cleanLegacyAttributes(shell);
-    cleanLegacyAttributes(targetDocument);
-    targetBody.replaceChildren(shell);
-    // Force a style override on the body as a last resort.
-    targetBody.style.setProperty("background-image", "none", "important");
-    targetBody.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
-    enableLoginCaptchaAutofill(targetDocument, loginSection as ParentNode, captchaAutofillState);
-    restoreLoginValidationGuards(targetDocument, loginValidationState);
-    targetBody.dataset.ccxpLiteLandingApplied = "true";
+    restoreLoginValidationGuards(targetDocument, rewriteResult.loginValidationState);
     onReady();
   }
   namespace.landing = {

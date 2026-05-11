@@ -120,4 +120,7 @@ export const landingModulePaths = [
   "src/landing/validation.ts",
   "src/landing/login.ts",
   "src/landing/captcha.ts",
+  "src/landing/identify.ts",
+  "src/landing/rewrite.ts",
+  "src/landing/style.ts",
 ];

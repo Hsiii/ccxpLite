@@ -395,6 +395,45 @@ declare global {
     enhancePasswordVisibilityToggle: (targetDocument: Document, rootNode: ParentNode) => void;
   }
 
+  interface CcxpLiteLandingIdentifyResult {
+    loginForm: HTMLFormElement | undefined;
+    loginSourceCell: HTMLElement;
+    tabNavigation: HTMLElement | undefined;
+    tabContents: HTMLElement[];
+    languageLinks: HTMLElement | undefined;
+    announcementTable: HTMLTableElement | undefined;
+    utilityLinks: HTMLTableElement | undefined;
+    cannotLoginLink: HTMLAnchorElement | undefined;
+    serviceLink: HTMLElement | undefined;
+    locale: CcxpLiteLocale;
+    strings: Readonly<Record<string, string>>;
+  }
+
+  interface CcxpLiteLandingIdentify {
+    identifyLandingSurface: (targetDocument: Document) => CcxpLiteLandingIdentifyResult | undefined;
+  }
+
+  interface CcxpLiteLandingRewriteResult {
+    shell: HTMLElement;
+    loginSection: HTMLElement;
+    loginValidationState: CcxpLiteLandingValidationState;
+    captchaAutofillState: CcxpLiteCaptchaAutofillState | undefined;
+  }
+
+  interface CcxpLiteLandingRewrite {
+    rewriteLandingSurface: (
+      targetDocument: Document,
+      identifiedSurface: CcxpLiteLandingIdentifyResult,
+    ) => CcxpLiteLandingRewriteResult;
+  }
+
+  interface CcxpLiteLandingStyle {
+    applyLandingTheme: (
+      targetDocument: Document,
+      rewriteResult: CcxpLiteLandingRewriteResult,
+    ) => void;
+  }
+
   interface CcxpLiteLanding {
     isSupportedInquirePath: (targetDocument: Document) => boolean;
     isLandingPage: (targetDocument: Document) => boolean;
@@ -552,6 +591,9 @@ declare global {
     landingTabs?: CcxpLiteLandingTabs;
     landingValidation?: CcxpLiteLandingValidation;
     landingLogin?: CcxpLiteLandingLogin;
+    landingIdentify?: CcxpLiteLandingIdentify;
+    landingRewrite?: CcxpLiteLandingRewrite;
+    landingStyle?: CcxpLiteLandingStyle;
     sidebar?: CcxpLiteSidebar;
     sidebarState?: CcxpLiteSidebarStateModule;
     sidebarFavorites?: CcxpLiteSidebarFavorites;

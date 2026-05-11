@@ -52,6 +52,9 @@
         "landing/captcha.js",
         "landing/tabs.js",
         "landing/login.js",
+        "landing/identify.js",
+        "landing/rewrite.js",
+        "landing/style.js",
         "landing/bootstrap.js",
         "content.js"
       ]
