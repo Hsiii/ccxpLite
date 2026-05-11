@@ -736,9 +736,9 @@ html[data-ccxp-lite-scope="nav"] body {
 .ccxp-lite-sidebar-experiment-switch {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0;
-  inline-size: 56px;
+  justify-content: center;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  inline-size: 76px;
   height: var(--ccxp-lite-size-control-height-sm);
   padding: var(--ccxp-lite-spacing-sidebar-experiment-inset-y)
     var(--ccxp-lite-spacing-sidebar-experiment-inset-x);
@@ -748,23 +748,6 @@ html[data-ccxp-lite-scope="nav"] body {
   color: var(--ccxp-lite-text-muted);
   cursor: pointer;
   box-shadow: 0 12px 24px -18px var(--ccxp-lite-lab-switch-shadow);
-  transition:
-    inline-size 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 220ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease;
-}
-
-.ccxp-lite-sidebar-experiment-switch:hover {
-  inline-size: var(--ccxp-lite-size-sidebar-experiment-switch-expanded);
-  gap: var(--ccxp-lite-spacing-inline-sm);
-  border-color: var(--ccxp-lite-primary-focus-border);
-  background: var(--ccxp-lite-primary-hover-surface);
-  color: var(--ccxp-lite-text);
-  transform: translateY(-1px);
-  box-shadow: 0 18px 32px -20px var(--ccxp-lite-lab-switch-shadow);
 }
 
 .ccxp-lite-sidebar-experiment-switch:focus-visible {
@@ -788,10 +771,6 @@ html[data-ccxp-lite-scope="nav"] body {
   border-radius: var(--ccxp-lite-radius-full);
   color: var(--ccxp-lite-text-muted);
   background: color-mix(in srgb, var(--ccxp-lite-surface) 84%, var(--ccxp-lite-accent));
-  transition:
-    color 160ms ease,
-    background-color 160ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
@@ -800,99 +779,43 @@ html[data-ccxp-lite-scope="nav"] body {
   background: color-mix(in srgb, var(--ccxp-lite-lab-active-surface) 88%, var(--ccxp-lite-surface));
 }
 
-.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-icon {
-  transform: scale(1.04);
-}
-
-.ccxp-lite-sidebar-experiment-copy {
-  display: grid;
-  max-inline-size: 0;
-  min-width: 0;
-  overflow: hidden;
-  line-height: 1.1;
-  opacity: 0;
-  transform: translateX(-4px);
-  transition:
-    max-inline-size 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 160ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-copy {
-  max-inline-size: 88px;
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.ccxp-lite-sidebar-experiment-label {
-  color: var(--ccxp-lite-text);
-  font: var(--ccxp-lite-type-utility);
-}
-
-.ccxp-lite-sidebar-experiment-detail {
-  color: var(--ccxp-lite-text-muted);
-  font: var(--ccxp-lite-type-caption);
-  opacity: 0.76;
-  transition:
-    opacity 160ms ease,
-    color 160ms ease;
-}
-
-.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-detail {
-  opacity: 1;
-}
-
 .ccxp-lite-sidebar-experiment-state {
   flex: 0 0 auto;
-  inline-size: 10px;
-  min-width: 10px;
-  height: 10px;
-  margin-left: auto;
+  position: relative;
+  inline-size: 28px;
+  min-width: 28px;
+  height: 16px;
   padding: 0;
   border: 1px solid var(--ccxp-lite-lab-inactive-border);
   border-radius: var(--ccxp-lite-radius-full);
   background: var(--ccxp-lite-lab-inactive-surface);
   color: transparent;
-  font: var(--ccxp-lite-type-caption);
-  text-align: center;
-  letter-spacing: 0.02em;
   overflow: hidden;
   white-space: nowrap;
-  transition:
-    inline-size 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    min-width 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    height 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    padding 160ms ease,
-    border-color 160ms ease,
-    background-color 160ms ease,
-    color 160ms ease,
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
   .ccxp-lite-sidebar-experiment-state {
   border-color: var(--ccxp-lite-lab-active-border);
   background: var(--ccxp-lite-lab-active-surface);
-  color: var(--ccxp-lite-lab-active-text);
 }
 
-.ccxp-lite-sidebar-experiment-switch:hover .ccxp-lite-sidebar-experiment-state {
-  inline-size: auto;
-  min-width: 44px;
-  height: auto;
-  padding: 4px 8px;
-  color: inherit;
-  transform: translateX(1px);
+.ccxp-lite-sidebar-experiment-state::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--ccxp-lite-lab-inactive-text);
 }
 
-.ccxp-lite-sidebar-experiment-switch:hover[data-ccxp-lite-sidebar-variant-mode="classic"]
-  .ccxp-lite-sidebar-experiment-state {
-  color: var(--ccxp-lite-lab-inactive-text);
-}
-
-.ccxp-lite-sidebar-experiment-switch:hover[data-ccxp-lite-sidebar-variant-mode="layered"]
-  .ccxp-lite-sidebar-experiment-state {
-  color: var(--ccxp-lite-lab-active-text);
+.ccxp-lite-sidebar-experiment-switch[data-ccxp-lite-sidebar-variant-mode="layered"]
+  .ccxp-lite-sidebar-experiment-state::after {
+  left: auto;
+  right: 1px;
+  background: var(--ccxp-lite-lab-active-text);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] {

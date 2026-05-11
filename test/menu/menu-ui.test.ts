@@ -127,12 +127,7 @@ describe("sidebar ui", () => {
     );
 
     expect(switcherNode.dataset.ccxpLiteSidebarVariantMode).toBe("classic");
-    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-label")?.textContent).toBe(
-      "Lab",
-    );
-    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-detail")?.textContent).toBe(
-      "Classic",
-    );
+    expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-icon")).not.toBeNull();
     expect(switcherNode.querySelector(".ccxp-lite-sidebar-experiment-state")?.textContent).toBe(
       "Off",
     );

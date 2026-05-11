@@ -217,21 +217,11 @@
       height: "20px",
     });
     iconWrap.append(createLabIcon(targetDocument));
-    const textWrap = targetDocument.createElement("span");
-    textWrap.className = "ccxp-lite-sidebar-experiment-copy";
-    const label = targetDocument.createElement("span");
-    label.className = "ccxp-lite-sidebar-experiment-label";
-    label.textContent = strings.sidebarExperimentLabel;
-    const detail = targetDocument.createElement("span");
-    detail.className = "ccxp-lite-sidebar-experiment-detail";
-    detail.textContent = isLayered ? strings.sidebarVariantLayered : strings.sidebarVariantClassic;
-    textWrap.append(label);
-    textWrap.append(detail);
     const status = targetDocument.createElement("span");
     status.className = "ccxp-lite-sidebar-experiment-state";
     status.textContent = isLayered ? strings.sidebarExperimentOn : strings.sidebarExperimentOff;
+    status.setAttribute("aria-hidden", "true");
     button.append(iconWrap);
-    button.append(textWrap);
     button.append(status);
     button.addEventListener("click", () => {
       const nextState = state;
