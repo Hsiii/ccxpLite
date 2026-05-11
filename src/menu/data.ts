@@ -65,17 +65,8 @@
             ? "\u5E38\u7528\u529F\u80FD"
             : strings.sidebarCategoryFavorites,
         icon: "star",
-        blocks:
-          favoriteLinks.length === 0
-            ? []
-            : [
-                {
-                  id: "category-favorites-block",
-                  label: "",
-                  links: dedupeLinkItems(favoriteLinks),
-                  kind: "block",
-                },
-              ],
+        blocks: [],
+        links: dedupeLinkItems(favoriteLinks),
         emptyMessage:
           strings.sidebarFavoritesEmpty === ""
             ? "Press star at any function to save it here"
@@ -212,7 +203,10 @@
     if (itemLabel !== "") {
       labels.push(itemLabel);
     }
-    const links = item.kind === "block" ? item.links : item.blocks.flatMap((block) => block.links);
+    const links =
+      item.kind === "block"
+        ? item.links
+        : [...(item.links ?? []), ...item.blocks.flatMap((block) => block.links)];
     for (const linkItem of links) {
       const linkLabel = normalizeSidebarLabel(linkItem.label);
       if (linkLabel !== "") {
@@ -682,14 +676,16 @@
     if (isSearchMatch(category.label, query)) {
       return category;
     }
+    const links = (category.links ?? []).filter((linkItem) => isSearchMatch(linkItem.label, query));
     const blocks = category.blocks
       .map((block) => filterBlock(block, query))
       .filter((node): node is CcxpLiteSidebarBlock => node !== undefined);
-    if (blocks.length === 0) {
+    if (links.length === 0 && blocks.length === 0) {
       return undefined;
     }
     return {
       ...category,
+      links,
       blocks,
     };
   }
@@ -732,9 +728,12 @@
     if (item.kind === "block") {
       return item.links.length;
     }
-    return item.blocks.reduce(
-      (total: number, block: CcxpLiteSidebarBlock) => total + block.links.length,
-      0,
+    return (
+      (item.links ?? []).length +
+      item.blocks.reduce(
+        (total: number, block: CcxpLiteSidebarBlock) => total + block.links.length,
+        0,
+      )
     );
   }
 

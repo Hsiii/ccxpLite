@@ -48,7 +48,7 @@ describe("sidebar ui", () => {
     sidebarFavorites.favoriteState.hasLoaded = true;
 
     const model = createSidebarModel();
-    model.favorites.blocks = [];
+    model.favorites.links = [];
 
     sidebarUi.renderSidebar(document, document, model);
 
@@ -122,7 +122,7 @@ describe("sidebar ui", () => {
     sidebarFavorites.favoriteState.hasLoaded = true;
 
     const model = createSidebarModel();
-    model.favorites.blocks = [];
+    model.favorites.links = [];
 
     sidebarUi.renderSidebar(document, document, model);
     expect(document.querySelector(".ccxp-lite-empty-title")?.textContent).toBe(

@@ -82,6 +82,7 @@ declare global {
     id: string;
     label: string;
     blocks: readonly CcxpLiteSidebarBlock[];
+    links?: readonly CcxpLiteSidebarLinkItem[];
     kind: "category";
     emptyMessage?: string;
     icon?: string;

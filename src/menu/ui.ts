@@ -124,10 +124,7 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        filterFavoriteLinks(
-          model.favorites.blocks.flatMap((block) => block.links),
-          state.searchQuery,
-        ),
+        filterFavoriteLinks(getCategoryLinks(model.favorites), state.searchQuery),
         filteredCategories,
         state,
         strings,
@@ -147,10 +144,14 @@
       return undefined;
     }
     return categories.find((category) =>
-      category.blocks.some((block) =>
-        block.links.some((linkItem) => isSameLeaf(linkItem, activeLeaf)),
-      ),
+      getCategoryLinks(category).some((linkItem) => isSameLeaf(linkItem, activeLeaf)),
     );
+  }
+
+  function getCategoryLinks(
+    category: CcxpLiteSidebarCategoryNode,
+  ): readonly CcxpLiteSidebarLinkItem[] {
+    return [...(category.links ?? []), ...category.blocks.flatMap((block) => block.links)];
   }
 
   function isSameLeaf(
@@ -311,14 +312,18 @@
   ): CcxpLiteSidebarCategoryNode | undefined {
     const normalizedQuery = normalizeClassicSearchText(query);
     const itemMatches = isClassicSearchMatch(item.label, normalizedQuery);
+    const links = (item.links ?? []).filter((linkItem) =>
+      isClassicSearchMatch(linkItem.label, normalizedQuery),
+    );
     const blocks = item.blocks
       .map((block) => filterClassicSidebarBlock(block, normalizedQuery))
       .filter((node): node is CcxpLiteSidebarBlock => node !== undefined);
-    if (!itemMatches && blocks.length === 0) {
+    if (!itemMatches && links.length === 0 && blocks.length === 0) {
       return undefined;
     }
     return {
       ...item,
+      links: itemMatches ? item.links : links,
       blocks: itemMatches ? item.blocks : blocks,
     };
   }
@@ -394,34 +399,31 @@
     children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
     if (group.kind === "category") {
-      if (group.id === "category-favorites") {
-        for (const linkItem of group.blocks.flatMap((block) => block.links)) {
-          children.append(
-            createClassicLinkButton(
-              targetDocument,
-              navDocument,
-              linkItem,
-              depth + 1,
-              strings,
-              rerender,
-            ),
-          );
-        }
-      } else {
-        for (const block of group.blocks) {
-          children.append(
-            createClassicSidebarNode(
-              targetDocument,
-              navDocument,
-              block,
-              expandedItemIds,
-              depth + 1,
-              strings,
-              state,
-              rerender,
-            ),
-          );
-        }
+      for (const linkItem of group.links ?? []) {
+        children.append(
+          createClassicLinkButton(
+            targetDocument,
+            navDocument,
+            linkItem,
+            depth + 1,
+            strings,
+            rerender,
+          ),
+        );
+      }
+      for (const block of group.blocks) {
+        children.append(
+          createClassicSidebarNode(
+            targetDocument,
+            navDocument,
+            block,
+            expandedItemIds,
+            depth + 1,
+            strings,
+            state,
+            rerender,
+          ),
+        );
       }
     } else {
       for (const linkItem of group.links) {
@@ -502,6 +504,11 @@
     let hasMatch = itemMatches;
     const expandedItemIds: string[] = [];
     if (item.kind === "category") {
+      for (const linkItem of item.links ?? []) {
+        if (isClassicSearchMatch(linkItem.label, normalizedQuery)) {
+          hasMatch = true;
+        }
+      }
       for (const block of item.blocks) {
         const childState = collectClassicExpandedState(block, normalizedQuery);
         expandedItemIds.push(...childState.expandedItemIds);
@@ -509,7 +516,7 @@
           hasMatch = true;
         }
       }
-      if (hasMatch && item.blocks.length > 0) {
+      if (hasMatch && ((item.links ?? []).length > 0 || item.blocks.length > 0)) {
         expandedItemIds.push(item.id);
       }
     } else {
@@ -691,6 +698,9 @@
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-category-detail";
     if (filteredCategory) {
+      for (const linkItem of filteredCategory.links ?? []) {
+        body.append(createDetailLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
+      }
       for (const block of filteredCategory.blocks) {
         body.append(createCategoryBlock(targetDocument, navDocument, block, strings, rerender));
       }

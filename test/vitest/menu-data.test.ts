@@ -113,6 +113,7 @@ describe("sidebar data", () => {
       id: "category-courses",
       label: "Courses & Grades",
       kind: "category",
+      links: [],
       blocks: [
         {
           id: "section-academic",
@@ -298,11 +299,10 @@ describe("sidebar data", () => {
 
     const model = sidebarData.buildSidebarModel(root, window.document, strings);
 
-    expect(model.favorites.blocks).toHaveLength(1);
-    expect(model.favorites.blocks[0].label).toBe("");
-    expect(model.favorites.blocks[0].links).toHaveLength(1);
-    expect(model.favorites.blocks[0].links[0].label).toBe("Apply now");
-    expect(model.favorites.blocks[0].links[0].pathSegments).toEqual([
+    expect(model.favorites.blocks).toHaveLength(0);
+    expect(model.favorites.links).toHaveLength(1);
+    expect(model.favorites.links?.[0].label).toBe("Apply now");
+    expect(model.favorites.links?.[0].pathSegments).toEqual([
       "Student services",
       "Select courses",
       "Apply now",

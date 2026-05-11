@@ -213,7 +213,10 @@
       return isFavoriteLink(item.linkItem, favoriteIds) ? [item.linkItem] : [];
     }
     const favoriteLinks: CcxpLiteSidebarLinkItem[] = [];
-    const links = item.kind === "block" ? item.links : item.blocks.flatMap((block) => block.links);
+    const links =
+      item.kind === "block"
+        ? item.links
+        : [...(item.links ?? []), ...item.blocks.flatMap((block) => block.links)];
     for (const linkItem of links) {
       if (isFavoriteLink(linkItem, favoriteIds)) {
         favoriteLinks.push(linkItem);
