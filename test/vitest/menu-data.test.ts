@@ -263,4 +263,30 @@ describe("sidebar data", () => {
       "Apply now",
     ]);
   });
+
+  test("applies manual english translations to unmatched chinese sidebar labels", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            insDoc(foldersTree, gLnk(0, "\u7C3D\u5230\u9000", "/attendance"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+
+    expect(model.categories).toHaveLength(1);
+    expect(model.categories[0].label).toBe("New & Unsorted");
+    expect(model.categories[0].blocks[0].label).toBe("Check In/Out");
+    expect(model.categories[0].blocks[0].links[0].label).toBe("Check In/Out");
+  });
 });

@@ -19,8 +19,9 @@
     navDocument: Document,
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarModel {
+    const locale = resolveSidebarLocale(strings);
     const normalizedItems = root.children
-      .map((entry, index) => normalizeRootEntry(entry, index, navDocument))
+      .map((entry, index) => normalizeRootEntry(entry, index, navDocument, locale))
       .filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
     const favoriteIds = getFavoriteIds();
     return buildCategorizedSidebarItems(normalizedItems, favoriteIds, strings);
@@ -274,6 +275,13 @@
         : strings.sidebarCategoryOtherSection;
     }
     const locale = detectLabelLocale([normalizedLabel]);
+    const localizedLabel = localizeSidebarLabel(label, locale);
+    if (localizedLabel !== label) {
+      return localizedLabel;
+    }
+    if (locale === "en" && label.includes("/")) {
+      return label.trim();
+    }
     const parts = normalizedLabel
       .split(/\s+/)
       .map((part) => part.trim())
@@ -458,11 +466,12 @@
     entryNode: CcxpLiteLegacySidebarNode,
     index: number,
     navDocument: Document,
+    locale: CcxpLiteLocale,
   ): CcxpLiteSidebarTreeNode | undefined {
     if ("children" in entryNode) {
-      return normalizeTopLevelGroup(entryNode, index, navDocument);
+      return normalizeTopLevelGroup(entryNode, index, navDocument, locale);
     }
-    const linkItem = normalizeLinkItem(entryNode, navDocument, []);
+    const linkItem = normalizeLinkItem(entryNode, navDocument, [], locale);
     if (!linkItem) {
       return undefined;
     }
@@ -478,16 +487,19 @@
     folderNode: CcxpLiteLegacySidebarFolderNode,
     index: number,
     navDocument: Document,
+    locale: CcxpLiteLocale,
   ): CcxpLiteSidebarBlock {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-    const groupLabel = toPlainText(folderNode.desc, navDocument);
+    const groupLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
     for (const childNode of folderNode.children) {
       if ("children" in childNode) {
-        directLinks.push(...collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments));
+        directLinks.push(
+          ...collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, locale),
+        );
         continue;
       }
-      const linkItem = normalizeLinkItem(childNode, navDocument, groupPathSegments);
+      const linkItem = normalizeLinkItem(childNode, navDocument, groupPathSegments, locale);
       if (linkItem) {
         directLinks.push(linkItem);
       }
@@ -504,18 +516,19 @@
     folderNode: CcxpLiteLegacySidebarFolderNode,
     navDocument: Document,
     parentPathSegments: readonly string[],
+    locale: CcxpLiteLocale,
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-    const folderLabel = toPlainText(folderNode.desc, navDocument);
+    const folderLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
     const nestedPathSegments = buildFavoritePathSegments(parentPathSegments, folderLabel);
     for (const childNode of folderNode.children) {
       if ("children" in childNode) {
         directLinks.push(
-          ...collectNestedLinksIntoGroup(childNode, navDocument, nestedPathSegments),
+          ...collectNestedLinksIntoGroup(childNode, navDocument, nestedPathSegments, locale),
         );
         continue;
       }
-      const linkItem = normalizeLinkItem(childNode, navDocument, nestedPathSegments);
+      const linkItem = normalizeLinkItem(childNode, navDocument, nestedPathSegments, locale);
       if (linkItem) {
         directLinks.push(linkItem);
       }
@@ -527,6 +540,7 @@
     itemNode: CcxpLiteLegacySidebarDocNode | undefined,
     navDocument: Document,
     parentPathSegments: readonly string[],
+    locale: CcxpLiteLocale,
   ): CcxpLiteSidebarLinkItem | undefined {
     if (!itemNode || typeof itemNode.link !== "string") {
       return undefined;
@@ -536,7 +550,7 @@
       return undefined;
     }
     const rawHtml = itemNode.desc ?? "";
-    const label = toPlainText(rawHtml, navDocument);
+    const label = localizeSidebarLabel(toPlainText(rawHtml, navDocument), locale);
     const clickLinkArgs = parseClickLinkArgs(rawHtml);
     const pathSegments = buildFavoritePathSegments(parentPathSegments, label);
     return {
@@ -617,6 +631,27 @@
       .join(" ")
       .trim();
   }
+
+  function resolveSidebarLocale(strings: Readonly<Record<string, string>>): CcxpLiteLocale {
+    return strings.sidebarTitle === "NTHU AIS" ? "en" : "zh";
+  }
+
+  function localizeSidebarLabel(label: string, locale: CcxpLiteLocale) {
+    if (locale !== "en") {
+      return label;
+    }
+    const normalizedLabel = normalizeSidebarLabel(label);
+    if (Object.hasOwn(EN_MANUAL_LABEL_TRANSLATIONS, normalizedLabel)) {
+      return EN_MANUAL_LABEL_TRANSLATIONS[
+        normalizedLabel as keyof typeof EN_MANUAL_LABEL_TRANSLATIONS
+      ];
+    }
+    return label;
+  }
+
+  const EN_MANUAL_LABEL_TRANSLATIONS = {
+    "\u7C3D\u5230\u9000": "Check In/Out",
+  } as const satisfies Readonly<Record<string, string>>;
 
   function filterFavoriteLinks(
     linkItems: readonly CcxpLiteSidebarLinkItem[],
