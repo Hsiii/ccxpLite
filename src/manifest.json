@@ -15,10 +15,10 @@
       "resources": [
         "assets/*",
         "content.css",
-        "content.shared.css",
-        "content.landing.css",
-        "content.main.css",
-        "content.menu.css",
+        "shared/content.css",
+        "landing/content.css",
+        "main/content.css",
+        "menu/content.css",
         "page.pe14d.js"
       ],
       "matches": ["https://www.ccxp.nthu.edu.tw/*", "https://ccxp.nthu.edu.tw/*"]

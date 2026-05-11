@@ -1,4 +1,4 @@
-@import url("content.shared.css");
-@import url("content.landing.css");
-@import url("content.main.css");
-@import url("content.menu.css");
+@import url("shared/content.css");
+@import url("landing/content.css");
+@import url("main/content.css");
+@import url("menu/content.css");
