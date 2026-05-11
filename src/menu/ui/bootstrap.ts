@@ -33,6 +33,13 @@
   const { getSidebarUiState } = sidebarState;
   const { renderSidebar, createSidebarSearch, syncTopLevelFramesetLayout } = sidebarUi;
   const { captureInitialMainFrameUrl } = sidebarRuntime;
+  const rerenderBindingByDocument = new WeakMap<
+    Document,
+    {
+      boundRerender: () => void;
+      render: (() => void) | undefined;
+    }
+  >();
 
   function isArray<T>(value: unknown): value is T[] {
     return value !== null && typeof value === "object" && value.constructor === Array;
@@ -73,6 +80,7 @@
     ensureThemeDocument(hostDocument, "nav");
     const strings = getLocalizedStrings(resolveLocaleFromDocument(navDocument));
     const state = getSidebarUiState(hostDocument);
+    const rerenderBinding = getOrCreateRerenderBinding(hostDocument);
     captureInitialMainFrameUrl();
     syncTopLevelFramesetLayout(state.sidebarVariant);
     const hostBody = ensureDocumentBody(hostDocument);
@@ -146,12 +154,7 @@
         const uiState = getSidebarUiState(hostDocument);
         uiState.currentCategoryId = "";
         uiState.activeLeaf = undefined;
-        renderSidebar(
-          hostDocument,
-          navDocument,
-          () => buildSidebarModel(rawTree, navDocument, strings),
-          strings,
-        );
+        rerenderBinding.render?.();
       });
 
       repoLink.addEventListener("click", () => {
@@ -161,7 +164,7 @@
       hostBody.dataset.ccxpLiteSidebarApplied = "true";
     }
 
-    const rerender = () => {
+    rerenderBinding.render = () => {
       renderSidebar(
         hostDocument,
         navDocument,
@@ -170,9 +173,24 @@
       );
     };
     ensureFavoriteStorageSync();
-    favoriteSubscribers.add(rerender);
-    ensureFavoriteIdsLoaded(rerender);
-    rerender();
+    favoriteSubscribers.add(rerenderBinding.boundRerender);
+    ensureFavoriteIdsLoaded(rerenderBinding.boundRerender);
+    rerenderBinding.boundRerender();
+  }
+
+  function getOrCreateRerenderBinding(targetDocument: Document) {
+    const existingBinding = rerenderBindingByDocument.get(targetDocument);
+    if (existingBinding) {
+      return existingBinding;
+    }
+    const binding = {
+      boundRerender: () => {
+        binding.render?.();
+      },
+      render: undefined as (() => void) | undefined,
+    };
+    rerenderBindingByDocument.set(targetDocument, binding);
+    return binding;
   }
 
   namespace.sidebar = {

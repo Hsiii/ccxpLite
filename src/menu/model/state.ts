@@ -4,9 +4,24 @@
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const sidebarUiStateByDocument = new WeakMap<Document, CcxpLiteSidebarState>();
   let persistedSidebarVariant: "classic" | "layered" | undefined;
+
+  function resolveSidebarStateScopeDocument(targetDocument: Document): Document {
+    try {
+      const scopeWindow = targetDocument.defaultView ?? runtimeScope;
+      const topDocument = scopeWindow.top?.document;
+      if (topDocument) {
+        return topDocument;
+      }
+    } catch {
+      // Fall through to the document that initiated the request.
+    }
+    return targetDocument;
+  }
+
   function getSidebarUiState(navDocument: Document): CcxpLiteSidebarState {
-    if (sidebarUiStateByDocument.has(navDocument)) {
-      const existingState = sidebarUiStateByDocument.get(navDocument);
+    const scopeDocument = resolveSidebarStateScopeDocument(navDocument);
+    if (sidebarUiStateByDocument.has(scopeDocument)) {
+      const existingState = sidebarUiStateByDocument.get(scopeDocument);
       if (existingState) {
         return existingState;
       }
@@ -24,7 +39,7 @@
         destination: 0,
       },
     };
-    sidebarUiStateByDocument.set(navDocument, state);
+    sidebarUiStateByDocument.set(scopeDocument, state);
     return state;
   }
 

@@ -27,6 +27,20 @@ describe("sidebar state", () => {
       },
     });
   });
+
+  test("shares sidebar state across frame documents in the same top-level page", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+    const { getSidebarUiState } = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
+    const frameDocument = {
+      defaultView: {
+        top: window,
+      },
+    } as unknown as Document;
+
+    expect(getSidebarUiState(frameDocument)).toBe(getSidebarUiState(window.document));
+  });
+
   test("persists normalized variants and falls back to classic on storage failure", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
