@@ -13,12 +13,12 @@ describe("login support", () => {
     const { window } = createTestWindow(createEnglishLoginAnnouncementHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingSupport = requireValue(window.CCXP_LITE.landingSupport, "landingSupport");
+    const loginSupport = requireValue(window.CCXP_LITE.loginSupport, "loginSupport");
 
-    const announcementTable = landingSupport.findAnnouncementTable(document);
+    const announcementTable = loginSupport.findAnnouncementTable(document);
     expect(announcementTable).toBeDefined();
 
-    landingSupport.prepareAnnouncementTable(announcementTable, {
+    loginSupport.prepareAnnouncementTable(announcementTable, {
       sidebarCategoryAnnouncementsAndVoting: "Notices & Voting",
     });
 
@@ -33,19 +33,14 @@ describe("login support", () => {
     const { window } = createTestWindow(createEnglishLoginAnnouncementHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingSupport = requireValue(window.CCXP_LITE.landingSupport, "landingSupport");
+    const loginSupport = requireValue(window.CCXP_LITE.loginSupport, "loginSupport");
 
-    const cannotLoginLink = landingSupport.findCannotLoginLink(document, undefined);
-    const serviceLink = landingSupport.findServiceLink(document);
-    const supportLinks = landingSupport.buildLandingSupportLinks(
-      document,
-      serviceLink,
-      cannotLoginLink,
-      {
-        cannotLogin: "Cannot sign in?",
-        servicePhone: "Service Phone",
-      },
-    );
+    const cannotLoginLink = loginSupport.findCannotLoginLink(document, undefined);
+    const serviceLink = loginSupport.findServiceLink(document);
+    const supportLinks = loginSupport.buildSupportLinks(document, serviceLink, cannotLoginLink, {
+      cannotLogin: "Cannot sign in?",
+      servicePhone: "Service Phone",
+    });
 
     expect(cannotLoginLink?.getAttribute("href")).toContain("forget_en.php");
     expect(

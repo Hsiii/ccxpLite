@@ -1,22 +1,22 @@
-(function registerCcxpLiteLandingIdentify(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginIdentify(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { shared, landingLocale, landingSupport } = namespace;
-  if (!shared || !landingLocale || !landingSupport) {
+  const { shared, loginLocale, loginSupport } = namespace;
+  if (!shared || !loginLocale || !loginSupport) {
     return;
   }
 
   const { getLocalizedStrings, rememberLocale } = shared;
-  const { resolveLandingLocale, getLoginForm } = landingLocale;
+  const { resolveLoginLocale, getLoginForm } = loginLocale;
   const {
     findLoginSourceCell,
     findAnnouncementTable,
     findUtilityLinksTable,
     findCannotLoginLink,
     findServiceLink,
-  } = landingSupport;
+  } = loginSupport;
 
-  function identifyLandingSurface(targetDocument: Document) {
+  function identifyLoginSurface(targetDocument: Document) {
     const loginForm = getLoginForm(targetDocument);
     const loginSourceCell = findLoginSourceCell(targetDocument, loginForm);
     if (!loginSourceCell) {
@@ -30,7 +30,7 @@
     const utilityLinks = findUtilityLinksTable(targetDocument);
     const cannotLoginLink = findCannotLoginLink(targetDocument, utilityLinks);
     const serviceLink = findServiceLink(targetDocument);
-    const locale = resolveLandingLocale(targetDocument, languageLinks, loginSourceCell, loginForm);
+    const locale = resolveLoginLocale(targetDocument, languageLinks, loginSourceCell, loginForm);
 
     rememberLocale(locale, targetDocument);
 
@@ -49,7 +49,7 @@
     };
   }
 
-  namespace.landingIdentify = {
-    identifyLandingSurface,
+  namespace.loginIdentify = {
+    identifyLoginSurface,
   };
 })(globalThis);

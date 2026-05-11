@@ -1,17 +1,9 @@
-(function registerCcxpLiteLandingRewrite(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginRewrite(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
-  const { landingValidation, landingCaptcha, landingTabs, landingSupport, landingLogin } =
-    namespace;
-  if (
-    !shared ||
-    !landingValidation ||
-    !landingCaptcha ||
-    !landingTabs ||
-    !landingSupport ||
-    !landingLogin
-  ) {
+  const { loginValidation, loginCaptcha, loginTabs, loginSupport, loginUi } = namespace;
+  if (!shared || !loginValidation || !loginCaptcha || !loginTabs || !loginSupport || !loginUi) {
     return;
   }
 
@@ -24,19 +16,19 @@
     moveChildNodes,
     removeNode,
   } = shared;
-  const { captureLoginValidationState } = landingValidation;
-  const { getOrCreateCaptchaAutofillState } = landingCaptcha;
-  const { createLandingSection, wireLandingTabs } = landingTabs;
+  const { captureValidationState } = loginValidation;
+  const { getOrCreateCaptchaState } = loginCaptcha;
+  const { createSection, wireTabs } = loginTabs;
   const {
     buildHeaderUtilityLinks,
-    buildLandingSupportLinks,
+    buildSupportLinks,
     collapseLegacyServiceRow,
     collapseLegacyCannotLoginLink,
     collapseLegacyUtilityRow,
     collapseLegacyThreeColumnRows,
     findCalendarTable,
     prepareAnnouncementTable,
-  } = landingSupport;
+  } = loginSupport;
   const {
     normalizeLoginFormLayout,
     removeLoginResetControls,
@@ -46,11 +38,11 @@
     removeLoginSpacingArtifacts,
     alignCaptchaMediaRow,
     enhancePasswordVisibilityToggle,
-  } = landingLogin;
+  } = loginUi;
 
-  function rewriteLandingSurface(
+  function rewriteLoginSurface(
     targetDocument: Document,
-    identifiedSurface: CcxpLiteLandingIdentifyResult,
+    identifiedSurface: CcxpLiteLoginIdentifyResult,
   ) {
     const {
       loginForm,
@@ -64,19 +56,19 @@
       serviceLink,
       strings,
     } = identifiedSurface;
-    const loginValidationState = captureLoginValidationState(targetDocument);
+    const loginValidationState = captureValidationState(targetDocument);
     const shell = targetDocument.createElement("main");
     shell.className = TOKENS.landingClass;
-    const topSection = createLandingSection(targetDocument, "ccxp-lite-landing-top");
-    const headerSection = createLandingSection(targetDocument, "ccxp-lite-landing-header");
-    const brandSection = createLandingSection(
+    const topSection = createSection(targetDocument, "ccxp-lite-landing-top");
+    const headerSection = createSection(targetDocument, "ccxp-lite-landing-header");
+    const brandSection = createSection(
       targetDocument,
       "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
     );
-    const langSection = createLandingSection(targetDocument, "ccxp-lite-landing-lang");
-    const loginSection = createLandingSection(targetDocument, "ccxp-lite-landing-login");
-    const tabsSection = createLandingSection(targetDocument, "ccxp-lite-landing-tabs");
-    const noticesSection = createLandingSection(targetDocument, "ccxp-lite-landing-notices");
+    const langSection = createSection(targetDocument, "ccxp-lite-landing-lang");
+    const loginSection = createSection(targetDocument, "ccxp-lite-landing-login");
+    const tabsSection = createSection(targetDocument, "ccxp-lite-landing-tabs");
+    const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
 
     const brandLockup = targetDocument.createElement("div");
     brandLockup.className = "ccxp-lite-landing-brand-lockup ccxp-lite-sidebar-brand";
@@ -134,7 +126,7 @@
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
 
-    const captchaAutofillState = getOrCreateCaptchaAutofillState(
+    const captchaAutofillState = getOrCreateCaptchaState(
       targetDocument,
       loginSection as ParentNode,
     );
@@ -171,12 +163,7 @@
     topSection.append(loginSection);
     shell.append(topSection);
 
-    const supportLinks = buildLandingSupportLinks(
-      targetDocument,
-      serviceLink,
-      cannotLoginLink,
-      strings,
-    );
+    const supportLinks = buildSupportLinks(targetDocument, serviceLink, cannotLoginLink, strings);
     if (serviceLink) {
       collapseLegacyServiceRow(serviceLink);
     }
@@ -196,10 +183,10 @@
         collapseLegacyThreeColumnRows(tabContent);
         tabsSection.append(tabContent);
       }
-      wireLandingTabs(targetDocument, tabNavigation, tabContents, strings);
+      wireTabs(targetDocument, tabNavigation, tabContents, strings);
       shell.append(tabsSection);
     } else if (supportLinks) {
-      const supportSection = createLandingSection(targetDocument, "ccxp-lite-landing-support-only");
+      const supportSection = createSection(targetDocument, "ccxp-lite-landing-support-only");
       supportSection.append(supportLinks);
       shell.append(supportSection);
     }
@@ -218,7 +205,7 @@
     };
   }
 
-  namespace.landingRewrite = {
-    rewriteLandingSurface,
+  namespace.loginRewrite = {
+    rewriteLoginSurface,
   };
 })(globalThis);

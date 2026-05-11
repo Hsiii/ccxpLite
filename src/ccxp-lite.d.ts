@@ -147,10 +147,10 @@ declare global {
     __ccxpLiteOriginal?: CcxpLiteWrappedSubmit;
   }
 
-  interface CcxpLiteLandingLocale {
+  interface CcxpLiteLoginLocale {
     isSupportedInquirePath: (targetDocument: Document) => boolean;
-    isLandingPage: (targetDocument: Document) => boolean;
-    resolveLandingLocale: (
+    isLoginPage: (targetDocument: Document) => boolean;
+    resolveLoginLocale: (
       targetDocument: Document,
       languageLinks: ParentNode | undefined,
       loginSourceCell: ParentNode | undefined,
@@ -300,36 +300,33 @@ declare global {
     ) => void;
   }
 
-  interface CcxpLiteLandingValidationState {
+  interface CcxpLiteLoginValidationState {
     startedAt: number;
     fnstrDate?: string;
     fnstrSeed?: string;
   }
 
-  interface CcxpLiteLandingValidation {
-    captureLoginValidationState: (targetDocument: Document) => CcxpLiteLandingValidationState;
-    restoreLoginValidationGuards: (
+  interface CcxpLiteLoginValidation {
+    captureValidationState: (targetDocument: Document) => CcxpLiteLoginValidationState;
+    restoreValidationGuards: (
       targetDocument: Document,
-      state: CcxpLiteLandingValidationState,
+      state: CcxpLiteLoginValidationState,
     ) => void;
-    ensureLoginSubmissionPayload: (
-      form: HTMLFormElement | undefined,
-      targetDocument: Document,
-    ) => void;
+    ensureSubmissionPayload: (form: HTMLFormElement | undefined, targetDocument: Document) => void;
     extractPwdstrFromImage: (
       imageNode: HTMLImageElement | undefined,
       targetDocument: Document,
     ) => string;
   }
 
-  interface CcxpLiteLandingCaptcha {
+  interface CcxpLiteLoginCaptcha {
     CAPTCHA_AUTOFILL_TIMEOUT_MS: number;
-    enableLoginCaptchaAutofill: (
+    enableCaptchaAutofill: (
       targetDocument: Document,
       rootNode: ParentNode,
       existingState?: CcxpLiteCaptchaAutofillState,
     ) => void;
-    getOrCreateCaptchaAutofillState: (
+    getOrCreateCaptchaState: (
       targetDocument: Document,
       rootNode: ParentNode,
     ) => CcxpLiteCaptchaAutofillState | undefined;
@@ -339,9 +336,9 @@ declare global {
     ) => void;
   }
 
-  interface CcxpLiteLandingTabs {
-    createLandingSection: (targetDocument: Document, className: string) => HTMLElement;
-    wireLandingTabs: (
+  interface CcxpLiteLoginTabs {
+    createSection: (targetDocument: Document, className: string) => HTMLElement;
+    wireTabs: (
       targetDocument: Document,
       tabNavigation: HTMLElement,
       tabContents: readonly HTMLElement[],
@@ -349,7 +346,7 @@ declare global {
     ) => void;
   }
 
-  interface CcxpLiteLandingSupport {
+  interface CcxpLiteLoginSupport {
     findLoginSourceCell: (
       targetDocument: Document,
       loginForm: Element | undefined,
@@ -367,7 +364,7 @@ declare global {
       excludedAnchor: HTMLAnchorElement | undefined,
       strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | undefined;
-    buildLandingSupportLinks: (
+    buildSupportLinks: (
       targetDocument: Document,
       serviceLinkNode: Element | undefined,
       cannotLoginAnchor: HTMLAnchorElement | undefined,
@@ -384,7 +381,7 @@ declare global {
     ) => void;
   }
 
-  interface CcxpLiteLandingLogin {
+  interface CcxpLiteLoginUi {
     normalizeLoginFormLayout: (rootNode: ParentNode) => void;
     removeLoginResetControls: (rootNode: ParentNode) => void;
     forceCaptchaLabelDisplay: (rootNode: ParentNode) => void;
@@ -395,7 +392,7 @@ declare global {
     enhancePasswordVisibilityToggle: (targetDocument: Document, rootNode: ParentNode) => void;
   }
 
-  interface CcxpLiteLandingIdentifyResult {
+  interface CcxpLiteLoginIdentifyResult {
     loginForm: HTMLFormElement | undefined;
     loginSourceCell: HTMLElement;
     tabNavigation: HTMLElement | undefined;
@@ -409,36 +406,33 @@ declare global {
     strings: Readonly<Record<string, string>>;
   }
 
-  interface CcxpLiteLandingIdentify {
-    identifyLandingSurface: (targetDocument: Document) => CcxpLiteLandingIdentifyResult | undefined;
+  interface CcxpLiteLoginIdentify {
+    identifyLoginSurface: (targetDocument: Document) => CcxpLiteLoginIdentifyResult | undefined;
   }
 
-  interface CcxpLiteLandingRewriteResult {
+  interface CcxpLiteLoginRewriteResult {
     shell: HTMLElement;
     loginSection: HTMLElement;
-    loginValidationState: CcxpLiteLandingValidationState;
+    loginValidationState: CcxpLiteLoginValidationState;
     captchaAutofillState: CcxpLiteCaptchaAutofillState | undefined;
   }
 
-  interface CcxpLiteLandingRewrite {
-    rewriteLandingSurface: (
+  interface CcxpLiteLoginRewrite {
+    rewriteLoginSurface: (
       targetDocument: Document,
-      identifiedSurface: CcxpLiteLandingIdentifyResult,
-    ) => CcxpLiteLandingRewriteResult;
+      identifiedSurface: CcxpLiteLoginIdentifyResult,
+    ) => CcxpLiteLoginRewriteResult;
   }
 
-  interface CcxpLiteLandingStyle {
-    applyLandingTheme: (
-      targetDocument: Document,
-      rewriteResult: CcxpLiteLandingRewriteResult,
-    ) => void;
+  interface CcxpLiteLoginStyle {
+    applyLoginTheme: (targetDocument: Document, rewriteResult: CcxpLiteLoginRewriteResult) => void;
   }
 
-  interface CcxpLiteLanding {
+  interface CcxpLiteLogin {
     isSupportedInquirePath: (targetDocument: Document) => boolean;
-    isLandingPage: (targetDocument: Document) => boolean;
-    preloadLandingCaptcha: (targetDocument: Document) => void;
-    simplifyLandingPage: (
+    isLoginPage: (targetDocument: Document) => boolean;
+    preloadCaptcha: (targetDocument: Document) => void;
+    simplifyLoginPage: (
       targetDocument: Document,
       options?: {
         retry?: () => void;
@@ -584,16 +578,16 @@ declare global {
     sharedDom?: CcxpLiteSharedDom;
     sharedTheme?: CcxpLiteSharedTheme;
     sharedBrand?: CcxpLiteSharedBrand;
-    landing?: CcxpLiteLanding;
-    landingLocale?: CcxpLiteLandingLocale;
-    landingSupport?: CcxpLiteLandingSupport;
-    landingCaptcha?: CcxpLiteLandingCaptcha;
-    landingTabs?: CcxpLiteLandingTabs;
-    landingValidation?: CcxpLiteLandingValidation;
-    landingLogin?: CcxpLiteLandingLogin;
-    landingIdentify?: CcxpLiteLandingIdentify;
-    landingRewrite?: CcxpLiteLandingRewrite;
-    landingStyle?: CcxpLiteLandingStyle;
+    login?: CcxpLiteLogin;
+    loginLocale?: CcxpLiteLoginLocale;
+    loginSupport?: CcxpLiteLoginSupport;
+    loginCaptcha?: CcxpLiteLoginCaptcha;
+    loginTabs?: CcxpLiteLoginTabs;
+    loginValidation?: CcxpLiteLoginValidation;
+    loginUi?: CcxpLiteLoginUi;
+    loginIdentify?: CcxpLiteLoginIdentify;
+    loginRewrite?: CcxpLiteLoginRewrite;
+    loginStyle?: CcxpLiteLoginStyle;
     sidebar?: CcxpLiteSidebar;
     sidebarState?: CcxpLiteSidebarStateModule;
     sidebarFavorites?: CcxpLiteSidebarFavorites;

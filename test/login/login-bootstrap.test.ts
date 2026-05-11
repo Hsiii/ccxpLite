@@ -17,7 +17,7 @@ const loginBootstrapModulePaths = [
 ];
 
 describe("login bootstrap", () => {
-  test("runs the identify, rewrite, and style pipeline through simplifyLandingPage", async () => {
+  test("runs the identify, rewrite, and style pipeline through simplifyLoginPage", async () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = {
@@ -31,9 +31,9 @@ describe("login bootstrap", () => {
         } as Response),
     ) as unknown as typeof window.fetch;
     loadModules(window, loginBootstrapModulePaths);
-    const landing = requireValue(window.CCXP_LITE.landing, "landing");
+    const login = requireValue(window.CCXP_LITE.login, "login");
 
-    landing.simplifyLandingPage(document);
+    login.simplifyLoginPage(document);
     await Promise.resolve();
     await Promise.resolve();
 

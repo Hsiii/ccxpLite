@@ -14,10 +14,10 @@ describe("login ui", () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
+    const loginUi = requireValue(window.CCXP_LITE.loginUi, "loginUi");
 
-    landingLogin.enhancePasswordVisibilityToggle(document, document);
-    landingLogin.enhancePasswordVisibilityToggle(document, document);
+    loginUi.enhancePasswordVisibilityToggle(document, document);
+    loginUi.enhancePasswordVisibilityToggle(document, document);
 
     const passwordField = requireElement(
       document.querySelector<HTMLInputElement>("input[name='passwd']"),
@@ -40,12 +40,12 @@ describe("login ui", () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
-    const landingLogin = requireValue(window.CCXP_LITE.landingLogin, "landingLogin");
+    const loginLocale = requireValue(window.CCXP_LITE.loginLocale, "loginLocale");
+    const loginUi = requireValue(window.CCXP_LITE.loginUi, "loginUi");
 
-    const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
-    landingLogin.normalizeLoginFormLayout(document);
-    landingLogin.normalizeLoginFormLayout(document);
+    const form = requireValue(loginLocale.getLoginForm(document), "loginForm");
+    loginUi.normalizeLoginFormLayout(document);
+    loginUi.normalizeLoginFormLayout(document);
 
     expect(form.classList.contains("ccxp-lite-login-form")).toBe(true);
     expect(form.dataset.ccxpLiteFormStructured).toBe("true");

@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingLocale(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginLocale(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   runtimeScope.CCXP_LITE ??= {};
   const namespace = runtimeScope.CCXP_LITE;
@@ -7,18 +7,18 @@
     return /\/ccxp\/inquire\/(?:index\.php)?\/?$/.test(pathName);
   }
 
-  function isLandingPage(targetDocument: Document) {
+  function isLoginPage(targetDocument: Document) {
     if (!isSupportedInquirePath(targetDocument)) {
       return false;
     }
-    return Boolean(getLoginForm(targetDocument) ?? hasLandingTabContent(targetDocument));
+    return Boolean(getLoginForm(targetDocument) ?? hasLoginTabContent(targetDocument));
   }
 
-  function hasLandingTabContent(targetDocument: Document) {
+  function hasLoginTabContent(targetDocument: Document) {
     return Boolean(targetDocument.querySelector(".tab, .tabcontent"));
   }
 
-  function resolveLandingLocale(
+  function resolveLoginLocale(
     targetDocument: Document,
     languageLinks: ParentNode | undefined,
     loginSourceCell: ParentNode | undefined,
@@ -151,10 +151,10 @@
     const rect = formNode.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0;
   }
-  namespace.landingLocale = {
+  namespace.loginLocale = {
     isSupportedInquirePath,
-    isLandingPage,
-    resolveLandingLocale,
+    isLoginPage,
+    resolveLoginLocale,
     getLoginForm,
   };
 })(globalThis);

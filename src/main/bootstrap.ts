@@ -2,13 +2,13 @@
   const namespace = globalThis.CCXP_LITE ?? {};
   const { shared } = namespace;
   const { sidebar } = namespace;
-  const { landing } = namespace;
-  if (!shared || !sidebar || !landing) {
+  const { login } = namespace;
+  if (!shared || !sidebar || !login) {
     return;
   }
   const sharedLib = shared;
   const sidebarLib = sidebar;
-  const landingLib = landing;
+  const loginLib = login;
   const {
     TOKENS,
     removeNode,
@@ -17,7 +17,7 @@
     ensureThemeDocument,
     cleanLegacyAttributes,
   } = sharedLib;
-  const { isSupportedInquirePath, isLandingPage, simplifyLandingPage } = landingLib;
+  const { isSupportedInquirePath, isLoginPage, simplifyLoginPage } = loginLib;
   const RETRY_LIMIT = 40;
   const RETRY_DELAY_MS = 250;
   const LAYERED_FRAMESET_COLUMNS = "*,0";
@@ -43,11 +43,11 @@
     }
   });
   function attachAndApply() {
-    if (isLandingPage(document)) {
-      landingLib.preloadLandingCaptcha(document);
-      simplifyLandingPage(document, {
+    if (isLoginPage(document)) {
+      loginLib.preloadCaptcha(document);
+      simplifyLoginPage(document, {
         retry,
-        onReady: markLandingReady,
+        onReady: markLoginReady,
       });
       return;
     }
@@ -199,7 +199,7 @@
     tryReleaseLoadingSprite();
   }
 
-  function markLandingReady() {
+  function markLoginReady() {
     if (!loadingState || loadingState.released) {
       return;
     }

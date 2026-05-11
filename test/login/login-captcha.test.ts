@@ -28,7 +28,7 @@ describe("login captcha", () => {
     const predictDigits = vi.fn().mockResolvedValue("654321");
     window.CCXP_LITE.decaptcha = { predictDigits };
     loadModules(window, loginCaptchaModulePaths);
-    const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
+    const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
 
     let resolveFetch: ((value: Response) => void) | undefined;
     window.fetch = vi.fn(
@@ -51,7 +51,7 @@ describe("login captcha", () => {
       changeSpy(event);
     });
 
-    landingCaptcha.enableLoginCaptchaAutofill(document, document);
+    loginCaptcha.enableCaptchaAutofill(document, document);
     expect(input.getAttribute("aria-busy")).toBe("true");
     expect(
       (document.querySelector("form") as HTMLElement).dataset.ccxpLiteCaptchaAutofillBound,
@@ -69,7 +69,7 @@ describe("login captcha", () => {
     expect(inputSpy).toHaveBeenCalled();
     expect(changeSpy).toHaveBeenCalled();
 
-    landingCaptcha.enableLoginCaptchaAutofill(document, document);
+    loginCaptcha.enableCaptchaAutofill(document, document);
     expect(vi.mocked(window.fetch).mock.calls.length).toBeGreaterThan(0);
   });
 
@@ -78,7 +78,7 @@ describe("login captcha", () => {
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = { predictDigits: vi.fn() };
     loadModules(window, loginCaptchaModulePaths);
-    const landingCaptcha = requireValue(window.CCXP_LITE.landingCaptcha, "landingCaptcha");
+    const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
 
     window.fetch = vi.fn(async () => {
       await Promise.resolve();
@@ -91,7 +91,7 @@ describe("login captcha", () => {
       document.querySelector<HTMLInputElement>("input[name='passwd2']"),
       "captcha input",
     );
-    landingCaptcha.enableLoginCaptchaAutofill(document, document);
+    loginCaptcha.enableCaptchaAutofill(document, document);
     await flushPromises();
     await flushPromises();
 

@@ -1,41 +1,35 @@
-(function registerCcxpLiteLandingBootstrap(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginBootstrap(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
-  const {
-    landingIdentify,
-    landingRewrite,
-    landingStyle,
-    landingLocale,
-    landingValidation,
-    landingCaptcha,
-  } = namespace;
+  const { loginIdentify, loginRewrite, loginStyle, loginLocale, loginValidation, loginCaptcha } =
+    namespace;
   if (
     !shared ||
-    !landingIdentify ||
-    !landingRewrite ||
-    !landingStyle ||
-    !landingLocale ||
-    !landingValidation ||
-    !landingCaptcha
+    !loginIdentify ||
+    !loginRewrite ||
+    !loginStyle ||
+    !loginLocale ||
+    !loginValidation ||
+    !loginCaptcha
   ) {
     return;
   }
-  const identifyLib = landingIdentify;
-  const rewriteLib = landingRewrite;
-  const styleLib = landingStyle;
+  const identifyLib = loginIdentify;
+  const rewriteLib = loginRewrite;
+  const styleLib = loginStyle;
   const { ensureDocumentBody, isDocumentComplete } = shared;
-  const { isSupportedInquirePath, isLandingPage } = landingLocale;
-  const { restoreLoginValidationGuards } = landingValidation;
-  const { enableLoginCaptchaAutofill, getOrCreateCaptchaAutofillState } = landingCaptcha;
-  function preloadLandingCaptcha(targetDocument: Document) {
-    if (!isLandingPage(targetDocument)) {
+  const { isSupportedInquirePath, isLoginPage } = loginLocale;
+  const { restoreValidationGuards } = loginValidation;
+  const { enableCaptchaAutofill, getOrCreateCaptchaState } = loginCaptcha;
+  function preloadCaptcha(targetDocument: Document) {
+    if (!isLoginPage(targetDocument)) {
       return;
     }
-    getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
+    getOrCreateCaptchaState(targetDocument, targetDocument);
   }
 
-  function simplifyLandingPage(
+  function simplifyLoginPage(
     targetDocument: Document,
     options: {
       retry?: () => void;
@@ -59,26 +53,26 @@
       retryFn();
       return;
     }
-    const identifiedSurface = identifyLib.identifyLandingSurface(targetDocument);
+    const identifiedSurface = identifyLib.identifyLoginSurface(targetDocument);
     if (!identifiedSurface) {
       retryFn();
       return;
     }
 
-    const rewriteResult = rewriteLib.rewriteLandingSurface(targetDocument, identifiedSurface);
-    styleLib.applyLandingTheme(targetDocument, rewriteResult);
-    enableLoginCaptchaAutofill(
+    const rewriteResult = rewriteLib.rewriteLoginSurface(targetDocument, identifiedSurface);
+    styleLib.applyLoginTheme(targetDocument, rewriteResult);
+    enableCaptchaAutofill(
       targetDocument,
       rewriteResult.loginSection as ParentNode,
       rewriteResult.captchaAutofillState,
     );
-    restoreLoginValidationGuards(targetDocument, rewriteResult.loginValidationState);
+    restoreValidationGuards(targetDocument, rewriteResult.loginValidationState);
     onReady();
   }
-  namespace.landing = {
+  namespace.login = {
     isSupportedInquirePath,
-    isLandingPage,
-    preloadLandingCaptcha,
-    simplifyLandingPage,
+    isLoginPage,
+    preloadCaptcha,
+    simplifyLoginPage,
   };
 })(globalThis);

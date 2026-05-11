@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingStyle(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginStyle(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
@@ -8,7 +8,7 @@
 
   const { ensureThemeDocument, cleanLegacyAttributes } = shared;
 
-  function applyLandingTheme(
+  function applyLoginTheme(
     targetDocument: Document,
     rewriteResult: {
       shell: HTMLElement;
@@ -24,7 +24,7 @@
     targetBody.dataset.ccxpLiteLandingApplied = "true";
   }
 
-  namespace.landingStyle = {
-    applyLandingTheme,
+  namespace.loginStyle = {
+    applyLoginTheme,
   };
 })(globalThis);

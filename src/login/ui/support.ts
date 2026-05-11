@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingSupport(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginSupport(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
@@ -350,7 +350,7 @@
     return anchor;
   }
 
-  function buildLandingSupportLinks(
+  function buildSupportLinks(
     targetDocument: Document,
     serviceLinkNode: Element | undefined,
     cannotLoginAnchor: HTMLAnchorElement | undefined,
@@ -697,14 +697,14 @@
   function normalizeLegacyWidth(rawValue: string | undefined) {
     return (rawValue ?? "").replaceAll(/\s+/g, "").toLowerCase();
   }
-  namespace.landingSupport = {
+  namespace.loginSupport = {
     findLoginSourceCell,
     findAnnouncementTable,
     findUtilityLinksTable,
     findCannotLoginLink,
     findServiceLink,
     buildHeaderUtilityLinks,
-    buildLandingSupportLinks,
+    buildSupportLinks,
     collapseLegacyServiceRow,
     collapseLegacyCannotLoginLink,
     collapseLegacyUtilityRow,

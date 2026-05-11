@@ -1,20 +1,20 @@
-(function registerCcxpLiteLandingCaptcha(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginCaptcha(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { landingLocale } = namespace;
-  if (!landingLocale) {
+  const { loginLocale } = namespace;
+  if (!loginLocale) {
     return;
   }
-  const { getLoginForm } = landingLocale;
+  const { getLoginForm } = loginLocale;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap<Document, CcxpLiteCaptchaAutofillState>();
-  function enableLoginCaptchaAutofill(
+  function enableCaptchaAutofill(
     targetDocument: Document,
     rootNode: ParentNode,
     existingState?: CcxpLiteCaptchaAutofillState,
   ) {
     const form = getLoginForm(targetDocument);
-    const state = existingState ?? getOrCreateCaptchaAutofillState(targetDocument, rootNode);
+    const state = existingState ?? getOrCreateCaptchaState(targetDocument, rootNode);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
@@ -57,7 +57,7 @@
     form.dataset.ccxpLiteCaptchaAutofillBound = "true";
   }
 
-  function getOrCreateCaptchaAutofillState(
+  function getOrCreateCaptchaState(
     targetDocument: Document,
     rootNode: ParentNode,
   ): CcxpLiteCaptchaAutofillState | undefined {
@@ -435,10 +435,10 @@
         globalThis.clearTimeout(timerId);
       });
   }
-  namespace.landingCaptcha = {
+  namespace.loginCaptcha = {
     CAPTCHA_AUTOFILL_TIMEOUT_MS,
-    enableLoginCaptchaAutofill,
-    getOrCreateCaptchaAutofillState,
+    enableCaptchaAutofill,
+    getOrCreateCaptchaState,
     primeCaptchaAutofill,
   };
 })(globalThis);

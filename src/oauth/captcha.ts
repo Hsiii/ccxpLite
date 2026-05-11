@@ -1,7 +1,7 @@
 (function bootstrapCcxpLiteOauthCaptcha(globalScope: typeof globalThis) {
   const { CCXP_LITE: namespace } = globalScope as Window & typeof globalThis;
-  const landingCaptcha = namespace?.landingCaptcha;
-  if (!landingCaptcha) {
+  const loginCaptcha = namespace?.loginCaptcha;
+  if (!loginCaptcha) {
     return;
   }
   const targetDocument = globalScope.document;
@@ -32,11 +32,11 @@
       stopRetry();
       return true;
     }
-    const state = landingCaptcha.getOrCreateCaptchaAutofillState(targetDocument, targetDocument);
+    const state = loginCaptcha.getOrCreateCaptchaState(targetDocument, targetDocument);
     if (!state) {
       return false;
     }
-    landingCaptcha.enableLoginCaptchaAutofill(targetDocument, targetDocument, state);
+    loginCaptcha.enableCaptchaAutofill(targetDocument, targetDocument, state);
     if (isAutofillBound()) {
       stopRetry();
       return true;

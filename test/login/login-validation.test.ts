@@ -13,8 +13,8 @@ describe("login validation", () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const validation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
-    expect(validation.captureLoginValidationState(document)).toMatchObject({
+    const validation = requireValue(window.CCXP_LITE.loginValidation, "loginValidation");
+    expect(validation.captureValidationState(document)).toMatchObject({
       fnstrDate: "20260428",
       fnstrSeed: "777",
     });
@@ -22,19 +22,19 @@ describe("login validation", () => {
       document.querySelector<HTMLInputElement>("input[name='fnstr']"),
       "fnstr input",
     ).value = "invalid";
-    expect(validation.captureLoginValidationState(document)).toHaveProperty("startedAt");
+    expect(validation.captureValidationState(document)).toHaveProperty("startedAt");
   });
   test("reloads the page when a guarded field is touched after expiry", () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
+    const loginValidation = requireValue(window.CCXP_LITE.loginValidation, "loginValidation");
     const reloadSpy = vi.fn();
     Object.defineProperty(document, "location", {
       configurable: true,
       value: { reload: reloadSpy, href: "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php" },
     });
-    landingValidation.restoreLoginValidationGuards(document, {
+    loginValidation.restoreValidationGuards(document, {
       startedAt: Date.now() - 31 * 60 * 1000,
     });
     const account = requireElement(
@@ -48,18 +48,18 @@ describe("login validation", () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     loadModules(window, loginModulePaths);
-    const landingLocale = requireValue(window.CCXP_LITE.landingLocale, "landingLocale");
-    const landingValidation = requireValue(window.CCXP_LITE.landingValidation, "landingValidation");
-    const form = requireValue(landingLocale.getLoginForm(document), "loginForm");
+    const loginLocale = requireValue(window.CCXP_LITE.loginLocale, "loginLocale");
+    const loginValidation = requireValue(window.CCXP_LITE.loginValidation, "loginValidation");
+    const form = requireValue(loginLocale.getLoginForm(document), "loginForm");
     const image = requireElement(form.querySelector<HTMLImageElement>("img"), "captcha image");
     image.setAttribute("src", "auth_img.php?pwdstr=20260501-123");
-    landingValidation.ensureLoginSubmissionPayload(form, document);
+    loginValidation.ensureSubmissionPayload(form, document);
     expect(
       requireElement(form.querySelector<HTMLInputElement>("input[name='fnstr']"), "fnstr input")
         .value,
     ).toBe("20260501-123");
     expect(
-      landingValidation.extractPwdstrFromImage(
+      loginValidation.extractPwdstrFromImage(
         {
           getAttribute: () => "auth_img.php?pwdstr=20260502-456",
         } as unknown as HTMLImageElement,

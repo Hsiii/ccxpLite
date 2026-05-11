@@ -1,14 +1,14 @@
-(function registerCcxpLiteLandingValidation(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginValidation(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { landingLocale } = namespace;
-  if (!landingLocale) {
+  const { loginLocale } = namespace;
+  if (!loginLocale) {
     return;
   }
 
-  const { getLoginForm } = landingLocale;
+  const { getLoginForm } = loginLocale;
 
-  function captureLoginValidationState(targetDocument: Document): CcxpLiteLandingValidationState {
+  function captureValidationState(targetDocument: Document): CcxpLiteLoginValidationState {
     const fnstrField = targetDocument.querySelector<HTMLInputElement>("input[name='fnstr']");
     const rawFnstr = fnstrField ? fnstrField.value : "";
     const match = rawFnstr.match(/^(\d{8})-(\d+)$/);
@@ -27,10 +27,7 @@
     };
   }
 
-  function restoreLoginValidationGuards(
-    targetDocument: Document,
-    state: CcxpLiteLandingValidationState,
-  ) {
+  function restoreValidationGuards(targetDocument: Document, state: CcxpLiteLoginValidationState) {
     const fields = ["account", "passwd", "passwd2"]
       .map((name) => targetDocument.querySelector<HTMLInputElement>(`input[name='${name}']`))
       .filter((field): field is HTMLInputElement => field !== null);
@@ -58,16 +55,13 @@
     }
 
     form.addEventListener("submit", () => {
-      ensureLoginSubmissionPayload(form, targetDocument);
+      ensureSubmissionPayload(form, targetDocument);
     });
 
     form.dataset.ccxpLiteValidationBound = "true";
   }
 
-  function ensureLoginSubmissionPayload(
-    form: HTMLFormElement | undefined,
-    targetDocument: Document,
-  ) {
+  function ensureSubmissionPayload(form: HTMLFormElement | undefined, targetDocument: Document) {
     if (!form) {
       return;
     }
@@ -107,10 +101,10 @@
     }
   }
 
-  namespace.landingValidation = {
-    captureLoginValidationState,
-    restoreLoginValidationGuards,
-    ensureLoginSubmissionPayload,
+  namespace.loginValidation = {
+    captureValidationState,
+    restoreValidationGuards,
+    ensureSubmissionPayload,
     extractPwdstrFromImage,
   };
 })(globalThis);

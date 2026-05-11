@@ -1,14 +1,14 @@
-(function registerCcxpLiteLandingLogin(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginUi(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
-  const { landingLocale, landingSupport } = namespace;
-  if (!shared || !landingLocale || !landingSupport) {
+  const { loginLocale, loginSupport } = namespace;
+  if (!shared || !loginLocale || !loginSupport) {
     return;
   }
   const { getLocalizedStrings, moveChildNodes, removeNode } = shared;
-  const { resolveLandingLocale, getLoginForm } = landingLocale;
-  const { findLoginSourceCell } = landingSupport;
+  const { resolveLoginLocale, getLoginForm } = loginLocale;
+  const { findLoginSourceCell } = loginSupport;
   function enhancePasswordVisibilityToggle(targetDocument: Document, rootNode: ParentNode) {
     const passwordFields = [
       ...rootNode.querySelectorAll<HTMLInputElement>(
@@ -970,7 +970,7 @@
 
   function getLandingStrings(targetDocument: Document): Readonly<Record<string, string>> {
     return getLocalizedStrings(
-      resolveLandingLocale(
+      resolveLoginLocale(
         targetDocument,
         targetDocument.querySelector("ul.links") ?? undefined,
         findLoginSourceCell(targetDocument, getLoginForm(targetDocument)) as ParentNode | undefined,
@@ -1043,7 +1043,7 @@
     }
     return icon;
   }
-  namespace.landingLogin = {
+  namespace.loginUi = {
     enhancePasswordVisibilityToggle,
     normalizeLoginFormLayout,
     removeLoginResetControls,

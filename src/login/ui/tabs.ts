@@ -1,4 +1,4 @@
-(function registerCcxpLiteLandingTabs(globalScope: typeof globalThis) {
+(function registerCcxpLiteLoginTabs(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
@@ -7,13 +7,13 @@
   }
   const { getLocalizedStrings } = shared;
 
-  function createLandingSection(targetDocument: Document, className: string) {
+  function createSection(targetDocument: Document, className: string) {
     const section = targetDocument.createElement("section");
     section.className = `ccxp-lite-landing-section ${className}`;
     return section;
   }
 
-  function wireLandingTabs(
+  function wireTabs(
     targetDocument: Document,
     tabNavigation: HTMLElement,
     tabContents: readonly HTMLElement[],
@@ -64,7 +64,7 @@
     if (buttonPanelMap.length === 0) {
       return;
     }
-    structureLandingTabNavigation(targetDocument, tabNavigation, buttonPanelMap);
+    structureLoginTabNavigation(targetDocument, tabNavigation, buttonPanelMap);
     tabNavigation.setAttribute("role", "tablist");
     tabNavigation.setAttribute("aria-label", strings.portalSectionsLabel);
     const uniquePanels = [...new Set(buttonPanelMap.map((entry) => entry.panel))];
@@ -162,7 +162,7 @@
     activateTabAt(getActiveIndex());
   }
 
-  function structureLandingTabNavigation(
+  function structureLoginTabNavigation(
     targetDocument: Document,
     tabNavigation: HTMLElement,
     buttonPanelMap: ReadonlyArray<{
@@ -200,8 +200,8 @@
     const targetMatch = onclickValue.match(/["']([^"']+)["']/);
     return targetMatch ? targetMatch[1] : "";
   }
-  namespace.landingTabs = {
-    createLandingSection,
-    wireLandingTabs,
+  namespace.loginTabs = {
+    createSection,
+    wireTabs,
   };
 })(globalThis);
