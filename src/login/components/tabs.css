@@ -11,12 +11,7 @@
   padding: var(--ccxp-lite-spacing-lg);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-sm);
-  background: linear-gradient(
-    180deg,
-    var(--ccxp-lite-sidebar-surface) 0,
-    var(--ccxp-lite-surface) calc(var(--ccxp-lite-spacing-lg) * 3)
-  );
-  min-width: 0;
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-account-guide-header {
@@ -27,15 +22,10 @@
 }
 
 .ccxp-lite-account-guide-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
   min-width: 0;
-}
-
-.ccxp-lite-account-guide-eyebrow {
-  margin: 0 0 var(--ccxp-lite-spacing-2xs);
-  color: var(--ccxp-lite-type-body-muted-color);
-  font: var(--ccxp-lite-type-caption);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .ccxp-lite-account-guide-title {
@@ -44,68 +34,104 @@
   font: var(--ccxp-lite-type-page-title);
 }
 
-.ccxp-lite-account-guide-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ccxp-lite-spacing-md);
-}
-
-.ccxp-lite-account-guide-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ccxp-lite-spacing-sm);
-  min-width: 0;
-  min-height: 100%;
-  padding: var(--ccxp-lite-spacing-md);
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-md);
-  background: var(--ccxp-lite-surface);
-  box-shadow: 0 1px 0 var(--ccxp-lite-border);
-}
-
-.ccxp-lite-account-guide-card-primary {
-  background: var(--ccxp-lite-primary-hover-surface);
-  border-color: var(--ccxp-lite-primary-focus-border);
-}
-
-.ccxp-lite-account-guide-card-highlight {
-  background: var(--ccxp-lite-primary-muted-surface);
-  border-color: var(--ccxp-lite-primary-focus-border);
-}
-
-.ccxp-lite-account-guide-card-title {
-  margin: 0;
-  color: var(--ccxp-lite-type-body-strong-color);
-  font: var(--ccxp-lite-type-body-strong);
-}
-
-.ccxp-lite-account-guide-card-list,
-.ccxp-lite-account-guide-note-list {
+.ccxp-lite-account-guide-info-list,
+.ccxp-lite-account-guide-account-list {
   margin: 0;
   padding-left: calc(var(--ccxp-lite-spacing-inset-sm) + var(--ccxp-lite-spacing-2xs));
   color: var(--ccxp-lite-type-body-color);
+}
+
+.ccxp-lite-account-guide-info-list {
   font: var(--ccxp-lite-type-body);
 }
 
-.ccxp-lite-account-guide-card-list li + li,
-.ccxp-lite-account-guide-note-list li + li {
-  margin-top: var(--ccxp-lite-spacing-xs);
-}
-
-.ccxp-lite-account-guide-note {
+.ccxp-lite-account-guide-account-list {
   display: flex;
   flex-direction: column;
   gap: var(--ccxp-lite-spacing-sm);
-  padding: var(--ccxp-lite-spacing-md);
-  border-radius: var(--ccxp-lite-radius-md);
-  background: var(--ccxp-lite-sidebar-surface);
-  border: 1px solid var(--ccxp-lite-border);
+  font: var(--ccxp-lite-type-body);
 }
 
-.ccxp-lite-account-guide-note-title {
+.ccxp-lite-account-guide-info-list li + li {
+  margin-top: var(--ccxp-lite-spacing-xs);
+}
+
+.ccxp-lite-account-guide-account-item {
   margin: 0;
+}
+
+.ccxp-lite-account-guide-account-line {
+  display: inline-flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--ccxp-lite-spacing-2xs);
+  min-width: 0;
+}
+
+.ccxp-lite-account-guide-account-label {
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-body-strong);
+}
+
+.ccxp-lite-account-guide-account-value {
+  min-width: 0;
+}
+
+.ccxp-lite-account-guide-info {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ccxp-lite-account-guide-info-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ccxp-lite-size-icon-button-sm);
+  height: var(--ccxp-lite-size-icon-button-sm);
+  margin-left: var(--ccxp-lite-spacing-2xs);
+  padding: 0;
+  border: 1px solid var(--ccxp-lite-primary-focus-border);
+  border-radius: var(--ccxp-lite-radius-full);
+  background: var(--ccxp-lite-primary-hover-surface);
+  color: var(--ccxp-lite-type-body-strong-color);
+  font: var(--ccxp-lite-type-caption);
+  font-weight: var(--ccxp-lite-font-weight-strong);
+  line-height: 1;
+  cursor: help;
+}
+
+.ccxp-lite-account-guide-info-button:focus-visible {
+  outline: 2px solid var(--ccxp-lite-primary-focus-border);
+  outline-offset: 2px;
+}
+
+.ccxp-lite-account-guide-info-popup {
+  position: absolute;
+  left: 0;
+  top: calc(100% + var(--ccxp-lite-spacing-xs));
+  z-index: 2;
+  width: min(320px, calc(100vw - var(--ccxp-lite-spacing-lg) * 2));
+  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-sm);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-sm);
+  background: var(--ccxp-lite-sidebar-surface);
+  box-shadow: 0 8px 24px var(--ccxp-lite-border);
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-utility);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(var(--ccxp-lite-spacing-2xs));
+  transition:
+    opacity 120ms ease,
+    transform 120ms ease;
+}
+
+.ccxp-lite-account-guide-info:hover .ccxp-lite-account-guide-info-popup,
+.ccxp-lite-account-guide-info:focus-within .ccxp-lite-account-guide-info-popup {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 .ccxp-lite-landing-service-link {
@@ -127,10 +153,6 @@
   min-height: var(--ccxp-lite-size-control-height-sm);
 }
 
-.ccxp-lite-landing-support-links .ccxp-lite-landing-service-link:first-child {
-  padding-left: 0;
-}
-
 .ccxp-lite-landing-service-link:hover {
   color: var(--ccxp-lite-type-utility-color);
   font: var(--ccxp-lite-type-utility) !important;
@@ -141,10 +163,6 @@
 @media (max-width: 960px) {
   .ccxp-lite-landing-tabs {
     width: 100%;
-  }
-
-  .ccxp-lite-account-guide-grid {
-    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -161,5 +179,10 @@
   .ccxp-lite-landing-support-links {
     margin-left: 0;
     flex-wrap: wrap;
+  }
+
+  .ccxp-lite-account-guide-info-popup {
+    left: auto;
+    right: 0;
   }
 }
