@@ -121,6 +121,10 @@
 .ccxp-lite-landing-login .ccxp-lite-login-helper-link {
   width: min(100%, var(--ccxp-lite-size-form-control-width));
   margin-top: var(--ccxp-lite-spacing-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ccxp-lite-spacing-2xs);
   color: var(--ccxp-lite-type-primary-link-color);
   font: var(--ccxp-lite-type-utility);
   text-align: center;
