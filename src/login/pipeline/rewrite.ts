@@ -18,7 +18,7 @@
   } = shared;
   const { captureValidationState } = loginValidation;
   const { getOrCreateCaptchaState } = loginCaptcha;
-  const { createSection, normalizeLandingTabs, wireTabs } = loginTabs;
+  const { createAccountGuide, createSection } = loginTabs;
   const {
     buildHeaderUtilityLinks,
     buildSupportLinks,
@@ -172,19 +172,10 @@
     }
 
     if (tabNavigation && tabContents.length > 0) {
-      normalizeLandingTabs(targetDocument, tabNavigation, tabContents, strings);
-      const tabsHeader = targetDocument.createElement("div");
-      tabsHeader.className = "ccxp-lite-landing-tabs-header";
-      tabsHeader.append(tabNavigation);
-      if (supportLinks) {
-        tabsHeader.append(supportLinks);
-      }
-      tabsSection.append(tabsHeader);
       for (const tabContent of tabContents) {
         collapseLegacyThreeColumnRows(tabContent);
-        tabsSection.append(tabContent);
       }
-      wireTabs(targetDocument, tabNavigation, tabContents, strings);
+      tabsSection.append(createAccountGuide(targetDocument, strings, supportLinks));
       shell.append(tabsSection);
     } else if (supportLinks) {
       const supportSection = createSection(targetDocument, "ccxp-lite-landing-support-only");

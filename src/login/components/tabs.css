@@ -1,122 +1,109 @@
 .ccxp-lite-landing-tabs {
-  width: 60%;
-  max-width: 60%;
+  width: min(100%, calc(var(--ccxp-lite-landing-max-width) * 0.78));
+  max-width: 100%;
   margin-inline: auto;
+}
+
+.ccxp-lite-account-guide {
   display: flex;
   flex-direction: column;
+  gap: var(--ccxp-lite-spacing-md);
+  padding: var(--ccxp-lite-spacing-lg);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-sm);
-  background: var(--ccxp-lite-surface);
-  overflow: hidden;
+  background: linear-gradient(
+    180deg,
+    var(--ccxp-lite-sidebar-surface) 0,
+    var(--ccxp-lite-surface) calc(var(--ccxp-lite-spacing-lg) * 3)
+  );
   min-width: 0;
 }
 
-.ccxp-lite-landing-tabs .tab {
+.ccxp-lite-account-guide-header {
   display: flex;
-  flex-wrap: nowrap;
-  gap: 0;
-  align-items: center;
-  min-height: var(--ccxp-lite-size-control-height-md);
-  padding: 0;
-  overflow-x: auto;
-  overflow-y: hidden;
-  min-width: 0 !important;
-  border-bottom: 0;
-  background: var(--ccxp-lite-surface);
-}
-
-.ccxp-lite-landing-tabs-header {
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: var(--ccxp-lite-spacing-sm);
-  min-height: var(--ccxp-lite-size-control-height-md);
-  padding: 0 var(--ccxp-lite-spacing-sm);
-  border-bottom: 1px solid var(--ccxp-lite-border);
-  background: var(--ccxp-lite-surface);
-  flex: 0 0 auto;
+  gap: var(--ccxp-lite-spacing-md);
 }
 
-.ccxp-lite-landing-tabs-header .tab {
-  flex: 1 1 auto;
-}
-
-.ccxp-lite-landing-tabs .tab button,
-.ccxp-lite-landing-tabs .tab [role="tab"] {
-  flex: 0 0 auto;
-  float: none;
-  position: relative;
-  top: 0;
-  margin: 0;
-  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-sm);
-  border: 0;
-  border-radius: var(--ccxp-lite-radius-xs);
-  background: transparent;
-  color: var(--ccxp-lite-type-body-color);
-  font: var(--ccxp-lite-type-nav);
-}
-
-.ccxp-lite-landing-tabs .tab .ccxp-lite-tab-item {
-  display: inline-flex;
-  align-items: center;
-  flex: 0 0 auto;
+.ccxp-lite-account-guide-title-wrap {
   min-width: 0;
 }
 
-.ccxp-lite-landing-tabs .tab .ccxp-lite-tab-divider {
-  display: inline-flex;
-  flex: 0 0 auto;
-  width: 1px;
-  height: var(--ccxp-lite-size-announcement-divider);
-  margin: 0 var(--ccxp-lite-spacing-inline-sm);
-  background: var(--ccxp-lite-border);
+.ccxp-lite-account-guide-eyebrow {
+  margin: 0 0 var(--ccxp-lite-spacing-2xs);
+  color: var(--ccxp-lite-type-body-muted-color);
+  font: var(--ccxp-lite-type-caption);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.ccxp-lite-landing-tabs .tab button.active,
-.ccxp-lite-landing-tabs .tab [role="tab"].active,
-.ccxp-lite-landing-tabs .tab [role="tab"][aria-selected="true"] {
-  background: var(--ccxp-lite-tabs-active-surface);
-  color: var(--ccxp-lite-type-body-strong-color);
+.ccxp-lite-account-guide-title {
+  margin: 0;
+  color: var(--ccxp-lite-type-page-title-color);
+  font: var(--ccxp-lite-type-page-title);
 }
 
-.ccxp-lite-landing-tabs .tab [role="tab"]:focus-visible {
-  outline: 2px solid var(--ccxp-lite-tabs-focus-outline);
-  outline-offset: 1px;
+.ccxp-lite-account-guide-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ccxp-lite-spacing-md);
 }
 
-.ccxp-lite-landing-tabs .tabcontent {
-  margin-top: 0;
+.ccxp-lite-account-guide-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+  min-width: 0;
+  min-height: 100%;
   padding: var(--ccxp-lite-spacing-md);
-  border: 0;
-  border-radius: 0;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-md);
   background: var(--ccxp-lite-surface);
+  box-shadow: 0 1px 0 var(--ccxp-lite-border);
 }
 
-.ccxp-lite-landing-tabs .tabcontent table[border="1"] {
-  border-collapse: collapse;
-  border: 1px solid var(--ccxp-lite-border) !important;
+.ccxp-lite-account-guide-card-primary {
+  background: var(--ccxp-lite-primary-hover-surface);
+  border-color: var(--ccxp-lite-primary-focus-border);
 }
 
-.ccxp-lite-landing-tabs .tabcontent table[border="1"] th,
-.ccxp-lite-landing-tabs .tabcontent table[border="1"] td {
-  border: 1px solid var(--ccxp-lite-border) !important;
+.ccxp-lite-account-guide-card-highlight {
+  background: var(--ccxp-lite-primary-muted-surface);
+  border-color: var(--ccxp-lite-primary-focus-border);
 }
 
-.ccxp-lite-landing-tabs .ccxp-lite-student-alumni-panel table {
-  width: 60% !important;
-  max-width: 60%;
+.ccxp-lite-account-guide-card-title {
+  margin: 0;
+  color: var(--ccxp-lite-type-body-strong-color);
+  font: var(--ccxp-lite-type-body-strong);
 }
 
-.ccxp-lite-landing-tabs .tabcontent[hidden] {
-  display: none !important;
+.ccxp-lite-account-guide-card-list,
+.ccxp-lite-account-guide-note-list {
+  margin: 0;
+  padding-left: calc(var(--ccxp-lite-spacing-inset-sm) + var(--ccxp-lite-spacing-2xs));
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
 }
 
-.ccxp-lite-landing-tabs .tabcontent h3,
-.ccxp-lite-landing-tabs .tabcontent ul {
-  margin-block: var(--ccxp-lite-spacing-2xs);
+.ccxp-lite-account-guide-card-list li + li,
+.ccxp-lite-account-guide-note-list li + li {
+  margin-top: var(--ccxp-lite-spacing-xs);
 }
 
-.ccxp-lite-landing-tabs .tabcontent h3 {
+.ccxp-lite-account-guide-note {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ccxp-lite-spacing-sm);
+  padding: var(--ccxp-lite-spacing-md);
+  border-radius: var(--ccxp-lite-radius-md);
+  background: var(--ccxp-lite-sidebar-surface);
+  border: 1px solid var(--ccxp-lite-border);
+}
+
+.ccxp-lite-account-guide-note-title {
+  margin: 0;
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-body-strong);
 }
@@ -125,9 +112,6 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-xs);
-  margin-left: auto;
-  padding-left: var(--ccxp-lite-spacing-inset-sm);
-  flex: 0 0 auto;
   color: var(--ccxp-lite-type-body-muted-color);
   font: var(--ccxp-lite-type-utility);
   text-decoration: none;
@@ -137,16 +121,13 @@
 .ccxp-lite-landing-support-links {
   display: inline-flex;
   align-items: center;
+  gap: var(--ccxp-lite-spacing-inline-sm);
   margin-left: auto;
   flex: 0 0 auto;
-}
-
-.ccxp-lite-landing-support-links .ccxp-lite-landing-service-link {
-  margin-left: 0;
+  min-height: var(--ccxp-lite-size-control-height-sm);
 }
 
 .ccxp-lite-landing-support-links .ccxp-lite-landing-service-link:first-child {
-  border-left: 0;
   padding-left: 0;
 }
 
@@ -158,24 +139,27 @@
 }
 
 @media (max-width: 960px) {
-  .ccxp-lite-landing-tabs,
-  .ccxp-lite-landing-tabs .ccxp-lite-student-alumni-panel table {
-    width: 100% !important;
-    max-width: 100%;
+  .ccxp-lite-landing-tabs {
+    width: 100%;
+  }
+
+  .ccxp-lite-account-guide-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 @media (max-width: 720px) {
-  .ccxp-lite-landing-tabs-header {
-    flex-wrap: wrap;
+  .ccxp-lite-account-guide {
+    padding: var(--ccxp-lite-spacing-md);
+  }
+
+  .ccxp-lite-account-guide-header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .ccxp-lite-landing-support-links {
     margin-left: 0;
-  }
-
-  .ccxp-lite-landing-tabs {
-    width: 100%;
-    max-width: 100%;
+    flex-wrap: wrap;
   }
 }
