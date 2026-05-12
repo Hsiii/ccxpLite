@@ -217,4 +217,10 @@
     align-items: center;
     gap: var(--ccxp-lite-spacing-lg);
   }
+
+  .ccxp-lite-landing-body > .ccxp-lite-landing-login,
+  .ccxp-lite-landing-body > .ccxp-lite-landing-tabs,
+  .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
+    align-self: center;
+  }
 }

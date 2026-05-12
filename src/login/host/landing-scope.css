@@ -37,6 +37,7 @@ html[data-ccxp-lite-scope="landing"] span,
 html[data-ccxp-lite-scope="landing"] p,
 html[data-ccxp-lite-scope="landing"] li {
   font-family: var(--ccxp-lite-font-sans) !important;
+  font-size: var(--ccxp-lite-font-size-utility) !important;
 }
 
 html[data-ccxp-lite-scope="landing"] a {

@@ -1,15 +1,16 @@
 .ccxp-lite-landing-notices {
   display: flex;
-  justify-content: center;
-  margin-top: var(--ccxp-lite-spacing-3xs);
-  width: 100%;
+  justify-content: flex-start;
+  align-self: flex-start;
+  flex: 0 1 420px;
+  width: min(100%, 420px);
   min-width: 0;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table {
-  width: 60% !important;
-  max-width: 60%;
-  margin-inline: auto;
+  width: 100% !important;
+  max-width: 100%;
+  margin-inline: 0;
   display: block;
   background: var(--ccxp-lite-surface);
   border: 1px solid var(--ccxp-lite-border);
@@ -27,6 +28,7 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table font,
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table a {
   font-family: var(--ccxp-lite-font-sans) !important;
+  font-size: var(--ccxp-lite-font-size-utility) !important;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table font {
@@ -242,6 +244,10 @@
 }
 
 @media (max-width: 960px) {
+  .ccxp-lite-landing-notices {
+    width: min(100%, 480px);
+  }
+
   .ccxp-lite-landing-notices .ccxp-lite-announcement-table {
     width: 100% !important;
     max-width: 100%;
@@ -249,6 +255,10 @@
 }
 
 @media (max-width: 720px) {
+  .ccxp-lite-landing-notices {
+    width: 100%;
+  }
+
   .ccxp-lite-landing-notices .ccxp-lite-announcement-entry {
     grid-template-columns: 1fr;
     align-items: flex-start;
