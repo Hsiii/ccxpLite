@@ -205,7 +205,7 @@
   left: 6px;
   top: 0;
   width: 1px;
-  height: calc(var(--ccxp-lite-spacing-md) + 5px);
+  height: calc(var(--ccxp-lite-spacing-md) + 11px);
   background: color-mix(in srgb, var(--ccxp-lite-border) 72%, transparent);
   border-radius: var(--ccxp-lite-radius-full);
 }
