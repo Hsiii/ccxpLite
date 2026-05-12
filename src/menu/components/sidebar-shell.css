@@ -18,12 +18,16 @@
 }
 
 .ccxp-lite-sidebar-header {
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, auto) minmax(0, 1fr);
   align-items: center;
+  flex: 0 0 var(--ccxp-lite-size-landing-header-height);
   gap: var(--ccxp-lite-spacing-md);
   padding-inline: var(--ccxp-lite-spacing-inset-lg);
   height: var(--ccxp-lite-size-landing-header-height);
+  min-height: var(--ccxp-lite-size-landing-header-height);
+  max-height: var(--ccxp-lite-size-landing-header-height);
   scrollbar-gutter: stable both-edges;
 }
 
@@ -75,7 +79,7 @@
 }
 
 .ccxp-lite-sidebar-content {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-height: 0;
   height: 100%;
   padding: 0 0 var(--ccxp-lite-spacing-inset-md);
