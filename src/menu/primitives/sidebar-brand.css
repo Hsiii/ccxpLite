@@ -1,7 +1,7 @@
 .ccxp-lite-sidebar-brand-group {
   display: inline-flex;
   align-items: center;
-  gap: var(--ccxp-lite-spacing-sm);
+  gap: var(--ccxp-lite-spacing-brand-inline);
   min-width: 0;
   flex: 1 1 auto;
 }
@@ -78,6 +78,7 @@
 .ccxp-lite-sidebar-brand-partner-link:focus-visible {
   display: inline-flex;
   align-items: center;
+  gap: var(--ccxp-lite-spacing-brand-inline);
   min-width: 0;
   margin: 0;
   padding: 0;

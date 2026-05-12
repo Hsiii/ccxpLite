@@ -1,7 +1,7 @@
 .ccxp-lite-landing-brand {
   display: inline-flex;
   align-items: center;
-  gap: var(--ccxp-lite-spacing-sm);
+  gap: var(--ccxp-lite-spacing-brand-inline);
   min-width: 0;
   grid-area: brand;
 }
