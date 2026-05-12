@@ -145,9 +145,9 @@
   min-height: 32px;
   width: 100%;
   padding: var(--ccxp-lite-spacing-lg);
-  border-bottom: 1px solid var(--ccxp-lite-border);
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-body-strong);
+  font-size: var(--ccxp-lite-font-size-body) !important;
   background: var(--ccxp-lite-sidebar-surface);
   box-sizing: border-box;
 }
@@ -155,6 +155,9 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-title-row {
   display: flex;
   align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--ccxp-lite-border);
+  background: var(--ccxp-lite-sidebar-surface);
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-scroll-row {
