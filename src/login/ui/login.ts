@@ -289,8 +289,11 @@
   function attachPasswordInfoPopover(
     targetDocument: Document,
     rootNode: ParentNode,
-    cannotLoginAnchor?: HTMLAnchorElement,
+    announcementActionAnchor?: HTMLAnchorElement,
   ) {
+    if (!announcementActionAnchor) {
+      return;
+    }
     const passwordFields = [
       ...rootNode.querySelectorAll<HTMLInputElement>(
         "input[name='passwd'], input[name='password'], input[type='password']",
@@ -304,16 +307,18 @@
         continue;
       }
       const strings = getLandingStrings(targetDocument);
-      const popover = loginTabsLib.createPasswordHelpPopover(
+      const shortcutButton = loginTabsLib.createPasswordHelpActionButton(
         targetDocument,
+        announcementActionAnchor,
         strings,
-        cannotLoginAnchor,
       );
-      popover.classList.add("ccxp-lite-password-help-trigger");
+      if (!shortcutButton) {
+        continue;
+      }
       const labelRow = getOrCreateLoginFieldLabelRow(targetDocument, rootNode, fieldNode);
       if (labelRow) {
         if (!labelRow.querySelector(".ccxp-lite-password-help-trigger")) {
-          labelRow.append(popover);
+          labelRow.append(shortcutButton);
         }
         fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
         continue;
@@ -324,7 +329,7 @@
         continue;
       }
       labelCell.append(targetDocument.createTextNode(" "));
-      labelCell.append(popover);
+      labelCell.append(shortcutButton);
       fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
     }
   }
@@ -348,7 +353,7 @@
     if (existingRow) {
       return existingRow;
     }
-    const {parentNode} = standaloneLabel;
+    const { parentNode } = standaloneLabel;
     if (!parentNode) {
       return undefined;
     }

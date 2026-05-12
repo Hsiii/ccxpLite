@@ -126,7 +126,7 @@
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
     if (!table || table.dataset.ccxpLiteAnnouncementPrepared === "true") {
-      return;
+      return undefined;
     }
     table.classList.add("ccxp-lite-announcement-table");
     const rows = [...table.rows];
@@ -201,7 +201,17 @@
       const announcementTable = table;
       announcementTable.hidden = true;
       announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
-      return;
+      return undefined;
+    }
+    const primaryActionAnchor = extractPrimaryAnnouncementAction(entries[0]?.topicContent);
+    if (primaryActionAnchor) {
+      entries.shift();
+    }
+    if (entries.length === 0) {
+      const announcementTable = table;
+      announcementTable.hidden = true;
+      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+      return primaryActionAnchor;
     }
     const tbody = table.tBodies[0];
     if (table.tBodies.length === 0) {
@@ -253,6 +263,18 @@
     tbody.append(contentRow);
     const announcementTable = table;
     announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+    return primaryActionAnchor;
+  }
+
+  function extractPrimaryAnnouncementAction(topicContent: HTMLElement | undefined) {
+    if (!topicContent) {
+      return undefined;
+    }
+    const sourceAnchor = topicContent.querySelector<HTMLAnchorElement>("a[href]");
+    if (!sourceAnchor) {
+      return undefined;
+    }
+    return sourceAnchor.cloneNode(true) as HTMLAnchorElement;
   }
 
   function isPasswordHelpAnnouncement(
@@ -443,8 +465,29 @@
     return buildLandingSupportLink(targetDocument, sourceAnchor, labelText);
   }
 
+  function buildLoginHelperLink(
+    targetDocument: Document,
+    sourceAnchor: HTMLAnchorElement | undefined,
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
+  ) {
+    if (!sourceAnchor) {
+      return undefined;
+    }
+    const anchor = targetDocument.createElement("a");
+    anchor.className = "ccxp-lite-login-helper-link";
+    anchor.href = sourceAnchor.href;
+    anchor.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
+    anchor.rel = "noopener noreferrer";
+    copyLegacyAnchorHandlers(sourceAnchor, anchor);
+    anchor.textContent = strings.loginRecoveryHelp;
+    return anchor;
+  }
+
   function normalizeSupportLabel(label: string | undefined) {
-    return (label ?? "").replaceAll(">>", "").replaceAll("<<", "").replaceAll(/\s+/g, " ").trim();
+    return (label ?? "")
+      .replaceAll(/[<>\uFF1C\uFF1E]+/g, " ")
+      .replaceAll(/\s+/g, " ")
+      .trim();
   }
 
   function buildLandingSupportLink(
@@ -565,22 +608,33 @@
     targetDocument: Document,
     utilityLinksTable: Element | undefined,
     excludedAnchor: HTMLAnchorElement | undefined,
+    serviceLinkNode: Element | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
-    if (!utilityLinksTable) {
-      return undefined;
-    }
     const excludedHref = excludedAnchor ? (excludedAnchor.getAttribute("href") ?? "") : "";
-    const anchors = [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")]
-      .filter((anchor) => anchor !== excludedAnchor)
-      .filter((anchor) => {
-        const href = anchor.getAttribute("href") ?? "";
-        return (
-          href !== "" && href !== excludedHref && !href.toLowerCase().includes("inquire_cpr.html")
-        );
-      })
-      .filter((anchor) => anchor.textContent.trim() !== "")
-      .slice(0, 3);
+    const anchors = utilityLinksTable
+      ? [...utilityLinksTable.querySelectorAll<HTMLAnchorElement>("a[href]")]
+          .filter((anchor) => anchor !== excludedAnchor)
+          .filter((anchor) => {
+            const href = anchor.getAttribute("href") ?? "";
+            return (
+              href !== "" &&
+              href !== excludedHref &&
+              !href.toLowerCase().includes("inquire_cpr.html")
+            );
+          })
+          .filter((anchor) => anchor.textContent.trim() !== "")
+      : [];
+    const serviceAnchorSource =
+      serviceLinkNode && serviceLinkNode.matches("a[href]")
+        ? (serviceLinkNode as HTMLAnchorElement)
+        : serviceLinkNode?.querySelector<HTMLAnchorElement>("a[href]");
+    if (
+      serviceAnchorSource &&
+      anchors.every((anchor) => anchor.href !== serviceAnchorSource.href)
+    ) {
+      anchors.push(serviceAnchorSource);
+    }
     if (anchors.length === 0) {
       return undefined;
     }
@@ -834,6 +888,7 @@
     findServiceLink,
     buildHeaderUtilityLinks,
     buildSupportLinks,
+    buildLoginHelperLink,
     collapseLegacyServiceRow,
     collapseLegacyCannotLoginLink,
     collapseLegacyUtilityRow,

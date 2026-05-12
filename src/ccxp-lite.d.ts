@@ -347,6 +347,11 @@ declare global {
       targetDocument: Document,
       strings?: Readonly<Record<string, string>>,
     ) => HTMLElement;
+    createPasswordHelpActionButton: (
+      targetDocument: Document,
+      sourceAnchor?: HTMLAnchorElement,
+      strings?: Readonly<Record<string, string>>,
+    ) => HTMLElement | undefined;
     createPasswordHelpPopover: (
       targetDocument: Document,
       strings?: Readonly<Record<string, string>>,
@@ -376,6 +381,7 @@ declare global {
       targetDocument: Document,
       utilityLinksTable: Element | undefined,
       excludedAnchor: HTMLAnchorElement | undefined,
+      serviceLinkNode: Element | undefined,
       strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | undefined;
     buildSupportLinks: (
@@ -384,6 +390,11 @@ declare global {
       cannotLoginAnchor: HTMLAnchorElement | undefined,
       strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | undefined;
+    buildLoginHelperLink: (
+      targetDocument: Document,
+      sourceAnchor: HTMLAnchorElement | undefined,
+      strings?: Readonly<Record<string, string>>,
+    ) => HTMLAnchorElement | undefined;
     collapseLegacyServiceRow: (serviceLinkNode: Element | undefined) => void;
     collapseLegacyCannotLoginLink: (cannotLoginAnchor: Element | undefined) => void;
     collapseLegacyUtilityRow: (utilityLinksTable: Element | undefined) => void;
@@ -392,7 +403,7 @@ declare global {
     prepareAnnouncementTable: (
       table: HTMLTableElement | undefined,
       strings?: Readonly<Record<string, string>>,
-    ) => void;
+    ) => HTMLAnchorElement | undefined;
   }
 
   interface CcxpLiteLoginUi {

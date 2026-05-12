@@ -306,6 +306,41 @@
     );
   }
 
+  function createPasswordHelpActionButton(
+    targetDocument: Document,
+    sourceAnchor: HTMLAnchorElement | undefined,
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
+  ) {
+    if (!sourceAnchor) {
+      return undefined;
+    }
+    const button = targetDocument.createElement("a");
+    button.className = "ccxp-lite-account-guide-info-button ccxp-lite-password-help-trigger";
+    button.href = sourceAnchor.href;
+    button.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
+    button.rel = "noopener noreferrer";
+    const sourceLabel = sourceAnchor.textContent.replaceAll(/\s+/g, " ").trim();
+    button.setAttribute("aria-label", sourceLabel === "" ? strings.loginRecoveryHelp : sourceLabel);
+    for (const attributeName of [
+      "onclick",
+      "onmousedown",
+      "onmouseup",
+      "onmouseover",
+      "onmouseout",
+      "onmouseenter",
+      "onmouseleave",
+      "onkeydown",
+      "onkeyup",
+    ]) {
+      const value = sourceAnchor.getAttribute(attributeName);
+      if (value !== null && value !== "") {
+        button.setAttribute(attributeName, value);
+      }
+    }
+    button.append(createInfoIcon(targetDocument));
+    return button;
+  }
+
   function getGuideCopy(
     strings: Readonly<Record<string, string>>,
     targetDocument: Document,
@@ -446,6 +481,7 @@
   namespace.loginTabs = {
     createAccountFormatExamples,
     createAccountFormatPopover,
+    createPasswordHelpActionButton,
     createPasswordHelpPopover,
     createAccountGuide,
     createSection,

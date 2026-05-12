@@ -76,13 +76,18 @@ describe("login surface contract", () => {
     const contract = summarizeLoginSurface(result.shell);
 
     expect(contract).toMatchObject({
-      hasAccountGuide: true,
-      accountGuideItemCount: 7,
-      supportLinkCount: 2,
+      hasAccountGuide: false,
+      accountGuideItemCount: 0,
+      supportLinkCount: 0,
       announcementRowCount: 0,
-      title: "\u767B\u5165\u8CC7\u8A0A",
+      title: "",
     });
-    expect(contract.supportLinkLabels.join(" ")).toContain("\u7121\u6CD5\u767B\u5165");
+    const helperLink = result.shell.querySelector(".ccxp-lite-login-helper-link");
+    const helperLinkText = helperLink ? helperLink.textContent.trim() : "";
+    expect(helperLinkText).toBe("\u9996\u6B21\u767B\u5165 / \u5FD8\u8A18\u5BC6\u78BC");
+    expect(result.shell.querySelector(".ccxp-lite-landing-utility")?.textContent ?? "").toContain(
+      "\u670D\u52D9\u96FB\u8A71",
+    );
   });
 
   test("support links and announcements localize without asserting the full rendered copy", () => {

@@ -18,10 +18,10 @@
   } = shared;
   const { captureValidationState } = loginValidation;
   const { getOrCreateCaptchaState } = loginCaptcha;
-  const { createAccountGuide, createSection } = loginTabs;
+  const { createSection } = loginTabs;
   const {
     buildHeaderUtilityLinks,
-    buildSupportLinks,
+    buildLoginHelperLink,
     collapseLegacyServiceRow,
     collapseLegacyCannotLoginLink,
     collapseLegacyUtilityRow,
@@ -119,6 +119,9 @@
       moveChildNodes(loginSourceCell, loginSection);
     }
 
+    const announcementPrimaryAction = prepareAnnouncementTable(announcementTable, strings);
+    const loginHelperLink = buildLoginHelperLink(targetDocument, cannotLoginLink, strings);
+
     normalizeLoginFormLayout(loginSection);
     attachAccountFormatInfo(targetDocument, loginSection);
     removeLoginResetControls(loginSection);
@@ -128,7 +131,10 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    attachPasswordInfoPopover(targetDocument, loginSection, cannotLoginLink);
+    attachPasswordInfoPopover(targetDocument, loginSection, announcementPrimaryAction);
+    if (loginHelperLink) {
+      loginSection.append(loginHelperLink);
+    }
 
     const captchaAutofillState = getOrCreateCaptchaState(
       targetDocument,
@@ -148,6 +154,7 @@
       targetDocument,
       utilityLinks,
       cannotLoginLink,
+      serviceLink,
       strings,
     );
     if (utilityHeaderLinks) {
@@ -165,7 +172,6 @@
 
     topSection.append(headerSection);
 
-    const supportLinks = buildSupportLinks(targetDocument, serviceLink, cannotLoginLink, strings);
     if (serviceLink) {
       collapseLegacyServiceRow(serviceLink);
     }
@@ -177,35 +183,17 @@
       for (const tabContent of tabContents) {
         collapseLegacyThreeColumnRows(tabContent);
       }
-      bodySection.append(createAccountGuide(targetDocument, strings, supportLinks));
-      bodySection.append(loginSection);
-      if (announcementTable) {
-        prepareAnnouncementTable(announcementTable, strings);
-        if (!announcementTable.hidden) {
-          noticesSection.append(announcementTable);
-          bodySection.append(noticesSection);
-        }
-      }
-      topSection.append(bodySection);
-      shell.append(topSection);
-    } else if (supportLinks) {
-      topSection.append(loginSection);
-      shell.append(topSection);
-      const supportSection = createSection(targetDocument, "ccxp-lite-landing-support-only");
-      supportSection.append(supportLinks);
-      shell.append(supportSection);
-    } else {
-      topSection.append(loginSection);
-      shell.append(topSection);
     }
 
-    if (announcementTable && !(tabNavigation && tabContents.length > 0)) {
-      prepareAnnouncementTable(announcementTable, strings);
-      if (!announcementTable.hidden) {
-        noticesSection.append(announcementTable);
-        shell.append(noticesSection);
-      }
+    if (announcementTable && !announcementTable.hidden) {
+      bodySection.append(loginSection);
+      noticesSection.append(announcementTable);
+      bodySection.append(noticesSection);
+      topSection.append(bodySection);
+    } else {
+      topSection.append(loginSection);
     }
+    shell.append(topSection);
 
     return {
       shell,
