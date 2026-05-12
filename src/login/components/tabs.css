@@ -186,12 +186,13 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:f
 }
 
 .ccxp-lite-landing-support-links {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--ccxp-lite-spacing-inline-sm);
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
   margin-left: 0;
   flex: 0 0 auto;
-  min-height: var(--ccxp-lite-size-login-control-height);
   justify-content: flex-start;
   align-self: flex-start;
 }
@@ -204,6 +205,12 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link:focus-visib
   font-weight: var(--ccxp-lite-font-weight-strong) !important;
   transform: none !important;
   text-decoration: none;
+}
+
+html[data-ccxp-lite-scope="landing"]
+  .ccxp-lite-landing-support-links
+  > .ccxp-lite-landing-service-link {
+  width: 100%;
 }
 
 @media (max-width: 960px) {
