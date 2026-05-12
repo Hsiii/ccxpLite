@@ -340,6 +340,10 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control {
   align-items: center;
   justify-content: center;
   text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-primary-button,
@@ -366,6 +370,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-secondary:focus-v
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:hover,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:focus-visible {
   background: var(--ccxp-lite-primary);
+  box-shadow: inset 0 0 0 999px var(--ccxp-lite-primary-focus-border);
 }
 
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control *,
