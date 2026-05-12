@@ -99,6 +99,10 @@
   cursor: help;
 }
 
+.ccxp-lite-account-guide-info-button:hover {
+  background: var(--ccxp-lite-primary-hover-surface);
+}
+
 .ccxp-lite-account-guide-info-button:focus-visible {
   outline: 2px solid var(--ccxp-lite-primary-focus-border);
   outline-offset: 2px;
@@ -169,6 +173,16 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary {
   border: 1px solid var(--ccxp-lite-border);
   background: transparent;
   color: var(--ccxp-lite-type-utility-color) !important;
+}
+
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-primary:hover,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-primary:focus-visible {
+  background: var(--ccxp-lite-primary);
+}
+
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:hover,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
 }
 
 .ccxp-lite-landing-support-links {
