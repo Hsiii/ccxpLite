@@ -189,6 +189,7 @@
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-list {
+  --ccxp-lite-announcement-timeline-color: var(--ccxp-lite-border);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -211,16 +212,12 @@
   top: 0;
   width: 1px;
   bottom: 0;
-  background: var(--ccxp-lite-border);
+  background: var(--ccxp-lite-announcement-timeline-color);
   border-radius: var(--ccxp-lite-radius-full);
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-row:first-child::before {
   top: calc(var(--ccxp-lite-spacing-md) + 11px);
-}
-
-.ccxp-lite-landing-notices .ccxp-lite-announcement-row:last-child::before {
-  bottom: calc(100% - (var(--ccxp-lite-spacing-md) + 11px));
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-row::after {
@@ -231,7 +228,7 @@
   width: 12px;
   height: 12px;
   border-radius: var(--ccxp-lite-radius-full);
-  background: var(--ccxp-lite-border);
+  background: var(--ccxp-lite-announcement-timeline-color);
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-date {
