@@ -57,6 +57,7 @@
     applyLoginFieldAccessibility(targetDocument);
     annotatePrimaryLoginAction(form);
     bindEnterToPrimaryLoginAction(form);
+    focusLoginEntryPoint(targetDocument, form);
     form.addEventListener("submit", () => {
       ensureSubmissionPayload(form, targetDocument);
     });
@@ -128,6 +129,34 @@
       triggerPrimaryLoginAction(formNode);
     });
     formNode.dataset.ccxpLiteEnterSubmitBound = "true";
+  }
+
+  function focusLoginEntryPoint(targetDocument: Document, form: HTMLFormElement) {
+    const formNode = form;
+    if (formNode.dataset.ccxpLiteInitialFocusApplied === "true") {
+      return;
+    }
+    const focusTarget = resolveInitialFocusTarget(targetDocument, formNode);
+    if (!focusTarget) {
+      return;
+    }
+    globalThis.requestAnimationFrame(() => {
+      focusTarget.focus({ preventScroll: true });
+    });
+    formNode.dataset.ccxpLiteInitialFocusApplied = "true";
+  }
+
+  function resolveInitialFocusTarget(targetDocument: Document, form: HTMLFormElement) {
+    const accountField = targetDocument.querySelector<HTMLInputElement>("input[name='account']");
+    const passwordField = targetDocument.querySelector<HTMLInputElement>("input[name='passwd']");
+    const captchaField = targetDocument.querySelector<HTMLInputElement>("input[name='passwd2']");
+    const preferredField = [accountField, passwordField, captchaField].find(
+      (field) => field !== null && !field.disabled && field.value.trim() === "",
+    );
+    if (preferredField) {
+      return preferredField;
+    }
+    return resolvePrimaryLoginAction(form);
   }
 
   function triggerPrimaryLoginAction(form: HTMLFormElement) {

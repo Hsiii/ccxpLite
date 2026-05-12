@@ -106,5 +106,39 @@ describe("login validation", () => {
       new window.KeyboardEvent("keydown", { bubbles: true, key: "Enter" }),
     );
     expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(document.activeElement).toBe(accountField);
+  });
+
+  test("focuses the login button when the form is already filled", () => {
+    const { window } = createTestWindow(createLoginHtml());
+    const document = window.document as Document;
+    loadModules(window, loginModulePaths);
+    const loginValidation = requireValue(window.CCXP_LITE.loginValidation, "loginValidation");
+    const loginLocale = requireValue(window.CCXP_LITE.loginLocale, "loginLocale");
+    const form = requireValue(loginLocale.getLoginForm(document), "loginForm");
+    const accountField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='account']"),
+      "account input",
+    );
+    const passwordField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd']"),
+      "password input",
+    );
+    const captchaField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd2']"),
+      "captcha input",
+    );
+    const submitButton = requireElement(
+      form.querySelector<HTMLButtonElement>("button[type='submit']"),
+      "submit button",
+    );
+
+    accountField.value = "demo-account";
+    passwordField.value = "demo-password";
+    captchaField.value = "123456";
+
+    loginValidation.restoreValidationGuards(document, { startedAt: Date.now() });
+
+    expect(document.activeElement).toBe(submitButton);
   });
 });
