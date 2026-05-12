@@ -223,7 +223,7 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-row::after {
   content: "";
   position: absolute;
-  top: calc(var(--ccxp-lite-spacing-md) + 5px);
+  top: calc(var(--ccxp-lite-spacing-md) + 2px);
   left: 0;
   width: 12px;
   height: 12px;
