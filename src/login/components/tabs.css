@@ -86,6 +86,8 @@
   position: relative;
   display: inline-flex;
   align-items: center;
+  margin-left: var(--ccxp-lite-spacing-2xs);
+  vertical-align: middle;
 }
 
 .ccxp-lite-account-guide-info-button {
@@ -98,21 +100,29 @@
   padding: 0;
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
-  background: var(--ccxp-lite-surface);
+  background: color-mix(in srgb, var(--ccxp-lite-surface) 84%, var(--ccxp-lite-primary) 16%);
   color: var(--ccxp-lite-type-body-strong-color);
-  font: var(--ccxp-lite-type-caption);
-  font-weight: var(--ccxp-lite-font-weight-strong);
   line-height: 1;
   cursor: help;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
 }
 
 .ccxp-lite-account-guide-info-button:hover {
-  background: var(--ccxp-lite-primary-hover-surface);
+  background: color-mix(
+    in srgb,
+    var(--ccxp-lite-primary-hover-surface) 80%,
+    var(--ccxp-lite-primary) 20%
+  );
 }
 
 .ccxp-lite-account-guide-info-button:focus-visible {
   outline: 2px solid var(--ccxp-lite-primary-focus-border);
   outline-offset: 2px;
+}
+
+.ccxp-lite-account-guide-info-button svg {
+  width: 14px;
+  height: 14px;
 }
 
 .ccxp-lite-account-guide-info-popup {

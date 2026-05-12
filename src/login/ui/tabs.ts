@@ -112,7 +112,7 @@
     button.className = "ccxp-lite-account-guide-info-button";
     button.type = "button";
     button.setAttribute("aria-label", labelText);
-    button.textContent = "i";
+    button.append(createInfoIcon(targetDocument));
     wrap.append(button);
 
     const popup = targetDocument.createElement("span");
@@ -136,6 +136,37 @@
     button.addEventListener("blur", hidePopup);
 
     return wrap;
+  }
+
+  function createInfoIcon(targetDocument: Document) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "1.8");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+
+    const circle = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
+    circle.setAttribute("cx", "12");
+    circle.setAttribute("cy", "12");
+    circle.setAttribute("r", "9");
+    icon.append(circle);
+
+    const stem = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+    stem.setAttribute("d", "M12 10v5");
+    icon.append(stem);
+
+    const dot = targetDocument.createElementNS("http://www.w3.org/2000/svg", "circle");
+    dot.setAttribute("cx", "12");
+    dot.setAttribute("cy", "7");
+    dot.setAttribute("r", "0.75");
+    dot.setAttribute("fill", "currentColor");
+    dot.setAttribute("stroke", "none");
+    icon.append(dot);
+
+    return icon;
   }
 
   function createAccountFormatExamples(
