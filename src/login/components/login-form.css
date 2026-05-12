@@ -369,8 +369,10 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-secondary:focus-v
 .ccxp-lite-landing-login .ccxp-lite-login-primary-button:focus-visible,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:hover,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:focus-visible {
-  background: var(--ccxp-lite-primary);
-  box-shadow: inset 0 0 0 999px var(--ccxp-lite-primary-focus-border);
+  background:
+    linear-gradient(var(--ccxp-lite-primary-glow), var(--ccxp-lite-primary-glow)),
+    var(--ccxp-lite-primary);
+  box-shadow: none;
 }
 
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control *,
