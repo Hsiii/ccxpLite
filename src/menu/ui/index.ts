@@ -219,10 +219,14 @@
       height: "20px",
     });
     iconWrap.append(createLabIcon(targetDocument));
+    const copy = targetDocument.createElement("span");
+    copy.className = "ccxp-lite-sidebar-experiment-label";
+    copy.textContent = strings.sidebarExperimentPersistentLabel;
     const status = targetDocument.createElement("span");
     status.className = "ccxp-lite-sidebar-experiment-state";
     status.setAttribute("aria-hidden", "true");
     button.append(iconWrap);
+    button.append(copy);
     button.append(status);
     button.addEventListener("click", () => {
       const nextState = state;
