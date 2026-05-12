@@ -49,6 +49,7 @@
     }
     const searchInput = shell.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input");
     const state = getSidebarUiState(hostDocument);
+    syncLegacyMainFrameVariantState(state.sidebarVariant);
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
       searchInput.addEventListener("input", () => {
         state.searchQuery = searchInput.value;
@@ -1554,6 +1555,34 @@
       position: "relative",
     });
     getOverlayMountNode(mountDocument).append(button);
+  }
+
+  function syncLegacyMainFrameVariantState(sidebarVariant: "classic" | "layered") {
+    const mainDocument = getLegacyMainFrame()?.contentDocument;
+    if (!mainDocument) {
+      return;
+    }
+    ensureThemeDocument(mainDocument, "main");
+    mainDocument.documentElement.dataset.ccxpLiteSidebarVariant = sidebarVariant;
+    mainDocument.body.dataset.ccxpLiteSidebarVariant = sidebarVariant;
+    if (sidebarVariant !== "classic") {
+      mainDocument.documentElement.style.scrollbarGutter = "";
+      mainDocument.body.style.scrollbarGutter = "";
+      mainDocument.body.style.setProperty("--ccxp-lite-lab-scrollbar-inline-compensation", "0px");
+      return;
+    }
+    mainDocument.documentElement.style.scrollbarGutter = "stable";
+    mainDocument.body.style.scrollbarGutter = "stable both-edges";
+    const view = mainDocument.defaultView;
+    if (!view) {
+      mainDocument.body.style.setProperty("--ccxp-lite-lab-scrollbar-inline-compensation", "0px");
+      return;
+    }
+    const scrollbarWidth = Math.max(0, view.innerWidth - mainDocument.documentElement.clientWidth);
+    mainDocument.body.style.setProperty(
+      "--ccxp-lite-lab-scrollbar-inline-compensation",
+      `${-scrollbarWidth}px`,
+    );
   }
 
   function removeExistingSidebarVariantSwitches(documents: ReadonlyArray<Document | undefined>) {

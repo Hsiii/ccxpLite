@@ -204,6 +204,10 @@ body.ccxp-lite-main-skin {
   padding: var(--ccxp-lite-spacing-lg);
 }
 
+html[data-ccxp-lite-scope="main"][data-ccxp-lite-sidebar-variant="classic"] {
+  scrollbar-gutter: stable;
+}
+
 body.ccxp-lite-main-skin[data-ccxp-lite-sidebar-variant="classic"] {
   scrollbar-gutter: stable both-edges;
 }

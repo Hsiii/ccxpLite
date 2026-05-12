@@ -342,6 +342,7 @@
     const { sidebarState } = globalThis.CCXP_LITE ?? {};
     if (sidebarState) {
       const state = sidebarState.getSidebarUiState(mainDocument);
+      mainDocument.documentElement.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
       mainDocument.body.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
       syncMainFrameLabScrollbarCompensation(mainDocument, state.sidebarVariant);
     }
