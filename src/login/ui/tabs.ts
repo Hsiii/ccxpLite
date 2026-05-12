@@ -276,7 +276,7 @@
           label: "Students / Alumni",
           heading: "Students / Alumni",
           items: [
-            "Account: student ID (examples: 110061190, X1106099, 102061190)",
+            "Student / alumni account: student ID (examples: 110061190, X1106099, 102061190)",
             "Nanda campus entrants from year 105 or earlier use the Nanda portal password; contact the Nanda computer center if it is forgotten.",
           ],
           panelKey: "student-alumni",
@@ -284,7 +284,7 @@
         {
           label: "Faculty / Staff",
           heading: "Faculty / Staff",
-          items: ["Account: employee number (example: W09090)"],
+          items: ["Faculty / staff account: employee number (example: W09090)"],
           panelKey: "staff",
         },
         {
@@ -297,8 +297,8 @@
           label: "Other",
           heading: "Other",
           items: [
-            "Public course takers: guest",
-            "Mandarin Center students: student ID (example: C1100088)",
+            "Public course taker account: guest",
+            "Mandarin Center student account: student ID (example: C1100088)",
             "Delegated account: delegator employee number-01 (example: A11111-01)",
           ],
           panelKey: "other",
@@ -328,7 +328,7 @@
         label: "\u5B78\u751F\uFF0F\u6821\u53CB",
         heading: "\u5B78\u751F\uFF0F\u6821\u53CB",
         items: [
-          "\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
+          "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
           "\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005\uFF1A\u5BC6\u78BC\u6CBF\u7528\u5357\u5927\u6821\u5340\u5165\u53E3\u7DB2\uFF1B\u82E5\u5FD8\u8A18\u5BC6\u78BC\uFF0C\u8ACB\u6D3D\u5357\u5927\u6821\u5340\u8A08\u4E2D\u3002",
         ],
         panelKey: "student-alumni",
@@ -336,7 +336,9 @@
       {
         label: "\u6559\u8077\u54E1",
         heading: "\u6559\u8077\u54E1",
-        items: ["\u5E33\u865F\uFF1A\u54E1\u5DE5\u7DE8\u865F\uFF08\u4F8B\uFF1AW09090\uFF09"],
+        items: [
+          "\u6559\u8077\u54E1\u5E33\u865F\uFF1A\u54E1\u5DE5\u7DE8\u865F\uFF08\u4F8B\uFF1AW09090\uFF09",
+        ],
         panelKey: "staff",
       },
       {
@@ -352,8 +354,8 @@
         label: "\u5176\u4ED6",
         heading: "\u5176\u4ED6",
         items: [
-          "\u793E\u6703\u4EBA\u58EB\u9078\u8AB2\uFF1Aguest",
-          "\u83EF\u8A9E\u4E2D\u5FC3\u5B78\u54E1\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1AC1100088\uFF09",
+          "\u793E\u6703\u4EBA\u58EB\u9078\u8AB2\u5E33\u865F\uFF1Aguest",
+          "\u83EF\u8A9E\u4E2D\u5FC3\u5B78\u54E1\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1AC1100088\uFF09",
           "\u59D4\u8A17\u6388\u6B0A\u5E33\u865F\uFF1A\u59D4\u8A17\u4EBA\u54E1\u5DE5\u7DE8\u865F-01\uFF08\u4F8B\uFF1AA11111-01\uFF09",
         ],
         panelKey: "other",

@@ -48,7 +48,7 @@ describe("login tabs", () => {
       "\u5B78\u751F\uFF0F\u6821\u53CB",
     );
     expect(requireElement(panels[1], "student alumni panel").textContent).toContain(
-      "\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
+      "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
     );
     expect(requireElement(panels[3], "vendor panel").textContent).toContain(
       "\u7D71\u4E00\u7DE8\u865F",
