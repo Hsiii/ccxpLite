@@ -188,6 +188,47 @@ export function createChineseLoginAnnouncementHtml(): string {
   `;
 }
 
+export function createChineseLoginAnnouncementWithEmptyBoldHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="zh">
+      <head></head>
+      <body>
+        <table>
+          <tr>
+            <td width="60%" style="min-width: 30em;" valign="top" align="center"></td>
+            <td width="3%"></td>
+            <td width="35%" valign="top">
+              <div align="right"><a href="inquire_cpr.html" target="_blank">&gt;&gt; <u>\u670D\u52D9\u96FB\u8A71</u> &lt;&lt;</a></div>
+              <table width="95%" border="0" cellpadding="3" cellspacing="0">
+                <tr>
+                  <td colspan="2" class="board_item">\u7CFB\u7D71\u516C\u544A</td>
+                </tr>
+                <tr>
+                  <td class="board_subject">\u65E5\u671F</td>
+                  <td class="board_subject">\u4E3B\u984C</td>
+                </tr>
+                <tr>
+                  <td class="board_0">2026/05/11</td>
+                  <td class="board_0">
+                    \u3010\u8A3B\u518A\u7D44\u516C\u544A\u3011
+                    <b style="color:#DD0000;padding:3px;border-bottom:#333333 1px dotted;"></b>
+                    <p style="color:#DD0000;">\u8ACB\u66F4\u65B0\u500B\u4EBA\u8CC7\u6599</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="board_1">2026/05/10</td>
+                  <td class="board_1">\u4E00\u822C\u516C\u544A\u5167\u5BB9\u66F4\u65B0\u901A\u77E5</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
 export function createLoginWithTabsHtml(): string {
   return `
     <!doctype html>

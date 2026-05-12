@@ -247,6 +247,7 @@
       while (entry.topicContent.firstChild) {
         body.append(entry.topicContent.firstChild);
       }
+      removeEmptyAnnouncementDecorators(body);
       entryRow.append(body);
       if (!entry.hasTokenizedHeader) {
         const date = table.ownerDocument.createElement("div");
@@ -275,6 +276,26 @@
       return undefined;
     }
     return sourceAnchor.cloneNode(true) as HTMLAnchorElement;
+  }
+
+  function removeEmptyAnnouncementDecorators(topicContent: HTMLElement) {
+    const decorativeSelector = "b, strong, font, span, i, em, u";
+    let removedAny: boolean;
+    do {
+      removedAny = false;
+      const decorativeNodes = [...topicContent.querySelectorAll<HTMLElement>(decorativeSelector)];
+      for (const node of decorativeNodes) {
+        const normalizedText = node.textContent.replaceAll("\u00A0", " ").trim();
+        if (normalizedText !== "") {
+          continue;
+        }
+        if (node.querySelector("a, button, input, select, textarea, img, svg, table, iframe")) {
+          continue;
+        }
+        node.remove();
+        removedAny = true;
+      }
+    } while (removedAny);
   }
 
   function isPasswordHelpAnnouncement(

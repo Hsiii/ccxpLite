@@ -9,6 +9,7 @@ import {
 } from "../helpers/module-loader.js";
 import {
   createChineseLoginAnnouncementHtml,
+  createChineseLoginAnnouncementWithEmptyBoldHtml,
   createEnglishLoginHtml,
   createEnglishLoginAnnouncementHtml,
   createLoginHtml,
@@ -175,5 +176,30 @@ describe("login surface contract", () => {
       "2022/12/03 \u7CFB\u7D71\u516C\u544A",
     );
     expect(announcementTable.querySelectorAll(".ccxp-lite-announcement-date")).toHaveLength(1);
+  });
+
+  test("removes empty decorative announcement tags without dropping real content", () => {
+    const { window } = createTestWindow(createChineseLoginAnnouncementWithEmptyBoldHtml());
+    const document = window.document as Document;
+    loadModules(window, loginModulePaths);
+    const loginSupport = requireValue(window.CCXP_LITE.loginSupport, "loginSupport");
+
+    const announcementTable = requireValue(
+      loginSupport.findAnnouncementTable(document),
+      "announcementTable",
+    );
+    loginSupport.prepareAnnouncementTable(announcementTable, {
+      sidebarCategoryAnnouncementsAndVoting: "\u516C\u544A\u8207\u6295\u7968",
+    });
+
+    const firstTopic = requireValue(
+      announcementTable.querySelector(".ccxp-lite-announcement-topic"),
+      "firstTopic",
+    );
+
+    expect(firstTopic.querySelector("b")).toBeNull();
+    expect(firstTopic.textContent.replaceAll(/\s+/g, " ").trim()).toContain(
+      "2026/05/11 \u8A3B\u518A\u7D44\u516C\u544A \u8ACB\u66F4\u65B0\u500B\u4EBA\u8CC7\u6599",
+    );
   });
 });
