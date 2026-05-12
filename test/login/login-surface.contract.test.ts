@@ -84,7 +84,7 @@ describe("login surface contract", () => {
     });
     const helperLink = result.shell.querySelector(".ccxp-lite-login-helper-link");
     const helperLinkText = helperLink ? helperLink.textContent.trim() : "";
-    expect(helperLinkText).toBe("\u9996\u6B21\u767B\u5165 / \u5FD8\u8A18\u5BC6\u78BC");
+    expect(helperLinkText).toBe("\u9996\u6B21\u767B\u5165 / \u5FD8\u8A18\u5BC6\u78BC?");
     expect(result.shell.querySelector(".ccxp-lite-landing-utility")?.textContent ?? "").toContain(
       "\u670D\u52D9\u96FB\u8A71",
     );

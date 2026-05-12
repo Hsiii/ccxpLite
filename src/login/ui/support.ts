@@ -479,7 +479,10 @@
     anchor.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
     anchor.rel = "noopener noreferrer";
     copyLegacyAnchorHandlers(sourceAnchor, anchor);
-    anchor.textContent = strings.loginRecoveryHelp;
+    const label = targetDocument.createElement("span");
+    label.textContent = `${strings.loginRecoveryHelp}?`;
+    anchor.append(label);
+    anchor.append(createLandingExternalLinkIcon(targetDocument));
     return anchor;
   }
 
@@ -648,7 +651,7 @@
       anchor.rel = "noopener noreferrer";
       anchor.className = "ccxp-lite-landing-utility-link";
       copyLegacyAnchorHandlers(sourceAnchor, anchor);
-      anchor.textContent = sourceAnchor.textContent.trim();
+      anchor.textContent = normalizeSupportLabel(sourceAnchor.textContent);
       anchor.append(createLandingExternalLinkIcon(targetDocument));
       nav.append(anchor);
       if (index < anchors.length - 1) {
