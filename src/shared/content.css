@@ -11,17 +11,24 @@ body {
   box-sizing: border-box;
 }
 
-body[data-ccxp-lite-sidebar-variant] {
+[data-ccxp-lite-floating-anchor-host="true"] {
   --ccxp-lite-lab-offset-inline: var(--ccxp-lite-spacing-lg);
   --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-lg);
 }
 
-body[data-ccxp-lite-sidebar-variant="layered"] {
-  --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-md);
+[data-ccxp-lite-floating-anchor-host="true"]:not(body) {
+  position: relative;
+}
+
+body[data-ccxp-lite-floating-anchor-host="true"] > [data-ccxp-lite-floating-anchor="true"] {
+  position: fixed;
+}
+
+[data-ccxp-lite-floating-anchor-host="true"]:not(body) > [data-ccxp-lite-floating-anchor="true"] {
+  position: absolute;
 }
 
 [data-ccxp-lite-floating-anchor="true"] {
-  position: fixed;
   inset-inline-end: var(--ccxp-lite-lab-offset-inline);
   inset-block-end: var(--ccxp-lite-lab-offset-block);
   z-index: 2147483646;

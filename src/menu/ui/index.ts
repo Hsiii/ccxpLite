@@ -1562,16 +1562,32 @@
       for (const node of scopeDocument.querySelectorAll(".ccxp-lite-sidebar-experiment-copy")) {
         node.remove();
       }
+      for (const node of scopeDocument.querySelectorAll(
+        "[data-ccxp-lite-floating-anchor='true']",
+      )) {
+        node.remove();
+      }
+      for (const node of scopeDocument.querySelectorAll(
+        "[data-ccxp-lite-floating-anchor-host='true']",
+      )) {
+        delete (node as HTMLElement).dataset.ccxpLiteFloatingAnchorHost;
+      }
     }
   }
 
   function getOverlayMountNode(targetDocument: Document): HTMLElement {
-    const targetBody = targetDocument.body;
-    let anchor = targetBody.querySelector<HTMLElement>("[data-ccxp-lite-floating-anchor='true']");
+    const anchorHost =
+      targetDocument.querySelector<HTMLElement>(
+        ".ccxp-lite-sidebar-content .ccxp-lite-dashboard-shell",
+      ) ??
+      targetDocument.querySelector<HTMLElement>(".ccxp-lite-sidebar-content .ccxp-lite-pane") ??
+      targetDocument.body;
+    anchorHost.dataset.ccxpLiteFloatingAnchorHost = "true";
+    let anchor = anchorHost.querySelector<HTMLElement>("[data-ccxp-lite-floating-anchor='true']");
     if (!anchor) {
       anchor = targetDocument.createElement("div");
       anchor.dataset.ccxpLiteFloatingAnchor = "true";
-      targetBody.append(anchor);
+      anchorHost.append(anchor);
     }
     return anchor;
   }

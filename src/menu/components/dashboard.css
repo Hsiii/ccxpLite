@@ -15,6 +15,11 @@
   background: var(--ccxp-lite-surface);
 }
 
+.ccxp-lite-dashboard-shell[data-ccxp-lite-floating-anchor-host="true"] {
+  --ccxp-lite-lab-offset-inline: var(--ccxp-lite-spacing-lg);
+  --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-md);
+}
+
 .ccxp-lite-pane .ccxp-lite-dashboard-group {
   display: flex;
   flex: 1 1 0;
@@ -53,6 +58,11 @@
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-md);
   background: var(--ccxp-lite-surface);
+}
+
+.ccxp-lite-pane[data-ccxp-lite-floating-anchor-host="true"] {
+  --ccxp-lite-lab-offset-inline: var(--ccxp-lite-spacing-md);
+  --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-md);
 }
 
 .ccxp-lite-pane-header {
