@@ -140,15 +140,23 @@
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-title {
-  display: block;
-  padding: var(--ccxp-lite-spacing-lg) var(--ccxp-lite-spacing-lg) var(--ccxp-lite-spacing-md);
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+  width: 100%;
+  padding: var(--ccxp-lite-spacing-lg);
   border-bottom: 1px solid var(--ccxp-lite-border);
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-body-strong);
   background: var(--ccxp-lite-sidebar-surface);
+  box-sizing: border-box;
 }
 
-.ccxp-lite-landing-notices .ccxp-lite-announcement-title-row,
+.ccxp-lite-landing-notices .ccxp-lite-announcement-title-row {
+  display: flex;
+  align-items: center;
+}
+
 .ccxp-lite-landing-notices .ccxp-lite-announcement-scroll-row {
   display: block;
 }
