@@ -604,6 +604,8 @@ declare global {
     oauthDecaptcha?: CcxpLiteCaptchaPredictor;
     oauthDecaptchaModel?: CcxpLiteDecaptchaModel;
     isOrphan?: boolean;
+    orphanReloadScheduled?: boolean;
+    orphanContextMonitorAttached?: boolean;
     cleanupTasks?: Array<() => void>;
   }
 

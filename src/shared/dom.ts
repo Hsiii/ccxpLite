@@ -101,12 +101,34 @@
     }
   }
 
+  function scheduleOrphanReload() {
+    if (namespace.orphanReloadScheduled === true) {
+      return;
+    }
+    namespace.orphanReloadScheduled = true;
+    globalThis.setTimeout(
+      () => {
+        try {
+          const targetWindow = runtimeScope.top ?? runtimeScope;
+          targetWindow.location.reload();
+          return;
+        } catch {
+          // Fall through to the local document reload when the top frame is not reachable.
+        }
+        runtimeScope.location.reload();
+      },
+      0,
+      undefined,
+    );
+  }
+
   function invalidateContext() {
     if (namespace.isOrphan === true) {
       return false;
     }
     namespace.isOrphan = true;
     triggerCleanup();
+    scheduleOrphanReload();
     return false;
   }
 
@@ -176,6 +198,29 @@
     }
     namespace.cleanupTasks.push(task);
   }
+
+  function verifyContextMonitorTick() {
+    ensureContextValid();
+  }
+
+  function installOrphanContextMonitor() {
+    if (namespace.orphanContextMonitorAttached === true || !hasRuntimeObject()) {
+      return;
+    }
+    namespace.orphanContextMonitorAttached = true;
+    const intervalId = runtimeScope.setInterval(verifyContextMonitorTick, 1500, undefined);
+    runtimeScope.addEventListener("focus", verifyContextMonitorTick);
+    runtimeScope.addEventListener("pageshow", verifyContextMonitorTick);
+    runtimeScope.document.addEventListener("visibilitychange", verifyContextMonitorTick);
+    addCleanupTask(() => {
+      runtimeScope.clearInterval(intervalId);
+      runtimeScope.removeEventListener("focus", verifyContextMonitorTick);
+      runtimeScope.removeEventListener("pageshow", verifyContextMonitorTick);
+      runtimeScope.document.removeEventListener("visibilitychange", verifyContextMonitorTick);
+    });
+  }
+
+  installOrphanContextMonitor();
   namespace.sharedDom = {
     moveChildNodes,
     removeNode,
