@@ -62,7 +62,7 @@
 
 .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
   grid-column: 3;
-  margin-top: calc(var(--ccxp-lite-spacing-lg) + var(--ccxp-lite-spacing-xs));
+  margin-top: var(--ccxp-lite-spacing-md);
 }
 
 .ccxp-lite-landing-header {
@@ -211,13 +211,20 @@
     grid-template-areas:
       "brand lang"
       "utility utility";
+    flex: 0 0 auto;
     row-gap: var(--ccxp-lite-spacing-sm);
     height: auto;
+    min-height: var(--ccxp-lite-size-landing-header-height);
     padding-block: var(--ccxp-lite-spacing-sm);
+    box-sizing: border-box;
   }
 
   .ccxp-lite-landing-utility {
-    justify-self: start;
+    width: 100%;
+    justify-self: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: var(--ccxp-lite-spacing-xs);
   }
 
   .ccxp-lite-landing-body {
@@ -251,11 +258,6 @@
   .ccxp-lite-landing-utility,
   .ccxp-lite-landing-lang {
     min-width: 0;
-  }
-
-  .ccxp-lite-landing-utility {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 
   .ccxp-lite-landing-lang ul.links {
