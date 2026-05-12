@@ -98,16 +98,19 @@
   height: var(--ccxp-lite-size-icon-button-sm);
   margin-left: var(--ccxp-lite-spacing-2xs);
   padding: 0;
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-full);
+  border: 0;
+  border-radius: 0;
   background: transparent;
-  color: var(--ccxp-lite-type-utility-color);
+  color: var(--ccxp-lite-type-caption-color);
+  font: var(--ccxp-lite-type-utility);
+  line-height: 1;
+  text-decoration: none;
   line-height: 1;
   cursor: pointer;
 }
 
 .ccxp-lite-account-guide-info-button:hover {
-  background: var(--ccxp-lite-primary-hover-surface);
+  color: var(--ccxp-lite-type-utility-color);
 }
 
 .ccxp-lite-account-guide-info-button:focus-visible {
@@ -115,9 +118,11 @@
   outline-offset: 2px;
 }
 
-.ccxp-lite-account-guide-info-button svg {
-  width: 14px;
-  height: 14px;
+.ccxp-lite-account-guide-info-marker {
+  display: inline-block;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-regular);
 }
 
 .ccxp-lite-account-guide-info-popup {
