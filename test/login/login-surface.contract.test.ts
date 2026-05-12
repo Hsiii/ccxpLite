@@ -152,12 +152,9 @@ describe("login surface contract", () => {
     expect(firstTopic.textContent.replaceAll(/\s+/g, " ").trim()).toContain(
       "2022/12/03 \u7CFB\u7D71\u516C\u544A \u9078\u8AB2\u7CFB\u7D71\u7DAD\u8B77\u901A\u77E5",
     );
-    expect(firstTopic.querySelector(".ccxp-lite-announcement-topic-token--date")?.textContent).toBe(
-      "2022/12/03",
+    expect(firstTopic.querySelector(".ccxp-lite-announcement-topic-header")?.textContent).toBe(
+      "2022/12/03 \u7CFB\u7D71\u516C\u544A",
     );
-    expect(
-      firstTopic.querySelector(".ccxp-lite-announcement-topic-token--label")?.textContent,
-    ).toBe("\u7CFB\u7D71\u516C\u544A");
     expect(announcementTable.querySelectorAll(".ccxp-lite-announcement-date")).toHaveLength(1);
   });
 });

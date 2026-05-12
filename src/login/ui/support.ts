@@ -264,29 +264,17 @@
         const topicDocument = topicContent.ownerDocument;
         const header = topicDocument.createElement("span");
         header.className = "ccxp-lite-announcement-topic-header";
-        const dateToken = topicDocument.createElement("span");
-        dateToken.className =
-          "ccxp-lite-announcement-topic-token ccxp-lite-announcement-topic-token--date";
-        dateToken.textContent = date;
-        const labelToken = topicDocument.createElement("span");
-        labelToken.className =
-          "ccxp-lite-announcement-topic-token ccxp-lite-announcement-topic-token--label";
-        labelToken.textContent = label;
-        header.append(dateToken, labelToken);
+        header.textContent = `${date} ${label}`;
         textNode.textContent = `${match[1]}${text.slice(match[0].length)}`;
         const insertionTarget = findAnnouncementHeaderInsertionTarget(topicContent, textNode);
         if (insertionTarget) {
-          const fragment = topicDocument.createDocumentFragment();
-          fragment.append(header);
+          const insertionAnchor = insertionTarget as ChildNode & {
+            before: (...nodes: readonly Node[]) => void;
+          };
+          insertionAnchor.before(header);
           if (textNode.textContent.trim() !== "") {
-            fragment.append(topicDocument.createTextNode(" "));
+            insertionAnchor.before(topicDocument.createTextNode(" "));
           }
-          fragment.append(insertionTarget);
-          (
-            insertionTarget as Node & {
-              replaceWith: (...nodes: readonly Node[]) => void;
-            }
-          ).replaceWith(fragment);
         } else {
           topicContent.prepend(header);
           if (textNode.textContent.trim() !== "") {
