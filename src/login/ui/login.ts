@@ -3,7 +3,7 @@
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   const { loginLocale, loginSupport } = namespace;
-  const {loginTabs} = namespace;
+  const { loginTabs } = namespace;
   if (!shared || !loginLocale || !loginSupport || !loginTabs) {
     return;
   }
@@ -308,13 +308,6 @@
       const labelRow = fieldNode
         .closest(".ccxp-lite-login-field")
         ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
-      if (!labelRow) {
-        continue;
-      }
-      if (labelRow.querySelector(".ccxp-lite-password-help-trigger")) {
-        fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
-        continue;
-      }
       const strings = getLandingStrings(targetDocument);
       const popover = loginTabsLib.createPasswordHelpPopover(
         targetDocument,
@@ -322,7 +315,20 @@
         cannotLoginAnchor,
       );
       popover.classList.add("ccxp-lite-password-help-trigger");
-      labelRow.append(popover);
+      if (labelRow) {
+        if (!labelRow.querySelector(".ccxp-lite-password-help-trigger")) {
+          labelRow.append(popover);
+        }
+        fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
+        continue;
+      }
+      const labelCell = fieldNode.closest("tr")?.querySelector<HTMLElement>("th, td");
+      if (!labelCell || labelCell.querySelector(".ccxp-lite-password-help-trigger")) {
+        fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
+        continue;
+      }
+      labelCell.append(targetDocument.createTextNode(" "));
+      labelCell.append(popover);
       fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
     }
   }

@@ -121,7 +121,6 @@
 
     normalizeLoginFormLayout(loginSection);
     attachAccountFormatInfo(targetDocument, loginSection);
-    attachPasswordInfoPopover(targetDocument, loginSection, cannotLoginLink);
     removeLoginResetControls(loginSection);
     forceCaptchaLabelDisplay(loginSection);
     replaceLoginFormImageButtons(targetDocument, loginSection);
@@ -129,6 +128,7 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
+    attachPasswordInfoPopover(targetDocument, loginSection, cannotLoginLink);
 
     const captchaAutofillState = getOrCreateCaptchaState(
       targetDocument,

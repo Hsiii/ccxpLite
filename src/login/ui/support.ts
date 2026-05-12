@@ -91,7 +91,7 @@
         const topicText = secondCell.textContent.replaceAll(/\s+/g, " ").trim();
         return topicText.length > 8;
       });
-      return dateRows.length >= 3;
+      return dateRows.length >= 2;
     };
     const preferred = panelTables.find((table) => {
       if (table.closest(".tabcontent")) {
@@ -188,11 +188,20 @@
       if (typeof cleanLegacyAttributes === "function") {
         cleanLegacyAttributes(topicContent);
       }
+      if (isPasswordHelpAnnouncement(topicContent, strings)) {
+        continue;
+      }
       entries.push({
         date: rawDate,
         topicContent,
         hasTokenizedHeader: tokenizeAnnouncementHeader(topicContent, rawDate),
       });
+    }
+    if (entries.length === 0) {
+      const announcementTable = table;
+      announcementTable.hidden = true;
+      announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+      return;
     }
     const tbody = table.tBodies[0];
     if (table.tBodies.length === 0) {
@@ -244,6 +253,47 @@
     tbody.append(contentRow);
     const announcementTable = table;
     announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+  }
+
+  function isPasswordHelpAnnouncement(
+    topicContent: HTMLElement,
+    strings: Readonly<Record<string, string>>,
+  ) {
+    const text = topicContent.textContent.replaceAll(/\s+/g, "").toLowerCase();
+    const rawCannotLoginText = Reflect.get(strings, "cannotLogin");
+    const cannotLoginText =
+      typeof rawCannotLoginText === "string"
+        ? rawCannotLoginText.replaceAll(/\s+/g, "").toLowerCase()
+        : "";
+    const anchors = [...topicContent.querySelectorAll<HTMLAnchorElement>("a[href]")];
+    const hasRecoveryLink = anchors.some((anchor) => {
+      const href = (anchor.getAttribute("href") ?? "").toLowerCase();
+      return href.includes("forget.php") || href.includes("forget_en.php");
+    });
+    if (hasRecoveryLink) {
+      return true;
+    }
+    const mentionsCannotLogin =
+      (cannotLoginText !== "" && text.includes(cannotLoginText)) ||
+      text.includes("\u7121\u6CD5\u767B\u5165") ||
+      text.includes("\u65E0\u6CD5\u767B\u5165") ||
+      text.includes("cannotlogin") ||
+      text.includes("cantlogin") ||
+      text.includes("can'tlogin".replaceAll("'", ""));
+    const mentionsPassword =
+      text.includes("\u5BC6\u78BC") || text.includes("\u5BC6\u7801") || text.includes("password");
+    const mentionsRecovery =
+      text.includes("\u5FD8\u8A18") ||
+      text.includes("\u91CD\u8A2D") ||
+      text.includes("\u91CD\u7F6E") ||
+      text.includes("\u555F\u7528") ||
+      text.includes("\u542F\u7528") ||
+      text.includes("reset") ||
+      text.includes("forgot") ||
+      text.includes("forget") ||
+      text.includes("activation") ||
+      text.includes("first-time");
+    return mentionsPassword && (mentionsCannotLogin || mentionsRecovery);
   }
 
   function tokenizeAnnouncementHeader(topicContent: HTMLElement, date: string): boolean {
