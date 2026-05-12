@@ -54,11 +54,99 @@
       }
     }
 
+    applyLoginFieldAccessibility(targetDocument);
+    annotatePrimaryLoginAction(form);
+    bindEnterToPrimaryLoginAction(form);
     form.addEventListener("submit", () => {
       ensureSubmissionPayload(form, targetDocument);
     });
 
     form.dataset.ccxpLiteValidationBound = "true";
+  }
+
+  function applyLoginFieldAccessibility(targetDocument: Document) {
+    const accountField = targetDocument.querySelector<HTMLInputElement>("input[name='account']");
+    const passwordField = targetDocument.querySelector<HTMLInputElement>("input[name='passwd']");
+    const captchaField = targetDocument.querySelector<HTMLInputElement>("input[name='passwd2']");
+    if (accountField) {
+      accountField.autocomplete = "username";
+      accountField.setAttribute("autocapitalize", "off");
+      accountField.setAttribute("spellcheck", "false");
+      accountField.enterKeyHint = "next";
+    }
+    if (passwordField) {
+      passwordField.autocomplete = "current-password";
+      passwordField.setAttribute("autocapitalize", "off");
+      passwordField.setAttribute("spellcheck", "false");
+      passwordField.enterKeyHint = captchaField ? "next" : "go";
+    }
+    if (captchaField) {
+      captchaField.autocomplete = "one-time-code";
+      captchaField.inputMode = "numeric";
+      captchaField.enterKeyHint = "go";
+    }
+  }
+
+  function annotatePrimaryLoginAction(form: HTMLFormElement) {
+    const primaryAction = resolvePrimaryLoginAction(form);
+    if (!primaryAction) {
+      return;
+    }
+    primaryAction.setAttribute("aria-keyshortcuts", "Enter");
+  }
+
+  function bindEnterToPrimaryLoginAction(form: HTMLFormElement) {
+    const formNode = form;
+    if (formNode.dataset.ccxpLiteEnterSubmitBound === "true") {
+      return;
+    }
+    formNode.addEventListener("keydown", (event) => {
+      if (
+        event.key !== "Enter" ||
+        event.defaultPrevented ||
+        event.isComposing ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey
+      ) {
+        return;
+      }
+      const { target } = event;
+      if (!(target instanceof HTMLInputElement)) {
+        return;
+      }
+      const inputType = (target.getAttribute("type") ?? "text").toLowerCase();
+      if (
+        ["button", "checkbox", "file", "hidden", "image", "radio", "reset", "submit"].includes(
+          inputType,
+        )
+      ) {
+        return;
+      }
+      event.preventDefault();
+      triggerPrimaryLoginAction(formNode);
+    });
+    formNode.dataset.ccxpLiteEnterSubmitBound = "true";
+  }
+
+  function triggerPrimaryLoginAction(form: HTMLFormElement) {
+    const primaryAction = resolvePrimaryLoginAction(form);
+    if (primaryAction && !primaryAction.hasAttribute("disabled")) {
+      primaryAction.click();
+      return;
+    }
+    if (typeof form.requestSubmit === "function") {
+      form.requestSubmit();
+      return;
+    }
+    form.submit();
+  }
+
+  function resolvePrimaryLoginAction(form: HTMLFormElement) {
+    return form.querySelector<HTMLElement>(
+      ".ccxp-lite-login-primary-button, button[type='submit'], input[type='submit'], input[type='image'], button:not([type])",
+    );
   }
 
   function ensureSubmissionPayload(form: HTMLFormElement | undefined, targetDocument: Document) {

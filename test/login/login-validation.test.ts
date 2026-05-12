@@ -67,4 +67,44 @@ describe("login validation", () => {
       ),
     ).toBe("20260502-456");
   });
+
+  test("adds autofill semantics and routes Enter to the primary login button", () => {
+    const { window } = createTestWindow(createLoginHtml());
+    const document = window.document as Document;
+    loadModules(window, loginModulePaths);
+    const loginValidation = requireValue(window.CCXP_LITE.loginValidation, "loginValidation");
+    const loginLocale = requireValue(window.CCXP_LITE.loginLocale, "loginLocale");
+    const form = requireValue(loginLocale.getLoginForm(document), "loginForm");
+    const submitButton = requireElement(
+      form.querySelector<HTMLButtonElement>("button[type='submit']"),
+      "submit button",
+    );
+    const clickSpy = vi.spyOn(submitButton, "click");
+
+    loginValidation.restoreValidationGuards(document, { startedAt: Date.now() });
+
+    const accountField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='account']"),
+      "account input",
+    );
+    const passwordField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd']"),
+      "password input",
+    );
+    const captchaField = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd2']"),
+      "captcha input",
+    );
+
+    expect(accountField.autocomplete).toBe("username");
+    expect(passwordField.autocomplete).toBe("current-password");
+    expect(captchaField.autocomplete).toBe("one-time-code");
+    expect(captchaField.inputMode).toBe("numeric");
+    expect(submitButton.getAttribute("aria-keyshortcuts")).toBe("Enter");
+
+    captchaField.dispatchEvent(
+      new window.KeyboardEvent("keydown", { bubbles: true, key: "Enter" }),
+    );
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
 });
