@@ -128,6 +128,10 @@
     transform 120ms ease;
 }
 
+.ccxp-lite-account-guide-info-popup[hidden] {
+  display: none;
+}
+
 .ccxp-lite-account-guide-info:hover .ccxp-lite-account-guide-info-popup,
 .ccxp-lite-account-guide-info:focus-within .ccxp-lite-account-guide-info-popup {
   opacity: 1;

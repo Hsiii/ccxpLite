@@ -56,6 +56,12 @@ describe("login tabs", () => {
         "student alumni popup",
       ).textContent,
     ).toContain("\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005");
+    expect(
+      requireElement(
+        result.shell.querySelector<HTMLElement>(".ccxp-lite-account-guide-info-popup"),
+        "student alumni popup",
+      ).hidden,
+    ).toBe(true);
     const ctas = [
       ...result.shell.querySelectorAll<HTMLElement>(".ccxp-lite-landing-service-link"),
     ].map((link) => ({

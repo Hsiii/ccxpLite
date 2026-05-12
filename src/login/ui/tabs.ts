@@ -105,7 +105,20 @@
     const popup = targetDocument.createElement("span");
     popup.className = "ccxp-lite-account-guide-info-popup";
     popup.textContent = popupText;
+    popup.hidden = true;
     wrap.append(popup);
+
+    const showPopup = () => {
+      popup.hidden = false;
+    };
+    const hidePopup = () => {
+      popup.hidden = true;
+    };
+
+    wrap.addEventListener("mouseenter", showPopup);
+    wrap.addEventListener("mouseleave", hidePopup);
+    button.addEventListener("focus", showPopup);
+    button.addEventListener("blur", hidePopup);
 
     return wrap;
   }
