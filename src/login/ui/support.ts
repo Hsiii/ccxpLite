@@ -203,8 +203,11 @@
     titleRow.className = "ccxp-lite-announcement-title-row";
     const titleCell = table.ownerDocument.createElement("td");
     titleCell.className = "ccxp-lite-announcement-title";
-    titleCell.textContent =
+    const titleHeading = table.ownerDocument.createElement("h3");
+    titleHeading.className = "ccxp-lite-announcement-title-heading ccxp-lite-account-guide-title";
+    titleHeading.textContent =
       titleText === "" ? strings.sidebarCategoryAnnouncementsAndVoting : titleText;
+    titleCell.append(titleHeading);
     titleRow.append(titleCell);
     const contentRow = table.ownerDocument.createElement("tr");
     contentRow.className = "ccxp-lite-announcement-scroll-row";
