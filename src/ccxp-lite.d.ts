@@ -199,12 +199,13 @@ declare global {
     createBrandPartnerLink: (
       targetDocument: Document,
       options?: {
-        markClassName?: string;
         linkClassName?: string;
+        iconWrapClassName?: string;
+        copyClassName?: string;
         labelClassName?: string;
         label?: string;
       },
-    ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
+    ) => { link: HTMLButtonElement };
   }
 
   interface CcxpLiteRuntime {
@@ -272,12 +273,13 @@ declare global {
     createBrandPartnerLink: (
       targetDocument: Document,
       options?: {
-        markClassName?: string;
         linkClassName?: string;
+        iconWrapClassName?: string;
+        copyClassName?: string;
         labelClassName?: string;
         label?: string;
       },
-    ) => { mark: HTMLSpanElement; link: HTMLButtonElement };
+    ) => { link: HTMLButtonElement };
     ensureDocumentHead: (targetDocument: Document) => HTMLHeadElement | undefined;
     ensureDocumentBody: (targetDocument: Document) => HTMLBodyElement | undefined;
     moveChildNodes: (sourceNode: ParentNode & Node, targetNode: ParentNode & Node) => void;

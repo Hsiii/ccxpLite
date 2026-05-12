@@ -89,13 +89,13 @@
     );
     brandSection.append(brandLockup);
 
-    const { mark: repoMark, link: repoLink } = createBrandPartnerLink(targetDocument, {
-      markClassName: "ccxp-lite-landing-brand-partner-mark",
+    const { link: repoLink } = createBrandPartnerLink(targetDocument, {
       linkClassName: "ccxp-lite-landing-brand-partner-link",
+      iconWrapClassName: "ccxp-lite-landing-brand-partner-mark",
+      copyClassName: "ccxp-lite-landing-brand-partner-copy",
       labelClassName: "ccxp-lite-landing-brand-partner-label",
       label: strings.sidebarGitHubLink,
     });
-    brandSection.append(repoMark);
     brandSection.append(repoLink);
 
     if (languageLinks) {

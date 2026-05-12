@@ -41,29 +41,11 @@
   letter-spacing: 0.01em;
 }
 
-.ccxp-lite-landing-brand-partner-mark,
 .ccxp-lite-landing-brand-partner-link {
-  color: var(--ccxp-lite-type-display-color);
-  font-family: var(--ccxp-lite-font-brand);
-  font-size: var(--ccxp-lite-font-size-sidebar-brand);
-  font-weight: var(--ccxp-lite-font-weight-regular);
-  line-height: 1;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-}
-
-.ccxp-lite-landing-brand-partner-mark {
-  display: inline-flex;
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
   align-items: center;
-  justify-content: center;
-}
-
-.ccxp-lite-landing-brand-partner-link,
-.ccxp-lite-landing-brand-partner-link:hover,
-.ccxp-lite-landing-brand-partner-link:active,
-.ccxp-lite-landing-brand-partner-link:focus-visible {
-  display: inline-flex;
-  align-items: center;
+  gap: var(--ccxp-lite-spacing-brand-inline);
   min-width: 0;
   margin: 0;
   padding: 0;
@@ -81,7 +63,17 @@
   text-decoration: none;
   transform: none;
   transition: none;
-  vertical-align: top;
+}
+
+.ccxp-lite-landing-brand-partner-mark,
+.ccxp-lite-landing-brand-partner-copy {
+  min-width: 0;
+}
+
+.ccxp-lite-landing-brand-partner-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ccxp-lite-landing-brand-partner-label {

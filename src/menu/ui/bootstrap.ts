@@ -118,9 +118,10 @@
         ),
       );
 
-      const { mark: repoMark, link: repoLink } = createBrandPartnerLink(hostDocument, {
-        markClassName: "ccxp-lite-sidebar-brand-partner-mark",
+      const { link: repoLink } = createBrandPartnerLink(hostDocument, {
         linkClassName: "ccxp-lite-sidebar-brand-partner-link",
+        iconWrapClassName: "ccxp-lite-sidebar-brand-partner-mark",
+        copyClassName: "ccxp-lite-sidebar-brand-partner-copy",
         labelClassName: "ccxp-lite-sidebar-brand-partner-label",
         label: strings.sidebarGitHubLink,
       });
@@ -134,7 +135,6 @@
       footer.className = "ccxp-lite-sidebar-footer";
 
       brandGroup.append(brand);
-      brandGroup.append(repoMark);
       brandGroup.append(repoLink);
       header.append(brandGroup);
       header.append(search);

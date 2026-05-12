@@ -75,28 +75,34 @@
   function createBrandPartnerLink(
     targetDocument: Document,
     options: {
-      markClassName?: string;
       linkClassName?: string;
+      iconWrapClassName?: string;
+      copyClassName?: string;
       labelClassName?: string;
       label?: string;
     } = {},
   ) {
-    const mark = targetDocument.createElement("span");
-    mark.className = options.markClassName ?? "";
-    mark.append(createBrandPartnerIcon(targetDocument));
-
     const link = targetDocument.createElement("button");
     link.type = "button";
     link.className = options.linkClassName ?? "";
     link.setAttribute("aria-label", options.label ?? "");
     link.setAttribute("title", options.label ?? "");
 
+    const iconWrap = targetDocument.createElement("span");
+    iconWrap.className = options.iconWrapClassName ?? "";
+    iconWrap.append(createBrandPartnerIcon(targetDocument));
+
+    const copy = targetDocument.createElement("span");
+    copy.className = options.copyClassName ?? "";
+
     const label = targetDocument.createElement("span");
     label.className = options.labelClassName ?? "";
     label.textContent = options.label ?? "";
-    link.append(label);
+    copy.append(label);
+    link.append(iconWrap);
+    link.append(copy);
 
-    return { mark, link };
+    return { link };
   }
 
   namespace.sharedBrand = {
