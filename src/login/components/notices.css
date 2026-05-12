@@ -274,7 +274,7 @@
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header {
   display: block;
-  margin: 0;
+  margin: 0 0 8px;
   color: var(--ccxp-lite-type-body-strong-color) !important;
   font: var(--ccxp-lite-type-caption);
   font-size: var(--ccxp-lite-font-size-body);
@@ -308,6 +308,12 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic ul,
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic ol {
   margin: 0;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-topic br {
+  content: "";
+  display: block;
+  margin-top: 8px;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic b,
