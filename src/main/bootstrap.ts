@@ -359,7 +359,7 @@
     const scrollbarWidth = Math.max(0, view.innerWidth - mainDocument.documentElement.clientWidth);
     mainDocument.body.style.setProperty(
       LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR,
-      `${scrollbarWidth}px`,
+      `${-scrollbarWidth}px`,
     );
   }
   attachAndApply();
