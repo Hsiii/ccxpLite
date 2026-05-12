@@ -340,6 +340,12 @@ declare global {
 
   interface CcxpLiteLoginTabs {
     createSection: (targetDocument: Document, className: string) => HTMLElement;
+    normalizeLandingTabs: (
+      targetDocument: Document,
+      tabNavigation: HTMLElement,
+      tabContents: readonly HTMLElement[],
+      strings?: Readonly<Record<string, string>>,
+    ) => void;
     wireTabs: (
       targetDocument: Document,
       tabNavigation: HTMLElement,

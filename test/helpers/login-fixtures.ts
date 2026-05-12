@@ -115,3 +115,60 @@ export function createEnglishLoginAnnouncementHtml(): string {
     </html>
   `;
 }
+
+export function createLoginWithTabsHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="zh">
+      <head></head>
+      <body>
+        <table>
+          <tr>
+            <td>
+              <form action="select_entry.php">
+                <table>
+                  <tr>
+                    <td>\u5E33\u865F</td>
+                    <td><input type="text" name="account" value="" /></td>
+                  </tr>
+                  <tr>
+                    <td>\u5BC6\u78BC <svg id="showPassword"></svg></td>
+                    <td><input type="password" name="passwd" value="" /></td>
+                  </tr>
+                  <tr>
+                    <td>\u9A57\u8B49\u78BC</td>
+                    <td>
+                      <input type="text" name="passwd2" class="inputtext" value="" />
+                      <div class="ccxp-lite-captcha-media-row">
+                        <img src="auth_img.php?pwdstr=20260428-777" />
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+                <input type="hidden" name="fnstr" value="20260428-777" />
+                <button type="submit">\u767B\u5165</button>
+              </form>
+            </td>
+          </tr>
+        </table>
+        <div class="tab">
+          <button class="active">\u5B78\u3000\u751F</button>
+          <button>\u6821\u3000\u53CB</button>
+          <button>\u6559\u8077\u54E1</button>
+          <button>\u53D7\u6B3E\u4EBA(\u5EE0\u5546)</button>
+          <button>\u5176\u3000\u4ED6</button>
+          <button>\u63D0\u9192\u4E8B\u9805</button>
+        </div>
+        <div class="tabcontent"><p>legacy student panel</p></div>
+        <div class="tabcontent"><p>legacy alumni panel</p></div>
+        <div class="tabcontent"><p>legacy staff panel</p></div>
+        <div class="tabcontent"><p>legacy vendor panel</p></div>
+        <div class="tabcontent"><p>legacy other panel</p></div>
+        <div class="tabcontent"><p>legacy reminder panel</p></div>
+        <div align="right"><a href="inquire_cpr.html">&gt;&gt; \u670D\u52D9\u96FB\u8A71 &lt;&lt;</a></div>
+        <a href="forget.php?lang=zh">\u7121\u6CD5\u767B\u5165</a>
+        <ul class="links"><li><strong>\u4E2D\u6587</strong></li></ul>
+      </body>
+    </html>
+  `;
+}

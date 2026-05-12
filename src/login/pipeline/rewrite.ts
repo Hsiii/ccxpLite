@@ -18,7 +18,7 @@
   } = shared;
   const { captureValidationState } = loginValidation;
   const { getOrCreateCaptchaState } = loginCaptcha;
-  const { createSection, wireTabs } = loginTabs;
+  const { createSection, normalizeLandingTabs, wireTabs } = loginTabs;
   const {
     buildHeaderUtilityLinks,
     buildSupportLinks,
@@ -172,6 +172,7 @@
     }
 
     if (tabNavigation && tabContents.length > 0) {
+      normalizeLandingTabs(targetDocument, tabNavigation, tabContents, strings);
       const tabsHeader = targetDocument.createElement("div");
       tabsHeader.className = "ccxp-lite-landing-tabs-header";
       tabsHeader.append(tabNavigation);
