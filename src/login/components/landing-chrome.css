@@ -37,7 +37,8 @@
   gap: var(--ccxp-lite-spacing-lg);
   width: 100%;
   max-width: 100%;
-  padding-inline: var(--ccxp-lite-spacing-lg);
+  padding-left: var(--ccxp-lite-spacing-lg);
+  padding-right: calc(var(--ccxp-lite-spacing-lg) + var(--ccxp-lite-spacing-sm));
   padding-bottom: var(--ccxp-lite-spacing-lg);
   box-sizing: border-box;
   flex: 1 1 auto;
@@ -61,6 +62,7 @@
 
 .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
   grid-column: 3;
+  margin-top: calc(var(--ccxp-lite-spacing-lg) + var(--ccxp-lite-spacing-xs));
 }
 
 .ccxp-lite-landing-header {
@@ -223,7 +225,8 @@
     grid-template-areas: "login notices";
     flex: 0 0 auto;
     min-height: auto;
-    padding-inline: var(--ccxp-lite-spacing-md);
+    padding-left: var(--ccxp-lite-spacing-md);
+    padding-right: calc(var(--ccxp-lite-spacing-md) + var(--ccxp-lite-spacing-sm));
     padding-bottom: var(--ccxp-lite-spacing-md);
   }
 
