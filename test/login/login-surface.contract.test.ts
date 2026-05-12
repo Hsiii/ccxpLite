@@ -9,6 +9,7 @@ import {
 } from "../helpers/module-loader.js";
 import {
   createChineseLoginAnnouncementHtml,
+  createEnglishLoginHtml,
   createEnglishLoginAnnouncementHtml,
   createLoginHtml,
   createLoginWithTabsHtml,
@@ -135,6 +136,19 @@ describe("login surface contract", () => {
       title: "Login Info",
     });
     expect(guide.textContent).toContain("Student / alumni account");
+  });
+
+  test("english landing keeps the password help trigger when recovery only exists outside announcements", () => {
+    const { window } = createTestWindow(createEnglishLoginHtml());
+    const document = window.document as Document;
+    loadModules(window, loginBootstrapModulePaths);
+    const login = requireValue(window.CCXP_LITE.login, "login");
+
+    login.simplifyLoginPage(document);
+
+    const trigger = document.querySelector(".ccxp-lite-password-help-trigger");
+    expect(trigger).not.toBeNull();
+    expect(trigger?.getAttribute("href")).toContain("forget_en.php");
   });
 
   test("tokenizes bracketed Chinese announcement labels with the date inline", () => {

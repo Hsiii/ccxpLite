@@ -116,6 +116,41 @@ export function createEnglishLoginAnnouncementHtml(): string {
   `;
 }
 
+export function createEnglishLoginHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="en">
+      <head></head>
+      <body>
+        <a href="forget_en.php?lang=E">Cannot sign in?</a>
+        <table>
+          <tr>
+            <td>
+              <form action="select_entry.php">
+                <table>
+                  <tr>
+                    <td>Account</td>
+                    <td><input type="text" name="account" value="" /></td>
+                  </tr>
+                  <tr>
+                    <td>Password</td>
+                    <td><input type="password" name="passwd" value="" /></td>
+                  </tr>
+                  <tr>
+                    <td>Verification Code</td>
+                    <td><input type="text" name="passwd2" class="inputtext" value="" /></td>
+                  </tr>
+                </table>
+                <button type="submit">Login</button>
+              </form>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
 export function createChineseLoginAnnouncementHtml(): string {
   return `
     <!doctype html>
