@@ -104,24 +104,18 @@
 .ccxp-lite-landing-login {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  min-height: 0;
-  padding: var(--ccxp-lite-spacing-xl);
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-md);
-  background: var(--ccxp-lite-surface);
-  box-sizing: border-box;
-  gap: var(--ccxp-lite-spacing-lg);
+  padding-inline: var(--ccxp-lite-spacing-sm);
+  padding-top: var(--ccxp-lite-spacing-lg);
 }
 
 .ccxp-lite-landing-login form {
   width: min(100%, var(--ccxp-lite-size-form-control-width));
   min-width: 0;
-  margin: auto;
 }
 
 .ccxp-lite-landing-login form.ccxp-lite-login-form {
@@ -536,7 +530,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
 
 @media (max-width: 380px) {
   .ccxp-lite-landing-login {
-    padding: var(--ccxp-lite-spacing-lg) var(--ccxp-lite-spacing-xs);
+    padding-inline: var(--ccxp-lite-spacing-xs);
   }
 
   .ccxp-lite-landing-login form,
