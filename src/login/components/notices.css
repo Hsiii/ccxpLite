@@ -206,7 +206,7 @@
   top: 0;
   width: 1px;
   bottom: 0;
-  background: color-mix(in srgb, var(--ccxp-lite-border) 72%, transparent);
+  background: var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
 }
 
@@ -226,7 +226,7 @@
   width: 12px;
   height: 12px;
   border-radius: var(--ccxp-lite-radius-full);
-  background: color-mix(in srgb, var(--ccxp-lite-border) 88%, var(--ccxp-lite-sidebar-surface));
+  background: var(--ccxp-lite-border);
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-date {
