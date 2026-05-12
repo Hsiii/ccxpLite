@@ -53,6 +53,10 @@
   align-self: stretch;
 }
 
+.ccxp-lite-landing-body > .ccxp-lite-landing-login {
+  align-self: flex-start;
+}
+
 .ccxp-lite-landing-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
