@@ -150,6 +150,15 @@
   white-space: nowrap;
 }
 
+.ccxp-lite-landing-service-link *,
+.ccxp-lite-landing-service-link:hover *,
+.ccxp-lite-landing-service-link:focus-visible * {
+  color: inherit !important;
+  font: inherit !important;
+  font-weight: inherit !important;
+  text-decoration: none !important;
+}
+
 .ccxp-lite-landing-service-link-primary {
   border: 0;
   background: var(--ccxp-lite-primary);
