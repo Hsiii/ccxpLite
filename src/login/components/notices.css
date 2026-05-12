@@ -246,6 +246,7 @@
   color: var(--ccxp-lite-type-body-color);
   font: var(--ccxp-lite-type-body);
   font-size: var(--ccxp-lite-font-size-utility);
+  line-height: 1.4;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-entry {
@@ -273,7 +274,7 @@
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header {
   display: block;
-  margin: 0 0 var(--ccxp-lite-spacing-2xs);
+  margin: 0 0 2px;
   color: var(--ccxp-lite-type-body-strong-color) !important;
   font: var(--ccxp-lite-type-caption);
   font-size: var(--ccxp-lite-font-size-body);
