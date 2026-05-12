@@ -15,6 +15,8 @@
   overflow: hidden;
   padding-inline: 0;
   height: auto;
+  min-height: 0;
+  max-height: none;
   scrollbar-gutter: stable both-edges;
 }
 
