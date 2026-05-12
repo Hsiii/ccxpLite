@@ -242,6 +242,7 @@
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-account-guide-info {
   flex: 0 0 auto;
+  margin-left: auto;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-password-help-trigger {

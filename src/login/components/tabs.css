@@ -100,7 +100,7 @@
   padding: 0;
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
-  background: color-mix(in srgb, var(--ccxp-lite-surface) 84%, var(--ccxp-lite-primary) 16%);
+  background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-body-strong-color);
   line-height: 1;
   cursor: help;
