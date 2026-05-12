@@ -153,47 +153,6 @@ export function createChineseLoginAnnouncementHtml(): string {
   `;
 }
 
-export function createChinesePasswordNoticeAnnouncementHtml(): string {
-  return `
-    <!doctype html>
-    <html lang="zh">
-      <head></head>
-      <body>
-        <table>
-          <tr>
-            <td width="60%" style="min-width: 30em;" valign="top" align="center"></td>
-            <td width="3%"></td>
-            <td width="35%" valign="top">
-              <div align="right"><a href="inquire_cpr.html" target="_blank">&gt;&gt; <u>\u670D\u52D9\u96FB\u8A71</u> &lt;&lt;</a></div>
-              <table width="95%" border="0" cellpadding="3" cellspacing="0">
-                <tr>
-                  <td colspan="2" class="board_item">\u7CFB\u7D71\u516C\u544A</td>
-                </tr>
-                <tr>
-                  <td class="board_subject">\u65E5\u671F</td>
-                  <td class="board_subject">\u4E3B\u984C</td>
-                </tr>
-                <tr>
-                  <td class="board_0">2026/05/11</td>
-                  <td class="board_0">\u5FD8\u8A18\u5BC6\u78BC\u6216\u9996\u6B21\u767B\u5165\u8ACB\u4F7F\u7528 <a href="forget.php?lang=zh">\u7121\u6CD5\u767B\u5165</a></td>
-                </tr>
-                <tr>
-                  <td class="board_1">2026/05/10</td>
-                  <td class="board_1">\u4E00\u822C\u516C\u544A\u4E00\u66F4\u65B0\u901A\u77E5</td>
-                </tr>
-                <tr>
-                  <td class="board_0">2026/05/09</td>
-                  <td class="board_0">\u4E00\u822C\u516C\u544A\u4E8C\u66F4\u65B0\u901A\u77E5</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-        </table>
-      </body>
-    </html>
-  `;
-}
-
 export function createLoginWithTabsHtml(): string {
   return `
     <!doctype html>

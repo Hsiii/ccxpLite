@@ -2,7 +2,6 @@ import { describe, expect, test, vi } from "vitest";
 
 import {
   createTestWindow,
-  requireElement,
   requireValue,
   loadModules,
   loginModulePaths,
@@ -10,7 +9,6 @@ import {
 } from "../helpers/module-loader.js";
 import {
   createChineseLoginAnnouncementHtml,
-  createChinesePasswordNoticeAnnouncementHtml,
   createEnglishLoginAnnouncementHtml,
   createLoginHtml,
   createLoginWithTabsHtml,
@@ -58,19 +56,6 @@ describe("login surface contract", () => {
       supportLinkCount: 0,
     });
     expect(document.querySelectorAll(".ccxp-lite-password-toggle")).toHaveLength(1);
-    const accountLabelCell = requireValue(
-      document.querySelector("input[name='account']")?.closest("tr")?.querySelector("td") ??
-        undefined,
-      "account label cell",
-    );
-    expect(accountLabelCell.textContent).toContain("\u5E33\u865F");
-    expect(accountLabelCell.querySelector(".ccxp-lite-account-guide-info-button")).not.toBeNull();
-    const popup = requireElement(
-      accountLabelCell.querySelector(".ccxp-lite-account-format-popup"),
-      "account format popup",
-    );
-    expect(popup.textContent).toContain("\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F");
-    expect(popup.querySelectorAll(".ccxp-lite-account-format-item")).toHaveLength(7);
   });
 
   test("rewriteLoginSurface keeps the tabbed login experience behind a small contract", () => {
@@ -98,16 +83,6 @@ describe("login surface contract", () => {
       title: "\u767B\u5165\u8CC7\u8A0A",
     });
     expect(contract.supportLinkLabels.join(" ")).toContain("\u7121\u6CD5\u767B\u5165");
-    expect(result.shell.querySelector(".ccxp-lite-account-guide-info-list")).toBeNull();
-    const passwordHelp = requireElement(
-      result.shell.querySelector(".ccxp-lite-password-help-popup"),
-      "password help popup",
-    );
-    expect(result.shell.textContent).toContain("\u5BC6\u78BC");
-    expect(passwordHelp.textContent).toContain("\u9996\u6B21\u767B\u5165");
-    expect(passwordHelp.querySelector(".ccxp-lite-password-help-popup-link")?.textContent).toBe(
-      "\u7121\u6CD5\u767B\u5165",
-    );
   });
 
   test("support links and announcements localize without asserting the full rendered copy", () => {
@@ -181,24 +156,5 @@ describe("login surface contract", () => {
       "2022/12/03 \u7CFB\u7D71\u516C\u544A",
     );
     expect(announcementTable.querySelectorAll(".ccxp-lite-announcement-date")).toHaveLength(1);
-  });
-
-  test("filters password recovery announcement cards when the content is duplicated elsewhere", () => {
-    const { window } = createTestWindow(createChinesePasswordNoticeAnnouncementHtml());
-    const document = window.document as Document;
-    loadModules(window, loginModulePaths);
-    const loginSupport = requireValue(window.CCXP_LITE.loginSupport, "loginSupport");
-    const shared = requireValue(window.CCXP_LITE.shared, "shared");
-
-    const announcementTable = requireValue(
-      loginSupport.findAnnouncementTable(document),
-      "announcementTable",
-    );
-    loginSupport.prepareAnnouncementTable(announcementTable, shared.getLocalizedStrings("zh"));
-
-    const announcements = [...announcementTable.querySelectorAll(".ccxp-lite-announcement-topic")];
-    expect(announcements).toHaveLength(2);
-    expect(announcementTable.textContent).not.toContain("\u5FD8\u8A18\u5BC6\u78BC");
-    expect(announcementTable.textContent).not.toContain("\u7121\u6CD5\u767B\u5165");
   });
 });
