@@ -268,9 +268,7 @@
       if (!accessory) {
         continue;
       }
-      const labelRow = fieldNode
-        .closest(".ccxp-lite-login-field")
-        ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
+      const labelRow = getOrCreateLoginFieldLabelRow(targetDocument, rootNode, fieldNode);
       if (labelRow) {
         if (!labelRow.querySelector(".ccxp-lite-account-guide-info")) {
           labelRow.append(accessory);
@@ -305,9 +303,6 @@
       ) {
         continue;
       }
-      const labelRow = fieldNode
-        .closest(".ccxp-lite-login-field")
-        ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
       const strings = getLandingStrings(targetDocument);
       const popover = loginTabsLib.createPasswordHelpPopover(
         targetDocument,
@@ -315,6 +310,7 @@
         cannotLoginAnchor,
       );
       popover.classList.add("ccxp-lite-password-help-trigger");
+      const labelRow = getOrCreateLoginFieldLabelRow(targetDocument, rootNode, fieldNode);
       if (labelRow) {
         if (!labelRow.querySelector(".ccxp-lite-password-help-trigger")) {
           labelRow.append(popover);
@@ -331,6 +327,64 @@
       labelCell.append(popover);
       fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
     }
+  }
+
+  function getOrCreateLoginFieldLabelRow(
+    targetDocument: Document,
+    rootNode: ParentNode,
+    fieldNode: Element,
+  ) {
+    const fieldGroupRow = fieldNode
+      .closest(".ccxp-lite-login-field")
+      ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
+    if (fieldGroupRow) {
+      return fieldGroupRow;
+    }
+    const standaloneLabel = findStandaloneLoginFieldLabel(rootNode, fieldNode);
+    if (!standaloneLabel) {
+      return undefined;
+    }
+    const existingRow = standaloneLabel.closest<HTMLElement>(".ccxp-lite-login-field-label-row");
+    if (existingRow) {
+      return existingRow;
+    }
+    const {parentNode} = standaloneLabel;
+    if (!parentNode) {
+      return undefined;
+    }
+    const labelRow = targetDocument.createElement("div");
+    labelRow.className = "ccxp-lite-login-field-label-row";
+    standaloneLabel.before(labelRow);
+    labelRow.append(standaloneLabel);
+    return labelRow;
+  }
+
+  function findStandaloneLoginFieldLabel(rootNode: ParentNode, fieldNode: Element) {
+    const fieldId = fieldNode.getAttribute("id") ?? "";
+    if (fieldId !== "") {
+      const explicitLabel = rootNode.querySelector<HTMLLabelElement>(
+        `label[for="${CSS.escape(fieldId)}"]`,
+      );
+      if (explicitLabel) {
+        return explicitLabel;
+      }
+    }
+    let siblingNode = fieldNode.previousSibling;
+    while (siblingNode) {
+      if (siblingNode.nodeType === Node.TEXT_NODE && getNodeText(siblingNode) === "") {
+        siblingNode = siblingNode.previousSibling;
+        continue;
+      }
+      if (siblingNode.nodeType !== Node.ELEMENT_NODE) {
+        return undefined;
+      }
+      const siblingElement = siblingNode as HTMLElement;
+      if (siblingElement.tagName.toLowerCase() === "label" && getNodeText(siblingElement) !== "") {
+        return siblingElement as HTMLLabelElement;
+      }
+      return undefined;
+    }
+    return undefined;
   }
 
   function groupLoginFieldRows(targetDocument: Document, formNode: HTMLFormElement) {
