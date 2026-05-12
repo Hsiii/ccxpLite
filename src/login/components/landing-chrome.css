@@ -27,6 +27,15 @@
   max-width: 100%;
 }
 
+.ccxp-lite-landing-body {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--ccxp-lite-spacing-xl);
+  width: 100%;
+  max-width: 100%;
+}
+
 .ccxp-lite-landing-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -174,6 +183,10 @@
   .ccxp-lite-landing-utility {
     justify-self: start;
   }
+
+  .ccxp-lite-landing-body {
+    gap: var(--ccxp-lite-spacing-lg);
+  }
 }
 
 @media (max-width: 720px) {
@@ -197,5 +210,11 @@
 
   .ccxp-lite-landing-lang ul.links {
     flex-wrap: wrap;
+  }
+
+  .ccxp-lite-landing-body {
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ccxp-lite-spacing-lg);
   }
 }

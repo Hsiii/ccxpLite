@@ -61,13 +61,13 @@
     shell.className = TOKENS.landingClass;
     const topSection = createSection(targetDocument, "ccxp-lite-landing-top");
     const headerSection = createSection(targetDocument, "ccxp-lite-landing-header");
+    const bodySection = createSection(targetDocument, "ccxp-lite-landing-body");
     const brandSection = createSection(
       targetDocument,
       "ccxp-lite-landing-brand ccxp-lite-sidebar-brand-group",
     );
     const langSection = createSection(targetDocument, "ccxp-lite-landing-lang");
     const loginSection = createSection(targetDocument, "ccxp-lite-landing-login");
-    const tabsSection = createSection(targetDocument, "ccxp-lite-landing-tabs");
     const noticesSection = createSection(targetDocument, "ccxp-lite-landing-notices");
 
     const brandLockup = targetDocument.createElement("div");
@@ -160,8 +160,6 @@
     }
 
     topSection.append(headerSection);
-    topSection.append(loginSection);
-    shell.append(topSection);
 
     const supportLinks = buildSupportLinks(targetDocument, serviceLink, cannotLoginLink, strings);
     if (serviceLink) {
@@ -175,12 +173,19 @@
       for (const tabContent of tabContents) {
         collapseLegacyThreeColumnRows(tabContent);
       }
-      tabsSection.append(createAccountGuide(targetDocument, strings, supportLinks));
-      shell.append(tabsSection);
+      bodySection.append(createAccountGuide(targetDocument, strings, supportLinks));
+      bodySection.append(loginSection);
+      topSection.append(bodySection);
+      shell.append(topSection);
     } else if (supportLinks) {
+      topSection.append(loginSection);
+      shell.append(topSection);
       const supportSection = createSection(targetDocument, "ccxp-lite-landing-support-only");
       supportSection.append(supportLinks);
       shell.append(supportSection);
+    } else {
+      topSection.append(loginSection);
+      shell.append(topSection);
     }
 
     if (announcementTable) {
