@@ -14,6 +14,7 @@ body {
 [data-ccxp-lite-floating-anchor-host="true"] {
   --ccxp-lite-lab-offset-inline: var(--ccxp-lite-spacing-lg);
   --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-lg);
+  --ccxp-lite-lab-scrollbar-inline-compensation: 0px;
 }
 
 [data-ccxp-lite-floating-anchor-host="true"]:not(body) {
@@ -29,7 +30,9 @@ body[data-ccxp-lite-floating-anchor-host="true"] > [data-ccxp-lite-floating-anch
 }
 
 [data-ccxp-lite-floating-anchor="true"] {
-  inset-inline-end: var(--ccxp-lite-lab-offset-inline);
+  inset-inline-end: calc(
+    var(--ccxp-lite-lab-offset-inline) + var(--ccxp-lite-lab-scrollbar-inline-compensation)
+  );
   inset-block-end: var(--ccxp-lite-lab-offset-block);
   z-index: 2147483646;
   display: flex;

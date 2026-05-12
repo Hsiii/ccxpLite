@@ -28,6 +28,7 @@
   const LOADING_SPRITE_TIMEOUT_MS = 8000;
   const SIDEBAR_VARIANT_STORAGE_KEY = "ccxp-lite-sidebar-variant";
   const SIDEBAR_VARIANT_DATASET_KEY = "ccxpLiteSidebarVariant";
+  const LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR = "--ccxp-lite-lab-scrollbar-inline-compensation";
   let attempts = 0;
   const loadingState = initializeLoadingSprite(document);
   sharedLib.addCleanupTask(() => {
@@ -341,7 +342,25 @@
     if (sidebarState) {
       const state = sidebarState.getSidebarUiState(mainDocument);
       mainDocument.body.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
+      syncMainFrameLabScrollbarCompensation(mainDocument, state.sidebarVariant);
     }
+  }
+
+  function syncMainFrameLabScrollbarCompensation(mainDocument: Document, sidebarVariant: string) {
+    if (sidebarVariant !== "classic") {
+      mainDocument.body.style.setProperty(LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR, "0px");
+      return;
+    }
+    const view = mainDocument.defaultView;
+    if (!view) {
+      mainDocument.body.style.setProperty(LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR, "0px");
+      return;
+    }
+    const scrollbarWidth = Math.max(0, view.innerWidth - mainDocument.documentElement.clientWidth);
+    mainDocument.body.style.setProperty(
+      LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR,
+      `${scrollbarWidth}px`,
+    );
   }
   attachAndApply();
 })();
