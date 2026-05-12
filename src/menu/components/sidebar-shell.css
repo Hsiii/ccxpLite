@@ -24,7 +24,7 @@
   align-items: center;
   flex: 0 0 var(--ccxp-lite-size-landing-header-height);
   gap: var(--ccxp-lite-spacing-md);
-  padding-inline: var(--ccxp-lite-spacing-inset-lg);
+  padding-inline: var(--ccxp-lite-spacing-inset-md);
   height: var(--ccxp-lite-size-landing-header-height);
   min-height: var(--ccxp-lite-size-landing-header-height);
   max-height: var(--ccxp-lite-size-landing-header-height);
