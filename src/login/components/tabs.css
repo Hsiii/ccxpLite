@@ -10,10 +10,13 @@
   gap: var(--ccxp-lite-spacing-md);
   flex: 0 1 420px;
   width: min(100%, 420px);
+  min-height: 0;
+  height: 100%;
   padding: var(--ccxp-lite-spacing-lg);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-md);
   background: var(--ccxp-lite-sidebar-surface);
+  box-sizing: border-box;
 }
 
 .ccxp-lite-account-guide-header {
@@ -157,7 +160,9 @@
   align-items: stretch;
   gap: var(--ccxp-lite-spacing-inline-sm);
   width: min(100%, var(--ccxp-lite-size-form-control-width));
+  max-width: 100%;
   margin-left: 0;
+  margin-top: auto;
   flex: 0 0 auto;
   justify-content: flex-start;
   align-self: flex-start;
@@ -171,7 +176,7 @@ html[data-ccxp-lite-scope="landing"]
 
 @media (max-width: 960px) {
   .ccxp-lite-account-guide {
-    width: min(100%, 480px);
+    width: 100%;
   }
 }
 

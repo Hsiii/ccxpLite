@@ -2,10 +2,12 @@
   width: 100%;
   max-width: 100%;
   margin: 0;
+  padding: var(--ccxp-lite-spacing-lg);
   padding-bottom: var(--ccxp-lite-spacing-lg);
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: var(--ccxp-lite-spacing-lg);
+  gap: var(--ccxp-lite-spacing-xl);
 }
 
 .ccxp-lite-landing-section {
@@ -28,12 +30,27 @@
 }
 
 .ccxp-lite-landing-body {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(240px, 304px) minmax(320px, 1fr) minmax(240px, 304px);
+  align-items: stretch;
   justify-content: center;
-  gap: var(--ccxp-lite-spacing-xl);
+  gap: var(--ccxp-lite-spacing-lg);
   width: 100%;
   max-width: 100%;
+  min-height: clamp(
+    560px,
+    calc(100vh - var(--ccxp-lite-size-landing-header-height) - var(--ccxp-lite-spacing-xl) * 4),
+    720px
+  );
+}
+
+.ccxp-lite-landing-body > .ccxp-lite-landing-login,
+.ccxp-lite-landing-body > .ccxp-lite-landing-tabs,
+.ccxp-lite-landing-body > .ccxp-lite-landing-notices {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
 }
 
 .ccxp-lite-landing-header {
@@ -170,6 +187,10 @@
 }
 
 @media (max-width: 960px) {
+  .ccxp-lite-landing-shell {
+    padding: var(--ccxp-lite-spacing-md);
+  }
+
   .ccxp-lite-landing-header {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
@@ -185,7 +206,23 @@
   }
 
   .ccxp-lite-landing-body {
-    gap: var(--ccxp-lite-spacing-lg);
+    grid-template-columns: minmax(240px, 280px) minmax(0, 1fr);
+    grid-template-areas:
+      "tabs login"
+      "notices notices";
+    min-height: auto;
+  }
+
+  .ccxp-lite-landing-body > .ccxp-lite-landing-tabs {
+    grid-area: tabs;
+  }
+
+  .ccxp-lite-landing-body > .ccxp-lite-landing-login {
+    grid-area: login;
+  }
+
+  .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
+    grid-area: notices;
   }
 }
 
@@ -213,14 +250,16 @@
   }
 
   .ccxp-lite-landing-body {
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: var(--ccxp-lite-spacing-lg);
+    min-height: auto;
   }
 
   .ccxp-lite-landing-body > .ccxp-lite-landing-login,
   .ccxp-lite-landing-body > .ccxp-lite-landing-tabs,
   .ccxp-lite-landing-body > .ccxp-lite-landing-notices {
-    align-self: center;
+    align-self: stretch;
   }
 }

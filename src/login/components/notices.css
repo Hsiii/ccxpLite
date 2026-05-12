@@ -1,20 +1,24 @@
 .ccxp-lite-landing-notices {
   display: flex;
   justify-content: flex-start;
-  align-self: flex-start;
+  align-self: stretch;
   flex: 0 1 420px;
   width: min(100%, 420px);
   min-width: 0;
+  min-height: 0;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table {
   width: 100% !important;
   max-width: 100%;
   margin-inline: 0;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
   background: var(--ccxp-lite-surface);
   border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-sm);
+  border-radius: var(--ccxp-lite-radius-md);
   overflow: hidden;
 }
 
@@ -130,6 +134,8 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-table > tbody {
   display: flex;
   flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-title {
@@ -150,17 +156,23 @@
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-scroll-row {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-content-cell {
   display: block;
+  height: 100%;
+  min-height: 0;
   padding: 0;
   vertical-align: top;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-list {
   display: block;
+  min-height: 100%;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-row {
@@ -245,7 +257,7 @@
 
 @media (max-width: 960px) {
   .ccxp-lite-landing-notices {
-    width: min(100%, 480px);
+    width: 100%;
   }
 
   .ccxp-lite-landing-notices .ccxp-lite-announcement-table {
