@@ -269,6 +269,7 @@
           heading: "Account Help",
           items: [
             `First-time sign-in, account activation, and password reset all start from "${strings.cannotLogin}".`,
+            'Except for "guest", the account codes below are examples only. Replace them with your own account.',
           ],
           panelKey: "account-help",
         },
@@ -276,8 +277,8 @@
           label: "Students / Alumni",
           heading: "Students / Alumni",
           items: [
-            "Account: student ID",
-            "Examples: 110061190, X1106099, 102061190",
+            "Account: student ID (examples: 110061190, X1106099, 102061190)",
+            "Use your own student ID in place of the example above.",
             "Nanda campus entrants from year 105 or earlier use the Nanda portal password; contact the Nanda computer center if it is forgotten.",
           ],
           panelKey: "student-alumni",
@@ -285,7 +286,10 @@
         {
           label: "Faculty / Staff",
           heading: "Faculty / Staff",
-          items: ["Account: employee number", "Example: W09090"],
+          items: [
+            "Account: employee number (example: W09090)",
+            "Use your own employee number in place of the example above.",
+          ],
           panelKey: "staff",
         },
         {
@@ -299,9 +303,9 @@
           heading: "Other",
           items: [
             "Public course takers: guest",
-            "Mandarin Center students: student ID",
-            "Example: C1100088",
-            "Delegated account: A11111-01",
+            "Mandarin Center students: student ID (example: C1100088)",
+            "Delegated account: delegator employee number-01 (example: A11111-01)",
+            'Replace the sample codes above with your assigned account. "guest" is the only fixed value.',
           ],
           panelKey: "other",
         },
@@ -323,6 +327,7 @@
         heading: "\u5E33\u865F\u554F\u984C",
         items: [
           `\u9996\u6B21\u767B\u5165\u3001\u5E33\u865F\u555F\u7528\u3001\u5FD8\u8A18\u5BC6\u78BC\uFF0C\u8ACB\u76F4\u63A5\u9EDE\u9078\u300C${strings.cannotLogin}\u300D\u3002`,
+          '\u9664\u4E86 "guest" \u4E4B\u5916\uFF0C\u4E0B\u65B9\u4EE3\u78BC\u90FD\u662F\u683C\u5F0F\u7BC4\u4F8B\uFF0C\u8ACB\u6539\u586B\u81EA\u5DF1\u7684\u5E33\u865F\u3002',
         ],
         panelKey: "account-help",
       },
@@ -330,8 +335,8 @@
         label: "\u5B78\u751F\uFF0F\u6821\u53CB",
         heading: "\u5B78\u751F\uFF0F\u6821\u53CB",
         items: [
-          "\u5E33\u865F\uFF1A\u5B78\u865F",
-          "\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190",
+          "\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
+          "\u8ACB\u4EE5\u81EA\u5DF1\u7684\u5B78\u865F\u53D6\u4EE3\u4E0A\u8FF0\u7BC4\u4F8B\u3002",
           "\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005\uFF1A\u5BC6\u78BC\u6CBF\u7528\u5357\u5927\u6821\u5340\u5165\u53E3\u7DB2\uFF1B\u82E5\u5FD8\u8A18\u5BC6\u78BC\uFF0C\u8ACB\u6D3D\u5357\u5927\u6821\u5340\u8A08\u4E2D\u3002",
         ],
         panelKey: "student-alumni",
@@ -339,7 +344,10 @@
       {
         label: "\u6559\u8077\u54E1",
         heading: "\u6559\u8077\u54E1",
-        items: ["\u5E33\u865F\uFF1A\u54E1\u5DE5\u7DE8\u865F", "\u4F8B\uFF1AW09090"],
+        items: [
+          "\u5E33\u865F\uFF1A\u54E1\u5DE5\u7DE8\u865F\uFF08\u4F8B\uFF1AW09090\uFF09",
+          "\u8ACB\u4EE5\u81EA\u5DF1\u7684\u54E1\u5DE5\u7DE8\u865F\u53D6\u4EE3\u4E0A\u8FF0\u7BC4\u4F8B\u3002",
+        ],
         panelKey: "staff",
       },
       {
@@ -356,9 +364,9 @@
         heading: "\u5176\u4ED6",
         items: [
           "\u793E\u6703\u4EBA\u58EB\u9078\u8AB2\uFF1Aguest",
-          "\u83EF\u8A9E\u4E2D\u5FC3\u5B78\u54E1\uFF1A\u5B78\u865F",
-          "\u4F8B\uFF1AC1100088",
-          "\u59D4\u8A17\u6388\u6B0A\u5E33\u865F\uFF1AA11111-01",
+          "\u83EF\u8A9E\u4E2D\u5FC3\u5B78\u54E1\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1AC1100088\uFF09",
+          "\u59D4\u8A17\u6388\u6B0A\u5E33\u865F\uFF1A\u59D4\u8A17\u4EBA\u54E1\u5DE5\u7DE8\u865F-01\uFF08\u4F8B\uFF1AA11111-01\uFF09",
+          '\u9664\u4E86 "guest" \u4E4B\u5916\uFF0C\u8ACB\u4EE5\u81EA\u5DF1\u7684\u6307\u6D3E\u5E33\u865F\u53D6\u4EE3\u4E0A\u8FF0\u7BC4\u4F8B\u3002',
         ],
         panelKey: "other",
       },

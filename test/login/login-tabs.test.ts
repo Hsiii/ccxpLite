@@ -48,10 +48,13 @@ describe("login tabs", () => {
       "\u5B78\u751F\uFF0F\u6821\u53CB",
     );
     expect(requireElement(panels[1], "student alumni panel").textContent).toContain(
-      "110061190\u3001X1106099\u3001102061190",
+      "\u5E33\u865F\uFF1A\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
     );
     expect(requireElement(panels[3], "vendor panel").textContent).toContain(
       "\u7D71\u4E00\u7DE8\u865F",
+    );
+    expect(requireElement(panels[4], "other panel").textContent).toContain(
+      "\u59D4\u8A17\u6388\u6B0A\u5E33\u865F\uFF1A\u59D4\u8A17\u4EBA\u54E1\u5DE5\u7DE8\u865F-01\uFF08\u4F8B\uFF1AA11111-01\uFF09",
     );
   });
 
