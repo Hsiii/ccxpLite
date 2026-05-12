@@ -274,10 +274,11 @@
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header {
   display: block;
-  margin: 0 0 2px;
+  margin: 0;
   color: var(--ccxp-lite-type-body-strong-color) !important;
   font: var(--ccxp-lite-type-caption);
   font-size: var(--ccxp-lite-font-size-body);
+  line-height: 1.2;
   letter-spacing: 0.01em;
   opacity: 0.78;
 }
