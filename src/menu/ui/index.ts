@@ -49,7 +49,6 @@
     }
     const searchInput = shell.querySelector<HTMLInputElement>(".ccxp-lite-sidebar-search-input");
     const state = getSidebarUiState(hostDocument);
-    syncLegacyMainFrameVariantState(state.sidebarVariant);
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
       searchInput.addEventListener("input", () => {
         state.searchQuery = searchInput.value;
@@ -1537,52 +1536,13 @@
     rerender: () => void,
     _footer?: HTMLElement,
   ) {
-    const variant = state.sidebarVariant;
-    const mainFrame = getLegacyMainFrame();
-    const mainDocument = mainFrame?.contentDocument;
-    // In classic mode, we want the button to stay at the bottom-right of the screen, which
-    // corresponds to the bottom-right of the main frame.
-    const isClassic = variant === "classic";
-    const mountDocument = isClassic && mainDocument ? mainDocument : targetDocument;
-    const button = createSidebarVariantSwitch(mountDocument, state, strings, rerender);
+    const button = createSidebarVariantSwitch(targetDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
-    removeExistingSidebarVariantSwitches([
-      targetDocument,
-      mainDocument ?? undefined,
-      mountDocument,
-    ]);
+    removeExistingSidebarVariantSwitches([targetDocument]);
     Object.assign(button.style, {
       position: "relative",
     });
-    getOverlayMountNode(mountDocument).append(button);
-  }
-
-  function syncLegacyMainFrameVariantState(sidebarVariant: "classic" | "layered") {
-    const mainDocument = getLegacyMainFrame()?.contentDocument;
-    if (!mainDocument) {
-      return;
-    }
-    ensureThemeDocument(mainDocument, "main");
-    mainDocument.documentElement.dataset.ccxpLiteSidebarVariant = sidebarVariant;
-    mainDocument.body.dataset.ccxpLiteSidebarVariant = sidebarVariant;
-    if (sidebarVariant !== "classic") {
-      mainDocument.documentElement.style.scrollbarGutter = "";
-      mainDocument.body.style.scrollbarGutter = "";
-      mainDocument.body.style.setProperty("--ccxp-lite-lab-scrollbar-inline-compensation", "0px");
-      return;
-    }
-    mainDocument.documentElement.style.scrollbarGutter = "stable";
-    mainDocument.body.style.scrollbarGutter = "stable both-edges";
-    const view = mainDocument.defaultView;
-    if (!view) {
-      mainDocument.body.style.setProperty("--ccxp-lite-lab-scrollbar-inline-compensation", "0px");
-      return;
-    }
-    const scrollbarWidth = Math.max(0, view.innerWidth - mainDocument.documentElement.clientWidth);
-    mainDocument.body.style.setProperty(
-      "--ccxp-lite-lab-scrollbar-inline-compensation",
-      `${-scrollbarWidth}px`,
-    );
+    getOverlayMountNode(targetDocument).append(button);
   }
 
   function removeExistingSidebarVariantSwitches(documents: ReadonlyArray<Document | undefined>) {
