@@ -135,54 +135,12 @@
   transform: translateY(0);
 }
 
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link {
+.ccxp-lite-landing-service-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--ccxp-lite-spacing-xs);
-  min-width: var(--ccxp-lite-size-control-min-width);
-  height: var(--ccxp-lite-size-login-control-height);
-  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-lg);
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-full);
-  background: transparent;
-  color: var(--ccxp-lite-type-utility-color);
-  font: var(--ccxp-lite-type-body);
-  font-size: var(--ccxp-lite-font-size-utility);
-  font-weight: var(--ccxp-lite-font-weight-strong);
-  text-decoration: none;
   white-space: nowrap;
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link *,
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link:hover *,
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link:focus-visible * {
-  color: inherit !important;
-  font: inherit !important;
-  font-weight: inherit !important;
-  text-decoration: none !important;
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-primary {
-  border: 0;
-  background: var(--ccxp-lite-primary);
-  color: var(--ccxp-lite-bg) !important;
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary {
-  border: 1px solid var(--ccxp-lite-border);
-  background: transparent;
-  color: var(--ccxp-lite-type-utility-color) !important;
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-primary:hover,
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-primary:focus-visible {
-  background: var(--ccxp-lite-primary);
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:hover,
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:focus-visible {
-  background: var(--ccxp-lite-primary-hover-surface);
 }
 
 .ccxp-lite-landing-support-links {
@@ -195,16 +153,6 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link-secondary:f
   flex: 0 0 auto;
   justify-content: flex-start;
   align-self: flex-start;
-}
-
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link:hover,
-html[data-ccxp-lite-scope="landing"] .ccxp-lite-landing-service-link:focus-visible {
-  color: inherit;
-  font: var(--ccxp-lite-type-body) !important;
-  font-size: var(--ccxp-lite-font-size-utility) !important;
-  font-weight: var(--ccxp-lite-font-weight-strong) !important;
-  transform: none !important;
-  text-decoration: none;
 }
 
 html[data-ccxp-lite-scope="landing"]

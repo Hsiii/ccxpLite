@@ -320,7 +320,8 @@
 }
 
 .ccxp-lite-landing-login .ccxp-lite-image-action-button,
-.ccxp-lite-landing-login .ccxp-lite-image-link-button {
+.ccxp-lite-landing-login .ccxp-lite-image-link-button,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control {
   min-width: var(--ccxp-lite-size-control-min-width);
   height: var(--ccxp-lite-size-login-control-height);
   max-width: 100%;
@@ -341,7 +342,8 @@
   text-decoration: none;
 }
 
-.ccxp-lite-landing-login .ccxp-lite-login-primary-button {
+.ccxp-lite-landing-login .ccxp-lite-login-primary-button,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary {
   border: 0;
   background: var(--ccxp-lite-primary);
   color: var(--ccxp-lite-bg);
@@ -353,13 +355,26 @@
 .ccxp-lite-landing-login .ccxp-lite-image-action-button:hover,
 .ccxp-lite-landing-login .ccxp-lite-image-link-button:hover,
 .ccxp-lite-landing-login .ccxp-lite-image-action-button:focus-visible,
-.ccxp-lite-landing-login .ccxp-lite-image-link-button:focus-visible {
+.ccxp-lite-landing-login .ccxp-lite-image-link-button:focus-visible,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-secondary:hover,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-secondary:focus-visible {
   background: var(--ccxp-lite-primary-hover-surface);
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-primary-button:hover,
-.ccxp-lite-landing-login .ccxp-lite-login-primary-button:focus-visible {
+.ccxp-lite-landing-login .ccxp-lite-login-primary-button:focus-visible,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:hover,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:focus-visible {
   background: var(--ccxp-lite-primary);
+}
+
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control *,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:hover *,
+html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
+  color: inherit !important;
+  font: inherit !important;
+  font-weight: inherit !important;
+  text-decoration: none !important;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-action-group {

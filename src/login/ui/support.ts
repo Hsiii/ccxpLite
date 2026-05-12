@@ -338,7 +338,9 @@
       return undefined;
     }
     const anchor = targetDocument.createElement("a");
-    anchor.className = `ccxp-lite-landing-service-link ccxp-lite-landing-service-link-${variant}`;
+    anchor.className =
+      "ccxp-lite-landing-service-link ccxp-lite-action-control " +
+      `ccxp-lite-action-control-${variant} ccxp-lite-landing-service-link-${variant}`;
     anchor.href = sourceAnchor.href;
     anchor.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
     anchor.rel = "noopener noreferrer";
