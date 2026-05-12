@@ -98,18 +98,18 @@
   height: var(--ccxp-lite-size-icon-button-sm);
   margin-left: var(--ccxp-lite-spacing-2xs);
   padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-full);
+  background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-caption-color);
   font: var(--ccxp-lite-type-utility);
   line-height: 1;
   text-decoration: none;
-  line-height: 1;
   cursor: pointer;
 }
 
 .ccxp-lite-account-guide-info-button:hover {
+  background: var(--ccxp-lite-primary-hover-surface);
   color: var(--ccxp-lite-type-utility-color);
 }
 
