@@ -127,7 +127,7 @@
 
 .ccxp-lite-account-guide-info-popup {
   position: absolute;
-  left: 0;
+  left: calc(100% - var(--ccxp-lite-size-icon-button-sm));
   top: calc(100% + var(--ccxp-lite-spacing-xs));
   z-index: 2;
   width: min(320px, calc(100vw - var(--ccxp-lite-spacing-lg) * 2));
@@ -144,6 +144,18 @@
   transition:
     opacity 120ms ease,
     transform 120ms ease;
+}
+
+.ccxp-lite-account-guide-info-popup::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--ccxp-lite-size-icon-button-sm) / 2);
+  bottom: 100%;
+  width: calc(var(--ccxp-lite-spacing-md) + var(--ccxp-lite-size-icon-button-sm));
+  height: calc(var(--ccxp-lite-spacing-xs) + var(--ccxp-lite-spacing-2xs));
+  transform: translateX(-50%);
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+  background: transparent;
 }
 
 .ccxp-lite-account-guide-info-popup[hidden] {

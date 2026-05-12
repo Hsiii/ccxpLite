@@ -127,28 +127,50 @@
     wrap.append(popup);
     button.setAttribute("aria-controls", popupId);
 
-    const showPopup = () => {
-      wrap.dataset.ccxpLitePopupOpen = "true";
-      popup.hidden = false;
-      button.setAttribute("aria-expanded", "true");
-    };
-    const hidePopup = () => {
-      wrap.dataset.ccxpLitePopupOpen = "false";
-      popup.hidden = true;
-      button.setAttribute("aria-expanded", "false");
-    };
-    const togglePopup = () => {
-      if (popup.hidden) {
-        showPopup();
-        return;
+    let isPinnedOpen = false;
+    let isPointerInside = false;
+    let suppressHoverOpen = false;
+
+    const syncPopupVisibility = () => {
+      const isVisible = isPinnedOpen || (isPointerInside && !suppressHoverOpen);
+      if (isVisible) {
+        wrap.dataset.ccxpLitePopupOpen = "true";
+      } else {
+        delete wrap.dataset.ccxpLitePopupOpen;
       }
-      hidePopup();
+      popup.hidden = !isVisible;
+      button.setAttribute("aria-expanded", isVisible ? "true" : "false");
     };
+    const openPinnedPopup = () => {
+      isPinnedOpen = true;
+      suppressHoverOpen = false;
+      syncPopupVisibility();
+    };
+    const closePopup = (options?: { suppressHoverOpen?: boolean }) => {
+      isPinnedOpen = false;
+      suppressHoverOpen = options?.suppressHoverOpen === true;
+      syncPopupVisibility();
+    };
+
+    wrap.addEventListener("mouseenter", () => {
+      isPointerInside = true;
+      suppressHoverOpen = false;
+      syncPopupVisibility();
+    });
+    wrap.addEventListener("mouseleave", () => {
+      isPointerInside = false;
+      suppressHoverOpen = false;
+      syncPopupVisibility();
+    });
 
     button.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
-      togglePopup();
+      if (isPinnedOpen) {
+        closePopup({ suppressHoverOpen: true });
+        return;
+      }
+      openPinnedPopup();
     });
     popup.addEventListener("click", (event) => {
       event.stopPropagation();
@@ -157,14 +179,14 @@
       if (wrap.contains(event.target as Node | null)) {
         return;
       }
-      hidePopup();
+      closePopup();
     });
     button.addEventListener("keydown", (event) => {
       if (event.key !== "Escape") {
         return;
       }
       event.preventDefault();
-      hidePopup();
+      closePopup({ suppressHoverOpen: true });
       button.blur();
     });
     popup.addEventListener("keydown", (event) => {
@@ -172,7 +194,7 @@
         return;
       }
       event.preventDefault();
-      hidePopup();
+      closePopup({ suppressHoverOpen: true });
       button.focus();
     });
 

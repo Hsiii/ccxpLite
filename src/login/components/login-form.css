@@ -250,8 +250,8 @@
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-account-guide-info-popup {
-  left: auto;
-  right: 0;
+  left: calc(100% - var(--ccxp-lite-size-icon-button-sm));
+  right: auto;
   width: min(360px, calc(100vw - var(--ccxp-lite-spacing-lg) * 2));
 }
 
