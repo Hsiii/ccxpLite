@@ -172,6 +172,7 @@
     const entries: Array<{
       date: string;
       topicContent: HTMLElement;
+      hasTokenizedHeader: boolean;
     }> = [];
     for (const row of rows) {
       const cells = [...row.cells];
@@ -190,6 +191,7 @@
       entries.push({
         date: rawDate,
         topicContent,
+        hasTokenizedHeader: tokenizeAnnouncementHeader(topicContent, rawDate),
       });
     }
     const tbody = table.tBodies[0];
@@ -215,16 +217,21 @@
       item.className = "ccxp-lite-announcement-row";
       const entryRow = table.ownerDocument.createElement("div");
       entryRow.className = "ccxp-lite-announcement-entry";
+      if (entry.hasTokenizedHeader) {
+        entryRow.classList.add("ccxp-lite-announcement-entry--merged-date");
+      }
       const body = table.ownerDocument.createElement("div");
       body.className = "ccxp-lite-announcement-topic";
       while (entry.topicContent.firstChild) {
         body.append(entry.topicContent.firstChild);
       }
-      const date = table.ownerDocument.createElement("div");
-      date.className = "ccxp-lite-announcement-date";
-      date.textContent = entry.date;
       entryRow.append(body);
-      entryRow.append(date);
+      if (!entry.hasTokenizedHeader) {
+        const date = table.ownerDocument.createElement("div");
+        date.className = "ccxp-lite-announcement-date";
+        date.textContent = entry.date;
+        entryRow.append(date);
+      }
       item.append(entryRow);
       list.append(item);
     }
@@ -234,6 +241,77 @@
     tbody.append(contentRow);
     const announcementTable = table;
     announcementTable.dataset.ccxpLiteAnnouncementPrepared = "true";
+  }
+
+  function tokenizeAnnouncementHeader(topicContent: HTMLElement, date: string): boolean {
+    const topicText = topicContent.textContent;
+    const leadingTitleMatch = topicText.match(
+      /^\s*\u3010([^\u3011]+)\u3011(?=\s|$|[.\uFF0E:\uFF1A])/u,
+    );
+    if (!leadingTitleMatch) {
+      return false;
+    }
+    const label = leadingTitleMatch[1].trim();
+    if (label === "") {
+      return false;
+    }
+    const walker = topicContent.ownerDocument.createTreeWalker(topicContent, NodeFilter.SHOW_TEXT);
+    let textNode = walker.nextNode();
+    while (textNode) {
+      const text = textNode.textContent ?? "";
+      const match = text.match(/^(\s*)\u3010([^\u3011]+)\u3011([\s.\uFF0E:\uFF1A]*)/u);
+      if (match) {
+        const topicDocument = topicContent.ownerDocument;
+        const header = topicDocument.createElement("span");
+        header.className = "ccxp-lite-announcement-topic-header";
+        const dateToken = topicDocument.createElement("span");
+        dateToken.className =
+          "ccxp-lite-announcement-topic-token ccxp-lite-announcement-topic-token--date";
+        dateToken.textContent = date;
+        const labelToken = topicDocument.createElement("span");
+        labelToken.className =
+          "ccxp-lite-announcement-topic-token ccxp-lite-announcement-topic-token--label";
+        labelToken.textContent = label;
+        header.append(dateToken, labelToken);
+        textNode.textContent = `${match[1]}${text.slice(match[0].length)}`;
+        const insertionTarget = findAnnouncementHeaderInsertionTarget(topicContent, textNode);
+        if (insertionTarget) {
+          const fragment = topicDocument.createDocumentFragment();
+          fragment.append(header);
+          if (textNode.textContent.trim() !== "") {
+            fragment.append(topicDocument.createTextNode(" "));
+          }
+          fragment.append(insertionTarget);
+          (
+            insertionTarget as Node & {
+              replaceWith: (...nodes: readonly Node[]) => void;
+            }
+          ).replaceWith(fragment);
+        } else {
+          topicContent.prepend(header);
+          if (textNode.textContent.trim() !== "") {
+            topicContent.insertBefore(topicDocument.createTextNode(" "), header.nextSibling);
+          }
+        }
+        return true;
+      }
+      if (text.trim() !== "") {
+        return false;
+      }
+      textNode = walker.nextNode();
+    }
+    return false;
+  }
+
+  function findAnnouncementHeaderInsertionTarget(
+    topicContent: HTMLElement,
+    textNode: Node,
+  ): Node | undefined {
+    let currentNode: Node = textNode;
+    while (currentNode.parentNode && currentNode.parentNode !== topicContent) {
+      currentNode = currentNode.parentNode;
+    }
+    return currentNode.parentNode === topicContent ? currentNode : undefined;
   }
 
   function findUtilityLinksTable(targetDocument: Document): HTMLTableElement | undefined {

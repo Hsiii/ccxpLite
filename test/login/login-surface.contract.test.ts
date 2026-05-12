@@ -8,6 +8,7 @@ import {
   sharedModulePaths,
 } from "../helpers/module-loader.js";
 import {
+  createChineseLoginAnnouncementHtml,
   createEnglishLoginAnnouncementHtml,
   createLoginHtml,
   createLoginWithTabsHtml,
@@ -129,5 +130,34 @@ describe("login surface contract", () => {
       title: "Login Info",
     });
     expect(guide.textContent).toContain("Student / alumni account");
+  });
+
+  test("tokenizes bracketed Chinese announcement labels with the date inline", () => {
+    const { window } = createTestWindow(createChineseLoginAnnouncementHtml());
+    const document = window.document as Document;
+    loadModules(window, loginModulePaths);
+    const loginSupport = requireValue(window.CCXP_LITE.loginSupport, "loginSupport");
+
+    const announcementTable = requireValue(
+      loginSupport.findAnnouncementTable(document),
+      "announcementTable",
+    );
+    loginSupport.prepareAnnouncementTable(announcementTable, {
+      sidebarCategoryAnnouncementsAndVoting: "\u516C\u544A\u8207\u6295\u7968",
+    });
+
+    const topics = [...announcementTable.querySelectorAll(".ccxp-lite-announcement-topic")];
+    const firstTopic = requireValue(topics[0], "firstTopic");
+
+    expect(firstTopic.textContent.replaceAll(/\s+/g, " ").trim()).toContain(
+      "2022/12/03 \u7CFB\u7D71\u516C\u544A \u9078\u8AB2\u7CFB\u7D71\u7DAD\u8B77\u901A\u77E5",
+    );
+    expect(firstTopic.querySelector(".ccxp-lite-announcement-topic-token--date")?.textContent).toBe(
+      "2022/12/03",
+    );
+    expect(
+      firstTopic.querySelector(".ccxp-lite-announcement-topic-token--label")?.textContent,
+    ).toBe("\u7CFB\u7D71\u516C\u544A");
+    expect(announcementTable.querySelectorAll(".ccxp-lite-announcement-date")).toHaveLength(1);
   });
 });

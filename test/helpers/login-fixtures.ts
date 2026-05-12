@@ -116,6 +116,43 @@ export function createEnglishLoginAnnouncementHtml(): string {
   `;
 }
 
+export function createChineseLoginAnnouncementHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="zh">
+      <head></head>
+      <body>
+        <table>
+          <tr>
+            <td width="60%" style="min-width: 30em;" valign="top" align="center"></td>
+            <td width="3%"></td>
+            <td width="35%" valign="top">
+              <div align="right"><a href="inquire_cpr.html" target="_blank">&gt;&gt; <u>\u670D\u52D9\u96FB\u8A71</u> &lt;&lt;</a></div>
+              <table width="95%" border="0" cellpadding="3" cellspacing="0">
+                <tr>
+                  <td colspan="2" class="board_item">\u7CFB\u7D71\u516C\u544A</td>
+                </tr>
+                <tr>
+                  <td class="board_subject">\u65E5\u671F</td>
+                  <td class="board_subject">\u4E3B\u984C</td>
+                </tr>
+                <tr>
+                  <td class="board_0">2022/12/03</td>
+                  <td class="board_0">\u3010\u7CFB\u7D71\u516C\u544A\u3011\u9078\u8AB2\u7CFB\u7D71\u7DAD\u8B77\u901A\u77E5</td>
+                </tr>
+                <tr>
+                  <td class="board_1">2022/12/01</td>
+                  <td class="board_1">\u4E00\u822C\u516C\u544A\u5167\u5BB9</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `;
+}
+
 export function createLoginWithTabsHtml(): string {
   return `
     <!doctype html>
