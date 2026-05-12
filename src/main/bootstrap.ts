@@ -337,29 +337,10 @@
     mainDocument.body.classList.add(TOKENS.mainClass);
     mainDocument.body.style.setProperty("background-image", "none", "important");
     mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
-    // Mount the lab button to the main frame in classic mode.
-    const { sidebarState, sidebarUi, shared: sharedNamespace } = globalThis.CCXP_LITE ?? {};
-    if (sidebarState && sidebarUi && sharedNamespace) {
+    const { sidebarState } = globalThis.CCXP_LITE ?? {};
+    if (sidebarState) {
       const state = sidebarState.getSidebarUiState(mainDocument);
       mainDocument.body.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
-      const strings = sharedNamespace.getLocalizedStrings(
-        sharedNamespace.resolveLocaleFromDocument(mainDocument),
-      );
-      if (state.sidebarVariant === "classic") {
-        sidebarUi.mountSidebarVariantSwitch(
-          mainDocument,
-          state,
-          strings,
-          () => {
-            try {
-              (window.top ?? globalThis).location.reload();
-            } catch {
-              globalThis.location.reload();
-            }
-          },
-          undefined,
-        );
-      }
     }
   }
   attachAndApply();
