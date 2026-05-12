@@ -21,6 +21,7 @@
     colorPrimaryFocusBorder: "rgba(159, 95, 165, 0.28)",
     colorPrimaryFocusRing: "rgba(159, 95, 165, 0.08)",
     colorPrimaryHoverSurface: "rgba(159, 95, 165, 0.06)",
+    colorPrimaryHoverSolid: "#8E4E94",
     colorPrimaryMutedSurface: "rgba(159, 95, 165, 0.04)",
     colorPrimaryGlow: "rgba(159, 95, 165, 0.18)",
     colorLabActiveSurface: "rgba(159, 95, 165, 0.14)",

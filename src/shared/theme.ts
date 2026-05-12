@@ -66,6 +66,7 @@
       "--ccxp-lite-primary-focus-border": TOKENS.colorPrimaryFocusBorder,
       "--ccxp-lite-primary-focus-ring": TOKENS.colorPrimaryFocusRing,
       "--ccxp-lite-primary-hover-surface": TOKENS.colorPrimaryHoverSurface,
+      "--ccxp-lite-primary-hover-solid": TOKENS.colorPrimaryHoverSolid,
       "--ccxp-lite-primary-muted-surface": TOKENS.colorPrimaryMutedSurface,
       "--ccxp-lite-primary-glow": TOKENS.colorPrimaryGlow,
       "--ccxp-lite-lab-active-surface": TOKENS.colorLabActiveSurface,

@@ -369,9 +369,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-secondary:focus-v
 .ccxp-lite-landing-login .ccxp-lite-login-primary-button:focus-visible,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:hover,
 html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control-primary:focus-visible {
-  background:
-    linear-gradient(var(--ccxp-lite-primary-glow), var(--ccxp-lite-primary-glow)),
-    var(--ccxp-lite-primary);
+  background: var(--ccxp-lite-primary-hover-solid);
   box-shadow: none;
 }
 
