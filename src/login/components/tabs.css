@@ -9,8 +9,6 @@
   flex-direction: column;
   gap: var(--ccxp-lite-spacing-md);
   padding: var(--ccxp-lite-spacing-lg);
-  border: 1px solid var(--ccxp-lite-border);
-  border-radius: var(--ccxp-lite-radius-sm);
   background: var(--ccxp-lite-surface);
 }
 
@@ -30,8 +28,8 @@
 
 .ccxp-lite-account-guide-title {
   margin: 0;
-  color: var(--ccxp-lite-type-page-title-color);
-  font: var(--ccxp-lite-type-page-title);
+  color: var(--ccxp-lite-type-body-strong-color);
+  font: var(--ccxp-lite-type-body-strong);
 }
 
 .ccxp-lite-account-guide-info-list,
@@ -69,8 +67,8 @@
 }
 
 .ccxp-lite-account-guide-account-label {
-  color: var(--ccxp-lite-type-body-strong-color);
-  font: var(--ccxp-lite-type-body-strong);
+  color: var(--ccxp-lite-type-body-color);
+  font: var(--ccxp-lite-type-body);
 }
 
 .ccxp-lite-account-guide-account-value {
@@ -91,9 +89,9 @@
   height: var(--ccxp-lite-size-icon-button-sm);
   margin-left: var(--ccxp-lite-spacing-2xs);
   padding: 0;
-  border: 1px solid var(--ccxp-lite-primary-focus-border);
+  border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
-  background: var(--ccxp-lite-primary-hover-surface);
+  background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-caption);
   font-weight: var(--ccxp-lite-font-weight-strong);
@@ -115,8 +113,7 @@
   padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-sm);
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-sm);
-  background: var(--ccxp-lite-sidebar-surface);
-  box-shadow: 0 8px 24px var(--ccxp-lite-border);
+  background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-body-color);
   font: var(--ccxp-lite-type-utility);
   opacity: 0;
@@ -138,10 +135,24 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-xs);
-  color: var(--ccxp-lite-type-body-muted-color);
+  padding: var(--ccxp-lite-spacing-sm) var(--ccxp-lite-spacing-inset-lg);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-full);
+  background: var(--ccxp-lite-surface);
+  color: var(--ccxp-lite-type-utility-color);
   font: var(--ccxp-lite-type-utility);
   text-decoration: none;
   white-space: nowrap;
+}
+
+.ccxp-lite-landing-service-link-primary {
+  border-color: var(--ccxp-lite-primary-focus-border);
+  background: var(--ccxp-lite-primary-hover-surface);
+  color: var(--ccxp-lite-type-body-strong-color);
+}
+
+.ccxp-lite-landing-service-link-secondary {
+  background: var(--ccxp-lite-surface);
 }
 
 .ccxp-lite-landing-support-links {

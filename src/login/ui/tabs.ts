@@ -28,7 +28,7 @@
     const titleWrap = targetDocument.createElement("div");
     titleWrap.className = "ccxp-lite-account-guide-title-wrap";
 
-    const title = targetDocument.createElement("h2");
+    const title = targetDocument.createElement("h3");
     title.className = "ccxp-lite-account-guide-title";
     title.textContent = copy.title;
     titleWrap.append(title);
@@ -73,7 +73,7 @@
     const line = targetDocument.createElement("div");
     line.className = "ccxp-lite-account-guide-account-line";
 
-    const label = targetDocument.createElement("strong");
+    const label = targetDocument.createElement("span");
     label.className = "ccxp-lite-account-guide-account-label";
     label.textContent = `${spec.label}:`;
     line.append(label);

@@ -256,19 +256,14 @@
         return false;
       }
       const href = (anchor.getAttribute("href") ?? "").toLowerCase();
-      if (
-        href.includes("inquire_cpr.html") ||
-        href.includes("inquire_cpr_en.html") ||
-        href.includes("forget.php") ||
-        href.includes("forget_en.php")
-      ) {
+      if (href.includes("forget.php") || href.includes("forget_en.php")) {
         return true;
       }
       return isCannotLoginLabel(anchor.textContent);
     };
     if (!utilityLinksTable) {
       const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
-        "a[href*='forget.php'], a[href*='forget_en.php'], a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html']",
+        "a[href*='forget.php'], a[href*='forget_en.php']",
       );
       return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
     }
@@ -278,7 +273,7 @@
       return fromUtility;
     }
     const fallbackAnchor = targetDocument.querySelector<HTMLAnchorElement>(
-      "a[href*='forget.php'], a[href*='forget_en.php'], a[href*='inquire_cpr.html'], a[href*='inquire_cpr_en.html']",
+      "a[href*='forget.php'], a[href*='forget_en.php']",
     );
     return fallbackAnchor && isCannotLoginAnchor(fallbackAnchor) ? fallbackAnchor : undefined;
   }
@@ -333,12 +328,13 @@
     targetDocument: Document,
     sourceAnchor: HTMLAnchorElement | undefined,
     labelText: string,
+    variant: "primary" | "secondary" = "secondary",
   ) {
     if (!sourceAnchor) {
       return undefined;
     }
     const anchor = targetDocument.createElement("a");
-    anchor.className = "ccxp-lite-landing-service-link";
+    anchor.className = `ccxp-lite-landing-service-link ccxp-lite-landing-service-link-${variant}`;
     anchor.href = sourceAnchor.href;
     anchor.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
     anchor.rel = "noopener noreferrer";
@@ -361,13 +357,21 @@
     if (!servicePhoneLink && !cannotLoginLink) {
       return undefined;
     }
-    const wrap = targetDocument.createElement("div");
-    wrap.className = "ccxp-lite-landing-support-links";
     if (servicePhoneLink) {
-      wrap.append(servicePhoneLink);
+      servicePhoneLink.classList.remove("ccxp-lite-landing-service-link-secondary");
+      servicePhoneLink.classList.add("ccxp-lite-landing-service-link-secondary");
     }
     if (cannotLoginLink) {
+      cannotLoginLink.classList.remove("ccxp-lite-landing-service-link-secondary");
+      cannotLoginLink.classList.add("ccxp-lite-landing-service-link-primary");
+    }
+    const wrap = targetDocument.createElement("div");
+    wrap.className = "ccxp-lite-landing-support-links";
+    if (cannotLoginLink) {
       wrap.append(cannotLoginLink);
+    }
+    if (servicePhoneLink) {
+      wrap.append(servicePhoneLink);
     }
     return wrap;
   }

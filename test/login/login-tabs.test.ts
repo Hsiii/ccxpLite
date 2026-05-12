@@ -56,6 +56,15 @@ describe("login tabs", () => {
         "student alumni popup",
       ).textContent,
     ).toContain("\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005");
+    const ctas = [
+      ...result.shell.querySelectorAll<HTMLElement>(".ccxp-lite-landing-service-link"),
+    ].map((link) => ({
+      text: link.textContent.trim(),
+      className: link.className,
+    }));
+    expect(ctas[0]?.text).toContain("\u7121\u6CD5\u767B\u5165");
+    expect(ctas[0]?.className).toContain("ccxp-lite-landing-service-link-primary");
+    expect(ctas[1]?.className).toContain("ccxp-lite-landing-service-link-secondary");
   });
 
   test("uses english copy when the login page locale is english", () => {
