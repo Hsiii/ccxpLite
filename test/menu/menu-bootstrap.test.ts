@@ -45,4 +45,24 @@ describe("sidebar bootstrap", () => {
 
     expect(sidebarFavorites.favoriteSubscribers.size).toBe(1);
   });
+
+  test("creates the search icon with intrinsic dimensions during bootstrap", () => {
+    const { window } = createTestWindow(createSidebarTreeDocument());
+    const document = window.document as Document;
+    loadModules(window, [...menuModulePaths, "src/menu/ui/bootstrap.ts"]);
+
+    const sidebar = requireValue(window.CCXP_LITE.sidebar, "sidebar");
+
+    sidebar.simplifySidebar(
+      {
+        contentDocument: document,
+      } as unknown as HTMLIFrameElement,
+      () => undefined,
+    );
+
+    const searchMarkup = document.body.innerHTML;
+    expect(searchMarkup).toContain('class="ccxp-lite-sidebar-search-icon"');
+    expect(searchMarkup).toContain('width="16"');
+    expect(searchMarkup).toContain('height="16"');
+  });
 });
