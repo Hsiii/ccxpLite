@@ -1,5 +1,5 @@
 .ccxp-lite-landing-tabs {
-  width: min(100%, calc(var(--ccxp-lite-landing-max-width) * 0.78));
+  width: 100%;
   max-width: 100%;
   margin-inline: auto;
 }
@@ -8,8 +8,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--ccxp-lite-spacing-md);
+  width: min(100%, 420px);
   padding: var(--ccxp-lite-spacing-lg);
-  background: var(--ccxp-lite-surface);
+  border: 1px solid var(--ccxp-lite-border);
+  border-radius: var(--ccxp-lite-radius-md);
+  background: var(--ccxp-lite-sidebar-surface);
 }
 
 .ccxp-lite-account-guide-header {
@@ -166,13 +169,14 @@ html[data-ccxp-lite-scope="landing"]
 }
 
 @media (max-width: 960px) {
-  .ccxp-lite-landing-tabs {
-    width: 100%;
+  .ccxp-lite-account-guide {
+    width: min(100%, 480px);
   }
 }
 
 @media (max-width: 720px) {
   .ccxp-lite-account-guide {
+    width: 100%;
     padding: var(--ccxp-lite-spacing-md);
   }
 
