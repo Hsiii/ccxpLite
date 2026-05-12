@@ -61,6 +61,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   grid-template-areas: "brand utility lang";
+  flex: 0 0 var(--ccxp-lite-size-landing-header-height);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -70,6 +71,7 @@
   background: var(--ccxp-lite-sidebar-surface);
   padding-inline: var(--ccxp-lite-spacing-inset-lg);
   height: var(--ccxp-lite-size-landing-header-height);
+  min-height: var(--ccxp-lite-size-landing-header-height);
   font-size: var(--ccxp-lite-font-size-sidebar-brand);
   border-bottom: 1px solid var(--ccxp-lite-border);
 }
