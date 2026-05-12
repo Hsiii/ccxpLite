@@ -66,12 +66,13 @@
 }
 
 .ccxp-lite-pane-header {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--ccxp-lite-spacing-sm);
-  height: 48px;
-  min-height: 48px;
+  height: var(--ccxp-lite-size-landing-header-height);
+  min-height: var(--ccxp-lite-size-landing-header-height);
   flex-shrink: 0;
 }
 
@@ -89,7 +90,7 @@
   gap: 0;
   .ccxp-lite-pane-header-detail {
     padding-inline: var(--ccxp-lite-spacing-md);
-    margin-block: var(--ccxp-lite-spacing-md);
+    margin: 0;
   }
   .ccxp-lite-destination-wrap {
     border-top: 1px solid var(--ccxp-lite-border);
