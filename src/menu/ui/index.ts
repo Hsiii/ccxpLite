@@ -225,6 +225,7 @@
     const status = targetDocument.createElement("span");
     status.className = "ccxp-lite-sidebar-experiment-state";
     status.setAttribute("aria-hidden", "true");
+    status.textContent = isLayered ? strings.sidebarExperimentOn : strings.sidebarExperimentOff;
     button.append(iconWrap);
     button.append(copy);
     button.append(status);

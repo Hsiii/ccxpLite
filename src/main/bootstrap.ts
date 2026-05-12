@@ -68,6 +68,7 @@
     });
     attachFrameListener(mainFrame, () => {
       simplifyMainFrame(mainFrame);
+      sidebarLib.simplifySidebar(navFrame, retry);
     });
     if (frames.top) {
       removeHeader(frames.top);
