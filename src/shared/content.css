@@ -10,3 +10,27 @@ body {
 * {
   box-sizing: border-box;
 }
+
+body[data-ccxp-lite-sidebar-variant] {
+  --ccxp-lite-lab-offset-inline: var(--ccxp-lite-spacing-lg);
+  --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-lg);
+}
+
+body[data-ccxp-lite-sidebar-variant="layered"] {
+  --ccxp-lite-lab-offset-block: var(--ccxp-lite-spacing-md);
+}
+
+[data-ccxp-lite-floating-anchor="true"] {
+  position: fixed;
+  inset-inline-end: var(--ccxp-lite-lab-offset-inline);
+  inset-block-end: var(--ccxp-lite-lab-offset-block);
+  z-index: 2147483646;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+[data-ccxp-lite-floating-anchor="true"] > * {
+  pointer-events: auto;
+}

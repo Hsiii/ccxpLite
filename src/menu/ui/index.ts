@@ -59,6 +59,8 @@
     if (searchInput && searchInput.value !== state.searchQuery) {
       searchInput.value = state.searchQuery;
     }
+    const hostBody = hostDocument.body;
+    hostBody.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
     const model = typeof modelInput === "function" ? modelInput() : modelInput;
     const filteredCategories = filterCategories(model.categories, state.searchQuery);
     const activeCategoryFromFiltered = filteredCategories.find(
@@ -1543,20 +1545,8 @@
       mainDocument ?? undefined,
       mountDocument,
     ]);
-    const switchPosition =
-      variant === "classic"
-        ? {
-            right: TOKENS.spacingLg,
-            bottom: TOKENS.spacingLg,
-          }
-        : {
-            right: TOKENS.spacingLg,
-            bottom: TOKENS.spacingMd,
-          };
     Object.assign(button.style, {
-      position: "fixed",
-      ...switchPosition,
-      zIndex: "2147483646",
+      position: "relative",
     });
     getOverlayMountNode(mountDocument).append(button);
   }
@@ -1576,7 +1566,14 @@
   }
 
   function getOverlayMountNode(targetDocument: Document): HTMLElement {
-    return targetDocument.body;
+    const targetBody = targetDocument.body;
+    let anchor = targetBody.querySelector<HTMLElement>("[data-ccxp-lite-floating-anchor='true']");
+    if (!anchor) {
+      anchor = targetDocument.createElement("div");
+      anchor.dataset.ccxpLiteFloatingAnchor = "true";
+      targetBody.append(anchor);
+    }
+    return anchor;
   }
 
   function createBackIcon(targetDocument: Document) {
