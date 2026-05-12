@@ -313,6 +313,12 @@
   height: var(--ccxp-lite-font-size-body);
 }
 
+.ccxp-lite-password-toggle:hover,
+.ccxp-lite-password-toggle:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
+  border-radius: var(--ccxp-lite-radius-full);
+}
+
 .ccxp-lite-landing-login .ccxp-lite-image-action-button,
 .ccxp-lite-landing-login .ccxp-lite-image-link-button {
   min-width: var(--ccxp-lite-size-control-min-width);
@@ -342,6 +348,18 @@
   font: var(--ccxp-lite-type-body);
   font-size: var(--ccxp-lite-font-size-utility);
   font-weight: var(--ccxp-lite-font-weight-strong);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-image-action-button:hover,
+.ccxp-lite-landing-login .ccxp-lite-image-link-button:hover,
+.ccxp-lite-landing-login .ccxp-lite-image-action-button:focus-visible,
+.ccxp-lite-landing-login .ccxp-lite-image-link-button:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-primary-button:hover,
+.ccxp-lite-landing-login .ccxp-lite-login-primary-button:focus-visible {
+  background: var(--ccxp-lite-primary);
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-action-group {
@@ -385,6 +403,13 @@
 
 .ccxp-lite-landing-login .ccxp-lite-audio-icon-link {
   text-decoration: none;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-button:hover,
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-link:hover,
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-button:focus-visible,
+.ccxp-lite-landing-login .ccxp-lite-audio-icon-link:focus-visible {
+  background: var(--ccxp-lite-primary-hover-surface);
 }
 
 .ccxp-lite-landing-login .ccxp-lite-audio-icon-button svg,
