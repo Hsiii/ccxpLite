@@ -49,9 +49,7 @@ describe("shared theme", () => {
     const stylesheetLinks = document.head.querySelectorAll("[data-ccxp-lite-stylesheet='true']");
     expect(stylesheetLinks).toHaveLength(1);
     expect(document.documentElement.dataset.ccxpLiteScope).toBe("nav");
-    expect(document.documentElement.style.getPropertyValue("--ccxp-lite-primary")).toBe(
-      "rgb(121, 36, 133)",
-    );
+    expect(document.documentElement.style.getPropertyValue("--ccxp-lite-primary")).toBe("#9F5FA5");
   });
   test("creates a head before injecting the stylesheet", () => {
     const { window } = createTestWindow("<!doctype html><html lang='zh'><body></body></html>");
