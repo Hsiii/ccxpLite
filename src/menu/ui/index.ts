@@ -1538,9 +1538,10 @@
   ) {
     const isClassic = state.sidebarVariant === "classic";
     const scopeDocument = resolveClassicOverlayScopeDocument(targetDocument, isClassic);
+    const topDocument = resolveTopLevelDocument();
     const button = createSidebarVariantSwitch(scopeDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
-    removeExistingSidebarVariantSwitches([targetDocument, scopeDocument]);
+    removeExistingSidebarVariantSwitches([targetDocument, scopeDocument, topDocument]);
     Object.assign(button.style, {
       position: "relative",
       pointerEvents: "auto",
@@ -1560,7 +1561,7 @@
       return targetDocument;
     }
     try {
-      const scopeDocument = window.top?.document;
+      const scopeDocument = resolveTopLevelDocument();
       if (!scopeDocument) {
         return targetDocument;
       }
@@ -1568,6 +1569,14 @@
       return scopeDocument;
     } catch {
       return targetDocument;
+    }
+  }
+
+  function resolveTopLevelDocument(): Document | undefined {
+    try {
+      return window.top?.document ?? undefined;
+    } catch {
+      return undefined;
     }
   }
 
