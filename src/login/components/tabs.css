@@ -103,7 +103,7 @@
   background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-body-strong-color);
   line-height: 1;
-  cursor: help;
+  cursor: pointer;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
 }
 
@@ -150,8 +150,8 @@
   display: none;
 }
 
-.ccxp-lite-account-guide-info:hover .ccxp-lite-account-guide-info-popup,
-.ccxp-lite-account-guide-info:focus-within .ccxp-lite-account-guide-info-popup {
+.ccxp-lite-account-guide-info[data-ccxp-lite-popup-open="true"]
+  .ccxp-lite-account-guide-info-popup {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);

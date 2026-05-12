@@ -112,6 +112,7 @@
     button.className = "ccxp-lite-account-guide-info-button";
     button.type = "button";
     button.setAttribute("aria-label", labelText);
+    button.setAttribute("aria-expanded", "false");
     button.append(createInfoIcon(targetDocument));
     wrap.append(button);
 
@@ -119,21 +120,61 @@
     popup.className = ["ccxp-lite-account-guide-info-popup", popupClassName]
       .filter((className) => className !== undefined && className !== "")
       .join(" ");
+    const popupId = `ccxp-lite-info-popup-${Math.random().toString(36).slice(2, 10)}`;
+    popup.id = popupId;
     popup.hidden = true;
     popup.append(popupContent);
     wrap.append(popup);
+    button.setAttribute("aria-controls", popupId);
 
     const showPopup = () => {
+      wrap.dataset.ccxpLitePopupOpen = "true";
       popup.hidden = false;
+      button.setAttribute("aria-expanded", "true");
     };
     const hidePopup = () => {
+      wrap.dataset.ccxpLitePopupOpen = "false";
       popup.hidden = true;
+      button.setAttribute("aria-expanded", "false");
+    };
+    const togglePopup = () => {
+      if (popup.hidden) {
+        showPopup();
+        return;
+      }
+      hidePopup();
     };
 
-    wrap.addEventListener("mouseenter", showPopup);
-    wrap.addEventListener("mouseleave", hidePopup);
-    button.addEventListener("focus", showPopup);
-    button.addEventListener("blur", hidePopup);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      togglePopup();
+    });
+    popup.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+    targetDocument.addEventListener("click", (event) => {
+      if (wrap.contains(event.target as Node | null)) {
+        return;
+      }
+      hidePopup();
+    });
+    button.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      event.preventDefault();
+      hidePopup();
+      button.blur();
+    });
+    popup.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+      event.preventDefault();
+      hidePopup();
+      button.focus();
+    });
 
     return wrap;
   }
