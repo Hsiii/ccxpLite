@@ -44,24 +44,13 @@ describe("login tabs", () => {
       ...result.shell.querySelectorAll<HTMLElement>(".ccxp-lite-account-guide-account-item"),
     ].map((item) => item.textContent.trim());
     expect(accountItems[0]).toContain(
-      "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F:\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
+      "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F:\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09\uFF0C\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005",
     );
     expect(accountItems[2]).toContain("\u7D71\u4E00\u7DE8\u865F");
     expect(accountItems[6]).toContain(
       "\u59D4\u8A17\u6388\u6B0A\u5E33\u865F:\u59D4\u8A17\u4EBA\u54E1\u5DE5\u7DE8\u865F-01\uFF08\u4F8B\uFF1AA11111-01\uFF09",
     );
-    expect(
-      requireElement(
-        result.shell.querySelector<HTMLElement>(".ccxp-lite-account-guide-info-popup"),
-        "student alumni popup",
-      ).textContent,
-    ).toContain("\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005");
-    expect(
-      requireElement(
-        result.shell.querySelector<HTMLElement>(".ccxp-lite-account-guide-info-popup"),
-        "student alumni popup",
-      ).hidden,
-    ).toBe(true);
+    expect(result.shell.querySelector(".ccxp-lite-account-guide-info-popup")).toBeNull();
     const ctas = [
       ...result.shell.querySelectorAll<HTMLElement>(".ccxp-lite-landing-service-link"),
     ].map((link) => ({

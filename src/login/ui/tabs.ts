@@ -150,10 +150,8 @@
         accounts: [
           {
             label: "Student / alumni account",
-            value: "student ID (e.g. 110061190, X1106099, 102061190)",
-            popup:
-              "Nanda campus entrants from year 105 or earlier use the Nanda portal password. Contact the Nanda computer center if it is forgotten.",
-            popupLabel: "Student and alumni account details",
+            value:
+              "student ID (e.g. 110061190, X1106099, 102061190), Nanda campus entrants from year 105 or earlier use the Nanda portal password. Contact the Nanda computer center if it is forgotten.",
           },
           {
             label: "Faculty / staff account",
@@ -192,10 +190,8 @@
       accounts: [
         {
           label: "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F",
-          value: "\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09",
-          popup:
-            "\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005\uFF1A\u5BC6\u78BC\u6CBF\u7528\u5357\u5927\u6821\u5340\u5165\u53E3\u7DB2\uFF1B\u82E5\u5FD8\u8A18\u5BC6\u78BC\uFF0C\u8ACB\u6D3D\u5357\u5927\u6821\u5340\u8A08\u4E2D\u3002",
-          popupLabel: "\u5B78\u751F\u8207\u6821\u53CB\u5E33\u865F\u88DC\u5145\u8AAA\u660E",
+          value:
+            "\u5B78\u865F\uFF08\u4F8B\uFF1A110061190\u3001X1106099\u3001102061190\uFF09\uFF0C\u5357\u5927\u6821\u5340 105 \u5E74\u524D\u5165\u5B78\u8005\uFF1A\u5BC6\u78BC\u6CBF\u7528\u5357\u5927\u6821\u5340\u5165\u53E3\u7DB2\uFF1B\u82E5\u5FD8\u8A18\u5BC6\u78BC\uFF0C\u8ACB\u6D3D\u5357\u5927\u6821\u5340\u8A08\u4E2D\u3002",
         },
         {
           label: "\u6559\u8077\u54E1\u5E33\u865F",
