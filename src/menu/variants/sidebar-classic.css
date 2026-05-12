@@ -20,6 +20,7 @@
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-sidebar-brand-group {
   display: inline-flex;
+  flex: 0 0 auto;
   align-items: center;
   min-width: 0;
   gap: var(--ccxp-lite-spacing-sm);
