@@ -300,7 +300,7 @@
     const sourceAnchor = serviceLinkNode.matches("a[href]")
       ? (serviceLinkNode as HTMLAnchorElement)
       : serviceLinkNode.querySelector<HTMLAnchorElement>("a[href]");
-    const sourceLabel = sourceAnchor?.textContent.trim() ?? "";
+    const sourceLabel = normalizeSupportLabel(sourceAnchor?.textContent);
     return buildLandingSupportLink(
       targetDocument,
       sourceAnchor ?? undefined,
@@ -316,12 +316,16 @@
     if (!sourceAnchor) {
       return undefined;
     }
-    const sourceLabel = sourceAnchor.textContent.trim();
+    const sourceLabel = normalizeSupportLabel(sourceAnchor.textContent);
     let labelText = strings.cannotLogin;
     if (!isCannotLoginLabel(sourceLabel) && sourceLabel !== "") {
       labelText = sourceLabel;
     }
     return buildLandingSupportLink(targetDocument, sourceAnchor, labelText);
+  }
+
+  function normalizeSupportLabel(label: string | undefined) {
+    return (label ?? "").replaceAll(">>", "").replaceAll("<<", "").replaceAll(/\s+/g, " ").trim();
   }
 
   function buildLandingSupportLink(
