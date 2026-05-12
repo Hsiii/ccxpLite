@@ -1536,13 +1536,79 @@
     rerender: () => void,
     _footer?: HTMLElement,
   ) {
-    const button = createSidebarVariantSwitch(targetDocument, state, strings, rerender);
+    const isClassic = state.sidebarVariant === "classic";
+    const scopeDocument = resolveClassicOverlayScopeDocument(targetDocument, isClassic);
+    const button = createSidebarVariantSwitch(scopeDocument, state, strings, rerender);
     button.dataset.ccxpLiteSidebarLabSwitch = "true";
-    removeExistingSidebarVariantSwitches([targetDocument]);
+    removeExistingSidebarVariantSwitches([targetDocument, scopeDocument]);
     Object.assign(button.style, {
       position: "relative",
+      pointerEvents: "auto",
     });
+    if (isClassic && scopeDocument !== targetDocument) {
+      getClassicMainFrameOverlayMountNode(scopeDocument).append(button);
+      return;
+    }
     getOverlayMountNode(targetDocument).append(button);
+  }
+
+  function resolveClassicOverlayScopeDocument(
+    targetDocument: Document,
+    isClassic: boolean,
+  ): Document {
+    if (!isClassic) {
+      return targetDocument;
+    }
+    try {
+      const scopeDocument = window.top?.document;
+      if (!scopeDocument) {
+        return targetDocument;
+      }
+      ensureThemeDocument(scopeDocument, "nav");
+      return scopeDocument;
+    } catch {
+      return targetDocument;
+    }
+  }
+
+  function getClassicMainFrameOverlayMountNode(targetDocument: Document): HTMLElement {
+    const targetRoot = targetDocument.documentElement;
+    let anchor = targetDocument.querySelector<HTMLElement>(
+      "[data-ccxp-lite-main-frame-overlay-anchor='true']",
+    );
+    if (!anchor) {
+      anchor = targetDocument.createElement("div");
+      anchor.dataset.ccxpLiteMainFrameOverlayAnchor = "true";
+      targetRoot.append(anchor);
+    }
+    syncClassicMainFrameOverlayPosition(targetDocument, anchor);
+    return anchor;
+  }
+
+  function syncClassicMainFrameOverlayPosition(targetDocument: Document, anchor: HTMLElement) {
+    const mainFrame = targetDocument.querySelector<HTMLElement>("frame[name='main']");
+    const view = targetDocument.defaultView;
+    if (!mainFrame || !view) {
+      Object.assign(anchor.style, {
+        position: "fixed",
+        insetInlineEnd: "var(--ccxp-lite-spacing-lg)",
+        insetBlockEnd: "var(--ccxp-lite-spacing-lg)",
+      });
+      return;
+    }
+    const rect = mainFrame.getBoundingClientRect();
+    const inlineOffset = Math.max(0, view.innerWidth - rect.right);
+    const blockOffset = Math.max(0, view.innerHeight - rect.bottom);
+    Object.assign(anchor.style, {
+      position: "fixed",
+      insetInlineEnd: `calc(var(--ccxp-lite-spacing-lg) + ${inlineOffset}px)`,
+      insetBlockEnd: `calc(var(--ccxp-lite-spacing-lg) + ${blockOffset}px)`,
+      zIndex: "2147483646",
+      display: "flex",
+      alignItems: "flex-end",
+      justifyContent: "flex-end",
+      pointerEvents: "none",
+    });
   }
 
   function removeExistingSidebarVariantSwitches(documents: ReadonlyArray<Document | undefined>) {
@@ -1565,6 +1631,11 @@
         "[data-ccxp-lite-floating-anchor-host='true']",
       )) {
         delete (node as HTMLElement).dataset.ccxpLiteFloatingAnchorHost;
+      }
+      for (const node of scopeDocument.querySelectorAll(
+        "[data-ccxp-lite-main-frame-overlay-anchor='true']",
+      )) {
+        node.remove();
       }
     }
   }
