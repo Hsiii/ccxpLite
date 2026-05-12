@@ -30,6 +30,8 @@
     prepareAnnouncementTable,
   } = loginSupport;
   const {
+    attachAccountFormatInfo,
+    attachPasswordInfoPopover,
     normalizeLoginFormLayout,
     removeLoginResetControls,
     forceCaptchaLabelDisplay,
@@ -118,6 +120,8 @@
     }
 
     normalizeLoginFormLayout(loginSection);
+    attachAccountFormatInfo(targetDocument, loginSection);
+    attachPasswordInfoPopover(targetDocument, loginSection, cannotLoginLink);
     removeLoginResetControls(loginSection);
     forceCaptchaLabelDisplay(loginSection);
     replaceLoginFormImageButtons(targetDocument, loginSection);
@@ -177,8 +181,10 @@
       bodySection.append(loginSection);
       if (announcementTable) {
         prepareAnnouncementTable(announcementTable, strings);
-        noticesSection.append(announcementTable);
-        bodySection.append(noticesSection);
+        if (!announcementTable.hidden) {
+          noticesSection.append(announcementTable);
+          bodySection.append(noticesSection);
+        }
       }
       topSection.append(bodySection);
       shell.append(topSection);
@@ -195,8 +201,10 @@
 
     if (announcementTable && !(tabNavigation && tabContents.length > 0)) {
       prepareAnnouncementTable(announcementTable, strings);
-      noticesSection.append(announcementTable);
-      shell.append(noticesSection);
+      if (!announcementTable.hidden) {
+        noticesSection.append(announcementTable);
+        shell.append(noticesSection);
+      }
     }
 
     return {

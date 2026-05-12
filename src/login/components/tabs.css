@@ -127,6 +127,7 @@
   background: var(--ccxp-lite-surface);
   color: var(--ccxp-lite-type-body-color);
   font: var(--ccxp-lite-type-utility);
+  font-weight: var(--ccxp-lite-font-weight-regular);
   opacity: 0;
   pointer-events: none;
   transform: translateY(var(--ccxp-lite-spacing-2xs));
@@ -144,6 +145,27 @@
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+}
+
+.ccxp-lite-account-format-popup {
+  white-space: normal;
+}
+
+.ccxp-lite-account-format-list {
+  margin: 0;
+  padding-left: calc(var(--ccxp-lite-spacing-inset-sm) + var(--ccxp-lite-spacing-2xs));
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-regular);
+}
+
+.ccxp-lite-account-format-item + .ccxp-lite-account-format-item {
+  margin-top: var(--ccxp-lite-spacing-xs);
+}
+
+.ccxp-lite-account-format-label,
+.ccxp-lite-account-format-value {
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-regular);
 }
 
 .ccxp-lite-landing-service-link {

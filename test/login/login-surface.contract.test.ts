@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 
 import {
   createTestWindow,
+  requireElement,
   loadModules,
   loginModulePaths,
   requireValue,
@@ -56,6 +57,18 @@ describe("login surface contract", () => {
       supportLinkCount: 0,
     });
     expect(document.querySelectorAll(".ccxp-lite-password-toggle")).toHaveLength(1);
+    const accountLabelCell = requireElement(
+      document.querySelector("input[name='account']")?.closest("tr")?.querySelector("td"),
+      "account label cell",
+    );
+    expect(accountLabelCell.textContent).toContain("\u5E33\u865F");
+    expect(accountLabelCell.querySelector(".ccxp-lite-account-guide-info-button")).not.toBeNull();
+    const popup = requireElement(
+      accountLabelCell.querySelector(".ccxp-lite-account-format-popup"),
+      "account format popup",
+    );
+    expect(popup.textContent).toContain("\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F");
+    expect(popup.querySelectorAll(".ccxp-lite-account-format-item")).toHaveLength(7);
   });
 
   test("rewriteLoginSurface keeps the tabbed login experience behind a small contract", () => {

@@ -33,14 +33,16 @@
     title.textContent = copy.title;
     titleWrap.append(title);
 
-    const infoList = targetDocument.createElement("ul");
-    infoList.className = "ccxp-lite-account-guide-info-list";
-    for (const itemText of copy.infoItems) {
-      const item = targetDocument.createElement("li");
-      item.textContent = itemText;
-      infoList.append(item);
+    if (copy.infoItems.length > 0) {
+      const infoList = targetDocument.createElement("ul");
+      infoList.className = "ccxp-lite-account-guide-info-list";
+      for (const itemText of copy.infoItems) {
+        const item = targetDocument.createElement("li");
+        item.textContent = itemText;
+        infoList.append(item);
+      }
+      titleWrap.append(infoList);
     }
-    titleWrap.append(infoList);
     header.append(titleWrap);
     shell.append(header);
 
@@ -92,6 +94,17 @@
   }
 
   function buildInfoPopover(targetDocument: Document, popupText: string, labelText: string) {
+    const popupContent = targetDocument.createElement("span");
+    popupContent.textContent = popupText;
+    return buildInfoPopoverContent(targetDocument, popupContent, labelText);
+  }
+
+  function buildInfoPopoverContent(
+    targetDocument: Document,
+    popupContent: Node,
+    labelText: string,
+    popupClassName?: string,
+  ) {
     const wrap = targetDocument.createElement("span");
     wrap.className = "ccxp-lite-account-guide-info";
 
@@ -103,9 +116,11 @@
     wrap.append(button);
 
     const popup = targetDocument.createElement("span");
-    popup.className = "ccxp-lite-account-guide-info-popup";
-    popup.textContent = popupText;
+    popup.className = ["ccxp-lite-account-guide-info-popup", popupClassName]
+      .filter((className) => className !== undefined && className !== "")
+      .join(" ");
     popup.hidden = true;
+    popup.append(popupContent);
     wrap.append(popup);
 
     const showPopup = () => {
@@ -121,6 +136,80 @@
     button.addEventListener("blur", hidePopup);
 
     return wrap;
+  }
+
+  function createAccountFormatExamples(
+    targetDocument: Document,
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
+  ) {
+    const copy = getGuideCopy(strings, targetDocument);
+    const list = targetDocument.createElement("ul");
+    list.className = "ccxp-lite-account-format-list";
+    for (const spec of copy.accounts) {
+      const item = targetDocument.createElement("li");
+      item.className = "ccxp-lite-account-format-item";
+
+      const label = targetDocument.createElement("span");
+      label.className = "ccxp-lite-account-format-label";
+      label.textContent = `${spec.label}: `;
+      item.append(label);
+
+      const value = targetDocument.createElement("span");
+      value.className = "ccxp-lite-account-format-value";
+      value.textContent = spec.value;
+      item.append(value);
+
+      list.append(item);
+    }
+    return list;
+  }
+
+  function createAccountFormatPopover(
+    targetDocument: Document,
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
+  ) {
+    return buildInfoPopoverContent(
+      targetDocument,
+      createAccountFormatExamples(targetDocument, strings),
+      strings.fieldAccount,
+      "ccxp-lite-account-format-popup",
+    );
+  }
+
+  function createPasswordHelpPopover(
+    targetDocument: Document,
+    strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
+    cannotLoginAnchor?: HTMLAnchorElement,
+  ) {
+    const copy = getPasswordHelpCopy(strings, targetDocument);
+    const content = targetDocument.createElement("div");
+    content.className = "ccxp-lite-password-help-popup";
+
+    const recoveryLine = targetDocument.createElement("p");
+    recoveryLine.className = "ccxp-lite-password-help-popup-line";
+    recoveryLine.append(targetDocument.createTextNode(copy.recoveryPrefix));
+    if (cannotLoginAnchor) {
+      recoveryLine.append(createPasswordHelpLink(targetDocument, cannotLoginAnchor, strings));
+    } else {
+      const fallback = targetDocument.createElement("span");
+      fallback.className = "ccxp-lite-password-help-popup-link";
+      fallback.textContent = strings.cannotLogin;
+      recoveryLine.append(fallback);
+    }
+    recoveryLine.append(targetDocument.createTextNode(copy.recoverySuffix));
+    content.append(recoveryLine);
+
+    const hygieneLine = targetDocument.createElement("p");
+    hygieneLine.className = "ccxp-lite-password-help-popup-line";
+    hygieneLine.textContent = copy.hygiene;
+    content.append(hygieneLine);
+
+    return buildInfoPopoverContent(
+      targetDocument,
+      content,
+      copy.buttonLabel,
+      "ccxp-lite-password-help-popup-shell",
+    );
   }
 
   function getGuideCopy(
@@ -143,10 +232,7 @@
     if (!isZh) {
       return {
         title: "Login Info",
-        infoItems: [
-          `First-time sign-in, account activation, and password reset: use "${strings.cannotLogin}".`,
-          "The system periodically requires password changes. Avoid birthdays, ID numbers, and phone numbers.",
-        ],
+        infoItems: [],
         accounts: [
           {
             label: "Student / alumni account",
@@ -183,10 +269,7 @@
 
     return {
       title: "\u767B\u5165\u8CC7\u8A0A",
-      infoItems: [
-        `\u9996\u6B21\u767B\u5165\u3001\u5E33\u865F\u555F\u7528\u3001\u5FD8\u8A18\u5BC6\u78BC\uFF1A\u8ACB\u76F4\u63A5\u9EDE\u9078\u300C${strings.cannotLogin}\u300D\u3002`,
-        "\u7CFB\u7D71\u6703\u5B9A\u671F\u8981\u6C42\u4FEE\u6539\u5BC6\u78BC\uFF0C\u8ACB\u907F\u514D\u4F7F\u7528\u751F\u65E5\u3001\u8EAB\u5206\u8B49\u5B57\u865F\u3001\u96FB\u8A71\u7B49\u6613\u731C\u8CC7\u8A0A\u3002",
-      ],
+      infoItems: [],
       accounts: [
         {
           label: "\u5B78\u751F\uFF0F\u6821\u53CB\u5E33\u865F",
@@ -221,7 +304,55 @@
     };
   }
 
+  function getPasswordHelpCopy(
+    strings: Readonly<Record<string, string>>,
+    targetDocument: Document,
+  ): Readonly<{
+    buttonLabel: string;
+    recoveryPrefix: string;
+    recoverySuffix: string;
+    hygiene: string;
+  }> {
+    const documentLanguage = targetDocument.documentElement.lang.toLowerCase();
+    const isZh =
+      documentLanguage.startsWith("zh") || strings.cannotLogin.includes("\u7121\u6CD5\u767B\u5165");
+    if (!isZh) {
+      return {
+        buttonLabel: "Password help",
+        recoveryPrefix: "First-time sign-in, account activation, or password reset: use ",
+        recoverySuffix: ".",
+        hygiene:
+          "The system periodically requires password changes. Avoid birthdays, ID numbers, and phone numbers.",
+      };
+    }
+    return {
+      buttonLabel: "\u5BC6\u78BC\u8AAA\u660E",
+      recoveryPrefix:
+        "\u9996\u6B21\u767B\u5165\u3001\u5E33\u865F\u555F\u7528\u6216\u5FD8\u8A18\u5BC6\u78BC\uFF1A\u8ACB\u4F7F\u7528",
+      recoverySuffix: "\u3002",
+      hygiene:
+        "\u7CFB\u7D71\u6703\u5B9A\u671F\u8981\u6C42\u4FEE\u6539\u5BC6\u78BC\uFF0C\u8ACB\u907F\u514D\u4F7F\u7528\u751F\u65E5\u3001\u8EAB\u5206\u8B49\u5B57\u865F\u3001\u96FB\u8A71\u7B49\u6613\u731C\u8CC7\u8A0A\u3002",
+    };
+  }
+
+  function createPasswordHelpLink(
+    targetDocument: Document,
+    sourceAnchor: HTMLAnchorElement,
+    strings: Readonly<Record<string, string>>,
+  ) {
+    const link = targetDocument.createElement("a");
+    link.className = "ccxp-lite-password-help-popup-link";
+    link.href = sourceAnchor.href;
+    link.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
+    link.rel = "noopener noreferrer";
+    link.textContent = strings.cannotLogin;
+    return link;
+  }
+
   namespace.loginTabs = {
+    createAccountFormatExamples,
+    createAccountFormatPopover,
+    createPasswordHelpPopover,
     createAccountGuide,
     createSection,
   };

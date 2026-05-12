@@ -3,9 +3,11 @@
   const namespace = runtimeScope.CCXP_LITE ?? {};
   const { shared } = namespace;
   const { loginLocale, loginSupport } = namespace;
-  if (!shared || !loginLocale || !loginSupport) {
+  const {loginTabs} = namespace;
+  if (!shared || !loginLocale || !loginSupport || !loginTabs) {
     return;
   }
+  const loginTabsLib = loginTabs;
   const { getLocalizedStrings, moveChildNodes, removeNode } = shared;
   const { resolveLoginLocale, getLoginForm } = loginLocale;
   const { findLoginSourceCell } = loginSupport;
@@ -214,19 +216,115 @@
     mergedCell.colSpan = columnCount;
     const fieldGroup = targetDocument.createElement("div");
     fieldGroup.className = "ccxp-lite-login-field";
+    const labelRow = targetDocument.createElement("div");
+    labelRow.className = "ccxp-lite-login-field-label-row";
     const label = targetDocument.createElement("label");
     label.className = "ccxp-lite-login-field-label";
     label.setAttribute("for", fieldId);
     label.textContent = resolveLoginFieldLabel(fieldPair, targetDocument);
+    labelRow.append(label);
+    const labelAccessory = buildLoginFieldLabelAccessory(targetDocument, fieldPair);
+    if (labelAccessory) {
+      labelRow.append(labelAccessory);
+    }
     const controlWrap = targetDocument.createElement("div");
     controlWrap.className = "ccxp-lite-login-field-control";
     removeInlineLoginLabelNodes(fieldPair.fieldCell, fieldPair.fieldNode);
     moveChildNodes(fieldPair.fieldCell, controlWrap);
-    fieldGroup.append(label);
+    fieldGroup.append(labelRow);
     fieldGroup.append(controlWrap);
     mergedCell.append(fieldGroup);
     row.append(mergedCell);
     return row;
+  }
+
+  function buildLoginFieldLabelAccessory(
+    targetDocument: Document,
+    fieldPair:
+      | {
+          fieldNode: Element;
+        }
+      | undefined,
+  ) {
+    const fieldName = (fieldPair?.fieldNode.getAttribute("name") ?? "").trim().toLowerCase();
+    if (fieldName !== "account") {
+      return undefined;
+    }
+    const strings = getLandingStrings(targetDocument);
+    return loginTabsLib.createAccountFormatPopover(targetDocument, strings);
+  }
+
+  function attachAccountFormatInfo(targetDocument: Document, rootNode: ParentNode) {
+    const accountFields = [
+      ...rootNode.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+        "input[name='account'], textarea[name='account'], select[name='account']",
+      ),
+    ];
+    for (const fieldNode of accountFields) {
+      if (fieldNode.dataset.ccxpLiteAccountInfoAttached === "true") {
+        continue;
+      }
+      const accessory = buildLoginFieldLabelAccessory(targetDocument, { fieldNode });
+      if (!accessory) {
+        continue;
+      }
+      const labelRow = fieldNode
+        .closest(".ccxp-lite-login-field")
+        ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
+      if (labelRow) {
+        if (!labelRow.querySelector(".ccxp-lite-account-guide-info")) {
+          labelRow.append(accessory);
+        }
+        fieldNode.dataset.ccxpLiteAccountInfoAttached = "true";
+        continue;
+      }
+      const labelCell = fieldNode.closest("tr")?.querySelector<HTMLElement>("th, td");
+      if (!labelCell || labelCell.querySelector(".ccxp-lite-account-guide-info")) {
+        continue;
+      }
+      labelCell.append(targetDocument.createTextNode(" "));
+      labelCell.append(accessory);
+      fieldNode.dataset.ccxpLiteAccountInfoAttached = "true";
+    }
+  }
+
+  function attachPasswordInfoPopover(
+    targetDocument: Document,
+    rootNode: ParentNode,
+    cannotLoginAnchor?: HTMLAnchorElement,
+  ) {
+    const passwordFields = [
+      ...rootNode.querySelectorAll<HTMLInputElement>(
+        "input[name='passwd'], input[name='password'], input[type='password']",
+      ),
+    ];
+    for (const fieldNode of passwordFields) {
+      if (
+        fieldNode.name === "passwd2" ||
+        fieldNode.dataset.ccxpLitePasswordInfoAttached === "true"
+      ) {
+        continue;
+      }
+      const labelRow = fieldNode
+        .closest(".ccxp-lite-login-field")
+        ?.querySelector<HTMLElement>(".ccxp-lite-login-field-label-row");
+      if (!labelRow) {
+        continue;
+      }
+      if (labelRow.querySelector(".ccxp-lite-password-help-trigger")) {
+        fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
+        continue;
+      }
+      const strings = getLandingStrings(targetDocument);
+      const popover = loginTabsLib.createPasswordHelpPopover(
+        targetDocument,
+        strings,
+        cannotLoginAnchor,
+      );
+      popover.classList.add("ccxp-lite-password-help-trigger");
+      labelRow.append(popover);
+      fieldNode.dataset.ccxpLitePasswordInfoAttached = "true";
+    }
   }
 
   function groupLoginFieldRows(targetDocument: Document, formNode: HTMLFormElement) {
@@ -1044,6 +1142,8 @@
     return icon;
   }
   namespace.loginUi = {
+    attachAccountFormatInfo,
+    attachPasswordInfoPopover,
     enhancePasswordVisibilityToggle,
     normalizeLoginFormLayout,
     removeLoginResetControls,

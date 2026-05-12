@@ -339,6 +339,19 @@ declare global {
   }
 
   interface CcxpLiteLoginTabs {
+    createAccountFormatExamples: (
+      targetDocument: Document,
+      strings?: Readonly<Record<string, string>>,
+    ) => HTMLElement;
+    createAccountFormatPopover: (
+      targetDocument: Document,
+      strings?: Readonly<Record<string, string>>,
+    ) => HTMLElement;
+    createPasswordHelpPopover: (
+      targetDocument: Document,
+      strings?: Readonly<Record<string, string>>,
+      cannotLoginAnchor?: HTMLAnchorElement,
+    ) => HTMLElement;
     createAccountGuide: (
       targetDocument: Document,
       strings?: Readonly<Record<string, string>>,
@@ -383,6 +396,12 @@ declare global {
   }
 
   interface CcxpLiteLoginUi {
+    attachAccountFormatInfo: (targetDocument: Document, rootNode: ParentNode) => void;
+    attachPasswordInfoPopover: (
+      targetDocument: Document,
+      rootNode: ParentNode,
+      cannotLoginAnchor?: HTMLAnchorElement,
+    ) => void;
     normalizeLoginFormLayout: (rootNode: ParentNode) => void;
     removeLoginResetControls: (rootNode: ParentNode) => void;
     forceCaptchaLabelDisplay: (rootNode: ParentNode) => void;

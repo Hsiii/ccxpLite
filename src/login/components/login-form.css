@@ -187,6 +187,14 @@
   gap: var(--ccxp-lite-spacing-2xs);
 }
 
+.ccxp-lite-landing-login .ccxp-lite-login-field-label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-2xs);
+  width: 100%;
+  min-width: 0;
+}
+
 .ccxp-lite-landing-login .ccxp-lite-login-inline-field {
   width: 100%;
   min-width: 0;
@@ -223,12 +231,50 @@
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label {
   display: block;
-  width: 100%;
+  flex: 0 1 auto;
+  min-width: 0;
   text-align: left;
   white-space: normal;
   color: var(--ccxp-lite-type-body-color);
   font: var(--ccxp-lite-type-body);
   font-size: var(--ccxp-lite-font-size-utility);
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-account-guide-info {
+  flex: 0 0 auto;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-password-help-trigger {
+  margin-left: auto;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label-row .ccxp-lite-account-guide-info-popup {
+  left: auto;
+  right: 0;
+  width: min(360px, calc(100vw - var(--ccxp-lite-spacing-lg) * 2));
+}
+
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup {
+  display: grid;
+  gap: var(--ccxp-lite-spacing-xs);
+  white-space: normal;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup-line {
+  margin: 0;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link,
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:visited {
+  color: var(--ccxp-lite-type-info-color);
+  font: inherit;
+  font-weight: var(--ccxp-lite-font-weight-strong);
+  text-decoration: underline;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:hover,
+.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:focus-visible {
+  text-decoration-thickness: 2px;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-control {
