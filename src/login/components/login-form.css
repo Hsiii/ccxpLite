@@ -152,14 +152,9 @@
 .ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-field,
 .ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-label,
 .ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-inline-control,
-.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-label,
 .ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-control,
 .ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-password-field {
   margin: 0 !important;
-}
-
-.ccxp-lite-landing-login form.ccxp-lite-login-form .ccxp-lite-login-field-label {
-  margin-bottom: calc(-1 * var(--ccxp-lite-spacing-2xs)) !important;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-fields {
@@ -207,10 +202,15 @@
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label-row {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--ccxp-lite-spacing-2xs);
   width: 100%;
   min-width: 0;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-field-label-row,
+.ccxp-lite-landing-login .ccxp-lite-login-field-label:not(.ccxp-lite-login-field-label-row > *) {
+  margin-top: var(--ccxp-lite-spacing-sm);
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-inline-field {
