@@ -5,10 +5,11 @@ A lightweight Chrome extension that enhances usability of the NTHU academic info
 ## Feature
 
 - Restructured login page prioritizing login usability
-- Auto decaptcha for login page (99.95% accuracy)
+- Auto decaptcha for login page (99.95% accuracy) and OAuth page (98.79% accuracy)
 - Save favorite functions for quick access
-- Categorized full-screen menu for better navigation
+- Categorized full-screen menu for better navigation (optional)
 - Saturation and texture suppression for a cleaner look
+- Broader English support
 
 ## Download & Installation
 
@@ -16,7 +17,7 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 
 ## Demo
 
-| Stage             | Original                                                                                        | Sidebar Mode                                                                                                  | Menu Mode                                                                                               |
+| Stage             | Original                                                                                                   | Sidebar Mode                                                                                                  | Menu Mode                                                                                               |
 | ----------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
 | Login             | <img src="demo/original/login.png" alt="Original login screen" height="200">                               | <img src="demo/sidebar/login.png" alt="Sidebar mode login screen" height="200">                               | <img src="demo/menu/login.png" alt="Menu mode login screen" height="200">                               |
 | Main              | <img src="demo/original/main.png" alt="Original main screen" height="200">                                 | <img src="demo/sidebar/main.png" alt="Sidebar mode main screen" height="200">                                 | <img src="demo/menu/main.png" alt="Menu mode main screen" height="200">                                 |
@@ -25,4 +26,4 @@ The extension is published on [Google Web Store](https://chromewebstore.google.c
 
 ## Decaptcha
 
-The extension bundles a decaptcha model from [ccxpDecaptcha](https://github.com/Hsiii/ccxpDecaptcha) and runs inference locally in the content script.
+The extension bundles decaptcha models from [ccxpDecaptcha](https://github.com/Hsiii/ccxpDecaptcha) and runs inference locally in the content script.
