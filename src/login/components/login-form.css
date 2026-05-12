@@ -118,6 +118,20 @@
   min-width: 0;
 }
 
+.ccxp-lite-landing-login .ccxp-lite-login-helper-link {
+  width: min(100%, var(--ccxp-lite-size-form-control-width));
+  margin-top: var(--ccxp-lite-spacing-lg);
+  color: var(--ccxp-lite-type-primary-link-color);
+  font: var(--ccxp-lite-type-utility);
+  text-align: center;
+  text-decoration: none;
+}
+
+.ccxp-lite-landing-login .ccxp-lite-login-helper-link:hover,
+.ccxp-lite-landing-login .ccxp-lite-login-helper-link:focus-visible {
+  text-decoration: underline;
+}
+
 .ccxp-lite-landing-login form.ccxp-lite-login-form {
   display: flex;
   flex-direction: column;

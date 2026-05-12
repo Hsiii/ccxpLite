@@ -100,19 +100,14 @@
   padding: 0;
   border: 1px solid var(--ccxp-lite-border);
   border-radius: var(--ccxp-lite-radius-full);
-  background: var(--ccxp-lite-surface);
-  color: var(--ccxp-lite-type-body-strong-color);
+  background: transparent;
+  color: var(--ccxp-lite-type-utility-color);
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
 }
 
 .ccxp-lite-account-guide-info-button:hover {
-  background: color-mix(
-    in srgb,
-    var(--ccxp-lite-primary-hover-surface) 80%,
-    var(--ccxp-lite-primary) 20%
-  );
+  background: var(--ccxp-lite-primary-hover-surface);
 }
 
 .ccxp-lite-account-guide-info-button:focus-visible {
