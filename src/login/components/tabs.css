@@ -159,9 +159,11 @@
   display: inline-flex;
   align-items: center;
   gap: var(--ccxp-lite-spacing-inline-sm);
-  margin-left: auto;
+  margin-left: 0;
   flex: 0 0 auto;
   min-height: var(--ccxp-lite-size-control-height-sm);
+  justify-content: flex-start;
+  align-self: flex-start;
 }
 
 .ccxp-lite-landing-service-link:hover {

@@ -42,10 +42,6 @@
     }
     titleWrap.append(infoList);
     header.append(titleWrap);
-
-    if (supportLinks) {
-      header.append(supportLinks);
-    }
     shell.append(header);
 
     const accountList = targetDocument.createElement("ul");
@@ -54,6 +50,10 @@
       accountList.append(buildAccountItem(targetDocument, spec));
     }
     shell.append(accountList);
+
+    if (supportLinks) {
+      shell.append(supportLinks);
+    }
 
     return shell;
   }
