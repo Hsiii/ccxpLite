@@ -292,6 +292,7 @@
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header,
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header * {
   color: inherit !important;
+  font-size: inherit !important;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-topic-header {
@@ -299,6 +300,7 @@
   margin: 0 0 8px;
   color: var(--ccxp-lite-type-body-strong-color) !important;
   font: var(--ccxp-lite-type-caption);
+  font-size: var(--ccxp-lite-font-size-caption);
   line-height: 1.2;
   letter-spacing: 0.01em;
   opacity: 0.78;
