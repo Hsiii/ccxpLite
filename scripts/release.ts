@@ -14,27 +14,20 @@ if (!existsSync(zipPath)) {
   process.exit(1);
 }
 
-const gitTagResult = spawnSync("git", ["tag", tag], {
-  cwd: projectRoot,
-  stdio: "inherit",
-});
-
-if (gitTagResult.status !== 0) {
-  throw new Error(`git tag ${tag} failed (may already exist)`);
-}
-
-const gitPushTagResult = spawnSync("git", ["push", "origin", tag], {
-  cwd: projectRoot,
-  stdio: "inherit",
-});
-
-if (gitPushTagResult.status !== 0) {
-  throw new Error("git push tag failed");
-}
-
 const ghResult = spawnSync(
   "gh",
-  ["release", "create", tag, zipPath, "--title", `ccxpLite ${tag}`, "--draft", "--generate-notes"],
+  [
+    "release",
+    "create",
+    tag,
+    zipPath,
+    "--title",
+    `ccxpLite ${tag}`,
+    "--draft",
+    "--generate-notes",
+    "--target",
+    "HEAD",
+  ],
   {
     cwd: projectRoot,
     stdio: "inherit",
