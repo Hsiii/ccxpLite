@@ -202,10 +202,32 @@
   }
 
   function createInfoMarker(targetDocument: Document) {
-    const marker = targetDocument.createElement("span");
-    marker.className = "ccxp-lite-account-guide-info-marker";
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const marker = targetDocument.createElementNS(svgNamespace, "svg");
+    marker.classList.add("ccxp-lite-account-guide-info-marker");
     marker.setAttribute("aria-hidden", "true");
-    marker.textContent = "?";
+    marker.setAttribute("xmlns", svgNamespace);
+    marker.setAttribute("viewBox", "0 0 24 24");
+    marker.setAttribute("fill", "none");
+    marker.setAttribute("stroke", "currentColor");
+    marker.setAttribute("stroke-width", "2");
+    marker.setAttribute("stroke-linecap", "round");
+    marker.setAttribute("stroke-linejoin", "round");
+
+    const circle = targetDocument.createElementNS(svgNamespace, "circle");
+    circle.setAttribute("cx", "12");
+    circle.setAttribute("cy", "12");
+    circle.setAttribute("r", "10");
+    marker.append(circle);
+
+    const questionStem = targetDocument.createElementNS(svgNamespace, "path");
+    questionStem.setAttribute("d", "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3");
+    marker.append(questionStem);
+
+    const questionDot = targetDocument.createElementNS(svgNamespace, "path");
+    questionDot.setAttribute("d", "M12 17h.01");
+    marker.append(questionDot);
+
     return marker;
   }
 

@@ -365,8 +365,8 @@
 }
 
 .ccxp-lite-password-toggle svg {
-  width: var(--ccxp-lite-font-size-body);
-  height: var(--ccxp-lite-font-size-body);
+  width: var(--ccxp-lite-font-size-utility);
+  height: var(--ccxp-lite-font-size-utility);
 }
 
 .ccxp-lite-password-toggle:hover,
