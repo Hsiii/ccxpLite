@@ -224,8 +224,11 @@
     titleCell.className = "ccxp-lite-announcement-title";
     const titleHeading = table.ownerDocument.createElement("h3");
     titleHeading.className = "ccxp-lite-announcement-title-heading ccxp-lite-account-guide-title";
-    titleHeading.textContent =
+    const titleLabel = table.ownerDocument.createElement("span");
+    titleLabel.className = "ccxp-lite-announcement-title-label";
+    titleLabel.textContent =
       titleText === "" ? strings.sidebarCategoryAnnouncementsAndVoting : titleText;
+    titleHeading.append(titleLabel, createAnnouncementMegaphoneIcon(table.ownerDocument));
     titleCell.append(titleHeading);
     titleRow.append(titleCell);
     const contentRow = table.ownerDocument.createElement("tr");
@@ -718,6 +721,28 @@
       "M15 3h6v6",
       "M10 14 21 3",
       "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6",
+    ]) {
+      const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", pathData);
+      icon.append(path);
+    }
+    return icon;
+  }
+
+  function createAnnouncementMegaphoneIcon(targetDocument: Document) {
+    const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
+    icon.setAttribute("class", "ccxp-lite-announcement-title-icon");
+    icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("fill", "none");
+    icon.setAttribute("stroke", "currentColor");
+    icon.setAttribute("stroke-width", "2");
+    icon.setAttribute("stroke-linecap", "round");
+    icon.setAttribute("stroke-linejoin", "round");
+    icon.setAttribute("aria-hidden", "true");
+    for (const pathData of [
+      "M11 6a13 13 0 0 0 8.4-2.8A1 1 0 0 1 21 4v12a1 1 0 0 1-1.6.8A13 13 0 0 0 11 14H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z",
+      "M6 14a12 12 0 0 0 2.4 7.2 2 2 0 0 0 3.2-2.4A8 8 0 0 1 10 14",
+      "M8 6v8",
     ]) {
       const path = targetDocument.createElementNS("http://www.w3.org/2000/svg", "path");
       path.setAttribute("d", pathData);

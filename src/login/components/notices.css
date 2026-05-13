@@ -149,17 +149,35 @@
   align-items: center;
   min-height: 0;
   width: 100%;
-  padding: var(--ccxp-lite-spacing-md) var(--ccxp-lite-spacing-lg) var(--ccxp-lite-spacing-sm);
+  padding: var(--ccxp-lite-spacing-md) var(--ccxp-lite-spacing-lg) var(--ccxp-lite-spacing-md);
   background: var(--ccxp-lite-sidebar-surface);
   box-sizing: border-box;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-title-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-inline-sm);
   margin: 0;
+  padding-bottom: var(--ccxp-lite-spacing-sm);
+  width: 100%;
   color: var(--ccxp-lite-type-body-strong-color);
   font: var(--ccxp-lite-type-body-strong);
   font-size: var(--ccxp-lite-font-size-section-title);
   letter-spacing: -0.01em;
+  border-bottom: 1px solid color-mix(in srgb, var(--ccxp-lite-primary) 14%, var(--ccxp-lite-border));
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-title-label {
+  min-width: 0;
+}
+
+.ccxp-lite-landing-notices .ccxp-lite-announcement-title-icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--ccxp-lite-primary);
+  opacity: 0.92;
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-title-row {
