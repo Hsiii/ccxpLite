@@ -139,7 +139,6 @@
 .ccxp-lite-landing-login form.ccxp-lite-login-form {
   display: flex;
   flex-direction: column;
-  gap: var(--ccxp-lite-spacing-sm);
 }
 
 .ccxp-lite-landing-login form.ccxp-lite-login-form,
@@ -202,7 +201,6 @@
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-label-row {
   display: flex;
-  align-items: flex-end;
   gap: var(--ccxp-lite-spacing-2xs);
   width: 100%;
   min-width: 0;
@@ -500,6 +498,7 @@ html[data-ccxp-lite-scope="landing"] .ccxp-lite-action-control:focus-visible * {
 }
 
 .ccxp-lite-landing-login .ccxp-lite-captcha-media-row {
+  margin-block: var(--ccxp-lite-spacing-sm);
   display: flex;
   align-items: center;
   justify-content: center;
