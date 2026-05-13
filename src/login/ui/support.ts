@@ -665,7 +665,7 @@
     const nav = targetDocument.createElement("nav");
     nav.className = "ccxp-lite-landing-utility";
     nav.setAttribute("aria-label", strings.externalLinksLabel);
-    for (const [index, sourceAnchor] of anchors.entries()) {
+    for (const [_, sourceAnchor] of anchors.entries()) {
       const anchor = targetDocument.createElement("a");
       anchor.href = sourceAnchor.href;
       anchor.target = "_blank";
@@ -675,12 +675,6 @@
       anchor.textContent = normalizeSupportLabel(sourceAnchor.textContent);
       anchor.append(createLandingExternalLinkIcon(targetDocument));
       nav.append(anchor);
-      if (index < anchors.length - 1) {
-        const separator = targetDocument.createElement("span");
-        separator.className = "ccxp-lite-landing-utility-separator";
-        separator.textContent = "|";
-        nav.append(separator);
-      }
     }
     return nav;
   }
