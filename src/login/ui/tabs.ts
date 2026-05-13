@@ -250,30 +250,16 @@
   function createPasswordHelpPopover(
     targetDocument: Document,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
-    cannotLoginAnchor?: HTMLAnchorElement,
   ) {
     const copy = getPasswordHelpCopy(strings, targetDocument);
-    const content = targetDocument.createElement("div");
+    const content = targetDocument.createElement("ul");
     content.className = "ccxp-lite-password-help-popup";
-
-    const recoveryLine = targetDocument.createElement("p");
-    recoveryLine.className = "ccxp-lite-password-help-popup-line";
-    recoveryLine.append(targetDocument.createTextNode(copy.recoveryPrefix));
-    if (cannotLoginAnchor) {
-      recoveryLine.append(createPasswordHelpLink(targetDocument, cannotLoginAnchor, strings));
-    } else {
-      const fallback = targetDocument.createElement("span");
-      fallback.className = "ccxp-lite-password-help-popup-link";
-      fallback.textContent = strings.cannotLogin;
-      recoveryLine.append(fallback);
+    for (const rule of copy.rules) {
+      const item = targetDocument.createElement("li");
+      item.className = "ccxp-lite-password-help-popup-line";
+      item.textContent = rule;
+      content.append(item);
     }
-    recoveryLine.append(targetDocument.createTextNode(copy.recoverySuffix));
-    content.append(recoveryLine);
-
-    const hygieneLine = targetDocument.createElement("p");
-    hygieneLine.className = "ccxp-lite-password-help-popup-line";
-    hygieneLine.textContent = copy.hygiene;
-    content.append(hygieneLine);
 
     return buildInfoPopoverContent(
       targetDocument,
@@ -285,37 +271,9 @@
 
   function createPasswordHelpActionButton(
     targetDocument: Document,
-    sourceAnchor: HTMLAnchorElement | undefined,
     strings: Readonly<Record<string, string>> = getLocalizedStrings("zh"),
   ) {
-    if (!sourceAnchor) {
-      return undefined;
-    }
-    const button = targetDocument.createElement("a");
-    button.className = "ccxp-lite-account-guide-info-button ccxp-lite-password-help-trigger";
-    button.href = sourceAnchor.href;
-    button.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
-    button.rel = "noopener noreferrer";
-    const sourceLabel = sourceAnchor.textContent.replaceAll(/\s+/g, " ").trim();
-    button.setAttribute("aria-label", sourceLabel === "" ? strings.loginRecoveryHelp : sourceLabel);
-    for (const attributeName of [
-      "onclick",
-      "onmousedown",
-      "onmouseup",
-      "onmouseover",
-      "onmouseout",
-      "onmouseenter",
-      "onmouseleave",
-      "onkeydown",
-      "onkeyup",
-    ]) {
-      const value = sourceAnchor.getAttribute(attributeName);
-      if (value !== null && value !== "") {
-        button.setAttribute(attributeName, value);
-      }
-    }
-    button.append(createInfoMarker(targetDocument));
-    return button;
+    return createPasswordHelpPopover(targetDocument, strings);
   }
 
   function getGuideCopy(
@@ -410,47 +368,21 @@
 
   function getPasswordHelpCopy(
     strings: Readonly<Record<string, string>>,
-    targetDocument: Document,
+    _targetDocument: Document,
   ): Readonly<{
     buttonLabel: string;
-    recoveryPrefix: string;
-    recoverySuffix: string;
-    hygiene: string;
+    rules: readonly string[];
   }> {
-    const documentLanguage = targetDocument.documentElement.lang.toLowerCase();
-    const isZh =
-      documentLanguage.startsWith("zh") || strings.cannotLogin.includes("\u7121\u6CD5\u767B\u5165");
-    if (!isZh) {
-      return {
-        buttonLabel: "Password help",
-        recoveryPrefix: "First-time sign-in, account activation, or password reset: use ",
-        recoverySuffix: ".",
-        hygiene:
-          "The system periodically requires password changes. Avoid birthdays, ID numbers, and phone numbers.",
-      };
-    }
     return {
-      buttonLabel: "\u5BC6\u78BC\u8AAA\u660E",
-      recoveryPrefix:
-        "\u9996\u6B21\u767B\u5165\u3001\u5E33\u865F\u555F\u7528\u6216\u5FD8\u8A18\u5BC6\u78BC\uFF1A\u8ACB\u4F7F\u7528",
-      recoverySuffix: "\u3002",
-      hygiene:
-        "\u7CFB\u7D71\u6703\u5B9A\u671F\u8981\u6C42\u4FEE\u6539\u5BC6\u78BC\uFF0C\u8ACB\u907F\u514D\u4F7F\u7528\u751F\u65E5\u3001\u8EAB\u5206\u8B49\u5B57\u865F\u3001\u96FB\u8A71\u7B49\u6613\u731C\u8CC7\u8A0A\u3002",
+      buttonLabel: strings.passwordHelpLabel,
+      rules: [
+        strings.passwordRulePeriod,
+        strings.passwordRuleCooldown,
+        strings.passwordRuleLength,
+        strings.passwordRuleComposition,
+        strings.passwordRuleAvoidPii,
+      ],
     };
-  }
-
-  function createPasswordHelpLink(
-    targetDocument: Document,
-    sourceAnchor: HTMLAnchorElement,
-    strings: Readonly<Record<string, string>>,
-  ) {
-    const link = targetDocument.createElement("a");
-    link.className = "ccxp-lite-password-help-popup-link";
-    link.href = sourceAnchor.href;
-    link.target = sourceAnchor.target === "" ? "_blank" : sourceAnchor.target;
-    link.rel = "noopener noreferrer";
-    link.textContent = strings.cannotLogin;
-    return link;
   }
 
   namespace.loginTabs = {

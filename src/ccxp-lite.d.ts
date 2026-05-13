@@ -349,13 +349,11 @@ declare global {
     ) => HTMLElement;
     createPasswordHelpActionButton: (
       targetDocument: Document,
-      sourceAnchor?: HTMLAnchorElement,
       strings?: Readonly<Record<string, string>>,
     ) => HTMLElement | undefined;
     createPasswordHelpPopover: (
       targetDocument: Document,
       strings?: Readonly<Record<string, string>>,
-      cannotLoginAnchor?: HTMLAnchorElement,
     ) => HTMLElement;
     createAccountGuide: (
       targetDocument: Document,

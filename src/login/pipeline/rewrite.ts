@@ -119,8 +119,7 @@
       moveChildNodes(loginSourceCell, loginSection);
     }
 
-    const announcementPrimaryAction = prepareAnnouncementTable(announcementTable, strings);
-    const passwordHelpAction = announcementPrimaryAction ?? cannotLoginLink;
+    prepareAnnouncementTable(announcementTable, strings);
     const loginHelperLink = buildLoginHelperLink(targetDocument, cannotLoginLink, strings);
 
     normalizeLoginFormLayout(loginSection);
@@ -132,7 +131,7 @@
     removeLoginSpacingArtifacts(targetDocument, loginSection);
     alignCaptchaMediaRow(targetDocument, loginSection);
     enhancePasswordVisibilityToggle(targetDocument, loginSection);
-    attachPasswordInfoPopover(targetDocument, loginSection, passwordHelpAction);
+    attachPasswordInfoPopover(targetDocument, loginSection);
     if (loginHelperLink) {
       loginSection.append(loginHelperLink);
     }

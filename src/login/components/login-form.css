@@ -278,24 +278,13 @@
 .ccxp-lite-landing-login .ccxp-lite-password-help-popup {
   display: grid;
   gap: var(--ccxp-lite-spacing-xs);
+  margin: 0;
+  padding-left: calc(var(--ccxp-lite-spacing-sm) + 2px);
   white-space: normal;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-password-help-popup-line {
   margin: 0;
-}
-
-.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link,
-.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:visited {
-  color: var(--ccxp-lite-type-info-color);
-  font: inherit;
-  font-weight: var(--ccxp-lite-font-weight-strong);
-  text-decoration: underline;
-}
-
-.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:hover,
-.ccxp-lite-landing-login .ccxp-lite-password-help-popup-link:focus-visible {
-  text-decoration-thickness: 2px;
 }
 
 .ccxp-lite-landing-login .ccxp-lite-login-field-control {

@@ -139,6 +139,13 @@
       hidePassword: "Hide password",
       fieldAccount: "Account",
       fieldPassword: "Password",
+      passwordHelpLabel: "Password rules",
+      passwordRulePeriod: "Change it every 90 days; your last 3 passwords cannot repeat.",
+      passwordRuleCooldown: "After changing it, wait 24 hours before changing it again.",
+      passwordRuleLength: "Use 8 to 16 alphanumeric characters.",
+      passwordRuleComposition:
+        "Include at least 1 uppercase letter, 1 lowercase letter, and 1 digit.",
+      passwordRuleAvoidPii: "Do not use your ID number, birthday, or phone number.",
       fieldVerificationCode: "Verification Code",
       fieldStudentId: "Student ID",
       fieldGeneric: "Field",
@@ -215,6 +222,16 @@
       hidePassword: "\u96B1\u85CF\u5BC6\u78BC",
       fieldAccount: "\u5E33\u865F",
       fieldPassword: "\u5BC6\u78BC",
+      passwordHelpLabel: "\u5BC6\u78BC\u898F\u5247",
+      passwordRulePeriod:
+        "\u6BCF 90 \u5929\u66F4\u63DB\u4E00\u6B21\uFF0C\u4E14\u6700\u8FD1 3 \u6B21\u5BC6\u78BC\u4E0D\u5F97\u91CD\u8907\u3002",
+      passwordRuleCooldown:
+        "\u4FEE\u6539\u5F8C 24 \u5C0F\u6642\u5167\u4E0D\u53EF\u518D\u6B21\u66F4\u63DB\u3002",
+      passwordRuleLength: "\u4F7F\u7528 8 \u81F3 16 \u4F4D\u82F1\u6578\u5B57\u3002",
+      passwordRuleComposition:
+        "\u81F3\u5C11\u5305\u542B 1 \u500B\u5927\u5BEB\u30011 \u500B\u5C0F\u5BEB\u8207 1 \u500B\u6578\u5B57\u3002",
+      passwordRuleAvoidPii:
+        "\u907F\u514D\u4F7F\u7528\u8EAB\u5206\u8B49\u5B57\u865F\u3001\u751F\u65E5\u6216\u96FB\u8A71\u865F\u78BC\u3002",
       fieldVerificationCode: "\u9A57\u8B49\u78BC",
       fieldStudentId: "\u5B78\u865F",
       fieldGeneric: "\u6B04\u4F4D",

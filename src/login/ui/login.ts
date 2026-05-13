@@ -286,14 +286,7 @@
     }
   }
 
-  function attachPasswordInfoPopover(
-    targetDocument: Document,
-    rootNode: ParentNode,
-    announcementActionAnchor?: HTMLAnchorElement,
-  ) {
-    if (!announcementActionAnchor) {
-      return;
-    }
+  function attachPasswordInfoPopover(targetDocument: Document, rootNode: ParentNode) {
     const passwordFields = [
       ...rootNode.querySelectorAll<HTMLInputElement>(
         "input[name='passwd'], input[name='password'], input[type='password']",
@@ -307,11 +300,7 @@
         continue;
       }
       const strings = getLandingStrings(targetDocument);
-      const shortcutButton = loginTabsLib.createPasswordHelpActionButton(
-        targetDocument,
-        announcementActionAnchor,
-        strings,
-      );
+      const shortcutButton = loginTabsLib.createPasswordHelpActionButton(targetDocument, strings);
       if (!shortcutButton) {
         continue;
       }
