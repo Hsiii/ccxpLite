@@ -189,7 +189,11 @@
 }
 
 .ccxp-lite-landing-notices .ccxp-lite-announcement-list {
-  --ccxp-lite-announcement-timeline-color: var(--ccxp-lite-type-caption-color);
+  --ccxp-lite-announcement-timeline-color: color-mix(
+    in srgb,
+    var(--ccxp-lite-type-caption-color) 58%,
+    var(--ccxp-lite-sidebar-surface)
+  );
   position: relative;
   display: flex;
   flex-direction: column;
