@@ -711,6 +711,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-landing-link-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "1em");
+    icon.setAttribute("height", "1em");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -733,6 +735,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-announcement-title-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "1em");
+    icon.setAttribute("height", "1em");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");

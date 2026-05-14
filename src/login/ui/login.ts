@@ -1134,6 +1134,8 @@
   function createAudioIcon(targetDocument: Document) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "16");
+    icon.setAttribute("height", "16");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1163,6 +1165,8 @@
   function createPasswordVisibilityIcon(targetDocument: Document, visible: boolean) {
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "14");
+    icon.setAttribute("height", "14");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");

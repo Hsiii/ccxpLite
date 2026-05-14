@@ -208,6 +208,8 @@
     marker.setAttribute("aria-hidden", "true");
     marker.setAttribute("xmlns", svgNamespace);
     marker.setAttribute("viewBox", "0 0 24 24");
+    marker.setAttribute("width", "1em");
+    marker.setAttribute("height", "1em");
     marker.setAttribute("fill", "none");
     marker.setAttribute("stroke", "currentColor");
     marker.setAttribute("stroke-width", "2");

@@ -1398,8 +1398,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-sidebar-search-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
-    icon.setAttribute("width", "16");
-    icon.setAttribute("height", "16");
+    icon.setAttribute("width", "20");
+    icon.setAttribute("height", "20");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1439,6 +1439,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-breadcrumb-chevron");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "16");
+    icon.setAttribute("height", "16");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1455,6 +1457,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-link-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1477,6 +1481,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", `ccxp-lite-favorite-star${isFavorite ? " is-active" : ""}`);
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", isFavorite ? "currentColor" : "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1672,6 +1678,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-inline-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2.2");
@@ -1690,6 +1698,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-inline-icon ccxp-lite-inline-icon-muted");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
@@ -1706,6 +1716,8 @@
     const icon = targetDocument.createElementNS("http://www.w3.org/2000/svg", "svg");
     icon.setAttribute("class", "ccxp-lite-category-icon");
     icon.setAttribute("viewBox", "0 0 24 24");
+    icon.setAttribute("width", "18");
+    icon.setAttribute("height", "18");
     icon.setAttribute("fill", "none");
     icon.setAttribute("stroke", "currentColor");
     icon.setAttribute("stroke-width", "2");
