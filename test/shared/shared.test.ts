@@ -108,6 +108,11 @@ describe("shared analytics", () => {
     expect(window.dataLayer?.[0]).toMatchObject({ event: "gtm.js" });
     expect(document.head.querySelectorAll("[data-ccxp-lite-gtm-script='true']")).toHaveLength(1);
     expect(document.head.querySelector("script")?.getAttribute("src")).toContain("GTM-TEST123");
+    expect(document.body.querySelectorAll("[data-ccxp-lite-gtm-noscript='true']")).toHaveLength(1);
+    expect(document.body.firstElementChild?.tagName).toBe("NOSCRIPT");
+    expect(document.body.querySelector("noscript iframe")?.getAttribute("src")).toContain(
+      "GTM-TEST123",
+    );
 
     sharedAnalytics.trackPageView(document, {
       page_surface: "login",

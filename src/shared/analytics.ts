@@ -10,6 +10,8 @@
   const DEFAULT_DATA_LAYER_NAME = "dataLayer";
   const GTM_SCRIPT_MARKER = "ccxpLiteGtmScript";
   const GTM_SCRIPT_ATTRIBUTE = "data-ccxp-lite-gtm-script";
+  const GTM_NOSCRIPT_MARKER = "ccxpLiteGtmNoscript";
+  const GTM_NOSCRIPT_ATTRIBUTE = "data-ccxp-lite-gtm-noscript";
   const GTM_BOOTSTRAP_MARKER = "ccxpLiteGtmBootstrap";
   const PAGE_VIEW_MARKER = "ccxpLiteTrackedPageView";
 
@@ -103,8 +105,12 @@
     const ensureHead =
       sharedDom?.ensureDocumentHead ??
       ((documentToUpdate: Document) => documentToUpdate.querySelector("head") ?? undefined);
+    const ensureBody =
+      sharedDom?.ensureDocumentBody ??
+      ((documentToUpdate: Document) => documentToUpdate.querySelector("body") ?? undefined);
     const head = ensureHead(targetDocument);
-    if (!head) {
+    const body = ensureBody(targetDocument);
+    if (!head || !body) {
       return {
         containerId,
         dataLayerName: normalizedDataLayerName,
@@ -127,6 +133,24 @@
       gtmScript.src = url.toString();
       gtmScript.dataset[GTM_SCRIPT_MARKER] = "true";
       head.append(gtmScript);
+    }
+
+    const existingNoscript = targetDocument.querySelector<HTMLScriptElement>(
+      `[${GTM_NOSCRIPT_ATTRIBUTE}="true"]`,
+    );
+    if (!existingNoscript) {
+      const noscript = targetDocument.createElement("noscript");
+      const iframe = targetDocument.createElement("iframe");
+      const url = new URL("https://www.googletagmanager.com/ns.html");
+      url.searchParams.set("id", containerId);
+      iframe.src = url.toString();
+      iframe.height = "0";
+      iframe.width = "0";
+      iframe.style.display = "none";
+      iframe.style.visibility = "hidden";
+      noscript.dataset[GTM_NOSCRIPT_MARKER] = "true";
+      noscript.append(iframe);
+      body.prepend(noscript);
     }
 
     return {
