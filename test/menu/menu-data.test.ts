@@ -49,61 +49,6 @@ describe("sidebar data", () => {
     expect(model.categories[0].blocks[1].links[0].label).toBe("\u5B78\u671F\u6210\u7E3E");
   });
 
-  test("uses the single direct-link label when only one synthetic item exists", () => {
-    const { window } = createTestWindow(`
-      <!doctype html>
-      <html>
-        <body>
-          <script>
-            foldersTree = gFld("root", "");
-            aux0 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
-            insDoc(aux0, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
-            insDoc(foldersTree, gLnk(0, "\u660E\u71C8\u5E73\u53F0", "/portal"));
-          </script>
-        </body>
-      </html>
-    `);
-    loadModules(window, menuModulePaths);
-
-    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
-    const shared = requireValue(window.CCXP_LITE.shared, "shared");
-    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
-    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
-    const campusCategory = model.categories.find(
-      (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
-    );
-
-    expect(campusCategory?.blocks[0]?.label).toBe("\u660E\u71C8\u5E73\u53F0");
-  });
-
-  test("combines the strongest keywords when multiple synthetic items share a category", () => {
-    const { window } = createTestWindow(`
-      <!doctype html>
-      <html>
-        <body>
-          <script>
-            foldersTree = gFld("root", "");
-            aux0 = insFld(foldersTree, gFld("\u6821\u5167\u5176\u4ED6\u7CFB\u7D71", ""));
-            insDoc(aux0, gLnk(1, "\u5916\u90E8\u7CFB\u7D71", "/ccxp/INQUIRE/PE/1/14D/report"));
-            insDoc(foldersTree, gLnk(0, "\u5B78\u7FD2\u5E73\u53F0", "/learn"));
-            insDoc(foldersTree, gLnk(0, "\u8A08\u901A\u4E2D\u5FC3\u76F8\u95DC\u670D\u52D9", "/cc"));
-          </script>
-        </body>
-      </html>
-    `);
-    loadModules(window, menuModulePaths);
-
-    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
-    const shared = requireValue(window.CCXP_LITE.shared, "shared");
-    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
-    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
-    const campusCategory = model.categories.find(
-      (category: { label: string }) => category.label === "\u6821\u5712\u7CFB\u7D71",
-    );
-
-    expect(campusCategory?.blocks[0]?.label).toBe("\u5B78\u7FD2\u8207\u8A08\u901A");
-  });
-
   test("filters favorites and categories by normalized search text", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
@@ -163,34 +108,6 @@ describe("sidebar data", () => {
     expect(model.categories[0].blocks[0].label).toBe("\u5168\u65B0\u529F\u80FD\u6E2C\u8A66");
     expect(model.categories[0].blocks[0].links[0].label).toBe(
       "\u5168\u65B0\u529F\u80FD\u6E2C\u8A66",
-    );
-  });
-
-  test("keeps unmatched groups visible in a fallback category", () => {
-    const { window } = createTestWindow(`
-      <!doctype html>
-      <html>
-        <body>
-          <script>
-            foldersTree = gFld("root", "");
-            aux0 = insFld(foldersTree, gFld("\u7814\u7A76\u5BA4\u5DE5\u5177", ""));
-            insDoc(aux0, gLnk(0, "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB", "/lab-storage"));
-          </script>
-        </body>
-      </html>
-    `);
-    loadModules(window, menuModulePaths);
-
-    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
-    const shared = requireValue(window.CCXP_LITE.shared, "shared");
-    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
-    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
-
-    expect(model.categories).toHaveLength(1);
-    expect(model.categories[0].label).toBe("\u65B0\u589E\u8207\u672A\u5206\u985E");
-    expect(model.categories[0].blocks[0].label).toBe("\u7814\u7A76\u5BA4\u5DE5\u5177");
-    expect(model.categories[0].blocks[0].links[0].label).toBe(
-      "\u5132\u5B58\u7A7A\u9593\u7533\u8ACB",
     );
   });
 

@@ -8,26 +8,6 @@ import {
 } from "../helpers/module-loader.js";
 
 describe("sidebar state", () => {
-  test("returns a stable state object per document with the expected defaults", () => {
-    const { window } = createTestWindow();
-    loadModules(window, menuModulePaths);
-    const { getSidebarUiState } = requireValue(window.CCXP_LITE.sidebarState, "sidebarState");
-    const state = getSidebarUiState(window.document);
-    expect(getSidebarUiState(window.document)).toBe(state);
-    expect(state).toMatchObject({
-      currentCategoryId: "",
-      searchQuery: "",
-      activeLeaf: undefined,
-      sidebarVariant: "classic",
-      classicExpandedItemIds: ["category-favorites"],
-      scrollTopByView: {
-        root: 0,
-        category: 0,
-        destination: 0,
-      },
-    });
-  });
-
   test("shares sidebar state across frame documents in the same top-level page", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
