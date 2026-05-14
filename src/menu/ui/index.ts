@@ -8,7 +8,7 @@
   if (!shared || !sidebarState || !sidebarFavorites || !sidebarData || !sidebarRuntime) {
     return;
   }
-  const { TOKENS, STRINGS, ensureThemeDocument } = shared;
+  const { TOKENS, STRINGS, ensureThemeDocument, trackEvent } = shared;
   const {
     getSidebarUiState,
     persistSidebarScroll,
@@ -32,6 +32,13 @@
     activateLegacyLink,
     isExternalLinkTarget,
   } = sidebarRuntime;
+  const searchTelemetryByDocument = new WeakMap<
+    Document,
+    {
+      timerId: number | undefined;
+      lastTrackedQuery: string;
+    }
+  >();
   function renderSidebar(
     hostDocument: Document,
     navDocument: Document,
@@ -52,6 +59,7 @@
     if (searchInput && searchInput.dataset.ccxpLiteSearchBound !== "true") {
       searchInput.addEventListener("input", () => {
         state.searchQuery = searchInput.value;
+        scheduleSearchTelemetry(hostDocument, state.searchQuery, state.sidebarVariant);
         renderSidebar(hostDocument, navDocument, modelInput, strings);
       });
       searchInput.dataset.ccxpLiteSearchBound = "true";
@@ -136,6 +144,49 @@
       ),
     );
     restoreSidebarScroll(content, state.scrollTopByView.root);
+  }
+
+  function getOrCreateSearchTelemetryState(targetDocument: Document) {
+    const existingState = searchTelemetryByDocument.get(targetDocument);
+    if (existingState) {
+      return existingState;
+    }
+    const nextState = {
+      timerId: undefined as number | undefined,
+      lastTrackedQuery: "",
+    };
+    searchTelemetryByDocument.set(targetDocument, nextState);
+    return nextState;
+  }
+
+  function scheduleSearchTelemetry(
+    targetDocument: Document,
+    rawQuery: string,
+    sidebarVariant: string,
+  ) {
+    const telemetryState = getOrCreateSearchTelemetryState(targetDocument);
+    if (telemetryState.timerId !== undefined) {
+      globalThis.clearTimeout(telemetryState.timerId);
+    }
+    telemetryState.timerId = globalThis.setTimeout(
+      () => {
+        telemetryState.timerId = undefined;
+        const normalizedQuery = rawQuery.trim().replaceAll(/\s+/g, " ");
+        if (normalizedQuery === telemetryState.lastTrackedQuery) {
+          return;
+        }
+        telemetryState.lastTrackedQuery = normalizedQuery;
+        trackEvent(targetDocument, {
+          feature: "search",
+          action: normalizedQuery === "" ? "clear" : "query",
+          surface: "sidebar",
+          sidebar_variant: sidebarVariant,
+          query_length: normalizedQuery.length,
+        });
+      },
+      300,
+      undefined,
+    );
   }
 
   function findCategoryContainingLeaf(
@@ -234,6 +285,12 @@
       nextState.sidebarVariant = setPersistedSidebarVariant(
         nextState.sidebarVariant === "classic" ? "layered" : "classic",
       );
+      trackEvent(targetDocument, {
+        feature: "sidebar",
+        action: "switch_variant",
+        surface: "sidebar",
+        sidebar_variant: nextState.sidebarVariant,
+      });
       syncTopLevelFramesetLayout(nextState.sidebarVariant);
       nextState.activeLeaf = undefined;
       nextState.currentCategoryId = "";
@@ -384,6 +441,14 @@
     button.append(createRowLabel(targetDocument, group.label, false));
     button.append(createClassicChevronIcon(targetDocument, isExpanded));
     button.addEventListener("click", () => {
+      trackEvent(targetDocument, {
+        feature: "sidebar",
+        action: "toggle_group",
+        surface: "sidebar",
+        group_id: group.id,
+        group_label: group.label,
+        expanded: !isExpanded,
+      });
       persistSidebarScroll(targetDocument, "root");
       const nextExpandedItemIds = new Set(expandedItemIds);
       if (nextExpandedItemIds.has(group.id)) {
@@ -651,6 +716,14 @@
       for (const category of categories) {
         body.append(
           createCategoryCard(targetDocument, category, strings, () => {
+            trackEvent(targetDocument, {
+              feature: "navigation",
+              action: "open_category",
+              surface: "sidebar",
+              sidebar_variant: state.sidebarVariant,
+              category_id: category.id,
+              category_label: category.label,
+            });
             persistSidebarScroll(targetDocument, "root");
             const nextState = state;
             nextState.currentCategoryId = category.id;
@@ -1027,6 +1100,7 @@
       const applyFavoriteChange = () => {
         const favoriteIds = new Set(getFavoriteIds());
         const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
+        const action = matchingIds.length > 0 ? "remove_favorite" : "add_favorite";
         if (matchingIds.length > 0) {
           for (const favoriteId of matchingIds) {
             favoriteIds.delete(favoriteId);
@@ -1035,6 +1109,13 @@
           favoriteIds.add(linkItem.id);
         }
         writeFavoriteIds(favoriteIds);
+        trackEvent(targetDocument, {
+          feature: "favorites",
+          action,
+          surface: "sidebar",
+          link_id: linkItem.id,
+          link_label: linkItem.label,
+        });
         if (typeof onFavoritesChange === "function") {
           onFavoritesChange();
         }
@@ -1311,6 +1392,13 @@
     retryButton.className = "ccxp-lite-destination-action";
     retryButton.textContent = strings.sidebarRetry;
     retryButton.addEventListener("click", () => {
+      trackEvent(targetDocument, {
+        feature: "navigation",
+        action: "retry_destination",
+        surface: "sidebar",
+        link_id: activeLeaf.id,
+        link_label: activeLeaf.label,
+      });
       const state = getSidebarUiState(targetDocument);
       if (!state.activeLeaf) {
         return;

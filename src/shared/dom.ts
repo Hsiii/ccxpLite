@@ -244,7 +244,7 @@
     sharedLocale;
   const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
     sharedBrand;
-  const { ensureDataLayer, pushToDataLayer, ensureGoogleTagManager, trackPageView } =
+  const { ensureDataLayer, pushToDataLayer, trackEvent, ensureGoogleTagManager, trackPageView } =
     sharedAnalytics;
   namespace.shared = {
     TOKENS,
@@ -278,6 +278,7 @@
     addCleanupTask,
     ensureDataLayer,
     pushToDataLayer,
+    trackEvent,
     ensureGoogleTagManager,
     trackPageView,
   };

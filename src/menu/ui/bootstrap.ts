@@ -26,6 +26,7 @@
     createBrandPartnerLink,
     isDocumentComplete,
     cleanLegacyAttributes,
+    trackEvent,
   } = shared;
   const { favoriteSubscribers, ensureFavoriteStorageSync, ensureFavoriteIdsLoaded } =
     sidebarFavorites;
@@ -152,12 +153,23 @@
 
       brand.addEventListener("click", () => {
         const uiState = getSidebarUiState(hostDocument);
+        trackEvent(hostDocument, {
+          feature: "navigation",
+          action: "go_home",
+          surface: "sidebar",
+          sidebar_variant: uiState.sidebarVariant,
+        });
         uiState.currentCategoryId = "";
         uiState.activeLeaf = undefined;
         rerenderBinding.render?.();
       });
 
       repoLink.addEventListener("click", () => {
+        trackEvent(hostDocument, {
+          feature: "engagement",
+          action: "open_repo",
+          surface: "sidebar",
+        });
         window.open("https://github.com/NTHU-SA/ccxpLite", "_blank", "noopener,noreferrer");
       });
 

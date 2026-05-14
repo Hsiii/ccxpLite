@@ -1,10 +1,11 @@
 (function registerCcxpLiteLoginCaptcha(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { loginLocale } = namespace;
-  if (!loginLocale) {
+  const { shared, loginLocale } = namespace;
+  if (!shared || !loginLocale) {
     return;
   }
+  const { trackEvent } = shared;
   const { getLoginForm } = loginLocale;
   const CAPTCHA_AUTOFILL_TIMEOUT_MS = 5000;
   const captchaAutofillStateByDocument = new WeakMap<Document, CcxpLiteCaptchaAutofillState>();
@@ -216,6 +217,13 @@
         resolvedInput.dispatchEvent(new Event("change", { bubbles: true }));
         captchaState.failedSrc = "";
         setCaptchaLoadingState(captchaState, false);
+        trackEvent(targetDocument, {
+          feature: "captcha",
+          action: "autofill_result",
+          surface: captchaState.kind === "oauth" ? "oauth" : "login",
+          captcha_kind: captchaState.kind,
+          outcome: "success",
+        });
       })
       .catch((error: unknown) => {
         if (requestToken === state.requestToken) {
@@ -263,6 +271,13 @@
     captchaState.requestToken++;
     setCaptchaLoadingState(captchaState, false);
     captchaState.input.removeAttribute("aria-busy");
+    trackEvent(captchaState.input.ownerDocument, {
+      feature: "captcha",
+      action: "autofill_result",
+      surface: captchaState.kind === "oauth" ? "oauth" : "login",
+      captcha_kind: captchaState.kind,
+      outcome: options.didTimeout === true ? "timeout_fallback" : "manual_fallback",
+    });
     if (options.didTimeout === true) {
       flashCaptchaTimeout(captchaState);
     }

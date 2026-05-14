@@ -14,6 +14,7 @@
   const GTM_NOSCRIPT_ATTRIBUTE = "data-ccxp-lite-gtm-noscript";
   const GTM_BOOTSTRAP_MARKER = "ccxpLiteGtmBootstrap";
   const PAGE_VIEW_MARKER = "ccxpLiteTrackedPageView";
+  const DEFAULT_EVENT_NAME = "ccxp_lite";
 
   function isRecord(value: unknown): value is Record<string, unknown> {
     return value !== null && typeof value === "object";
@@ -42,6 +43,12 @@
     return isArray<CcxpLiteDataLayerEvent>(existingValue) ? existingValue : undefined;
   }
 
+  function compactEventProperties(event: CcxpLiteDataLayerEvent) {
+    return Object.fromEntries(
+      Object.entries(event).filter(([, value]) => value !== undefined),
+    ) as CcxpLiteDataLayerEvent;
+  }
+
   function pushToDataLayer(
     event: CcxpLiteDataLayerEvent,
     options: {
@@ -64,6 +71,28 @@
     }
     layer.push(event);
     return event;
+  }
+
+  function trackEvent(
+    targetDocument: Document,
+    payload: CcxpLiteDataLayerEvent,
+    options: {
+      dataLayerName?: string;
+      eventName?: string;
+    } = {},
+  ) {
+    return pushToDataLayer(
+      compactEventProperties({
+        event: options.eventName ?? DEFAULT_EVENT_NAME,
+        page_host: targetDocument.location.hostname,
+        page_path: targetDocument.location.pathname,
+        page_title: targetDocument.title,
+        ...payload,
+      }),
+      {
+        dataLayerName: options.dataLayerName,
+      },
+    );
   }
 
   function ensureGoogleTagManager(
@@ -176,15 +205,15 @@
     if (options.once !== false) {
       targetDocumentElement.dataset[PAGE_VIEW_MARKER] = "true";
     }
-    return pushToDataLayer(
-      {
-        event: "ccxp_lite_page_view",
-        page_host: targetDocument.location.hostname,
-        page_path: targetDocument.location.pathname,
-        page_title: targetDocument.title,
+    return trackEvent(
+      targetDocument,
+      compactEventProperties({
+        feature: "page",
+        action: "view",
         ...payload,
-      },
+      }),
       {
+        eventName: "ccxp_lite_page_view",
         dataLayerName: options.dataLayerName,
       },
     );
@@ -193,6 +222,7 @@
   namespace.sharedAnalytics = {
     ensureDataLayer,
     pushToDataLayer,
+    trackEvent,
     ensureGoogleTagManager,
     trackPageView,
   };

@@ -34,6 +34,7 @@
   sharedLib.ensureGoogleTagManager(document);
   sharedLib.trackPageView(document, {
     page_surface: loginSurface ? "login" : "inquire",
+    sidebar_variant: loginSurface ? undefined : readSidebarVariant(),
   });
   const loadingState = initializeLoadingSprite(document);
   sharedLib.addCleanupTask(() => {

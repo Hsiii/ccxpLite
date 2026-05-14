@@ -89,7 +89,7 @@ describe("shared theme", () => {
 });
 
 describe("shared analytics", () => {
-  test("creates the data layer, injects GTM once, and tracks page views once", () => {
+  test("creates the data layer, injects GTM once, and tracks normalized events", () => {
     const { window } = createTestWindow();
     const document = window.document as Document;
     loadModules(window, sharedModulePaths);
@@ -114,16 +114,28 @@ describe("shared analytics", () => {
       "GTM-TEST123",
     );
 
-    sharedAnalytics.trackPageView(document, {
-      page_surface: "login",
+    sharedAnalytics.trackEvent(document, {
+      feature: "favorites",
+      action: "add_favorite",
+      surface: "sidebar",
+      optional_field: undefined,
     });
     sharedAnalytics.trackPageView(document, {
       page_surface: "login",
     });
 
-    expect(window.dataLayer).toHaveLength(2);
+    expect(window.dataLayer).toHaveLength(3);
     expect(window.dataLayer?.[1]).toMatchObject({
+      event: "ccxp_lite",
+      feature: "favorites",
+      action: "add_favorite",
+      surface: "sidebar",
+    });
+    expect(window.dataLayer?.[1]).not.toHaveProperty("optional_field");
+    expect(window.dataLayer?.[2]).toMatchObject({
       event: "ccxp_lite_page_view",
+      feature: "page",
+      action: "view",
       page_surface: "login",
     });
   });

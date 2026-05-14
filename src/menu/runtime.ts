@@ -5,7 +5,7 @@
   if (!shared || !sidebarState || !sidebarFavorites) {
     return;
   }
-  const { TOKENS, ensureThemeDocument, cleanLegacyAttributes } = shared;
+  const { TOKENS, ensureThemeDocument, cleanLegacyAttributes, trackEvent } = shared;
   const { getSidebarUiState, persistSidebarScroll } = sidebarState;
   const { getScopedSessionStorage, INITIAL_MAIN_URL_STORAGE_KEY } = sidebarFavorites;
   const DESTINATION_LOAD_TIMEOUT_MS = 8000;
@@ -37,6 +37,16 @@
       activateLegacyLink(linkItem, navDocument, legacyMainFrame);
       return;
     }
+    trackEvent(targetDocument, {
+      feature: "navigation",
+      action: "open_link",
+      surface: "sidebar",
+      navigation_mode: "embedded",
+      sidebar_variant: state.sidebarVariant,
+      link_id: linkItem.id,
+      link_label: linkItem.label,
+      link_target: (linkItem.target ?? "main").toLowerCase(),
+    });
     persistSidebarScroll(targetDocument, "category");
     state.activeLeaf = {
       id: linkItem.id,
@@ -88,6 +98,17 @@
 
   function openLeafInNewTab(activeLeaf: CcxpLiteSidebarLinkItem, navDocument: Document) {
     const resolvedUrl = resolveLeafUrl(activeLeaf, navDocument);
+    const state = getSidebarUiState(navDocument);
+    trackEvent(navDocument, {
+      feature: "navigation",
+      action: "open_link",
+      surface: "sidebar",
+      navigation_mode: "new_tab",
+      sidebar_variant: state.sidebarVariant,
+      link_id: activeLeaf.id,
+      link_label: activeLeaf.label,
+      link_target: (activeLeaf.target ?? "_blank").toLowerCase(),
+    });
     window.open(resolvedUrl, "_blank", "noopener");
   }
 
@@ -138,6 +159,17 @@
     }
     const resolvedUrl = resolveLeafUrl(linkItem, navDocument);
     const normalizedTarget = (linkItem.target ?? "main").toLowerCase();
+    const state = getSidebarUiState(navDocument);
+    trackEvent(navDocument, {
+      feature: "navigation",
+      action: "open_link",
+      surface: "sidebar",
+      navigation_mode: normalizedTarget === "_blank" ? "new_tab" : "legacy_frame",
+      sidebar_variant: state.sidebarVariant,
+      link_id: linkItem.id,
+      link_label: linkItem.label,
+      link_target: normalizedTarget,
+    });
     const resolvedDestinationFrame =
       normalizedTarget === "main" ? (destinationFrame ?? getLegacyMainFrame()) : destinationFrame;
     if (normalizedTarget === "_blank") {

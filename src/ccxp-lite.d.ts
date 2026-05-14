@@ -193,6 +193,14 @@ declare global {
         dataLayerName?: string;
       },
     ) => CcxpLiteDataLayerEvent | undefined;
+    trackEvent: (
+      targetDocument: Document,
+      payload: CcxpLiteDataLayerEvent,
+      options?: {
+        dataLayerName?: string;
+        eventName?: string;
+      },
+    ) => CcxpLiteDataLayerEvent | undefined;
     ensureGoogleTagManager: (
       targetDocument: Document,
       options?: {
@@ -338,6 +346,7 @@ declare global {
     addCleanupTask: (task: () => void) => void;
     ensureDataLayer: CcxpLiteSharedAnalytics["ensureDataLayer"];
     pushToDataLayer: CcxpLiteSharedAnalytics["pushToDataLayer"];
+    trackEvent: CcxpLiteSharedAnalytics["trackEvent"];
     ensureGoogleTagManager: CcxpLiteSharedAnalytics["ensureGoogleTagManager"];
     trackPageView: CcxpLiteSharedAnalytics["trackPageView"];
   }

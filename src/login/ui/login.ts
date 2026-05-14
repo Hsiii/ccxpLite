@@ -8,7 +8,7 @@
     return;
   }
   const loginTabsLib = loginTabs;
-  const { getLocalizedStrings, moveChildNodes, removeNode } = shared;
+  const { getLocalizedStrings, moveChildNodes, removeNode, trackEvent } = shared;
   const { resolveLoginLocale, getLoginForm } = loginLocale;
   const { findLoginSourceCell } = loginSupport;
   function enhancePasswordVisibilityToggle(targetDocument: Document, rootNode: ParentNode) {
@@ -41,6 +41,12 @@
       toggleButton.addEventListener("click", () => {
         const isHidden = field.type !== "text";
         field.type = isHidden ? "text" : "password";
+        trackEvent(targetDocument, {
+          feature: "login",
+          action: "toggle_password_visibility",
+          surface: "login",
+          visible: isHidden,
+        });
         toggleButton.setAttribute(
           "aria-label",
           isHidden ? strings.hidePassword : strings.showPassword,
