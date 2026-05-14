@@ -41,6 +41,7 @@
       "run_at": "document_start",
       "js": [
         "shared/constants.js",
+        "shared/analytics.js",
         "shared/theme.js",
         "shared/locale.js",
         "shared/brand.js",
@@ -78,6 +79,11 @@
       "matches": ["https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php*"],
       "run_at": "document_start",
       "js": [
+        "shared/constants.js",
+        "shared/analytics.js",
+        "shared/theme.js",
+        "shared/locale.js",
+        "shared/brand.js",
         "shared/dom.js",
         "oauth/decaptcha.model.js",
         "oauth/decaptcha.js",

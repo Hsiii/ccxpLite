@@ -1,7 +1,7 @@
 (function registerCcxpLiteSharedDom(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { sharedConstants, sharedTheme, sharedLocale, sharedBrand } = namespace;
+  const { sharedConstants, sharedTheme, sharedLocale, sharedBrand, sharedAnalytics } = namespace;
   function isArray<T>(value: unknown): value is T[] {
     return value !== null && typeof value === "object" && value.constructor === Array;
   }
@@ -235,21 +235,24 @@
     getLocalStorageAreaSafely,
     addCleanupTask,
   };
-  if (!sharedConstants || !sharedTheme || !sharedLocale || !sharedBrand) {
+  if (!sharedConstants || !sharedTheme || !sharedLocale || !sharedBrand || !sharedAnalytics) {
     return;
   }
-  const { TOKENS, LOCALIZED_STRINGS, SIDEBAR_CATEGORIES, ASSETS } = sharedConstants;
+  const { TOKENS, LOCALIZED_STRINGS, SIDEBAR_CATEGORIES, ASSETS, GTM } = sharedConstants;
   const { ensureThemeDocument } = sharedTheme;
   const { getLocalizedStrings, normalizeLocale, rememberLocale, resolveLocaleFromDocument } =
     sharedLocale;
   const { createBrandImage, createBrandCopy, createBrandPartnerIcon, createBrandPartnerLink } =
     sharedBrand;
+  const { ensureDataLayer, pushToDataLayer, ensureGoogleTagManager, trackPageView } =
+    sharedAnalytics;
   namespace.shared = {
     TOKENS,
     STRINGS: LOCALIZED_STRINGS.zh,
     LOCALIZED_STRINGS,
     SIDEBAR_CATEGORIES,
     ASSETS,
+    GTM,
     ensureThemeDocument,
     getLocalizedStrings,
     normalizeLocale,
@@ -273,5 +276,9 @@
     getRuntimeSafely,
     getLocalStorageAreaSafely,
     addCleanupTask,
+    ensureDataLayer,
+    pushToDataLayer,
+    ensureGoogleTagManager,
+    trackPageView,
   };
 })(globalThis);

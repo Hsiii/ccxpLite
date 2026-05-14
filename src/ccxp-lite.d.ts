@@ -11,6 +11,7 @@ declare global {
 
   interface Window {
     CCXP_LITE?: CcxpLiteNamespace;
+    dataLayer?: CcxpLiteDataLayerEvent[];
   }
 
   type CcxpLiteLocale = "en" | "zh";
@@ -171,9 +172,48 @@ declare global {
   interface CcxpLiteSharedConstants {
     TOKENS: Record<string, string>;
     ASSETS: Record<string, string>;
+    GTM: {
+      containerId: string;
+      dataLayerName: string;
+    };
     LOCALIZED_STRINGS: Record<string, Record<string, string>>;
     SIDEBAR_CATEGORIES: readonly CcxpLiteSidebarCategoryDefinition[];
     [key: string]: unknown;
+  }
+
+  interface CcxpLiteDataLayerEvent extends Record<string, unknown> {
+    event?: string;
+  }
+
+  interface CcxpLiteSharedAnalytics {
+    ensureDataLayer: (dataLayerName?: string) => readonly CcxpLiteDataLayerEvent[] | undefined;
+    pushToDataLayer: (
+      event: CcxpLiteDataLayerEvent,
+      options?: {
+        dataLayerName?: string;
+      },
+    ) => CcxpLiteDataLayerEvent | undefined;
+    ensureGoogleTagManager: (
+      targetDocument: Document,
+      options?: {
+        containerId?: string;
+        dataLayerName?: string;
+        bootstrapEvent?: CcxpLiteDataLayerEvent;
+      },
+    ) => {
+      containerId: string;
+      dataLayerName: string;
+      dataLayer: readonly CcxpLiteDataLayerEvent[] | undefined;
+      injected: boolean;
+    };
+    trackPageView: (
+      targetDocument: Document,
+      payload?: CcxpLiteDataLayerEvent,
+      options?: {
+        once?: boolean;
+        dataLayerName?: string;
+      },
+    ) => CcxpLiteDataLayerEvent | undefined;
   }
 
   interface CcxpLiteSharedLocale {
@@ -253,6 +293,10 @@ declare global {
       itemLabels: readonly string[];
     }>;
     ASSETS: Record<string, string>;
+    GTM: {
+      containerId: string;
+      dataLayerName: string;
+    };
     ensureThemeDocument: (targetDocument: Document, scope: string) => boolean;
     getLocalizedStrings: (locale: string) => Readonly<Record<string, string>>;
     rememberLocale: (locale: string | undefined, targetDocument: Document | undefined) => string;
@@ -292,6 +336,10 @@ declare global {
     getRuntimeSafely: () => CcxpLiteRuntime | undefined;
     getLocalStorageAreaSafely: CcxpLiteSharedDom["getLocalStorageAreaSafely"];
     addCleanupTask: (task: () => void) => void;
+    ensureDataLayer: CcxpLiteSharedAnalytics["ensureDataLayer"];
+    pushToDataLayer: CcxpLiteSharedAnalytics["pushToDataLayer"];
+    ensureGoogleTagManager: CcxpLiteSharedAnalytics["ensureGoogleTagManager"];
+    trackPageView: CcxpLiteSharedAnalytics["trackPageView"];
   }
 
   interface CcxpLiteSidebar {
@@ -603,6 +651,7 @@ declare global {
   interface CcxpLiteNamespace {
     shared?: CcxpLiteShared;
     sharedConstants?: CcxpLiteSharedConstants;
+    sharedAnalytics?: CcxpLiteSharedAnalytics;
     sharedLocale?: CcxpLiteSharedLocale;
     sharedDom?: CcxpLiteSharedDom;
     sharedTheme?: CcxpLiteSharedTheme;

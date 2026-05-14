@@ -11,6 +11,7 @@ export type TestWindow = Window &
     CCXP_LITE: CcxpLiteNamespace;
     document: Document;
     chrome: typeof chrome;
+    dataLayer?: CcxpLiteDataLayerEvent[];
   };
 
 export function createTestWindow(
@@ -97,6 +98,7 @@ export function requireElement<T extends Element>(
 
 export const sharedModulePaths = [
   "src/shared/constants.ts",
+  "src/shared/analytics.ts",
   "src/shared/locale.ts",
   "src/shared/theme.ts",
   "src/shared/brand.ts",

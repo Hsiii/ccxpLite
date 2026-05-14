@@ -457,10 +457,16 @@
     stylesheetPath: "content.css",
   } as const;
 
+  const GTM = {
+    containerId: "",
+    dataLayerName: "dataLayer",
+  } as const;
+
   namespace.sharedConstants = {
     TOKENS,
     LOCALIZED_STRINGS,
     SIDEBAR_CATEGORIES,
     ASSETS,
+    GTM,
   };
 })(globalThis);

@@ -30,6 +30,11 @@
   const SIDEBAR_VARIANT_DATASET_KEY = "ccxpLiteSidebarVariant";
   const LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR = "--ccxp-lite-lab-scrollbar-inline-compensation";
   let attempts = 0;
+  const loginSurface = isLoginPage(document);
+  sharedLib.ensureGoogleTagManager(document);
+  sharedLib.trackPageView(document, {
+    page_surface: loginSurface ? "login" : "inquire",
+  });
   const loadingState = initializeLoadingSprite(document);
   sharedLib.addCleanupTask(() => {
     if (loadingState) {

@@ -87,3 +87,39 @@ describe("shared theme", () => {
     expect(document.querySelector("body")).toBe(injectedBody);
   });
 });
+
+describe("shared analytics", () => {
+  test("creates the data layer, injects GTM once, and tracks page views once", () => {
+    const { window } = createTestWindow();
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const sharedAnalytics = requireValue(window.CCXP_LITE.sharedAnalytics, "sharedAnalytics");
+
+    const firstBootstrap = sharedAnalytics.ensureGoogleTagManager(document, {
+      containerId: "GTM-TEST123",
+    });
+    const secondBootstrap = sharedAnalytics.ensureGoogleTagManager(document, {
+      containerId: "GTM-TEST123",
+    });
+
+    expect(firstBootstrap.injected).toBe(true);
+    expect(secondBootstrap.injected).toBe(true);
+    expect(window.dataLayer).toHaveLength(1);
+    expect(window.dataLayer?.[0]).toMatchObject({ event: "gtm.js" });
+    expect(document.head.querySelectorAll("[data-ccxp-lite-gtm-script='true']")).toHaveLength(1);
+    expect(document.head.querySelector("script")?.getAttribute("src")).toContain("GTM-TEST123");
+
+    sharedAnalytics.trackPageView(document, {
+      page_surface: "login",
+    });
+    sharedAnalytics.trackPageView(document, {
+      page_surface: "login",
+    });
+
+    expect(window.dataLayer).toHaveLength(2);
+    expect(window.dataLayer?.[1]).toMatchObject({
+      event: "ccxp_lite_page_view",
+      page_surface: "login",
+    });
+  });
+});
