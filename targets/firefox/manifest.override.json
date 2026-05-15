@@ -1,4 +1,7 @@
 {
+  "background": {
+    "scripts": ["background/analytics.js"]
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "ccxp-lite@hsiii.dev",
