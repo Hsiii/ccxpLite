@@ -3,14 +3,31 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const projectRoot = process.cwd();
+const supportedTargets = new Set(["crx", "firefox"]);
+const targetArgIndex = process.argv.indexOf("--target");
+const target =
+  targetArgIndex !== -1 && targetArgIndex + 1 < process.argv.length
+    ? process.argv[targetArgIndex + 1]
+    : "crx";
+
+if (!supportedTargets.has(target)) {
+  throw new Error(`Unsupported release target: ${target}`);
+}
+
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
-const tag = `v${version}`;
-const zipPath = path.join(projectRoot, "dist", `ccxpLite-v${version}.zip`);
+const tag = `${target}-v${version}`;
+const archiveExtension = target === "firefox" ? "xpi" : "zip";
+const zipPath = path.join(
+  projectRoot,
+  target,
+  "dist",
+  `ccxpLite-${target}-v${version}.${archiveExtension}`,
+);
 
 if (!existsSync(zipPath)) {
-  process.stderr.write(`Zip not found: ${zipPath}\nRun "bun run build" first.\n`);
+  process.stderr.write(`Archive not found: ${zipPath}\nRun "bun run build:${target}" first.\n`);
   process.exit(1);
 }
 
@@ -22,7 +39,7 @@ const ghResult = spawnSync(
     tag,
     zipPath,
     "--title",
-    `ccxpLite ${tag}`,
+    `ccxpLite ${target} ${tag}`,
     "--draft",
     "--generate-notes",
     "--target",
@@ -47,4 +64,4 @@ if (openResult.status !== 0) {
   process.stderr.write("Failed to open release in browser\n");
 }
 
-process.stdout.write(`Draft release ${tag} created with ${zipPath}\n`);
+process.stdout.write(`Draft ${target} release ${tag} created with ${zipPath}\n`);

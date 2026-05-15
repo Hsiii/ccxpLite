@@ -1,0 +1,9 @@
+{
+  "name": "ccxp-lite-crx",
+  "private": true,
+  "description": "Chrome target for ccxpLite.",
+  "scripts": {
+    "build": "bun --cwd .. run build:crx",
+    "release": "bun --cwd .. run release:crx"
+  }
+}

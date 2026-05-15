@@ -1,0 +1,9 @@
+{
+  "name": "ccxp-lite-firefox",
+  "private": true,
+  "description": "Firefox target for ccxpLite.",
+  "scripts": {
+    "build": "bun --cwd .. run build:firefox",
+    "release": "bun --cwd .. run release:firefox"
+  }
+}

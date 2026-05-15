@@ -2,6 +2,7 @@ import {
   copyFileSync,
   existsSync,
   lstatSync,
+  writeFileSync,
   mkdtempSync,
   mkdirSync,
   readdirSync,
@@ -13,20 +14,34 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const projectRoot = process.cwd();
+const supportedTargets = new Set(["crx", "firefox"]);
+const targetArgIndex = process.argv.indexOf("--target");
+const target =
+  targetArgIndex !== -1 && targetArgIndex + 1 < process.argv.length
+    ? process.argv[targetArgIndex + 1]
+    : "crx";
+
+if (!supportedTargets.has(target)) {
+  throw new Error(`Unsupported build target: ${target}`);
+}
+
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
+const packageRoot = path.join(projectRoot, target);
 const srcDir = path.join(projectRoot, "src");
 const compiledSrcDir = path.join(projectRoot, ".build", "src");
-const distDir = path.join(projectRoot, "dist");
+const distDir = path.join(packageRoot, "dist");
 const unpackedDir = path.join(distDir, "unpacked");
-const outputZip = path.join(distDir, `ccxpLite-v${version}.zip`);
+const archiveExtension = target === "firefox" ? "xpi" : "zip";
+const outputZip = path.join(distDir, `ccxpLite-${target}-v${version}.${archiveExtension}`);
 const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
 const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_decaptcha_model.py");
 const generatedModelPath = path.join(srcDir, "login", "auth", "decaptcha.model.ts");
 const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
+const targetManifestPath = path.join(packageRoot, "src", "manifest.json");
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -66,6 +81,12 @@ function copyTree(
     mkdirSync(path.dirname(targetPath), { recursive: true });
     copyFileSync(sourcePath, targetPath);
   }
+}
+
+function writeManifest(outputPath: string) {
+  const manifest = JSON.parse(readFileSync(targetManifestPath, "utf8")) as Record<string, unknown>;
+  manifest.version = version;
+  writeFileSync(outputPath, `${JSON.stringify(manifest, undefined, 2)}\n`);
 }
 
 try {
@@ -179,6 +200,9 @@ try {
     (sourcePath, isDirectory) => isDirectory || sourcePath.endsWith(".js"),
   );
 
+  writeManifest(path.join(stagingDir, "manifest.json"));
+  writeManifest(path.join(unpackedDir, "manifest.json"));
+
   const zipResult = spawnSync("zip", ["-q", "-r", outputZip, "."], {
     cwd: stagingDir,
     stdio: "inherit",
@@ -189,7 +213,7 @@ try {
   }
 
   process.stdout.write(
-    `Built ${outputZip}\nUnpacked extension: ${unpackedDir}\nVersion: ${version}\n`,
+    `Built ${outputZip}\nUnpacked extension: ${unpackedDir}\nTarget: ${target}\nVersion: ${version}\n`,
   );
 } finally {
   rmSync(stagingDir, { recursive: true, force: true });
