@@ -41,7 +41,8 @@ const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_de
 const generatedModelPath = path.join(srcDir, "login", "auth", "decaptcha.model.ts");
 const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
-const targetManifestPath = path.join(packageRoot, "src", "manifest.json");
+const baseManifestPath = path.join(srcDir, "manifest.base.json");
+const targetManifestOverridePath = path.join(packageRoot, "src", "manifest.override.json");
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -83,8 +84,48 @@ function copyTree(
   }
 }
 
+function isRecordObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && value.constructor === Object;
+}
+
+function mergeManifestEntries(
+  base: Readonly<Record<string, unknown>>,
+  override: Readonly<Record<string, unknown>>,
+): Record<string, unknown> {
+  const merged = { ...base };
+
+  for (const [key, value] of Object.entries(override)) {
+    const baseValue = merged[key];
+
+    if (value !== undefined && isRecordObject(value) && isRecordObject(baseValue)) {
+      merged[key] = mergeManifestEntries(baseValue, value);
+      continue;
+    }
+
+    merged[key] = value;
+  }
+
+  return merged;
+}
+
+function shouldCopySourcePath(sourcePath: string, isDirectory: boolean) {
+  if (isDirectory) {
+    return true;
+  }
+
+  return !sourcePath.endsWith(".ts") && path.basename(sourcePath) !== "manifest.base.json";
+}
+
 function writeManifest(outputPath: string) {
-  const manifest = JSON.parse(readFileSync(targetManifestPath, "utf8")) as Record<string, unknown>;
+  const baseManifest = JSON.parse(readFileSync(baseManifestPath, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  const targetOverride = JSON.parse(readFileSync(targetManifestOverridePath, "utf8")) as Record<
+    string,
+    unknown
+  >;
+  const manifest = mergeManifestEntries(baseManifest, targetOverride);
   manifest.version = version;
   writeFileSync(outputPath, `${JSON.stringify(manifest, undefined, 2)}\n`);
 }
@@ -179,16 +220,8 @@ try {
     throw new Error("TypeScript extension build failed");
   }
 
-  copyTree(
-    srcDir,
-    stagingDir,
-    (sourcePath, isDirectory) => isDirectory || !sourcePath.endsWith(".ts"),
-  );
-  copyTree(
-    srcDir,
-    unpackedDir,
-    (sourcePath, isDirectory) => isDirectory || !sourcePath.endsWith(".ts"),
-  );
+  copyTree(srcDir, stagingDir, shouldCopySourcePath);
+  copyTree(srcDir, unpackedDir, shouldCopySourcePath);
   copyTree(
     compiledSrcDir,
     stagingDir,
