@@ -15,6 +15,10 @@ function toUint8Array(imageBytes: unknown) {
   throw new TypeError("Expected captcha image bytes as ArrayBuffer or Uint8Array.");
 }
 
+function isCaptchaImageElement(value: unknown): value is HTMLImageElement {
+  return typeof HTMLImageElement !== "undefined" && value instanceof HTMLImageElement;
+}
+
 async function loadImage(objectUrl: string): Promise<HTMLImageElement> {
   return await new Promise((resolve, reject) => {
     const image = new Image();
@@ -160,6 +164,31 @@ function getHeadInputVectors(
   }
 
   async function decodeImageData(imageBytes: unknown) {
+    if (isCaptchaImageElement(imageBytes)) {
+      const image = imageBytes;
+      const width = image.naturalWidth > 0 ? image.naturalWidth : image.width;
+      const height = image.naturalHeight > 0 ? image.naturalHeight : image.height;
+      const canvas =
+        typeof OffscreenCanvas === "undefined"
+          ? runtimeScope.document.createElement("canvas")
+          : new OffscreenCanvas(width, height);
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext("2d", { willReadFrequently: true }) as
+        | OffscreenCanvasRenderingContext2D
+        | CanvasRenderingContext2D
+        | null;
+      if (!context) {
+        throw new Error("Failed to create 2d canvas context.");
+      }
+      context.drawImage(image, 0, 0);
+      return {
+        width,
+        height,
+        data: context.getImageData(0, 0, width, height).data,
+      };
+    }
+
     const bytes = toUint8Array(imageBytes);
     const blobBytes = new Uint8Array(bytes);
     if (typeof Blob === "undefined") {

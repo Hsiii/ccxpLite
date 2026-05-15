@@ -405,8 +405,12 @@
     }
     try {
       return await downloadCaptchaImageBytes(targetDocument, captchaSrc);
-    } catch {
-      return await waitForCaptchaImageLoad(state.image);
+    } catch (error: unknown) {
+      try {
+        return await waitForCaptchaImageLoad(state.image);
+      } catch {
+        throw error;
+      }
     }
   }
   interface CcxpLiteCaptchaError extends Error {

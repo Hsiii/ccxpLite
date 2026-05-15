@@ -73,7 +73,7 @@ describe("login captcha", () => {
     expect(vi.mocked(window.fetch).mock.calls.length).toBeGreaterThan(0);
   });
 
-  test("falls back to manual entry and flashes timeout on timeout-style failures", async () => {
+  test("falls back to manual entry and flashes timeout when download and image fallback both fail", async () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     window.CCXP_LITE.decaptcha = { predictDigits: vi.fn() };
@@ -91,12 +91,76 @@ describe("login captcha", () => {
       document.querySelector<HTMLInputElement>("input[name='passwd2']"),
       "captcha input",
     );
+    const image = requireElement(
+      document.querySelector<HTMLImageElement>(".ccxp-lite-captcha-media-row img"),
+      "legacy captcha image",
+    );
+    Object.defineProperty(image, "complete", {
+      configurable: true,
+      get: () => false,
+    });
+    Object.defineProperty(image, "naturalWidth", {
+      configurable: true,
+      get: () => 0,
+    });
+    Object.defineProperty(image, "naturalHeight", {
+      configurable: true,
+      get: () => 0,
+    });
     loginCaptcha.enableCaptchaAutofill(document, document);
+    setTimeout(() => {
+      image.dispatchEvent(new Event("error"));
+    }, 0);
+    await flushPromises();
     await flushPromises();
     await flushPromises();
 
     expect(input.hasAttribute("aria-busy")).toBe(false);
     expect(input.dataset.timeoutFlash).toBe("true");
     expect(input.value).toBe("");
+  });
+
+  test("falls back to the rendered captcha image when legacy fetch fails", async () => {
+    const { window } = createTestWindow(createLoginHtml());
+    const document = window.document as Document;
+    const predictDigits = vi.fn().mockResolvedValue("432109");
+    window.CCXP_LITE.decaptcha = { predictDigits };
+    loadModules(window, loginCaptchaModulePaths);
+    const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
+
+    window.fetch = vi.fn(() => {
+      throw new Error("network-failed");
+    }) as unknown as typeof window.fetch;
+
+    const image = requireElement(
+      document.querySelector<HTMLImageElement>(".ccxp-lite-captcha-media-row img"),
+      "legacy captcha image",
+    );
+    Object.defineProperty(image, "complete", {
+      configurable: true,
+      get: () => true,
+    });
+    Object.defineProperty(image, "naturalWidth", {
+      configurable: true,
+      get: () => 150,
+    });
+    Object.defineProperty(image, "naturalHeight", {
+      configurable: true,
+      get: () => 80,
+    });
+
+    const input = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='passwd2']"),
+      "captcha input",
+    );
+
+    loginCaptcha.enableCaptchaAutofill(document, document);
+    await flushPromises();
+    await flushPromises();
+
+    expect(input.value).toBe("432109");
+    expect(input.getAttribute("aria-busy")).toBe("false");
+    expect(predictDigits).toHaveBeenCalledTimes(1);
+    expect(predictDigits.mock.calls[0]?.[0]).toBe(image);
   });
 });
