@@ -21,6 +21,7 @@ const tag = `${target}-v${version}`;
 const archiveExtension = target === "firefox" ? "xpi" : "zip";
 const zipPath = path.join(
   projectRoot,
+  "targets",
   target,
   "dist",
   `ccxpLite-${target}-v${version}.${archiveExtension}`,

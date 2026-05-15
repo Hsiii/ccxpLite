@@ -28,9 +28,10 @@ if (!supportedTargets.has(target)) {
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
-const packageRoot = path.join(projectRoot, target);
-const srcDir = path.join(projectRoot, "src");
-const compiledSrcDir = path.join(projectRoot, ".build", "src");
+const packageRoot = path.join(projectRoot, "targets", target);
+const sharedRoot = path.join(projectRoot, "shared");
+const srcDir = path.join(sharedRoot, "src");
+const compiledSrcDir = path.join(projectRoot, ".build", "shared", "src");
 const distDir = path.join(packageRoot, "dist");
 const unpackedDir = path.join(distDir, "unpacked");
 const archiveExtension = target === "firefox" ? "xpi" : "zip";
@@ -41,8 +42,8 @@ const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_de
 const generatedModelPath = path.join(srcDir, "login", "auth", "decaptcha.model.ts");
 const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
-const baseManifestPath = path.join(srcDir, "manifest.base.json");
-const targetManifestOverridePath = path.join(packageRoot, "src", "manifest.override.json");
+const baseManifestPath = path.join(sharedRoot, "manifest.base.json");
+const targetManifestOverridePath = path.join(packageRoot, "manifest.override.json");
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -206,9 +207,9 @@ try {
       "--noEmit",
       "false",
       "--rootDir",
-      "./src",
+      "./shared/src",
       "--outDir",
-      "./.build/src",
+      "./.build/shared/src",
     ],
     {
       cwd: projectRoot,

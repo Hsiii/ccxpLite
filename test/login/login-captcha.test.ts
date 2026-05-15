@@ -11,8 +11,8 @@ import { createLoginHtml } from "../helpers/login-fixtures.js";
 
 const loginCaptchaModulePaths = [
   ...sharedModulePaths,
-  "src/login/locale.ts",
-  "src/login/auth/captcha.ts",
+  "shared/src/login/locale.ts",
+  "shared/src/login/auth/captcha.ts",
 ];
 
 async function flushPromises() {

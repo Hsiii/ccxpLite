@@ -13,9 +13,9 @@ A lightweight browser extension that enhances usability of the NTHU academic inf
 
 ## Packages
 
-- `crx/`: Chrome-targeted package metadata and build artifacts
-- `firefox/`: Firefox-targeted package metadata and build artifacts
-- `src/`: shared extension source, assets, and base manifest
+- `shared/`: shared extension source, assets, and base manifest
+- `targets/crx/`: Chrome-targeted metadata and build artifacts
+- `targets/firefox/`: Firefox-targeted metadata and build artifacts
 
 ## Download & Installation
 
