@@ -1,6 +1,7 @@
 (function bootstrapCcxpLiteOauthCaptcha(globalScope: typeof globalThis) {
   const { CCXP_LITE: namespace } = globalScope as Window & typeof globalThis;
   const loginCaptcha = namespace?.loginCaptcha;
+  const shared = namespace?.shared;
   if (!loginCaptcha) {
     return;
   }
@@ -8,6 +9,9 @@
   if (!isOauthAuthorizePage(targetDocument)) {
     return;
   }
+  shared?.trackPageView?.(targetDocument, {
+    page_surface: "oauth_authorize",
+  });
 
   const MAX_BIND_ATTEMPTS = 40;
   const RETRY_DELAY_MS = 250;

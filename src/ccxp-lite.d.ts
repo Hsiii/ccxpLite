@@ -212,6 +212,17 @@ declare global {
     getURL: (path: string) => string;
     id: string;
     lastError?: { message?: string };
+    sendMessage?: (message: unknown) => void;
+  }
+
+  type CcxpLiteAnalyticsPrimitive = string | number | boolean;
+
+  type CcxpLiteAnalyticsParams = Record<string, CcxpLiteAnalyticsPrimitive | undefined>;
+
+  interface CcxpLiteAnalyticsMessage {
+    type: "ccxp-lite:analytics-event";
+    name: string;
+    params: CcxpLiteAnalyticsParams;
   }
 
   interface CcxpLiteSharedDom {
@@ -240,7 +251,24 @@ declare global {
     ensureThemeDocument: (targetDocument: Document, scope: string) => boolean;
   }
 
-  interface CcxpLiteShared {
+  interface CcxpLiteSharedAnalytics {
+    trackEvent?: (
+      targetDocument: Document,
+      payload: CcxpLiteAnalyticsParams,
+      options?: {
+        eventName?: string;
+      },
+    ) => CcxpLiteAnalyticsMessage | undefined;
+    trackPageView?: (
+      targetDocument: Document,
+      payload?: CcxpLiteAnalyticsParams,
+      options?: {
+        once?: boolean;
+      },
+    ) => CcxpLiteAnalyticsMessage | undefined;
+  }
+
+  interface CcxpLiteShared extends CcxpLiteSharedAnalytics {
     TOKENS: Record<string, string>;
     STRINGS: Record<string, string>;
     LOCALIZED_STRINGS: Record<string, Record<string, string>>;
@@ -607,6 +635,7 @@ declare global {
     sharedDom?: CcxpLiteSharedDom;
     sharedTheme?: CcxpLiteSharedTheme;
     sharedBrand?: CcxpLiteSharedBrand;
+    sharedAnalytics?: CcxpLiteSharedAnalytics;
     login?: CcxpLiteLogin;
     loginLocale?: CcxpLiteLoginLocale;
     loginSupport?: CcxpLiteLoginSupport;

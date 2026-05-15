@@ -9,6 +9,7 @@
     return;
   }
   const { TOKENS, STRINGS, ensureThemeDocument } = shared;
+  const trackEvent = shared.trackEvent ?? (() => undefined);
   const {
     getSidebarUiState,
     persistSidebarScroll,
@@ -484,6 +485,10 @@
     );
     button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
+      trackNavigationEvent(targetDocument, linkItem, {
+        sidebarVariant: "classic",
+        navigationMode: "legacy_frame",
+      });
       activateLegacyLink(linkItem, navDocument);
     });
     return button;
@@ -925,6 +930,10 @@
     );
     button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
+      trackNavigationEvent(targetDocument, linkItem, {
+        sidebarVariant: "layered",
+        navigationMode: "embedded",
+      });
       openLeafDestination(targetDocument, navDocument, linkItem, rerender);
     });
     return button;
@@ -946,6 +955,10 @@
     );
     button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
     button.addEventListener("click", () => {
+      trackNavigationEvent(targetDocument, linkItem, {
+        sidebarVariant: "layered",
+        navigationMode: "embedded",
+      });
       openLeafDestination(targetDocument, navDocument, linkItem, rerender);
     });
     return button;
@@ -1056,6 +1069,25 @@
       applyFavoriteChange();
     });
     return favoriteButton;
+  }
+
+  function trackNavigationEvent(
+    targetDocument: Document,
+    linkItem: CcxpLiteSidebarLinkItem,
+    options: {
+      sidebarVariant: "classic" | "layered";
+      navigationMode: "embedded" | "legacy_frame" | "new_tab";
+    },
+  ) {
+    trackEvent(targetDocument, {
+      feature: "navigation",
+      action: "open_link",
+      surface: "sidebar",
+      sidebar_variant: options.sidebarVariant,
+      navigation_mode: options.navigationMode,
+      link_id: linkItem.id,
+      link_label: linkItem.label,
+    });
   }
 
   async function showRemovePinnedDialog(
@@ -1326,6 +1358,10 @@
     openButton.className = "ccxp-lite-destination-action";
     openButton.textContent = strings.sidebarOpenInNewTab;
     openButton.addEventListener("click", () => {
+      trackNavigationEvent(targetDocument, activeLeaf, {
+        sidebarVariant: "layered",
+        navigationMode: "new_tab",
+      });
       openLeafInNewTab(activeLeaf, navDocument);
     });
     actions.append(retryButton);

@@ -87,3 +87,61 @@ describe("shared theme", () => {
     expect(document.querySelector("body")).toBe(injectedBody);
   });
 });
+
+describe("shared analytics", () => {
+  test("sends normalized interaction events to the extension runtime", () => {
+    const { window } = createTestWindow();
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const sendMessage = vi.spyOn(window.chrome.runtime, "sendMessage");
+    const sharedAnalytics = requireValue(window.CCXP_LITE.sharedAnalytics, "sharedAnalytics");
+    const trackEvent = requireValue(sharedAnalytics.trackEvent, "trackEvent");
+
+    const result = trackEvent(document, {
+      feature: "search",
+      action: "query",
+      query_length: 4,
+      ignored: undefined,
+    });
+
+    expect(result).toEqual({
+      type: "ccxp-lite:analytics-event",
+      name: "ccxp_lite",
+      params: {
+        feature: "search",
+        action: "query",
+        query_length: 4,
+        page_host: "www.ccxp.nthu.edu.tw",
+        page_path: "/ccxp/INQUIRE/index.php",
+        page_title: "",
+        page_location: "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php",
+      },
+    });
+    expect(sendMessage).toHaveBeenCalledWith(result, expect.any(Function));
+  });
+
+  test("tracks page views only once by default", () => {
+    const { window } = createTestWindow();
+    const document = window.document as Document;
+    loadModules(window, sharedModulePaths);
+    const sendMessage = vi.spyOn(window.chrome.runtime, "sendMessage");
+    const sharedAnalytics = requireValue(window.CCXP_LITE.sharedAnalytics, "sharedAnalytics");
+    const trackPageView = requireValue(sharedAnalytics.trackPageView, "trackPageView");
+
+    const firstResult = trackPageView(document, {
+      page_surface: "login",
+    });
+    const secondResult = trackPageView(document, {
+      page_surface: "login",
+    });
+
+    expect(firstResult?.name).toBe("ccxp_lite_page_view");
+    expect(firstResult?.params).toMatchObject({
+      feature: "page",
+      action: "view",
+      page_surface: "login",
+    });
+    expect(secondResult).toBeUndefined();
+    expect(sendMessage).toHaveBeenCalledTimes(1);
+  });
+});

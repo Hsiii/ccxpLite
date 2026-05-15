@@ -4,6 +4,10 @@
   "version": "1.7.1",
   "description": "__MSG_appDescription__",
   "default_locale": "en",
+  "permissions": ["storage"],
+  "background": {
+    "service_worker": "background/analytics.js"
+  },
   "icons": {
     "16": "assets/logo.png",
     "32": "assets/logo.png",
@@ -45,6 +49,7 @@
         "shared/locale.js",
         "shared/brand.js",
         "shared/dom.js",
+        "shared/analytics.js",
         "menu/model/state.js",
         "menu/model/favorites.js",
         "menu/model/data.js",
@@ -79,6 +84,7 @@
       "run_at": "document_start",
       "js": [
         "shared/dom.js",
+        "shared/analytics.js",
         "oauth/decaptcha.model.js",
         "oauth/decaptcha.js",
         "login/locale.js",

@@ -31,6 +31,7 @@ export function createTestWindow(
       id: "ccxp-lite-test",
       getURL: (assetPath: string) => `chrome-extension://ccxp-lite/${assetPath}`,
       lastError: undefined,
+      sendMessage: (_message: unknown) => undefined,
     },
     storage: {
       local: {
@@ -101,6 +102,7 @@ export const sharedModulePaths = [
   "src/shared/theme.ts",
   "src/shared/brand.ts",
   "src/shared/dom.ts",
+  "src/shared/analytics.ts",
 ];
 
 export const menuModulePaths = [

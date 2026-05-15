@@ -1,12 +1,13 @@
 (function registerCcxpLiteLoginValidation(globalScope: typeof globalThis) {
   const runtimeScope = globalScope;
   const namespace = runtimeScope.CCXP_LITE ?? {};
-  const { loginLocale } = namespace;
-  if (!loginLocale) {
+  const { loginLocale, shared } = namespace;
+  if (!loginLocale || !shared) {
     return;
   }
 
   const { getLoginForm } = loginLocale;
+  const trackEvent = shared.trackEvent ?? (() => undefined);
 
   function captureValidationState(targetDocument: Document): CcxpLiteLoginValidationState {
     const fnstrField = targetDocument.querySelector<HTMLInputElement>("input[name='fnstr']");
@@ -60,6 +61,13 @@
     focusLoginEntryPoint(targetDocument, form);
     form.addEventListener("submit", () => {
       ensureSubmissionPayload(form, targetDocument);
+      trackEvent(targetDocument, {
+        feature: "login",
+        action: "submit",
+        surface: "login",
+        submit_method: form.dataset.ccxpLiteSubmitMethod ?? "submit",
+      });
+      delete form.dataset.ccxpLiteSubmitMethod;
     });
 
     form.dataset.ccxpLiteValidationBound = "true";
@@ -89,11 +97,19 @@
   }
 
   function annotatePrimaryLoginAction(form: HTMLFormElement) {
+    const formNode = form;
     const primaryAction = resolvePrimaryLoginAction(form);
     if (!primaryAction) {
       return;
     }
     primaryAction.setAttribute("aria-keyshortcuts", "Enter");
+    if (primaryAction.dataset.ccxpLiteSubmitTrackBound === "true") {
+      return;
+    }
+    primaryAction.addEventListener("click", () => {
+      formNode.dataset.ccxpLiteSubmitMethod = "button";
+    });
+    primaryAction.dataset.ccxpLiteSubmitTrackBound = "true";
   }
 
   function bindEnterToPrimaryLoginAction(form: HTMLFormElement) {
@@ -126,6 +142,7 @@
         return;
       }
       event.preventDefault();
+      formNode.dataset.ccxpLiteSubmitMethod = "enter";
       triggerPrimaryLoginAction(formNode);
     });
     formNode.dataset.ccxpLiteEnterSubmitBound = "true";
