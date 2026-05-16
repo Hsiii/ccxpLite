@@ -3,11 +3,10 @@
   const { shared } = namespace;
   const { sidebar } = namespace;
   const { login } = namespace;
-  if (!shared || !sidebar || !login) {
+  if (!shared || !login) {
     return;
   }
   const sharedLib = shared;
-  const sidebarLib = sidebar;
   const loginLib = login;
   const {
     TOKENS,
@@ -59,6 +58,11 @@
       });
       return;
     }
+    if (!sidebar) {
+      retry();
+      return;
+    }
+    const sidebarLib = sidebar;
     const frames = findFrames();
     if (!frames.nav || !frames.main) {
       retry();
