@@ -8,7 +8,7 @@
       "id": "ccxp-lite@hsiii.dev",
       "strict_min_version": "121.0",
       "data_collection_permissions": {
-        "required": false
+        "required": ["none"]
       }
     }
   }
