@@ -30,10 +30,9 @@
   const SIDEBAR_VARIANT_DATASET_KEY = "ccxpLiteSidebarVariant";
   const LAB_SCROLLBAR_INLINE_COMPENSATION_CSS_VAR = "--ccxp-lite-lab-scrollbar-inline-compensation";
   let attempts = 0;
-  const loginSurface = isLoginPage(document);
   trackPageView?.(document, {
-    page_surface: loginSurface ? "login" : "inquire",
-    sidebar_variant: loginSurface ? undefined : readSidebarVariant(),
+    page_surface: isLoginPage(document) ? "login" : "inquire",
+    sidebar_variant: isLoginPage(document) ? undefined : readSidebarVariant(),
   });
   const loadingState = initializeLoadingSprite(document);
   sharedLib.addCleanupTask(() => {
@@ -50,6 +49,7 @@
     }
   });
   function attachAndApply() {
+    const loginSurface = isLoginPage(document);
     if (loginSurface) {
       loginLib.preloadCaptcha(document);
       simplifyLoginPage(document, {

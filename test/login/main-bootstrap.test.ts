@@ -48,4 +48,41 @@ describe("main bootstrap login path", () => {
     expect(body.dataset.ccxpLiteLandingApplied).toBe("true");
     expect(landingShell).not.toBeNull();
   });
+
+  test("rewrites the login page when bootstrap starts before the form is parsed", async () => {
+    const { window } = createTestWindow(
+      "<!doctype html><html lang='zh'><head></head><body></body></html>",
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/",
+    );
+    window.fetch = vi
+      .fn()
+      .mockRejectedValue(
+        new Error("captcha fetch disabled in test"),
+      ) as unknown as typeof window.fetch;
+
+    let readyState: DocumentReadyState = "loading";
+    Object.defineProperty(window.document, "readyState", {
+      configurable: true,
+      get: () => readyState,
+    });
+
+    loadModules(window, loginBootstrapModulePaths);
+
+    const parsedDocument = new window.DOMParser().parseFromString(createLoginHtml(), "text/html");
+    const targetBody = window.document.body as HTMLBodyElement;
+    const replacementBody = parsedDocument.body.cloneNode(true) as HTMLBodyElement;
+    targetBody.replaceChildren(...replacementBody.childNodes);
+    readyState = "complete";
+
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 300);
+    });
+
+    const document = window.document as Document;
+    const body = document.body as HTMLBodyElement;
+    const landingShell = document.querySelector("main.ccxp-lite-landing-shell");
+
+    expect(body.dataset.ccxpLiteLandingApplied).toBe("true");
+    expect(landingShell).not.toBeNull();
+  });
 });
