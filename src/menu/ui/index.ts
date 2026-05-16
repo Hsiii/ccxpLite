@@ -76,7 +76,7 @@
       state.currentCategoryId = "";
     }
     footer.textContent = "";
-    content.innerHTML = "";
+    content.textContent = "";
     shell.dataset.ccxpLiteSidebarVariant = state.sidebarVariant;
     mountSidebarVariantSwitch(
       hostDocument,
