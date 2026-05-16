@@ -61,7 +61,7 @@
     const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
     if (storageApi) {
       (
-        storageApi as {
+        storageApi as unknown as {
           set: (items: Readonly<Record<string, unknown>>, cb: () => void) => void;
         }
       ).set({ [FAVORITES_STORAGE_KEY]: [...favoriteIds] }, () => {
