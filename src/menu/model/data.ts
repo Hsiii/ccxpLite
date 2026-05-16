@@ -484,7 +484,7 @@
     locale: CcxpLiteLocale,
   ): CcxpLiteSidebarBlock {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-    const groupLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
+    const groupLabel = localizeSidebarLabel(toPlainText(folderNode.desc), locale);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
     for (const childNode of folderNode.children) {
       if ("children" in childNode) {
@@ -513,7 +513,7 @@
     locale: CcxpLiteLocale,
   ): readonly CcxpLiteSidebarLinkItem[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
-    const folderLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
+    const folderLabel = localizeSidebarLabel(toPlainText(folderNode.desc), locale);
     const nestedPathSegments = buildFavoritePathSegments(parentPathSegments, folderLabel);
     for (const childNode of folderNode.children) {
       if ("children" in childNode) {
@@ -532,7 +532,7 @@
 
   function normalizeLinkItem(
     itemNode: CcxpLiteLegacySidebarDocNode | undefined,
-    navDocument: Document,
+    _navDocument: Document,
     parentPathSegments: readonly string[],
     locale: CcxpLiteLocale,
   ): CcxpLiteSidebarLinkItem | undefined {
@@ -544,7 +544,7 @@
       return undefined;
     }
     const rawHtml = itemNode.desc ?? "";
-    const label = localizeSidebarLabel(toPlainText(rawHtml, navDocument), locale);
+    const label = localizeSidebarLabel(toPlainText(rawHtml), locale);
     const clickLinkArgs = parseClickLinkArgs(rawHtml);
     const pathSegments = buildFavoritePathSegments(parentPathSegments, label);
     return {
@@ -597,7 +597,7 @@
     };
   }
 
-  function toPlainText(rawHtml: unknown, navDocument: Document) {
+  function toPlainText(rawHtml: unknown) {
     if (rawHtml === null || rawHtml === undefined || rawHtml === "") {
       return "";
     }
@@ -605,13 +605,17 @@
     if (extractedVisibleText !== "") {
       return extractedVisibleText;
     }
-    const scratch = navDocument.createElement("div");
-    scratch.innerHTML = (typeof rawHtml === "string" ? rawHtml : "")
-      .replaceAll(/onclick='[^']*'/gi, "")
-      .replaceAll(String.raw`\"`, "&quot;")
-      .replaceAll(String.raw`\'`, "&#39;")
-      .replaceAll(/<br\s*\/?>/gi, " ");
-    return scratch.textContent.replaceAll(/\s+/g, " ").trim();
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(
+      (typeof rawHtml === "string" ? rawHtml : "")
+        .replaceAll(/onclick='[^']*'/gi, "")
+        .replaceAll(String.raw`\"`, "&quot;")
+        .replaceAll(String.raw`\'`, "&#39;")
+        .replaceAll(/<br\s*\/?>/gi, " "),
+      "text/html",
+    );
+    const { textContent } = parsedDocument.body;
+    return typeof textContent === "string" ? textContent.replaceAll(/\s+/g, " ").trim() : "";
   }
 
   function extractLegacyVisibleText(rawHtml: unknown) {

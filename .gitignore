@@ -12,5 +12,5 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 __pycache__/
-assets/
+/assets/
 .capture-profile/

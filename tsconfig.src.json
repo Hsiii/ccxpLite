@@ -4,6 +4,6 @@
     "module": "none",
     "types": ["chrome"]
   },
-  "include": ["shared/src/**/*.ts", "shared/src/**/*.d.ts"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts"],
   "exclude": ["dist", "node_modules", ".playwright-cli", "fixtures/ccxp-snapshot"]
 }

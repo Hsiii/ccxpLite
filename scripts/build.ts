@@ -28,11 +28,10 @@ if (!supportedTargets.has(target)) {
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
-const packageRoot = path.join(projectRoot, "targets", target);
-const sharedRoot = path.join(projectRoot, "shared");
-const srcDir = path.join(sharedRoot, "src");
-const compiledSrcDir = path.join(projectRoot, ".build", "shared", "src");
-const distDir = path.join(packageRoot, "dist");
+const srcDir = path.join(projectRoot, "src");
+const compiledSrcDir = path.join(projectRoot, ".build", "src");
+const distRoot = path.join(projectRoot, "dist");
+const distDir = path.join(distRoot, target);
 const unpackedDir = path.join(distDir, "unpacked");
 const archiveExtension = target === "firefox" ? "xpi" : "zip";
 const outputZip = path.join(distDir, `ccxpLite-${target}-v${version}.${archiveExtension}`);
@@ -42,8 +41,8 @@ const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_de
 const generatedModelPath = path.join(srcDir, "login", "auth", "decaptcha.model.ts");
 const generatedOauthModelPath = path.join(srcDir, "oauth", "decaptcha.model.ts");
 const srcTsconfigPath = path.join(projectRoot, "tsconfig.src.json");
-const baseManifestPath = path.join(sharedRoot, "manifest.base.json");
-const targetManifestOverridePath = path.join(packageRoot, "manifest.override.json");
+const baseManifestPath = path.join(srcDir, "manifest.base.json");
+const targetManifestOverridePath = path.join(srcDir, `manifest.${target}.json`);
 
 function resolveCheckpointPath(relativeSegments: readonly string[]) {
   const repoCandidates = [
@@ -96,6 +95,11 @@ function mergeManifestEntries(
   const merged = { ...base };
 
   for (const [key, value] of Object.entries(override)) {
+    if (value === null) {
+      Reflect.deleteProperty(merged, key);
+      continue;
+    }
+
     const baseValue = merged[key];
 
     if (value !== undefined && isRecordObject(value) && isRecordObject(baseValue)) {
@@ -114,7 +118,7 @@ function shouldCopySourcePath(sourcePath: string, isDirectory: boolean) {
     return true;
   }
 
-  return !sourcePath.endsWith(".ts") && path.basename(sourcePath) !== "manifest.base.json";
+  return !sourcePath.endsWith(".ts") && !path.basename(sourcePath).startsWith("manifest.");
 }
 
 function writeManifest(outputPath: string) {
@@ -132,6 +136,7 @@ function writeManifest(outputPath: string) {
 }
 
 try {
+  mkdirSync(distRoot, { recursive: true });
   mkdirSync(distDir, { recursive: true });
   mkdirSync(unpackedDir, { recursive: true });
   rmSync(compiledSrcDir, { recursive: true, force: true });
@@ -207,9 +212,9 @@ try {
       "--noEmit",
       "false",
       "--rootDir",
-      "./shared/src",
+      "./src",
       "--outDir",
-      "./.build/shared/src",
+      "./.build/src",
     ],
     {
       cwd: projectRoot,

@@ -97,32 +97,32 @@ export function requireElement<T extends Element>(
 }
 
 export const sharedModulePaths = [
-  "shared/src/shared/constants.ts",
-  "shared/src/shared/locale.ts",
-  "shared/src/shared/theme.ts",
-  "shared/src/shared/brand.ts",
-  "shared/src/shared/dom.ts",
-  "shared/src/shared/analytics.ts",
+  "src/shared/constants.ts",
+  "src/shared/locale.ts",
+  "src/shared/theme.ts",
+  "src/shared/brand.ts",
+  "src/shared/dom.ts",
+  "src/shared/analytics.ts",
 ];
 
 export const menuModulePaths = [
   ...sharedModulePaths,
-  "shared/src/menu/model/state.ts",
-  "shared/src/menu/model/favorites.ts",
-  "shared/src/menu/model/data.ts",
-  "shared/src/menu/runtime.ts",
-  "shared/src/menu/ui/index.ts",
+  "src/menu/model/state.ts",
+  "src/menu/model/favorites.ts",
+  "src/menu/model/data.ts",
+  "src/menu/runtime.ts",
+  "src/menu/ui/index.ts",
 ];
 
 export const loginModulePaths = [
   ...sharedModulePaths,
-  "shared/src/login/locale.ts",
-  "shared/src/login/ui/support.ts",
-  "shared/src/login/ui/tabs.ts",
-  "shared/src/login/auth/validation.ts",
-  "shared/src/login/ui/login.ts",
-  "shared/src/login/auth/captcha.ts",
-  "shared/src/login/pipeline/identify.ts",
-  "shared/src/login/pipeline/rewrite.ts",
-  "shared/src/login/pipeline/style.ts",
+  "src/login/locale.ts",
+  "src/login/ui/support.ts",
+  "src/login/ui/tabs.ts",
+  "src/login/auth/validation.ts",
+  "src/login/ui/login.ts",
+  "src/login/auth/captcha.ts",
+  "src/login/pipeline/identify.ts",
+  "src/login/pipeline/rewrite.ts",
+  "src/login/pipeline/style.ts",
 ];
