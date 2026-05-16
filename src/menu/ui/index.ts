@@ -256,6 +256,13 @@
     sidebarList.className = "ccxp-lite-sidebar-list";
     const items = createClassicSidebarItems(model, state.searchQuery);
     const expandedItemIds = new Set<string>(state.classicExpandedItemIds);
+    if (
+      !favoriteState.hasLoaded &&
+      state.searchQuery === "" &&
+      !expandedItemIds.has("category-favorites")
+    ) {
+      expandedItemIds.add("category-favorites");
+    }
     const searchQuery = normalizeClassicSearchText(state.searchQuery);
     const searchExpansionIds = new Set<string>();
     if (searchQuery !== "") {
@@ -403,6 +410,21 @@
     const children = targetDocument.createElement("div");
     children.className = "ccxp-lite-link-list ccxp-lite-link-list-layer";
     children.style.setProperty("--ccxp-lite-tree-depth", String(depth + 1));
+    if (
+      !favoriteState.hasLoaded &&
+      group.kind === "category" &&
+      group.id === "category-favorites"
+    ) {
+      children.append(
+        createSkeletonStack(
+          targetDocument,
+          3,
+          "ccxp-lite-row-button ccxp-lite-item ccxp-lite-skeleton-row",
+        ),
+      );
+      linkList.append(children);
+      return linkList;
+    }
     if (group.kind === "category") {
       for (const linkItem of group.links ?? []) {
         children.append(
