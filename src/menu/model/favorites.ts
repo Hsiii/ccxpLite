@@ -57,6 +57,21 @@
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
+
+    const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
+    if (storageApi) {
+      (
+        storageApi as {
+          set: (items: Readonly<Record<string, unknown>>, cb: () => void) => void;
+        }
+      ).set({ [FAVORITES_STORAGE_KEY]: [...favoriteIds] }, () => {
+        const runtime = namespace.sharedDom?.getRuntimeSafely();
+        if (runtime && runtime.lastError) {
+          // Ignore storage write failures.
+        }
+      });
+    }
+
     const storage = getScopedFavoriteStorage();
     if (!storage) {
       return;
@@ -69,6 +84,11 @@
   }
 
   async function readFavoritesFromStorage(): Promise<ReadonlySet<string>> {
+    const extensionFavorites = await readFavoritesFromExtensionStorage();
+    if (extensionFavorites.size > 0) {
+      return extensionFavorites;
+    }
+
     return await new Promise((resolve) => {
       const storage = getScopedFavoriteStorage();
       if (storage) {
@@ -97,6 +117,38 @@
           resolve(new Set<string>());
         },
       );
+    });
+  }
+
+  async function readFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
+    return await new Promise((resolve) => {
+      const runtime = namespace.sharedDom?.getRuntimeSafely();
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
+      if (!storageApi) {
+        resolve(new Set());
+        return;
+      }
+      (
+        storageApi as {
+          get: (
+            keys: readonly string[],
+            cb: (res: Readonly<Record<string, unknown>>) => void,
+          ) => void;
+        }
+      ).get([FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
+        if (runtime && runtime.lastError) {
+          resolve(new Set<string>());
+          return;
+        }
+        const storedValue = result[FAVORITES_STORAGE_KEY] as unknown[];
+        resolve(
+          new Set(
+            isArray(storedValue)
+              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
+              : [],
+          ),
+        );
+      });
     });
   }
 
