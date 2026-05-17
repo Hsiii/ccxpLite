@@ -520,11 +520,11 @@ declare global {
     FAVORITES_STORAGE_SCOPE_PATH: string;
     FAVORITES_STORAGE_KEY: string;
     INITIAL_MAIN_URL_STORAGE_KEY: string;
-    favoriteSubscribers: Set<() => void>;
     getFavoriteIds: () => ReadonlySet<string>;
     ensureFavoriteIdsLoaded: (onReady?: () => void) => void;
     writeFavoriteIds: (favoriteIds: ReadonlySet<string>) => void;
     ensureFavoriteStorageSync: () => void;
+    subscribeToFavoriteChanges: (callback: () => void) => () => void;
     collectFavoriteLinks: (
       item: CcxpLiteSidebarTreeNode | undefined,
       favoriteIds: ReadonlySet<string>,

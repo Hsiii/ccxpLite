@@ -27,7 +27,7 @@
     isDocumentComplete,
     cleanLegacyAttributes,
   } = shared;
-  const { favoriteSubscribers, ensureFavoriteStorageSync, ensureFavoriteIdsLoaded } =
+  const { ensureFavoriteStorageSync, ensureFavoriteIdsLoaded, subscribeToFavoriteChanges } =
     sidebarFavorites;
   const { buildSidebarModel, parseSidebarTree } = sidebarData;
   const { getSidebarUiState } = sidebarState;
@@ -38,6 +38,7 @@
     {
       boundRerender: () => void;
       render: (() => void) | undefined;
+      unsubscribeFavorites: (() => void) | undefined;
     }
   >();
 
@@ -173,7 +174,10 @@
       );
     };
     ensureFavoriteStorageSync();
-    favoriteSubscribers.add(rerenderBinding.boundRerender);
+    rerenderBinding.unsubscribeFavorites?.();
+    rerenderBinding.unsubscribeFavorites = subscribeToFavoriteChanges(
+      rerenderBinding.boundRerender,
+    );
     ensureFavoriteIdsLoaded(rerenderBinding.boundRerender);
     rerenderBinding.boundRerender();
   }
@@ -188,6 +192,7 @@
         binding.render?.();
       },
       render: undefined as (() => void) | undefined,
+      unsubscribeFavorites: undefined as (() => void) | undefined,
     };
     rerenderBindingByDocument.set(targetDocument, binding);
     return binding;

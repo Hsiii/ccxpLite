@@ -24,6 +24,12 @@ export function createTestWindow(
   });
   window.document.write(html);
   const testWindow = window as unknown as TestWindow;
+  const storageChangeListeners = new Set<
+    (
+      changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+      areaName: chrome.storage.AreaName,
+    ) => void
+  >();
 
   testWindow.CCXP_LITE = {} as CcxpLiteNamespace;
   testWindow.chrome = {
@@ -40,6 +46,27 @@ export function createTestWindow(
           callback: (result: Readonly<Record<string, unknown>>) => void,
         ) => {
           callback({});
+        },
+        set: (_items: Readonly<Record<string, unknown>>, callback?: () => void) => {
+          callback?.();
+        },
+      },
+      onChanged: {
+        addListener: (
+          callback: (
+            changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+            areaName: chrome.storage.AreaName,
+          ) => void,
+        ) => {
+          storageChangeListeners.add(callback);
+        },
+        removeListener: (
+          callback: (
+            changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+            areaName: chrome.storage.AreaName,
+          ) => void,
+        ) => {
+          storageChangeListeners.delete(callback);
         },
       },
     },

@@ -41,7 +41,7 @@ describe("main bootstrap login path", () => {
       setTimeout(resolve, 0);
     });
 
-    const document = window.document as Document;
+    const document = window.document as unknown as Document;
     const body = document.body as HTMLBodyElement;
     const landingShell = document.querySelector("main.ccxp-lite-landing-shell");
 
@@ -68,8 +68,12 @@ describe("main bootstrap login path", () => {
 
     loadModules(window, loginBootstrapModulePaths);
 
-    const parsedDocument = new window.DOMParser().parseFromString(createLoginHtml(), "text/html");
-    const targetBody = window.document.body as HTMLBodyElement;
+    const parsedDocument = new window.DOMParser().parseFromString(
+      createLoginHtml(),
+      "text/html",
+    ) as unknown as Document;
+    const document = window.document as unknown as Document;
+    const targetBody = document.body as HTMLBodyElement;
     const replacementBody = parsedDocument.body.cloneNode(true) as HTMLBodyElement;
     targetBody.replaceChildren(...replacementBody.childNodes);
     readyState = "complete";
@@ -78,7 +82,6 @@ describe("main bootstrap login path", () => {
       setTimeout(resolve, 300);
     });
 
-    const document = window.document as Document;
     const body = document.body as HTMLBodyElement;
     const landingShell = document.querySelector("main.ccxp-lite-landing-shell");
 

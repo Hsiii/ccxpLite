@@ -4,6 +4,7 @@
   const FAVORITES_STORAGE_SCOPE_PATH = "/ccxp/INQUIRE/select_entry.php";
   const FAVORITES_STORAGE_KEY = `ccxp-lite-sidebar-favorites::${FAVORITES_STORAGE_SCOPE_PATH}`;
   const INITIAL_MAIN_URL_STORAGE_KEY = `ccxp-lite-sidebar-initial-main-url::${FAVORITES_STORAGE_SCOPE_PATH}`;
+  const LEGACY_FAVORITES_STORAGE_KEY = "ccxp-lite-sidebar-favorites";
   const favoriteState: {
     ids: Set<string>;
     hasLoaded: boolean;
@@ -14,9 +15,25 @@
     pendingLoad: undefined,
   };
   const favoriteSubscribers = new Set<() => void>();
-  let favoriteStorageSyncBound = false;
+  let favoriteStorageSubscriptionBound = false;
+
+  interface FavoriteStorageEnvelope {
+    version: 1;
+    updatedAt: number;
+    ids: string[];
+  }
+
   function isArray<T>(value: unknown): value is T[] {
-    return value !== null && typeof value === "object" && value.constructor === Array;
+    const prototype =
+      value !== null && typeof value === "object"
+        ? (Reflect.getPrototypeOf(value) as { constructor?: { name?: string } } | undefined)
+        : undefined;
+    return (
+      value !== null &&
+      typeof value === "object" &&
+      prototype !== undefined &&
+      prototype.constructor?.name === "Array"
+    );
   }
 
   function getFavoriteIds(): ReadonlySet<string> {
@@ -57,70 +74,105 @@
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
+    persistFavoriteIds(favoriteIds).catch(() => undefined);
+  }
 
+  async function persistFavoriteIds(favoriteIds: ReadonlySet<string>) {
     const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
-    if (storageApi) {
+    if (!storageApi) {
+      return;
+    }
+    await new Promise<void>((resolve) => {
       (
         storageApi as unknown as {
           set: (items: Readonly<Record<string, unknown>>, cb: () => void) => void;
         }
-      ).set({ [FAVORITES_STORAGE_KEY]: [...favoriteIds] }, () => {
-        const runtime = namespace.sharedDom?.getRuntimeSafely();
-        if (runtime && runtime.lastError) {
-          // Ignore storage write failures.
-        }
-      });
-    }
-
-    const storage = getScopedFavoriteStorage();
-    if (!storage) {
-      return;
-    }
-    try {
-      storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
-    } catch {
-      // Ignore storage write failures; in-memory state still updates for the current page.
-    }
-  }
-
-  async function readFavoritesFromStorage(): Promise<ReadonlySet<string>> {
-    const extensionFavorites = await readFavoritesFromExtensionStorage();
-    if (extensionFavorites.size > 0) {
-      return extensionFavorites;
-    }
-
-    return await new Promise((resolve) => {
-      const storage = getScopedFavoriteStorage();
-      if (storage) {
-        try {
-          const storedValue = JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) ?? "[]") as unknown;
-          resolve(
-            new Set(
-              isArray(storedValue)
-                ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-                : [],
-            ),
-          );
-          return;
-        } catch {
-          // Fall through to migration fallback.
-        }
-      }
-      readLegacyFavoritesFromExtensionStorage().then(
-        (favoriteIds) => {
-          if (favoriteIds.size > 0) {
-            writeFavoriteIds(favoriteIds);
-          }
-          resolve(favoriteIds);
+      ).set(
+        {
+          [FAVORITES_STORAGE_KEY]: createFavoriteStorageEnvelope(favoriteIds),
         },
         () => {
-          resolve(new Set<string>());
+          const runtime = namespace.sharedDom?.getRuntimeSafely();
+          if (runtime && runtime.lastError) {
+            // Ignore storage write failures and keep the in-memory state.
+          }
+          resolve();
         },
       );
     });
   }
 
-  async function readFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
+  function createFavoriteStorageEnvelope(
+    favoriteIds: ReadonlySet<string>,
+    updatedAt = Date.now(),
+  ): FavoriteStorageEnvelope {
+    return {
+      version: 1,
+      updatedAt,
+      ids: [...favoriteIds],
+    };
+  }
+
+  async function readFavoritesFromStorage(): Promise<ReadonlySet<string>> {
+    const canonicalFavorites = await readCanonicalFavoriteEnvelope();
+    if (canonicalFavorites !== undefined) {
+      return canonicalFavorites;
+    }
+    const migratedFavorites = await migrateLegacyFavorites();
+    await persistFavoriteIds(migratedFavorites);
+    return migratedFavorites;
+  }
+
+  async function readCanonicalFavoriteEnvelope(): Promise<ReadonlySet<string> | undefined> {
+    return await new Promise((resolve) => {
+      const runtime = namespace.sharedDom?.getRuntimeSafely();
+      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
+      if (!storageApi) {
+        resolve(undefined);
+        return;
+      }
+      (
+        storageApi as {
+          get: (
+            keys: readonly string[],
+            cb: (res: Readonly<Record<string, unknown>>) => void,
+          ) => void;
+        }
+      ).get([FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
+        if (runtime && runtime.lastError) {
+          resolve(undefined);
+          return;
+        }
+        if (!Object.hasOwn(result, FAVORITES_STORAGE_KEY)) {
+          resolve(undefined);
+          return;
+        }
+        resolve(readFavoriteIdsFromStorageValue(result[FAVORITES_STORAGE_KEY]));
+      });
+    });
+  }
+
+  async function migrateLegacyFavorites(): Promise<ReadonlySet<string>> {
+    const scopedFavorites = readLegacyScopedFavorites();
+    const legacyExtensionFavorites = await readLegacyFavoritesFromExtensionStorage();
+    return new Set<string>([...scopedFavorites, ...legacyExtensionFavorites]);
+  }
+
+  function readLegacyScopedFavorites(): ReadonlySet<string> {
+    const storage = getScopedFavoriteStorage();
+    if (!storage) {
+      return new Set<string>();
+    }
+    try {
+      return readFavoriteIdsFromStorageValue(
+        JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) ?? "null") as unknown,
+      );
+    } catch {
+      return new Set<string>();
+    }
+  }
+
+  async function readLegacyFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
     return await new Promise((resolve) => {
       const runtime = namespace.sharedDom?.getRuntimeSafely();
       const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
@@ -135,55 +187,77 @@
             cb: (res: Readonly<Record<string, unknown>>) => void,
           ) => void;
         }
-      ).get([FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
+      ).get([LEGACY_FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
         if (runtime && runtime.lastError) {
           resolve(new Set<string>());
           return;
         }
-        const storedValue = result[FAVORITES_STORAGE_KEY] as unknown[];
-        resolve(
-          new Set(
-            isArray(storedValue)
-              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-              : [],
-          ),
-        );
+        resolve(readFavoriteIdsFromStorageValue(result[LEGACY_FAVORITES_STORAGE_KEY]));
       });
     });
   }
 
+  function readFavoriteIdsFromStorageValue(value: unknown): ReadonlySet<string> {
+    let favoriteIds: readonly unknown[] = [];
+    if (isFavoriteStorageEnvelope(value)) {
+      favoriteIds = value.ids;
+    } else if (isArray(value)) {
+      favoriteIds = value;
+    }
+    return new Set(favoriteIds.map(normalizeFavoriteStorageValue).filter(Boolean));
+  }
+
+  function isFavoriteStorageEnvelope(value: unknown): value is FavoriteStorageEnvelope {
+    if (value === null || typeof value !== "object") {
+      return false;
+    }
+    const candidate = value as Partial<FavoriteStorageEnvelope>;
+    return candidate.version === 1 && isArray(candidate.ids);
+  }
+
   function ensureFavoriteStorageSync() {
-    const scopeWindow = getFavoriteScopeWindow();
-    if (favoriteStorageSyncBound) {
+    if (favoriteStorageSubscriptionBound) {
       return;
     }
-    const onStorage = (event: StorageEvent) => {
-      const { sharedDom } = namespace;
-      if (sharedDom && !sharedDom.ensureContextValid()) {
-        scopeWindow.removeEventListener("storage", onStorage);
-        return;
-      }
-      if (event.key !== FAVORITES_STORAGE_KEY) {
-        return;
-      }
-      const nextValue = (() => {
-        try {
-          return JSON.parse(event.newValue ?? "[]") as unknown[];
-        } catch {
-          return [];
+    const runtime = namespace.sharedDom?.getRuntimeSafely();
+    if (!runtime) {
+      return;
+    }
+    try {
+      const onStorageChange = (
+        changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+        areaName: chrome.storage.AreaName,
+      ) => {
+        const { sharedDom } = namespace;
+        if (sharedDom && !sharedDom.ensureContextValid()) {
+          return;
         }
-      })();
-      favoriteState.ids = new Set(
-        isArray(nextValue) ? nextValue.map(normalizeFavoriteStorageValue).filter(Boolean) : [],
-      );
-      favoriteState.hasLoaded = true;
-      notifyFavoriteSubscribers();
+        if (areaName !== "local") {
+          return;
+        }
+        if (!Object.hasOwn(changes, FAVORITES_STORAGE_KEY)) {
+          return;
+        }
+        const favoriteChange = changes[FAVORITES_STORAGE_KEY];
+        favoriteState.ids = new Set(readFavoriteIdsFromStorageValue(favoriteChange.newValue));
+        favoriteState.hasLoaded = true;
+        notifyFavoriteSubscribers();
+      };
+      chrome.storage.onChanged.addListener(onStorageChange);
+      namespace.sharedDom?.addCleanupTask(() => {
+        chrome.storage.onChanged.removeListener(onStorageChange);
+      });
+      favoriteStorageSubscriptionBound = true;
+    } catch {
+      // Ignore cross-context subscription failures.
+    }
+  }
+
+  function subscribeToFavoriteChanges(callback: () => void) {
+    favoriteSubscribers.add(callback);
+    return () => {
+      favoriteSubscribers.delete(callback);
     };
-    scopeWindow.addEventListener("storage", onStorage);
-    namespace.sharedDom?.addCleanupTask(() => {
-      scopeWindow.removeEventListener("storage", onStorage);
-    });
-    favoriteStorageSyncBound = true;
   }
 
   function notifyFavoriteSubscribers() {
@@ -220,38 +294,6 @@
     } catch {
       return globalThis;
     }
-  }
-
-  async function readLegacyFavoritesFromExtensionStorage(): Promise<ReadonlySet<string>> {
-    return await new Promise((resolve) => {
-      const runtime = namespace.sharedDom?.getRuntimeSafely();
-      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
-      if (!storageApi) {
-        resolve(new Set());
-        return;
-      }
-      (
-        storageApi as {
-          get: (
-            keys: readonly string[],
-            cb: (res: Readonly<Record<string, unknown>>) => void,
-          ) => void;
-        }
-      ).get(["ccxp-lite-sidebar-favorites"], (result: Readonly<Record<string, unknown>>) => {
-        if (runtime && runtime.lastError) {
-          resolve(new Set<string>());
-          return;
-        }
-        const storedValue = result["ccxp-lite-sidebar-favorites"] as unknown[];
-        resolve(
-          new Set(
-            isArray(storedValue)
-              ? storedValue.map(normalizeFavoriteStorageValue).filter(Boolean)
-              : [],
-          ),
-        );
-      });
-    });
   }
 
   function collectFavoriteLinks(
@@ -557,16 +599,17 @@
         .replace("?&", "?");
     }
   }
+
   namespace.sidebarFavorites = {
     FAVORITES_STORAGE_SCOPE_PATH,
     FAVORITES_STORAGE_KEY,
     INITIAL_MAIN_URL_STORAGE_KEY,
     favoriteState,
-    favoriteSubscribers,
     getFavoriteIds,
     ensureFavoriteIdsLoaded,
     writeFavoriteIds,
     ensureFavoriteStorageSync,
+    subscribeToFavoriteChanges,
     collectFavoriteLinks,
     dedupeLinkItems,
     createLinkId,

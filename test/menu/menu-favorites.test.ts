@@ -8,11 +8,19 @@ import {
 } from "../helpers/module-loader.js";
 
 describe("sidebar favorites", () => {
-  test("loads favorites from scoped localStorage and writes normalized updates", async () => {
+  test("migrates scoped localStorage favorites into canonical extension storage", async () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
 
     const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    let persistedFavorites: unknown;
+    window.chrome.storage.local.set = ((
+      items: Readonly<Record<string, unknown>>,
+      done?: () => void,
+    ) => {
+      persistedFavorites = items[api.FAVORITES_STORAGE_KEY];
+      done?.();
+    }) as typeof window.chrome.storage.local.set;
     window.localStorage.setItem(
       api.FAVORITES_STORAGE_KEY,
       JSON.stringify(["legacy|Academic>Grades|Semester Grades|main|"]),
@@ -26,10 +34,10 @@ describe("sidebar favorites", () => {
     expect(loadedIds.size).toBe(1);
 
     api.writeFavoriteIds(new Set(["external", "grades"]));
-    expect(JSON.parse(window.localStorage.getItem(api.FAVORITES_STORAGE_KEY) ?? "[]")).toEqual([
-      "external",
-      "grades",
-    ]);
+    expect(persistedFavorites).toMatchObject({
+      version: 1,
+      ids: ["external", "grades"],
+    });
   });
 
   test("handles blocked localStorage reads and still notifies subscribers on write", async () => {
@@ -38,7 +46,7 @@ describe("sidebar favorites", () => {
 
     const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
     const callback = vi.fn();
-    api.favoriteSubscribers.add(() => {
+    api.subscribeToFavoriteChanges(() => {
       callback(undefined);
     });
 
@@ -58,7 +66,11 @@ describe("sidebar favorites", () => {
       done: (result: Readonly<Record<string, unknown>>) => void,
     ) => {
       done({
-        "ccxp-lite-sidebar-favorites": ["legacy|Academic>Grades|Semester Grades|main|"],
+        [api.FAVORITES_STORAGE_KEY]: {
+          version: 1,
+          updatedAt: 1,
+          ids: ["legacy|Academic>Grades|Semester Grades|main|"],
+        },
       });
     }) as typeof window.chrome.storage.local.get;
 
@@ -74,28 +86,58 @@ describe("sidebar favorites", () => {
     localStorageGetItem.mockRestore();
   });
 
-  test("syncs across storage events without crashing on invalid payloads", () => {
+  test("syncs across extension storage changes without crashing on invalid payloads", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);
 
     const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    let storageListener:
+      | ((
+          changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+          areaName: chrome.storage.AreaName,
+        ) => void)
+      | undefined;
+    const addListener = vi
+      .spyOn(window.chrome.storage.onChanged, "addListener")
+      .mockImplementation(
+        (
+          callback: (
+            changes: Readonly<Record<string, chrome.storage.StorageChange>>,
+            areaName: chrome.storage.AreaName,
+          ) => void,
+        ) => {
+          storageListener = callback;
+        },
+      );
     api.ensureFavoriteStorageSync();
+    const listener = requireValue(storageListener, "storage listener");
 
-    window.dispatchEvent(
-      new window.StorageEvent("storage", {
-        key: api.FAVORITES_STORAGE_KEY,
-        newValue: JSON.stringify(["grades"]),
-      }),
+    listener(
+      {
+        [api.FAVORITES_STORAGE_KEY]: {
+          oldValue: undefined,
+          newValue: {
+            version: 1,
+            updatedAt: 1,
+            ids: ["grades"],
+          },
+        },
+      },
+      "local",
     );
     expect([...api.getFavoriteIds()]).toEqual(["grades"]);
 
-    window.dispatchEvent(
-      new window.StorageEvent("storage", {
-        key: api.FAVORITES_STORAGE_KEY,
-        newValue: "{invalid",
-      }),
+    listener(
+      {
+        [api.FAVORITES_STORAGE_KEY]: {
+          oldValue: undefined,
+          newValue: "{invalid",
+        },
+      },
+      "local",
     );
     expect([...api.getFavoriteIds()]).toEqual([]);
+    addListener.mockRestore();
   });
 
   test("matches versioned favorites even when menu depth changes", () => {
