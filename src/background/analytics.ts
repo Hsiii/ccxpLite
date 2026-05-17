@@ -16,6 +16,18 @@
     lastActivityAt: number;
   }
 
+  interface FavoriteStorageEnvelope {
+    version: 1;
+    updatedAt: number;
+    ids: string[];
+  }
+
+  interface FavoriteStorageMessage {
+    type: "ccxp-lite:favorites-get" | "ccxp-lite:favorites-set";
+    key: string;
+    value?: FavoriteStorageEnvelope;
+  }
+
   let hasShownConfigWarning = false;
 
   function getGa4Config(): Ga4Config {
@@ -124,6 +136,14 @@
     );
   }
 
+  function isFavoriteStorageMessage(message: unknown): message is FavoriteStorageMessage {
+    return (
+      isRecord(message) &&
+      (message.type === "ccxp-lite:favorites-get" || message.type === "ccxp-lite:favorites-set") &&
+      typeof message.key === "string"
+    );
+  }
+
   async function postEvent(message: CcxpLiteAnalyticsMessage) {
     const { measurementId, apiSecret } = getGa4Config();
     if (measurementId === "" || apiSecret === "") {
@@ -187,4 +207,37 @@
       console.warn("[ccxp-lite] Failed to process GA4 analytics event.", error);
     });
   });
+
+  function favoriteMessageListener(
+    message: unknown,
+    _sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: unknown) => void,
+  ): boolean | undefined {
+    if (!isFavoriteStorageMessage(message)) {
+      return undefined;
+    }
+    if (message.type === "ccxp-lite:favorites-get") {
+      getStoredValue<unknown>(message.key)
+        .then((value) => {
+          sendResponse(value);
+        })
+        .catch(() => {
+          sendResponse(undefined);
+        });
+      return true;
+    }
+    setStoredValue(message.key, message.value)
+      .then(() => {
+        sendResponse(undefined);
+      })
+      .catch(() => {
+        sendResponse(undefined);
+      });
+    return true;
+  }
+  chrome.runtime.onMessage.addListener(
+    favoriteMessageListener as unknown as Parameters<
+      typeof chrome.runtime.onMessage.addListener
+    >[0],
+  );
 })();

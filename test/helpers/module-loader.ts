@@ -37,7 +37,9 @@ export function createTestWindow(
       id: "ccxp-lite-test",
       getURL: (assetPath: string) => `chrome-extension://ccxp-lite/${assetPath}`,
       lastError: undefined,
-      sendMessage: (_message: unknown) => undefined,
+      sendMessage: (_message: unknown, callback?: (response: unknown) => void) => {
+        callback?.(undefined);
+      },
     },
     storage: {
       local: {

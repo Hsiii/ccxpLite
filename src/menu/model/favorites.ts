@@ -23,6 +23,12 @@
     ids: string[];
   }
 
+  interface FavoriteStorageMessage {
+    type: "ccxp-lite:favorites-get" | "ccxp-lite:favorites-set";
+    key: string;
+    value?: FavoriteStorageEnvelope;
+  }
+
   function isArray<T>(value: unknown): value is T[] {
     const prototype =
       value !== null && typeof value === "object"
@@ -74,31 +80,16 @@
     favoriteState.ids = new Set(favoriteIds);
     favoriteState.hasLoaded = true;
     notifyFavoriteSubscribers();
-    persistFavoriteIds(favoriteIds).catch(() => undefined);
+    const envelope = createFavoriteStorageEnvelope(favoriteIds);
+    writeFavoriteEnvelopeToScopedStorage(envelope);
+    persistFavoriteEnvelope(envelope).catch(() => undefined);
   }
 
-  async function persistFavoriteIds(favoriteIds: ReadonlySet<string>) {
-    const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
-    if (!storageApi) {
-      return;
-    }
-    await new Promise<void>((resolve) => {
-      (
-        storageApi as unknown as {
-          set: (items: Readonly<Record<string, unknown>>, cb: () => void) => void;
-        }
-      ).set(
-        {
-          [FAVORITES_STORAGE_KEY]: createFavoriteStorageEnvelope(favoriteIds),
-        },
-        () => {
-          const runtime = namespace.sharedDom?.getRuntimeSafely();
-          if (runtime && runtime.lastError) {
-            // Ignore storage write failures and keep the in-memory state.
-          }
-          resolve();
-        },
-      );
+  async function persistFavoriteEnvelope(favoriteEnvelope: Readonly<FavoriteStorageEnvelope>) {
+    await sendFavoriteStorageMessage<undefined>({
+      type: "ccxp-lite:favorites-set",
+      key: FAVORITES_STORAGE_KEY,
+      value: favoriteEnvelope,
     });
   }
 
@@ -114,42 +105,62 @@
   }
 
   async function readFavoritesFromStorage(): Promise<ReadonlySet<string>> {
-    const canonicalFavorites = await readCanonicalFavoriteEnvelope();
-    if (canonicalFavorites !== undefined) {
-      return canonicalFavorites;
+    const canonicalEnvelope = await readCanonicalFavoriteEnvelope();
+    const scopedEnvelope = readScopedFavoriteEnvelope();
+    const preferredEnvelope = pickPreferredFavoriteEnvelope(canonicalEnvelope, scopedEnvelope);
+    if (preferredEnvelope) {
+      if (
+        canonicalEnvelope === undefined ||
+        preferredEnvelope.updatedAt > canonicalEnvelope.updatedAt
+      ) {
+        await persistFavoriteEnvelope(preferredEnvelope);
+      }
+      if (scopedEnvelope === undefined || preferredEnvelope.updatedAt > scopedEnvelope.updatedAt) {
+        writeFavoriteEnvelopeToScopedStorage(preferredEnvelope);
+      }
+      return new Set(preferredEnvelope.ids.map(normalizeFavoriteStorageValue).filter(Boolean));
     }
     const migratedFavorites = await migrateLegacyFavorites();
-    await persistFavoriteIds(migratedFavorites);
+    const migratedEnvelope = createFavoriteStorageEnvelope(migratedFavorites, 0);
+    writeFavoriteEnvelopeToScopedStorage(migratedEnvelope);
+    await persistFavoriteEnvelope(migratedEnvelope);
     return migratedFavorites;
   }
 
-  async function readCanonicalFavoriteEnvelope(): Promise<ReadonlySet<string> | undefined> {
-    return await new Promise((resolve) => {
-      const runtime = namespace.sharedDom?.getRuntimeSafely();
-      const storageApi = namespace.sharedDom?.getLocalStorageAreaSafely();
-      if (!storageApi) {
-        resolve(undefined);
-        return;
-      }
-      (
-        storageApi as {
-          get: (
-            keys: readonly string[],
-            cb: (res: Readonly<Record<string, unknown>>) => void,
-          ) => void;
-        }
-      ).get([FAVORITES_STORAGE_KEY], (result: Readonly<Record<string, unknown>>) => {
-        if (runtime && runtime.lastError) {
-          resolve(undefined);
-          return;
-        }
-        if (!Object.hasOwn(result, FAVORITES_STORAGE_KEY)) {
-          resolve(undefined);
-          return;
-        }
-        resolve(readFavoriteIdsFromStorageValue(result[FAVORITES_STORAGE_KEY]));
-      });
+  async function readCanonicalFavoriteEnvelope(): Promise<FavoriteStorageEnvelope | undefined> {
+    const storedValue = await sendFavoriteStorageMessage<unknown>({
+      type: "ccxp-lite:favorites-get",
+      key: FAVORITES_STORAGE_KEY,
     });
+    return readFavoriteEnvelopeFromStorageValue(storedValue);
+  }
+
+  function readScopedFavoriteEnvelope(): FavoriteStorageEnvelope | undefined {
+    const storage = getScopedFavoriteStorage();
+    if (!storage) {
+      return undefined;
+    }
+    try {
+      return readFavoriteEnvelopeFromStorageValue(
+        JSON.parse(storage.getItem(FAVORITES_STORAGE_KEY) ?? "null") as unknown,
+      );
+    } catch {
+      return undefined;
+    }
+  }
+
+  function writeFavoriteEnvelopeToScopedStorage(
+    favoriteEnvelope: Readonly<FavoriteStorageEnvelope>,
+  ) {
+    const storage = getScopedFavoriteStorage();
+    if (!storage) {
+      return;
+    }
+    try {
+      storage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(favoriteEnvelope));
+    } catch {
+      // Ignore scoped storage write failures and keep the in-memory state.
+    }
   }
 
   async function migrateLegacyFavorites(): Promise<ReadonlySet<string>> {
@@ -197,14 +208,32 @@
     });
   }
 
-  function readFavoriteIdsFromStorageValue(value: unknown): ReadonlySet<string> {
-    let favoriteIds: readonly unknown[] = [];
+  function readFavoriteEnvelopeFromStorageValue(
+    value: unknown,
+  ): FavoriteStorageEnvelope | undefined {
     if (isFavoriteStorageEnvelope(value)) {
-      favoriteIds = value.ids;
-    } else if (isArray(value)) {
-      favoriteIds = value;
+      return {
+        version: 1,
+        updatedAt: normalizeFavoriteUpdatedAt(value.updatedAt),
+        ids: value.ids.map(normalizeFavoriteStorageValue).filter(Boolean),
+      };
     }
-    return new Set(favoriteIds.map(normalizeFavoriteStorageValue).filter(Boolean));
+    if (isArray(value)) {
+      return {
+        version: 1,
+        updatedAt: 0,
+        ids: value.map(normalizeFavoriteStorageValue).filter(Boolean),
+      };
+    }
+    return undefined;
+  }
+
+  function readFavoriteIdsFromStorageValue(value: unknown): ReadonlySet<string> {
+    const favoriteEnvelope = readFavoriteEnvelopeFromStorageValue(value);
+    if (!favoriteEnvelope) {
+      return new Set<string>();
+    }
+    return new Set(favoriteEnvelope.ids);
   }
 
   function isFavoriteStorageEnvelope(value: unknown): value is FavoriteStorageEnvelope {
@@ -213,6 +242,45 @@
     }
     const candidate = value as Partial<FavoriteStorageEnvelope>;
     return candidate.version === 1 && isArray(candidate.ids);
+  }
+
+  function normalizeFavoriteUpdatedAt(value: unknown) {
+    return typeof value === "number" && Number.isFinite(value) ? value : 0;
+  }
+
+  function pickPreferredFavoriteEnvelope(
+    leftEnvelope: Readonly<FavoriteStorageEnvelope> | undefined,
+    rightEnvelope: Readonly<FavoriteStorageEnvelope> | undefined,
+  ) {
+    if (!leftEnvelope) {
+      return rightEnvelope;
+    }
+    if (!rightEnvelope) {
+      return leftEnvelope;
+    }
+    return rightEnvelope.updatedAt > leftEnvelope.updatedAt ? rightEnvelope : leftEnvelope;
+  }
+
+  async function sendFavoriteStorageMessage<T>(message: FavoriteStorageMessage) {
+    const runtime = namespace.sharedDom?.getRuntimeSafely();
+    if (!runtime?.sendMessage) {
+      return undefined;
+    }
+    return await new Promise<T | undefined>((resolve) => {
+      (
+        runtime.sendMessage as (
+          payload: FavoriteStorageMessage,
+          callback: (response: T | undefined) => void,
+        ) => void
+      )(message, (response) => {
+        const nextRuntime = namespace.sharedDom?.getRuntimeSafely();
+        if (nextRuntime?.lastError) {
+          resolve(undefined);
+          return;
+        }
+        resolve(response);
+      });
+    });
   }
 
   function ensureFavoriteStorageSync() {
@@ -456,12 +524,24 @@
       return false;
     }
     if (parsedFavoriteId.version === "v3") {
-      return (
-        parsedFavoriteId.label === normalizeFavoriteText(linkItem.label) &&
-        parsedFavoriteId.href === normalizeFavoriteUrl(linkItem.href) &&
-        parsedFavoriteId.target === normalizeFavoriteText(linkItem.target) &&
-        parsedFavoriteId.clickSignature === createFavoriteClickSignature(linkItem.clickLinkArgs)
-      );
+      if (
+        parsedFavoriteId.label !== normalizeFavoriteText(linkItem.label) ||
+        parsedFavoriteId.target !== normalizeFavoriteText(linkItem.target)
+      ) {
+        return false;
+      }
+      const normalizedHref = normalizeFavoriteUrl(linkItem.href);
+      const normalizedClickSignature = createFavoriteClickSignature(linkItem.clickLinkArgs);
+      if (parsedFavoriteId.href !== "" && parsedFavoriteId.href === normalizedHref) {
+        return true;
+      }
+      if (
+        parsedFavoriteId.clickSignature !== "" &&
+        parsedFavoriteId.clickSignature === normalizedClickSignature
+      ) {
+        return true;
+      }
+      return false;
     }
     if (
       parsedFavoriteId.label !== normalizeFavoriteText(linkItem.label) ||
@@ -503,7 +583,7 @@
         label: normalizeFavoriteText(parts[1]),
         href: normalizeFavoriteUrl(parts[2]),
         target: normalizeFavoriteText(parts[3]),
-        clickSignature: normalizeFavoriteText(parts[4]),
+        clickSignature: normalizeFavoriteClickSignature(parts[4]),
       };
     }
     if (parts[0] !== "v2") {
@@ -560,8 +640,12 @@
 
   function createFavoriteClickSignature(clickLinkArgs: CcxpLiteClickLinkArgs | undefined) {
     return clickLinkArgs
-      ? `${clickLinkArgs.name.trim()}::${normalizeFavoriteUrl(clickLinkArgs.url)}`
+      ? `${normalizeFavoriteText(clickLinkArgs.name)}::${normalizeFavoriteUrl(clickLinkArgs.url)}`
       : "";
+  }
+
+  function normalizeFavoriteClickSignature(signature: unknown) {
+    return createFavoriteClickSignature(parseFavoriteClickSignature(signature));
   }
 
   function normalizeFavoriteUrl(rawValue: string | undefined) {
@@ -571,9 +655,19 @@
     }
     try {
       const url = new URL(value, "https://www.ccxp.nthu.edu.tw/");
-      const volatileParams = ["acixstore", "sid", "session", "phpsessid", "token", "_", "t"];
-      for (const key of volatileParams) {
-        url.searchParams.delete(key);
+      const volatileParams = new Set([
+        "_",
+        "acixstore",
+        "phpsessid",
+        "session",
+        "sid",
+        "t",
+        "token",
+      ]);
+      for (const [key] of url.searchParams.entries()) {
+        if (volatileParams.has(key.toLowerCase())) {
+          url.searchParams.delete(key);
+        }
       }
       const sortedEntries = [...url.searchParams.entries()].toSorted(
         ([leftKey, leftValue], [rightKey, rightValue]) => {

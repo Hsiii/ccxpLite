@@ -212,7 +212,7 @@ declare global {
     getURL: (path: string) => string;
     id: string;
     lastError?: { message?: string };
-    sendMessage?: (message: unknown) => void;
+    sendMessage?: typeof chrome.runtime.sendMessage;
   }
 
   type CcxpLiteAnalyticsPrimitive = string | number | boolean;

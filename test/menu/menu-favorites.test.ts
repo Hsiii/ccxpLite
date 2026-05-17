@@ -14,13 +14,13 @@ describe("sidebar favorites", () => {
 
     const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
     let persistedFavorites: unknown;
-    window.chrome.storage.local.set = ((
-      items: Readonly<Record<string, unknown>>,
+    window.chrome.runtime.sendMessage = ((
+      message: { key?: string; value?: unknown },
       done?: () => void,
     ) => {
-      persistedFavorites = items[api.FAVORITES_STORAGE_KEY];
+      persistedFavorites = message.key === api.FAVORITES_STORAGE_KEY ? message.value : undefined;
       done?.();
-    }) as typeof window.chrome.storage.local.set;
+    }) as typeof window.chrome.runtime.sendMessage;
     window.localStorage.setItem(
       api.FAVORITES_STORAGE_KEY,
       JSON.stringify(["legacy|Academic>Grades|Semester Grades|main|"]),
@@ -192,6 +192,67 @@ describe("sidebar favorites", () => {
         pathSegments: ["Student services", "Select courses", "Apply now"],
         target: "main",
       }),
+    );
+  });
+
+  test("matches stored v3 favorites across login sessions when volatile route values change", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+
+    const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const currentLink = {
+      id: api.createLinkId({
+        label: "Transcript",
+        href: "/JH/8/R/6.3/JH8R63001.php?ACIXSTORE=new-session",
+        target: "main",
+        clickLinkArgs: {
+          name: "%A6%A8%C1Z%ACd%B8%DF",
+          url: "/JH/8/R/6.3/JH8R63001.php",
+        },
+      }),
+      legacyId: api.createLegacyLinkId({
+        label: "Transcript",
+        href: "/JH/8/R/6.3/JH8R63001.php?ACIXSTORE=new-session",
+        target: "main",
+        clickLinkArgs: {
+          name: "%A6%A8%C1Z%ACd%B8%DF",
+          url: "/JH/8/R/6.3/JH8R63001.php",
+        },
+      }),
+      label: "Transcript",
+      href: "/JH/8/R/6.3/JH8R63001.php?ACIXSTORE=new-session",
+      target: "main",
+      clickLinkArgs: {
+        name: "%A6%A8%C1Z%ACd%B8%DF",
+        url: "/JH/8/R/6.3/JH8R63001.php",
+      },
+    };
+    const savedFavoriteId =
+      "v3||Transcript||/JH/8/R/6.3/JH8R63001.php?ACIXSTORE=old-session||main||%A6%A8%C1Z%ACd%B8%DF::/JH%2F8%2FR%2F6.3%2FJH8R63001.php";
+
+    expect(api.getMatchingFavoriteIds(currentLink, new Set([savedFavoriteId]))).toEqual([
+      savedFavoriteId,
+    ]);
+  });
+
+  test("writes canonical v3 favorite ids without volatile session parameters", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+
+    const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+
+    expect(
+      api.createLinkId({
+        label: "Transcript",
+        href: "/JH/8/R/6.3/JH8R63001.php?ACIXSTORE=old-session",
+        target: "main",
+        clickLinkArgs: {
+          name: "%A6%A8%C1Z%ACd%B8%DF",
+          url: "/JH%2F8%2FR%2F6.3%2FJH8R63001.php",
+        },
+      }),
+    ).toBe(
+      "v3||Transcript||/JH/8/R/6.3/JH8R63001.php||main||%A6%A8%C1Z%ACd%B8%DF::/JH%2F8%2FR%2F6.3%2FJH8R63001.php",
     );
   });
 });
