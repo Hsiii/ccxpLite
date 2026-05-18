@@ -27,6 +27,16 @@ bun run build:crx
 bun run build:firefox
 ```
 
+To produce an installable Firefox XPI, submit the Firefox build for AMO signing:
+
+```bash
+export AMO_JWT_ISSUER=your-amo-jwt-issuer
+export AMO_JWT_SECRET=your-amo-jwt-secret
+bun run sign:firefox
+```
+
+This signs the unpacked Firefox build as an `unlisted` add-on and writes the signed artifact under `dist/firefox/signed/`.
+
 ## Demo
 
 | Screen            | Original                                                                                                   | Sidebar Mode                                                                                                  | Menu Mode                                                                                               |

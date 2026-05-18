@@ -11,6 +11,7 @@
     "build": "bun run build:crx && bun run build:firefox",
     "build:crx": "bun run scripts/build.ts --target crx",
     "build:firefox": "bun run scripts/build.ts --target firefox",
+    "sign:firefox": "bun run build:firefox && bun run scripts/sign_firefox.ts",
     "clean": "rm -rf dist .build",
     "capture": "bun run scripts/capture_marketing_images.ts",
     "update:readme-assets": "bun run scripts/update_readme_assets.ts",
