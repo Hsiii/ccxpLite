@@ -301,7 +301,7 @@ describe("sidebar data", () => {
 
     expect(model.categories).toHaveLength(1);
     expect(model.categories[0].label).toBe("Planning & Enrollment");
-    expect(model.categories[0].blocks[0].label).toBe("Student services");
+    expect(model.categories[0].blocks[0].label).toBe("Select courses");
     expect(model.categories[0].blocks[0].links[0].pathSegments).toEqual([
       "Student services",
       "Select courses",
@@ -377,8 +377,8 @@ describe("sidebar data", () => {
 
     sidebarFavorites.favoriteState.ids = new Set([
       sidebarFavorites.createBlockId({
-        label: "Student services",
-        pathSegments: ["Student services"],
+        label: "Select courses",
+        pathSegments: ["Student services", "Select courses"],
         parentCategoryId: "category-planning-and-enrollment",
       }),
     ]);
@@ -387,7 +387,7 @@ describe("sidebar data", () => {
     const model = sidebarData.buildSidebarModel(root, window.document, strings);
 
     expect(model.favorites.blocks).toHaveLength(1);
-    expect(model.favorites.blocks[0]?.label).toBe("Student services");
+    expect(model.favorites.blocks[0]?.label).toBe("Select courses");
     expect(model.favorites.links).toHaveLength(0);
   });
 
@@ -419,12 +419,8 @@ describe("sidebar data", () => {
       (entry: CcxpLiteSidebarCategoryNode) => entry.label === "Planning & Enrollment",
     );
 
-    expect(category?.blocks.map((block) => block.label)).toEqual([
-      "Student services",
-      "Select courses",
-    ]);
-    expect(category?.blocks[0]?.links.map((link) => link.label)).toEqual(["Overview"]);
-    expect(category?.blocks[1]?.links.map((link) => link.label)).toEqual(["Apply now"]);
+    expect(category?.blocks.map((block) => block.label)).toEqual(["Select courses"]);
+    expect(category?.blocks[0]?.links.map((link) => link.label)).toEqual(["Apply now"]);
   });
 
   test("drops mixed-language duplicates from a broad block when sibling blocks expose them separately", () => {
@@ -447,8 +443,11 @@ describe("sidebar data", () => {
             aux4 = insFld(foldersTree, gFld("\u9078\u8AB2 Select courses", ""));
             insDoc(aux4, gLnk(0, "\u7DB2\u8DEF\u9078\u8AB2 Select courses", "/select"));
             insDoc(aux4, gLnk(0, "\u52A0\u7C3D\u7533\u8ACB application for extra selection", "/extra"));
+            insDoc(aux4, gLnk(0, "eForm", "/eform"));
             insDoc(aux4, gLnk(0, "\u505C\u4FEE\u7533\u8ACB Course withdrawal application", "/withdraw"));
             insDoc(aux4, gLnk(0, "\u9078\u8AB2\u60C5\u5F62\u67E5\u8A62 Inquiries regarding course selection results", "/inquiry"));
+            insDoc(aux4, gLnk(0, "\u8F38\u5165\u5C0E\u5E2B\u5BC6\u78BC Key in advising password", "/advisor-password"));
+            insDoc(aux4, gLnk(0, "\u9078\u4E0A/\u5269\u9918\u540D\u984D/\u5F85\u4E82\u6578\u4EBA\u6578\u7D71\u8A08", "/seat-stats"));
             insDoc(foldersTree, gLnk(0, "\u6821\u969B/\u8DE8\u7CFB\u7D71\u9078\u4FEE", "/cross"));
             insDoc(foldersTree, gLnk(0, "\u6691\u4FEE Summer courses", "/summer"));
           </script>
@@ -475,13 +474,12 @@ describe("sidebar data", () => {
       "\u6691\u4FEE Summer courses",
     ]);
     expect(category?.blocks[1]?.links.map((link) => link.label)).toEqual([
-      "\u8AB2\u7A0B\u9810\u6392 Tentative schedule",
+      "\u8AB2\u7A0B\u9810\u6392Tentative schedule",
     ]);
     expect(category?.blocks[2]?.links.map((link) => link.label)).toEqual([
-      "\u7DB2\u8DEF\u9078\u8AB2 Select courses",
-      "\u52A0\u7C3D\u7533\u8ACB application for extra selection",
-      "\u505C\u4FEE\u7533\u8ACB Course withdrawal application",
-      "\u9078\u8AB2\u60C5\u5F62\u67E5\u8A62 Inquiries regarding course selection results",
+      "eForm",
+      "\u8F38\u5165\u5C0E\u5E2B\u5BC6\u78BC Key in advising password",
+      "\u9078\u4E0A/\u5269\u9918\u540D\u984D/\u5F85\u4E82\u6578\u4EBA\u6578\u7D71\u8A08",
     ]);
   });
 
