@@ -14,6 +14,7 @@
     ensureDocumentHead,
     ensureDocumentBody,
     ensureThemeDocument,
+    isDocumentComplete,
     cleanLegacyAttributes,
     trackPageView,
   } = sharedLib;
@@ -58,16 +59,29 @@
       });
       return;
     }
+    const frames = findFrames();
+    if (!frames.nav || !frames.main) {
+      if (document.body instanceof HTMLBodyElement) {
+        if (!isDocumentComplete(document)) {
+          retry();
+          return;
+        }
+        simplifyMainDocument(document);
+        markStandaloneMainReady();
+        return;
+      }
+      if (!sidebar) {
+        retry();
+        return;
+      }
+      retry();
+      return;
+    }
     if (!sidebar) {
       retry();
       return;
     }
     const sidebarLib = sidebar;
-    const frames = findFrames();
-    if (!frames.nav || !frames.main) {
-      retry();
-      return;
-    }
     const navFrame = frames.nav;
     const mainFrame = frames.main;
     applyFramesetLayout();
@@ -221,6 +235,15 @@
     tryReleaseLoadingSprite();
   }
 
+  function markStandaloneMainReady() {
+    if (!loadingState || loadingState.released) {
+      return;
+    }
+    loadingState.navReady = true;
+    loadingState.mainReady = true;
+    tryReleaseLoadingSprite();
+  }
+
   function tryReleaseLoadingSprite() {
     if (!loadingState || loadingState.released) {
       return;
@@ -344,16 +367,22 @@
     if (!mainDocument) {
       return;
     }
+    simplifyMainDocument(mainDocument);
+  }
+
+  function simplifyMainDocument(mainDocument: Document) {
     ensureThemeDocument(mainDocument, "main");
     cleanLegacyAttributes(mainDocument);
-    mainDocument.body.classList.add(TOKENS.mainClass);
-    mainDocument.body.style.setProperty("background-image", "none", "important");
-    mainDocument.body.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
+    const mainBody = mainDocument.body;
+    const mainDocumentElement = mainDocument.documentElement;
+    mainBody.classList.add(TOKENS.mainClass);
+    mainBody.style.setProperty("background-image", "none", "important");
+    mainBody.style.setProperty("background-color", "var(--ccxp-lite-bg)", "important");
     const { sidebarState } = globalThis.CCXP_LITE ?? {};
     if (sidebarState) {
       const state = sidebarState.getSidebarUiState(mainDocument);
-      mainDocument.documentElement.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
-      mainDocument.body.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
+      mainDocumentElement.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
+      mainBody.dataset[SIDEBAR_VARIANT_DATASET_KEY] = state.sidebarVariant;
       syncMainFrameLabScrollbarCompensation(mainDocument, state.sidebarVariant);
     }
   }

@@ -88,4 +88,24 @@ describe("main bootstrap login path", () => {
     expect(body.dataset.ccxpLiteLandingApplied).toBe("true");
     expect(landingShell).not.toBeNull();
   });
+
+  test("skins standalone inquire pages when they open outside the frameset", async () => {
+    const { window } = createTestWindow(
+      "<!doctype html><html lang='zh'><head></head><body><main>Standalone page</main></body></html>",
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/B/B.2/B.2.3/JHB23001.php?ACIXSTORE=test",
+    );
+
+    loadModules(window, loginBootstrapModulePaths);
+
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 0);
+    });
+
+    const document = window.document as unknown as Document;
+    const body = document.body as HTMLBodyElement;
+
+    expect(body.classList.contains("ccxp-lite-main-skin")).toBe(true);
+    expect(body.style.getPropertyValue("background-image")).toBe("none");
+    expect(body.style.getPropertyValue("background-color")).toBe("var(--ccxp-lite-bg)");
+  });
 });
