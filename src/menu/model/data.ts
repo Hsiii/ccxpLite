@@ -22,9 +22,9 @@
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarModel {
     const locale = resolveSidebarLocale(strings);
-    const normalizedItems = root.children
-      .map((entry, index) => normalizeRootEntry(entry, index, navDocument, locale))
-      .filter((item): item is CcxpLiteSidebarTreeNode => item !== undefined);
+    const normalizedItems = root.children.flatMap((entry, index) =>
+      normalizeRootEntry(entry, index, navDocument, locale),
+    );
     const favoriteIds = getFavoriteIds();
     return buildCategorizedSidebarItems(normalizedItems, favoriteIds, strings);
   }
@@ -199,17 +199,32 @@
           }
           const candidateLinkKeys = linkKeySets[candidateIndex];
           const candidateLinkLabels = linkLabelSets[candidateIndex];
+          const candidateInsideBlockByKey = isLinkKeySubset(candidateLinkKeys, blockLinkKeys);
+          const candidateInsideBlockByLabel = isLinkKeySubset(candidateLinkLabels, blockLinkLabels);
+          const blockInsideCandidateByKey = isLinkKeySubset(blockLinkKeys, candidateLinkKeys);
+          const blockInsideCandidateByLabel = isLinkKeySubset(blockLinkLabels, candidateLinkLabels);
           const isExactDuplicateSet =
             candidate.links.length === block.links.length &&
-            ((candidateLinkKeys.size === blockLinkKeys.size &&
-              isLinkKeySubset(candidateLinkKeys, blockLinkKeys)) ||
-              (candidateLinkLabels.size === blockLinkLabels.size &&
-                isLinkKeySubset(candidateLinkLabels, blockLinkLabels)));
+            ((candidateLinkKeys.size === blockLinkKeys.size && candidateInsideBlockByKey) ||
+              (candidateLinkLabels.size === blockLinkLabels.size && candidateInsideBlockByLabel));
           if (
             (candidateLinkKeys.size === 0 && candidateLinkLabels.size === 0) ||
-            (!isLinkKeySubset(candidateLinkKeys, blockLinkKeys) &&
-              !isLinkKeySubset(candidateLinkLabels, blockLinkLabels)) ||
-            (candidate.links.length > block.links.length && !isExactDuplicateSet) ||
+            (!candidateInsideBlockByKey &&
+              !candidateInsideBlockByLabel &&
+              !blockInsideCandidateByKey &&
+              !blockInsideCandidateByLabel) ||
+            (candidate.links.length > block.links.length &&
+              !isExactDuplicateSet &&
+              !blockInsideCandidateByKey &&
+              !blockInsideCandidateByLabel) ||
+            (candidate.links.length > block.links.length &&
+              !isExactDuplicateSet &&
+              !hasNestedOverlapWithinBlock(
+                block,
+                candidate,
+                candidateLinkKeys,
+                candidateLinkLabels,
+              )) ||
             (candidate.links.length === block.links.length &&
               getBlockSpecificityScore(candidate) <= getBlockSpecificityScore(block))
           ) {
@@ -263,6 +278,34 @@
       }),
       -1,
     );
+  }
+
+  function hasNestedOverlapWithinBlock(
+    block: CcxpLiteSidebarBlock,
+    candidate: CcxpLiteSidebarBlock,
+    candidateLinkKeys: ReadonlySet<string>,
+    candidateLinkLabels: ReadonlySet<string>,
+  ) {
+    const normalizedCandidateLabel = normalizeSidebarLabel(candidate.label);
+    let hasOverlap = false;
+    for (const linkItem of block.links) {
+      const normalizedLinkLabel = normalizeSidebarLabel(linkItem.label);
+      const hasMatchingLink =
+        candidateLinkKeys.has(createSidebarLinkKey(linkItem)) ||
+        candidateLinkLabels.has(normalizedLinkLabel);
+      if (!hasMatchingLink) {
+        continue;
+      }
+      hasOverlap = true;
+      const pathSegments = linkItem.pathSegments ?? [];
+      const hasNestedCandidateLabel = pathSegments.some(
+        (pathSegment) => normalizeSidebarLabel(pathSegment) === normalizedCandidateLabel,
+      );
+      if (!hasNestedCandidateLabel) {
+        return false;
+      }
+    }
+    return hasOverlap;
   }
 
   function createSidebarLinkKey(linkItem: CcxpLiteSidebarLinkItem) {
@@ -644,36 +687,46 @@
     index: number,
     navDocument: Document,
     locale: CcxpLiteLocale,
-  ): CcxpLiteSidebarTreeNode | undefined {
+  ): readonly CcxpLiteSidebarTreeNode[] {
     if ("children" in entryNode) {
-      return normalizeTopLevelGroup(entryNode, index, navDocument, locale);
+      return normalizeTopLevelGroupEntries(entryNode, index, navDocument, locale);
     }
     const linkItem = normalizeLinkItem(entryNode, navDocument, [], locale);
     if (!linkItem) {
-      return undefined;
+      return [];
     }
-    return {
-      id: `link-${index}`,
-      label: linkItem.label,
-      linkItem,
-      kind: "link",
-    };
+    return [
+      {
+        id: `link-${index}`,
+        label: linkItem.label,
+        linkItem,
+        kind: "link",
+      },
+    ];
   }
 
-  function normalizeTopLevelGroup(
+  function normalizeTopLevelGroupEntries(
     folderNode: CcxpLiteLegacySidebarFolderNode,
     index: number,
     navDocument: Document,
     locale: CcxpLiteLocale,
-  ): CcxpLiteSidebarBlock {
+  ): readonly CcxpLiteSidebarBlock[] {
     const directLinks: CcxpLiteSidebarLinkItem[] = [];
+    const childBlocks: CcxpLiteSidebarBlock[] = [];
     const groupLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
     const groupPathSegments = buildFavoritePathSegments([], groupLabel, `group-${index}`);
-    for (const childNode of folderNode.children) {
+    for (const [childIndex, childNode] of folderNode.children.entries()) {
       if ("children" in childNode) {
-        directLinks.push(
-          ...collectNestedLinksIntoGroup(childNode, navDocument, groupPathSegments, locale),
+        const childBlock = normalizeNestedGroupBlock(
+          childNode,
+          `group-${index}-child-${childIndex}`,
+          groupPathSegments,
+          navDocument,
+          locale,
         );
+        if (childBlock) {
+          childBlocks.push(childBlock);
+        }
         continue;
       }
       const linkItem = normalizeLinkItem(childNode, navDocument, groupPathSegments, locale);
@@ -681,10 +734,51 @@
         directLinks.push(linkItem);
       }
     }
+    return [
+      ...(directLinks.length > 0
+        ? [
+            {
+              id: `group-${index}`,
+              label: groupLabel,
+              pathSegments: groupPathSegments,
+              links: directLinks,
+              kind: "block",
+            } satisfies CcxpLiteSidebarBlock,
+          ]
+        : []),
+      ...childBlocks,
+    ];
+  }
+
+  function normalizeNestedGroupBlock(
+    folderNode: CcxpLiteLegacySidebarFolderNode,
+    id: string,
+    parentPathSegments: readonly string[],
+    navDocument: Document,
+    locale: CcxpLiteLocale,
+  ): CcxpLiteSidebarBlock | undefined {
+    const directLinks: CcxpLiteSidebarLinkItem[] = [];
+    const folderLabel = localizeSidebarLabel(toPlainText(folderNode.desc, navDocument), locale);
+    const nestedPathSegments = buildFavoritePathSegments(parentPathSegments, folderLabel);
+    for (const childNode of folderNode.children) {
+      if ("children" in childNode) {
+        directLinks.push(
+          ...collectNestedLinksIntoGroup(childNode, navDocument, nestedPathSegments, locale),
+        );
+        continue;
+      }
+      const linkItem = normalizeLinkItem(childNode, navDocument, nestedPathSegments, locale);
+      if (linkItem) {
+        directLinks.push(linkItem);
+      }
+    }
+    if (directLinks.length === 0) {
+      return undefined;
+    }
     return {
-      id: `group-${index}`,
-      label: groupLabel,
-      pathSegments: groupPathSegments,
+      id,
+      label: folderLabel,
+      pathSegments: nestedPathSegments,
       links: directLinks,
       kind: "block",
     };
