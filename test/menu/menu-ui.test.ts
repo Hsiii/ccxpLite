@@ -73,6 +73,7 @@ describe("sidebar ui", () => {
       document.querySelector('button[title="Courses & Grades"]'),
       "Expected classic category row",
     );
+    expect(categoryRow.classList.contains("ccxp-lite-row-button-has-dual-trailing")).toBe(true);
     expect(
       categoryRow.querySelector(".ccxp-lite-row-action-slot .ccxp-lite-favorite-toggle"),
     ).toBeNull();
