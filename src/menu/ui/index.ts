@@ -19,11 +19,13 @@
   const {
     favoriteState,
     getFavoriteIds,
+    getMatchingFavoriteBlockIds,
     getMatchingFavoriteIds,
-    writeFavoriteIds,
     isFavoriteLink,
+    isFavoriteBlock,
+    writeFavoriteIds,
   } = sidebarFavorites;
-  const { filterFavoriteLinks, filterCategories, filterCategoryTree } = sidebarData;
+  const { filterCategories, filterCategoryTree } = sidebarData;
   const {
     DESTINATION_LOAD_TIMEOUT_MS,
     openLeafDestination,
@@ -127,7 +129,7 @@
       createDashboardView(
         hostDocument,
         navDocument,
-        filterFavoriteLinks(getCategoryLinks(model.favorites), state.searchQuery),
+        filterCategoryTree(model.favorites, state.searchQuery),
         filteredCategories,
         state,
         strings,
@@ -681,7 +683,7 @@
   function createDashboardView(
     targetDocument: Document,
     navDocument: Document,
-    favorites: readonly CcxpLiteSidebarLinkItem[],
+    favorites: CcxpLiteSidebarCategoryNode | undefined,
     categories: readonly CcxpLiteSidebarCategoryNode[],
     state: CcxpLiteSidebarState,
     strings: Readonly<Record<string, string>>,
@@ -691,7 +693,9 @@
     layout.className = "ccxp-lite-dashboard";
     const shell = targetDocument.createElement("section");
     shell.className = "ccxp-lite-dashboard-shell";
-    shell.append(createPinnedSection(targetDocument, navDocument, favorites, strings, rerender));
+    shell.append(
+      createPinnedSection(targetDocument, navDocument, favorites, state, strings, rerender),
+    );
     shell.append(createAllSection(targetDocument, categories, state, strings, rerender));
     layout.append(shell);
     return layout;
@@ -700,7 +704,8 @@
   function createPinnedSection(
     targetDocument: Document,
     navDocument: Document,
-    favorites: readonly CcxpLiteSidebarLinkItem[],
+    favorites: CcxpLiteSidebarCategoryNode | undefined,
+    state: CcxpLiteSidebarState,
     strings: Readonly<Record<string, string>>,
     rerender: () => void,
   ): HTMLElement {
@@ -712,12 +717,17 @@
     section.append(header);
     const body = targetDocument.createElement("div");
     body.className = "ccxp-lite-pane-body ccxp-lite-pinned-list";
+    const pinnedBlocks = favorites?.blocks ?? [];
+    const pinnedLinks = favorites?.links ?? [];
     if (!favoriteState.hasLoaded) {
       body.append(createSkeletonStack(targetDocument, 3, "ccxp-lite-skeleton-card"));
-    } else if (favorites.length === 0) {
+    } else if (pinnedBlocks.length === 0 && pinnedLinks.length === 0) {
       body.append(createEmptyState(targetDocument, strings.sidebarFavoritesEmpty));
     } else {
-      for (const linkItem of favorites) {
+      for (const blockItem of pinnedBlocks) {
+        body.append(createPinnedBlockCard(targetDocument, blockItem, state, strings, rerender));
+      }
+      for (const linkItem of pinnedLinks) {
         body.append(createPinnedLinkCard(targetDocument, navDocument, linkItem, strings, rerender));
       }
     }
@@ -1035,6 +1045,29 @@
     return button;
   }
 
+  function createPinnedBlockCard(
+    targetDocument: Document,
+    blockItem: CcxpLiteSidebarBlock,
+    state: CcxpLiteSidebarState,
+    strings: Readonly<Record<string, string>>,
+    rerender: () => void,
+  ) {
+    const button = targetDocument.createElement("button");
+    button.type = "button";
+    button.className = "ccxp-lite-link-card ccxp-lite-pinned-card";
+    button.setAttribute("title", blockItem.label);
+    button.append(createRowLabel(targetDocument, blockItem.label, false));
+    button.append(createBlockFavoriteToggle(targetDocument, blockItem, strings, rerender));
+    button.addEventListener("click", () => {
+      persistSidebarScroll(targetDocument, "root");
+      const nextState = state;
+      nextState.currentCategoryId = blockItem.parentCategoryId ?? "";
+      nextState.activeLeaf = undefined;
+      rerender();
+    });
+    return button;
+  }
+
   function createDetailLinkCard(
     targetDocument: Document,
     navDocument: Document,
@@ -1176,45 +1209,39 @@
     const favoriteButton = targetDocument.createElement("button");
     favoriteButton.type = "button";
     favoriteButton.className = "ccxp-lite-favorite-toggle ccxp-lite-favorite-toggle-block";
-    const favoriteStateForBlock = getBlockFavoriteState(block);
-    favoriteButton.dataset.ccxpLiteFavoriteState = favoriteStateForBlock;
-    favoriteButton.setAttribute("aria-pressed", favoriteStateForBlock === "all" ? "true" : "false");
+    const blockIsFavorite = isFavoriteBlock(block, getFavoriteIds());
+    favoriteButton.dataset.ccxpLiteFavoriteState = blockIsFavorite ? "all" : "none";
+    favoriteButton.setAttribute("aria-pressed", blockIsFavorite ? "true" : "false");
     favoriteButton.setAttribute(
       "aria-label",
-      favoriteStateForBlock === "all"
+      blockIsFavorite
         ? `${strings.sidebarRemoveFavorite}: ${block.label}`
         : `${strings.sidebarAddFavorite}: ${block.label}`,
     );
     favoriteButton.setAttribute(
       "title",
-      favoriteStateForBlock === "all" ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite,
+      blockIsFavorite ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite,
     );
-    favoriteButton.append(createFavoriteStarIcon(targetDocument, favoriteStateForBlock !== "none"));
+    favoriteButton.append(createFavoriteStarIcon(targetDocument, blockIsFavorite));
     favoriteButton.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
       const applyFavoriteChange = () => {
         const favoriteIds = new Set(getFavoriteIds());
-        if (favoriteStateForBlock === "all") {
-          for (const linkItem of block.links) {
-            const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
-            for (const favoriteId of matchingIds) {
-              favoriteIds.delete(favoriteId);
-            }
+        if (blockIsFavorite) {
+          const matchingIds = getMatchingFavoriteBlockIds(block, favoriteIds);
+          for (const favoriteId of matchingIds) {
+            favoriteIds.delete(favoriteId);
           }
         } else {
-          for (const linkItem of block.links) {
-            if (getMatchingFavoriteIds(linkItem, favoriteIds).length === 0) {
-              favoriteIds.add(linkItem.id);
-            }
-          }
+          favoriteIds.add(block.favoriteId ?? block.id);
         }
         writeFavoriteIds(favoriteIds);
         if (typeof onFavoritesChange === "function") {
           onFavoritesChange();
         }
       };
-      if (favoriteStateForBlock === "all") {
+      if (blockIsFavorite) {
         showRemovePinnedDialog(targetDocument, block.label, strings).then(
           (shouldRemove) => {
             if (!shouldRemove) {
@@ -1229,23 +1256,6 @@
       applyFavoriteChange();
     });
     return favoriteButton;
-  }
-
-  function getBlockFavoriteState(block: CcxpLiteSidebarBlock): "none" | "partial" | "all" {
-    let favoriteCount = 0;
-    const favoriteIds = getFavoriteIds();
-    for (const linkItem of block.links) {
-      if (getMatchingFavoriteIds(linkItem, favoriteIds).length > 0) {
-        favoriteCount++;
-      }
-    }
-    if (favoriteCount === 0) {
-      return "none";
-    }
-    if (favoriteCount === block.links.length) {
-      return "all";
-    }
-    return "partial";
   }
 
   function trackNavigationEvent(

@@ -353,6 +353,44 @@ describe("sidebar data", () => {
     ]);
   });
 
+  test("adds pinned folders to the favorites blocks instead of pinning their child links", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("Student services", ""));
+            aux1 = insFld(aux0, gFld("Select courses", ""));
+            insDoc(aux1, gLnk(0, "Apply now", "/courses/apply"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarFavorites = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+
+    sidebarFavorites.favoriteState.ids = new Set([
+      sidebarFavorites.createBlockId({
+        label: "Student services",
+        pathSegments: ["Student services"],
+        parentCategoryId: "category-planning-and-enrollment",
+      }),
+    ]);
+    sidebarFavorites.favoriteState.hasLoaded = true;
+
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+
+    expect(model.favorites.blocks).toHaveLength(1);
+    expect(model.favorites.blocks[0]?.label).toBe("Student services");
+    expect(model.favorites.links).toHaveLength(0);
+  });
+
   test("applies manual english translations to unmatched chinese sidebar labels", () => {
     const { window } = createTestWindow(`
       <!doctype html>

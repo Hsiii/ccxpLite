@@ -387,6 +387,22 @@
     return favoriteLinks;
   }
 
+  function collectFavoriteBlocks(
+    item: CcxpLiteSidebarTreeNode | undefined,
+    favoriteIds: ReadonlySet<string>,
+  ): readonly CcxpLiteSidebarBlock[] {
+    if (!item) {
+      return [];
+    }
+    if (item.kind === "block") {
+      return isFavoriteBlock(item, favoriteIds) ? [item] : [];
+    }
+    if (item.kind === "category") {
+      return item.blocks.filter((block) => isFavoriteBlock(block, favoriteIds));
+    }
+    return [];
+  }
+
   function dedupeLinkItems(
     linkItems: readonly CcxpLiteSidebarLinkItem[],
   ): readonly CcxpLiteSidebarLinkItem[] {
@@ -408,6 +424,16 @@
       normalizeFavoriteUrl(linkItem.href),
       normalizeFavoriteText(linkItem.target),
       clickSignature,
+    ].join("||");
+  }
+
+  function createBlockId(blockItem: Partial<CcxpLiteSidebarBlock>) {
+    return [
+      "v4",
+      normalizeFavoritePathSignature(blockItem.pathSegments),
+      normalizeFavoriteText(blockItem.label),
+      normalizeFavoriteText(blockItem.parentCategoryId),
+      "",
     ].join("||");
   }
 
@@ -440,6 +466,13 @@
         href: parts[2],
         target: parts[3],
         clickLinkArgs: parseFavoriteClickSignature(parts[4]),
+      });
+    }
+    if (parts.length === 5 && parts[0] === "v4") {
+      return createBlockId({
+        pathSegments: parseFavoritePathSignature(parts[1]),
+        label: parts[2],
+        parentCategoryId: parts[3],
       });
     }
     if (parts.length !== 5 || parts[0] !== "v2") {
@@ -505,6 +538,13 @@
     return getMatchingFavoriteIds(linkItem, favoriteIds).length > 0;
   }
 
+  function isFavoriteBlock(
+    blockItem: CcxpLiteSidebarBlock | undefined,
+    favoriteIds: ReadonlySet<string>,
+  ) {
+    return getMatchingFavoriteBlockIds(blockItem, favoriteIds).length > 0;
+  }
+
   function getMatchingFavoriteIds(
     linkItem: CcxpLiteSidebarLinkItem | undefined,
     favoriteIds: ReadonlySet<string>,
@@ -513,6 +553,16 @@
       return [];
     }
     return [...favoriteIds].filter((favoriteId) => isFavoriteIdMatch(linkItem, favoriteId));
+  }
+
+  function getMatchingFavoriteBlockIds(
+    blockItem: CcxpLiteSidebarBlock | undefined,
+    favoriteIds: ReadonlySet<string>,
+  ): readonly string[] {
+    if (!blockItem) {
+      return [];
+    }
+    return [...favoriteIds].filter((favoriteId) => isFavoriteBlockIdMatch(blockItem, favoriteId));
   }
 
   function isFavoriteIdMatch(linkItem: CcxpLiteSidebarLinkItem, favoriteId: string) {
@@ -543,6 +593,9 @@
       }
       return false;
     }
+    if (parsedFavoriteId.version !== "v2") {
+      return false;
+    }
     if (
       parsedFavoriteId.label !== normalizeFavoriteText(linkItem.label) ||
       parsedFavoriteId.target !== normalizeFavoriteText(linkItem.target) ||
@@ -551,6 +604,27 @@
       return false;
     }
     const currentPathSegments = normalizeFavoritePathSegments(linkItem.pathSegments);
+    if (parsedFavoriteId.pathSegments.length === 0 || currentPathSegments.length === 0) {
+      return true;
+    }
+    return areFavoritePathSegmentsCompatible(parsedFavoriteId.pathSegments, currentPathSegments);
+  }
+
+  function isFavoriteBlockIdMatch(blockItem: CcxpLiteSidebarBlock, favoriteId: string) {
+    if (favoriteId === blockItem.favoriteId) {
+      return true;
+    }
+    const parsedFavoriteId = parseVersionedFavoriteId(favoriteId);
+    if (!parsedFavoriteId || parsedFavoriteId.version !== "v4") {
+      return false;
+    }
+    if (
+      parsedFavoriteId.label !== normalizeFavoriteText(blockItem.label) ||
+      parsedFavoriteId.parentCategoryId !== normalizeFavoriteText(blockItem.parentCategoryId)
+    ) {
+      return false;
+    }
+    const currentPathSegments = normalizeFavoritePathSegments(blockItem.pathSegments);
     if (parsedFavoriteId.pathSegments.length === 0 || currentPathSegments.length === 0) {
       return true;
     }
@@ -572,6 +646,12 @@
         target: string;
         clickSignature: string;
       }
+    | {
+        version: "v4";
+        pathSegments: readonly string[];
+        label: string;
+        parentCategoryId: string;
+      }
     | undefined {
     const parts = favoriteId.split("||");
     if (parts.length !== 5) {
@@ -584,6 +664,14 @@
         href: normalizeFavoriteUrl(parts[2]),
         target: normalizeFavoriteText(parts[3]),
         clickSignature: normalizeFavoriteClickSignature(parts[4]),
+      };
+    }
+    if (parts[0] === "v4") {
+      return {
+        version: "v4",
+        pathSegments: parseFavoritePathSignature(parts[1]),
+        label: normalizeFavoriteText(parts[2]),
+        parentCategoryId: normalizeFavoriteText(parts[3]),
       };
     }
     if (parts[0] !== "v2") {
@@ -648,6 +736,10 @@
     return createFavoriteClickSignature(parseFavoriteClickSignature(signature));
   }
 
+  function normalizeFavoritePathSignature(pathSegments: readonly string[] | undefined) {
+    return normalizeFavoritePathSegments(pathSegments).join(">");
+  }
+
   function normalizeFavoriteUrl(rawValue: string | undefined) {
     const value = (rawValue ?? "").trim();
     if (value === "") {
@@ -705,12 +797,16 @@
     ensureFavoriteStorageSync,
     subscribeToFavoriteChanges,
     collectFavoriteLinks,
+    collectFavoriteBlocks,
     dedupeLinkItems,
     createLinkId,
+    createBlockId,
     createLegacyLinkId,
     buildFavoritePathSegments,
     isFavoriteLink,
+    isFavoriteBlock,
     getMatchingFavoriteIds,
+    getMatchingFavoriteBlockIds,
     getScopedSessionStorage,
   };
 })(globalThis);
