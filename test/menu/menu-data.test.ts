@@ -205,6 +205,39 @@ describe("sidebar data", () => {
     ).not.toContain("\u65B0\u589E\u8207\u672A\u5206\u985E");
   });
 
+  test("drops loose category links when the same destination already exists inside a grouped block", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("\u9078\u8AB2 Select courses", ""));
+            insDoc(aux0, gLnk(0, "\u7DB2\u8DEF\u9078\u8AB2 Select courses", "/course/select"));
+            insDoc(aux0, gLnk(0, "\u52A0\u7C3D\u7533\u8ACB application for extra selection", "/course/extra"));
+            insDoc(foldersTree, gLnk(0, "\u7DB2\u8DEF\u9078\u8AB2Select courses", "/course/select"));
+            insDoc(foldersTree, gLnk(0, "\u52A0\u7C3D\u7533\u8ACBapplication for extra selection", "/course/extra"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const category = model.categories.find(
+      (entry: CcxpLiteSidebarCategoryNode) => entry.label === "\u9810\u6392\u8207\u9078\u8AB2",
+    );
+
+    expect(category?.blocks).toHaveLength(1);
+    expect(category?.blocks[0]?.links.map((link) => link.label)).toEqual([
+      "\u7DB2\u8DEF\u9078\u8AB2 Select courses",
+      "\u52A0\u7C3D\u7533\u8ACB application for extra selection",
+    ]);
+  });
+
   test("categorizes english-only groups instead of dropping them into new and unsorted", () => {
     const { window } = createTestWindow(`
       <!doctype html>
