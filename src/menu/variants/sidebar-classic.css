@@ -274,13 +274,6 @@
   height: var(--ccxp-lite-size-sidebar-category-leading);
 }
 
-.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
-  .ccxp-lite-category
-  > .ccxp-lite-row-button
-  .ccxp-lite-row-trailing {
-  grid-template-columns: var(--ccxp-lite-size-sidebar-category-leading);
-}
-
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-favorite-toggle {
   width: var(--ccxp-lite-size-sidebar-category-leading);
   height: var(--ccxp-lite-size-sidebar-category-leading);

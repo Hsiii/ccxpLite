@@ -69,6 +69,17 @@ describe("sidebar ui", () => {
 
     sidebarUi.renderSidebar(document, document, model, strings);
 
+    const categoryRow = requireElement(
+      document.querySelector('button[title="Courses & Grades"]'),
+      "Expected classic category row",
+    );
+    expect(
+      categoryRow.querySelector(".ccxp-lite-row-action-slot .ccxp-lite-favorite-toggle"),
+    ).toBeNull();
+    expect(
+      categoryRow.querySelector(".ccxp-lite-row-chevron-slot .ccxp-lite-chevron"),
+    ).not.toBeNull();
+
     const blockRow = requireElement(
       document.querySelector('button[title="Academic"]'),
       "Expected classic block row",

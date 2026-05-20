@@ -635,6 +635,8 @@
           createBlockFavoriteToggle(targetDocument, group, strings, rerender),
         ),
       );
+    } else {
+      trailing.append(createClassicActionSlot(targetDocument));
     }
     trailing.append(
       createClassicChevronSlot(
@@ -656,10 +658,14 @@
     return trailing;
   }
 
-  function createClassicActionSlot(targetDocument: Document, action: HTMLElement): HTMLElement {
+  function createClassicActionSlot(targetDocument: Document, action?: HTMLElement): HTMLElement {
     const slot = targetDocument.createElement("span");
     slot.className = "ccxp-lite-row-action-slot";
-    slot.append(action);
+    if (action) {
+      slot.append(action);
+    } else {
+      slot.setAttribute("aria-hidden", "true");
+    }
     return slot;
   }
 
