@@ -393,9 +393,7 @@
     button.append(
       createClassicTrailingActions(targetDocument, group, isExpanded, strings, rerender),
     );
-    if (group.kind === "block") {
-      button.classList.add("ccxp-lite-row-button-has-dual-trailing");
-    }
+    button.classList.add("ccxp-lite-row-button-has-dual-trailing");
     button.addEventListener("click", () => {
       persistSidebarScroll(targetDocument, "root");
       const nextExpandedItemIds = new Set(expandedItemIds);
