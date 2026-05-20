@@ -10,7 +10,7 @@ import {
 } from "../helpers/module-loader.js";
 
 describe("sidebar ui", () => {
-  test("pins every link inside a second-layer classic folder without using the chevron slot", () => {
+  test("keeps chevrons right aligned while reserving the slot to their left for nested rows", () => {
     const { window } = createTestWindow(createSidebarShellHtml());
     loadModules(window, menuModulePaths);
 
@@ -63,7 +63,7 @@ describe("sidebar ui", () => {
     };
 
     state.sidebarVariant = "classic";
-    state.classicExpandedItemIds = ["category-courses"];
+    state.classicExpandedItemIds = ["category-courses", "section-academic"];
     sidebarFavorites.favoriteState.ids = new Set();
     sidebarFavorites.favoriteState.hasLoaded = true;
 
@@ -74,7 +74,10 @@ describe("sidebar ui", () => {
       "Expected classic block row",
     );
     expect(blockRow.classList.contains("ccxp-lite-row-button-has-dual-trailing")).toBe(true);
-    expect(blockRow.querySelector(".ccxp-lite-chevron")).not.toBeNull();
+    expect(
+      blockRow.querySelector(".ccxp-lite-row-action-slot .ccxp-lite-favorite-toggle-block"),
+    ).not.toBeNull();
+    expect(blockRow.querySelector(".ccxp-lite-row-chevron-slot .ccxp-lite-chevron")).not.toBeNull();
 
     const favoriteToggle = requireElement(
       blockRow.querySelector(".ccxp-lite-favorite-toggle-block"),
@@ -84,5 +87,17 @@ describe("sidebar ui", () => {
     favoriteToggle.dispatchEvent(clickEvent);
 
     expect([...sidebarFavorites.getFavoriteIds()]).toEqual(["grades", "schedule"]);
+
+    const nestedLinkRow = requireElement(
+      document.querySelector('button[title="Semester Grades"]'),
+      "Expected nested classic link row",
+    );
+    expect(nestedLinkRow.classList.contains("ccxp-lite-row-button-has-dual-trailing")).toBe(true);
+    expect(
+      nestedLinkRow.querySelector(".ccxp-lite-row-action-slot .ccxp-lite-favorite-toggle"),
+    ).not.toBeNull();
+    expect(
+      nestedLinkRow.querySelector(".ccxp-lite-row-chevron-slot .ccxp-lite-chevron"),
+    ).toBeNull();
   });
 });

@@ -510,7 +510,17 @@
     button.append(
       createRowLabel(targetDocument, linkItem.label, isExternalLinkTarget(linkItem, navDocument)),
     );
-    button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    if (depth > 0) {
+      button.classList.add("ccxp-lite-row-button-has-dual-trailing");
+      button.append(
+        createClassicLinkTrailingActions(
+          targetDocument,
+          createFavoriteToggle(targetDocument, linkItem, strings, rerender),
+        ),
+      );
+    } else {
+      button.append(createFavoriteToggle(targetDocument, linkItem, strings, rerender));
+    }
     button.addEventListener("click", () => {
       trackNavigationEvent(targetDocument, linkItem, {
         sidebarVariant: "classic",
@@ -618,11 +628,50 @@
   ): HTMLElement {
     const trailing = targetDocument.createElement("span");
     trailing.className = "ccxp-lite-row-trailing";
-    trailing.append(createClassicChevronIcon(targetDocument, isExpanded));
     if (group.kind === "block") {
-      trailing.append(createBlockFavoriteToggle(targetDocument, group, strings, rerender));
+      trailing.append(
+        createClassicActionSlot(
+          targetDocument,
+          createBlockFavoriteToggle(targetDocument, group, strings, rerender),
+        ),
+      );
     }
+    trailing.append(
+      createClassicChevronSlot(
+        targetDocument,
+        createClassicChevronIcon(targetDocument, isExpanded),
+      ),
+    );
     return trailing;
+  }
+
+  function createClassicLinkTrailingActions(
+    targetDocument: Document,
+    action: HTMLElement,
+  ): HTMLElement {
+    const trailing = targetDocument.createElement("span");
+    trailing.className = "ccxp-lite-row-trailing";
+    trailing.append(createClassicActionSlot(targetDocument, action));
+    trailing.append(createClassicChevronSlot(targetDocument));
+    return trailing;
+  }
+
+  function createClassicActionSlot(targetDocument: Document, action: HTMLElement): HTMLElement {
+    const slot = targetDocument.createElement("span");
+    slot.className = "ccxp-lite-row-action-slot";
+    slot.append(action);
+    return slot;
+  }
+
+  function createClassicChevronSlot(targetDocument: Document, chevron?: SVGElement): HTMLElement {
+    const slot = targetDocument.createElement("span");
+    slot.className = "ccxp-lite-row-chevron-slot";
+    if (chevron) {
+      slot.append(chevron);
+    } else {
+      slot.setAttribute("aria-hidden", "true");
+    }
+    return slot;
   }
 
   function createDashboardView(
