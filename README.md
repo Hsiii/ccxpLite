@@ -11,31 +11,9 @@ A lightweight browser extension that enhances usability of the NTHU academic inf
 - Saturation and texture suppression for a cleaner look
 - Broader English support
 
-## Packages
-
-- `src/`: shared extension source, assets, and target manifests
-- `dist/`: generated build outputs
-
 ## Download & Installation
 
-The Chrome extension is published on [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb).
-
-Build packages with Bun:
-
-```bash
-bun run build:crx
-bun run build:firefox
-```
-
-To produce an installable Firefox XPI, submit the Firefox build for AMO signing:
-
-```bash
-export AMO_JWT_ISSUER=your-amo-jwt-issuer
-export AMO_JWT_SECRET=your-amo-jwt-secret
-bun run sign:firefox
-```
-
-This signs the unpacked Firefox build as an `unlisted` add-on and writes the signed artifact under `dist/firefox/signed/`.
+We provide both [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb) and [Firebox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/ccxplite/) support.
 
 ## Demo
 
