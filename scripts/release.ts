@@ -25,10 +25,27 @@ const zipPath = path.join(
   target,
   `ccxpLite-${target}-v${version}.${archiveExtension}`,
 );
+const releaseAssets = [zipPath];
+const firefoxSourceZipPath = path.join(
+  projectRoot,
+  "dist",
+  "firefox",
+  `ccxpLite-firefox-v${version}-sources.zip`,
+);
 
 if (!existsSync(zipPath)) {
   process.stderr.write(`Archive not found: ${zipPath}\nRun "bun run build:${target}" first.\n`);
   process.exit(1);
+}
+
+if (target === "firefox") {
+  if (!existsSync(firefoxSourceZipPath)) {
+    process.stderr.write(
+      `Firefox source archive not found: ${firefoxSourceZipPath}\nRun "bun run build:firefox" first.\n`,
+    );
+    process.exit(1);
+  }
+  releaseAssets.push(firefoxSourceZipPath);
 }
 
 const ghResult = spawnSync(
@@ -37,7 +54,7 @@ const ghResult = spawnSync(
     "release",
     "create",
     tag,
-    zipPath,
+    ...releaseAssets,
     "--title",
     `ccxpLite ${target} ${tag}`,
     "--draft",
@@ -64,4 +81,4 @@ if (openResult.status !== 0) {
   process.stderr.write("Failed to open release in browser\n");
 }
 
-process.stdout.write(`Draft ${target} release ${tag} created with ${zipPath}\n`);
+process.stdout.write(`Draft ${target} release ${tag} created with ${releaseAssets.join(", ")}\n`);

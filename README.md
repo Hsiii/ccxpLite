@@ -15,6 +15,13 @@ A lightweight browser extension that enhances usability of the NTHU academic inf
 
 We provide both [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb) and [Firebox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/ccxplite/) support.
 
+Firefox builds also emit a trimmed source archive alongside the XPI:
+
+- `dist/firefox/ccxpLite-firefox-v<version>.xpi`
+- `dist/firefox/ccxpLite-firefox-v<version>-sources.zip`
+
+The source archive keeps the extension code and build metadata needed for review while excluding binary/demo assets such as images.
+
 ## Demo
 
 | Screen            | Original                                                                                                   | Sidebar Mode                                                                                                  | Menu Mode                                                                                               |

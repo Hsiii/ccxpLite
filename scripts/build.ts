@@ -35,7 +35,9 @@ const distDir = path.join(distRoot, target);
 const unpackedDir = path.join(distDir, "unpacked");
 const archiveExtension = target === "firefox" ? "xpi" : "zip";
 const outputZip = path.join(distDir, `ccxpLite-${target}-v${version}.${archiveExtension}`);
+const firefoxSourceZip = path.join(distDir, `ccxpLite-firefox-v${version}-sources.zip`);
 const stagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-build-"));
+const sourceStagingDir = mkdtempSync(path.join(tmpdir(), "ccxp-lite-source-build-"));
 const exportScriptPath = path.join(projectRoot, "scripts", "export_decaptcha_model.py");
 const exportOauthScriptPath = path.join(projectRoot, "scripts", "export_oauth_decaptcha_model.py");
 const generatedModelPath = path.join(srcDir, "login", "auth", "decaptcha.model.ts");
@@ -121,6 +123,57 @@ function shouldCopySourcePath(sourcePath: string, isDirectory: boolean) {
   return !sourcePath.endsWith(".ts") && !path.basename(sourcePath).startsWith("manifest.");
 }
 
+function shouldCopyFirefoxSourceArchivePath(sourcePath: string, isDirectory: boolean) {
+  const relativePath = path.relative(projectRoot, sourcePath);
+  const normalizedPath = relativePath.split(path.sep).join("/");
+  const ext = path.extname(sourcePath).toLowerCase();
+  const allowedRootFiles = new Set([
+    "bun.lock",
+    "LICENSE",
+    "package.json",
+    "README.md",
+    "THIRD_PARTY_NOTICES",
+    "tsconfig.base.json",
+    "tsconfig.json",
+    "tsconfig.src.json",
+    "tsconfig.tools.json",
+  ]);
+  const allowedScriptFiles = new Set([
+    "scripts/build.ts",
+    "scripts/export_decaptcha_model.py",
+    "scripts/export_oauth_decaptcha_model.py",
+    "scripts/release.ts",
+    "scripts/sign_firefox.ts",
+  ]);
+
+  if (isDirectory) {
+    return (
+      normalizedPath === "" ||
+      normalizedPath === "src" ||
+      (normalizedPath.startsWith("src/") && normalizedPath !== "src/assets") ||
+      normalizedPath === "scripts" ||
+      normalizedPath.startsWith("scripts/")
+    );
+  }
+
+  if (allowedRootFiles.has(relativePath)) {
+    return true;
+  }
+
+  if (normalizedPath.startsWith("src/")) {
+    if (normalizedPath === "src/manifest.crx.json" || normalizedPath.startsWith("src/assets/")) {
+      return false;
+    }
+    return ![".avif", ".gif", ".ico", ".jpeg", ".jpg", ".png", ".webp"].includes(ext);
+  }
+
+  if (normalizedPath.startsWith("scripts/")) {
+    return allowedScriptFiles.has(normalizedPath);
+  }
+
+  return false;
+}
+
 function writeManifest(outputPath: string) {
   const baseManifest = JSON.parse(readFileSync(baseManifestPath, "utf8")) as Record<
     string,
@@ -142,6 +195,9 @@ try {
   rmSync(compiledSrcDir, { recursive: true, force: true });
   rmSync(unpackedDir, { recursive: true, force: true });
   rmSync(outputZip, { force: true });
+  if (target === "firefox") {
+    rmSync(firefoxSourceZip, { force: true });
+  }
   mkdirSync(unpackedDir, { recursive: true });
 
   const checkpointPath = resolveCheckpointPath(["out", "best.pt"]);
@@ -251,9 +307,24 @@ try {
     throw new Error("zip command failed");
   }
 
+  if (target === "firefox") {
+    copyTree(projectRoot, sourceStagingDir, shouldCopyFirefoxSourceArchivePath);
+    const sourceZipResult = spawnSync("zip", ["-q", "-r", firefoxSourceZip, "."], {
+      cwd: sourceStagingDir,
+      stdio: "inherit",
+    });
+
+    if (sourceZipResult.status !== 0) {
+      throw new Error("firefox source zip command failed");
+    }
+  }
+
   process.stdout.write(
-    `Built ${outputZip}\nUnpacked extension: ${unpackedDir}\nTarget: ${target}\nVersion: ${version}\n`,
+    `Built ${outputZip}\n${
+      target === "firefox" ? `Firefox source archive: ${firefoxSourceZip}\n` : ""
+    }Unpacked extension: ${unpackedDir}\nTarget: ${target}\nVersion: ${version}\n`,
   );
 } finally {
   rmSync(stagingDir, { recursive: true, force: true });
+  rmSync(sourceStagingDir, { recursive: true, force: true });
 }
