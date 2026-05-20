@@ -185,30 +185,42 @@
     blocks: readonly CcxpLiteSidebarBlock[],
   ): readonly CcxpLiteSidebarBlock[] {
     const linkKeySets = blocks.map((block) => new Set(block.links.map(createSidebarLinkKey)));
+    const linkLabelSets = blocks.map(
+      (block) => new Set(block.links.map((linkItem) => normalizeSidebarLabel(linkItem.label))),
+    );
     const prunedBlocks = blocks
       .map((block, blockIndex) => {
         const blockLinkKeys = linkKeySets[blockIndex];
+        const blockLinkLabels = linkLabelSets[blockIndex];
         const overlappingSubsetKeys = new Set<string>();
         for (const [candidateIndex, candidate] of blocks.entries()) {
           if (candidateIndex === blockIndex || candidate.links.length === 0) {
             continue;
           }
           const candidateLinkKeys = linkKeySets[candidateIndex];
+          const candidateLinkLabels = linkLabelSets[candidateIndex];
           const isExactDuplicateSet =
             candidate.links.length === block.links.length &&
-            candidateLinkKeys.size === blockLinkKeys.size &&
-            isLinkKeySubset(candidateLinkKeys, blockLinkKeys);
+            ((candidateLinkKeys.size === blockLinkKeys.size &&
+              isLinkKeySubset(candidateLinkKeys, blockLinkKeys)) ||
+              (candidateLinkLabels.size === blockLinkLabels.size &&
+                isLinkKeySubset(candidateLinkLabels, blockLinkLabels)));
           if (
-            candidateLinkKeys.size === 0 ||
-            !isLinkKeySubset(candidateLinkKeys, blockLinkKeys) ||
+            (candidateLinkKeys.size === 0 && candidateLinkLabels.size === 0) ||
+            (!isLinkKeySubset(candidateLinkKeys, blockLinkKeys) &&
+              !isLinkKeySubset(candidateLinkLabels, blockLinkLabels)) ||
             (candidate.links.length > block.links.length && !isExactDuplicateSet) ||
             (candidate.links.length === block.links.length &&
               getBlockSpecificityScore(candidate) <= getBlockSpecificityScore(block))
           ) {
             continue;
           }
-          for (const linkKey of candidateLinkKeys) {
-            overlappingSubsetKeys.add(linkKey);
+          for (const linkItem of block.links) {
+            const linkKey = createSidebarLinkKey(linkItem);
+            const linkLabel = normalizeSidebarLabel(linkItem.label);
+            if (candidateLinkKeys.has(linkKey) || candidateLinkLabels.has(linkLabel)) {
+              overlappingSubsetKeys.add(linkKey);
+            }
           }
         }
         if (overlappingSubsetKeys.size === 0) {
