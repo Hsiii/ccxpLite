@@ -262,10 +262,27 @@
   position: absolute;
   top: 50%;
   right: var(--ccxp-lite-sidebar-row-padding-x);
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(2, var(--ccxp-lite-size-sidebar-category-leading));
+  align-items: center;
+  transform: translateY(-50%);
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-action-slot,
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-chevron-slot {
   display: inline-flex;
   align-items: center;
-  gap: var(--ccxp-lite-spacing-inline-sm);
-  transform: translateY(-50%);
+  justify-content: center;
+  width: var(--ccxp-lite-size-sidebar-category-leading);
+  height: var(--ccxp-lite-size-sidebar-category-leading);
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  .ccxp-lite-category
+  > .ccxp-lite-row-button
+  .ccxp-lite-row-trailing {
+  grid-template-columns: var(--ccxp-lite-size-sidebar-category-leading);
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-favorite-toggle {
