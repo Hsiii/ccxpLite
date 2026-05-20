@@ -168,6 +168,14 @@
     color 120ms ease;
 }
 
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  .ccxp-lite-row-button.ccxp-lite-row-button-has-dual-trailing {
+  padding-right: calc(
+    var(--ccxp-lite-sidebar-row-padding-x) + (var(--ccxp-lite-size-sidebar-category-leading) * 2) +
+      var(--ccxp-lite-spacing-brand-inline) + var(--ccxp-lite-spacing-inline-sm)
+  );
+}
+
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-label-wrap,
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-label {
   min-width: 0;
@@ -239,26 +247,34 @@
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-chevron {
-  position: absolute;
-  top: 50%;
-  right: var(--ccxp-lite-sidebar-row-padding-x);
   width: var(--ccxp-lite-size-sidebar-category-leading);
   height: var(--ccxp-lite-size-sidebar-category-leading);
   color: currentColor;
-  transform: translateY(-50%);
+  transform: none;
   transition: transform 120ms ease;
 }
 
 .ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-chevron.is-expanded {
-  transform: translateY(-50%) rotate(90deg);
+  transform: rotate(90deg);
 }
 
-.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-favorite-toggle {
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-row-trailing {
   position: absolute;
   top: 50%;
   right: var(--ccxp-lite-sidebar-row-padding-x);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ccxp-lite-spacing-inline-sm);
+  transform: translateY(-50%);
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"] .ccxp-lite-favorite-toggle {
   width: var(--ccxp-lite-size-sidebar-category-leading);
   height: var(--ccxp-lite-size-sidebar-category-leading);
   margin: 0;
-  transform: translateY(-50%);
+}
+
+.ccxp-lite-sidebar-shell[data-ccxp-lite-sidebar-variant="classic"]
+  .ccxp-lite-favorite-toggle-block[data-ccxp-lite-favorite-state="partial"] {
+  color: color-mix(in srgb, var(--ccxp-lite-brand) 60%, var(--ccxp-lite-text-muted));
 }

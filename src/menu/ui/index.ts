@@ -390,7 +390,12 @@
       button.append(createClassicRowLeadingSpacer(targetDocument));
     }
     button.append(createRowLabel(targetDocument, group.label, false));
-    button.append(createClassicChevronIcon(targetDocument, isExpanded));
+    button.append(
+      createClassicTrailingActions(targetDocument, group, isExpanded, strings, rerender),
+    );
+    if (group.kind === "block") {
+      button.classList.add("ccxp-lite-row-button-has-dual-trailing");
+    }
     button.addEventListener("click", () => {
       persistSidebarScroll(targetDocument, "root");
       const nextExpandedItemIds = new Set(expandedItemIds);
@@ -602,6 +607,22 @@
       icon.classList.add("is-expanded");
     }
     return icon;
+  }
+
+  function createClassicTrailingActions(
+    targetDocument: Document,
+    group: CcxpLiteSidebarCategoryNode | CcxpLiteSidebarBlock,
+    isExpanded: boolean,
+    strings: Readonly<Record<string, string>>,
+    rerender: () => void,
+  ): HTMLElement {
+    const trailing = targetDocument.createElement("span");
+    trailing.className = "ccxp-lite-row-trailing";
+    trailing.append(createClassicChevronIcon(targetDocument, isExpanded));
+    if (group.kind === "block") {
+      trailing.append(createBlockFavoriteToggle(targetDocument, group, strings, rerender));
+    }
+    return trailing;
   }
 
   function createDashboardView(
@@ -1091,6 +1112,87 @@
       applyFavoriteChange();
     });
     return favoriteButton;
+  }
+
+  function createBlockFavoriteToggle(
+    targetDocument: Document,
+    block: CcxpLiteSidebarBlock,
+    strings: Readonly<Record<string, string>>,
+    onFavoritesChange: () => void,
+  ): HTMLElement {
+    const favoriteButton = targetDocument.createElement("button");
+    favoriteButton.type = "button";
+    favoriteButton.className = "ccxp-lite-favorite-toggle ccxp-lite-favorite-toggle-block";
+    const favoriteStateForBlock = getBlockFavoriteState(block);
+    favoriteButton.dataset.ccxpLiteFavoriteState = favoriteStateForBlock;
+    favoriteButton.setAttribute("aria-pressed", favoriteStateForBlock === "all" ? "true" : "false");
+    favoriteButton.setAttribute(
+      "aria-label",
+      favoriteStateForBlock === "all"
+        ? `${strings.sidebarRemoveFavorite}: ${block.label}`
+        : `${strings.sidebarAddFavorite}: ${block.label}`,
+    );
+    favoriteButton.setAttribute(
+      "title",
+      favoriteStateForBlock === "all" ? strings.sidebarRemoveFavorite : strings.sidebarAddFavorite,
+    );
+    favoriteButton.append(createFavoriteStarIcon(targetDocument, favoriteStateForBlock !== "none"));
+    favoriteButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const applyFavoriteChange = () => {
+        const favoriteIds = new Set(getFavoriteIds());
+        if (favoriteStateForBlock === "all") {
+          for (const linkItem of block.links) {
+            const matchingIds = getMatchingFavoriteIds(linkItem, favoriteIds);
+            for (const favoriteId of matchingIds) {
+              favoriteIds.delete(favoriteId);
+            }
+          }
+        } else {
+          for (const linkItem of block.links) {
+            if (getMatchingFavoriteIds(linkItem, favoriteIds).length === 0) {
+              favoriteIds.add(linkItem.id);
+            }
+          }
+        }
+        writeFavoriteIds(favoriteIds);
+        if (typeof onFavoritesChange === "function") {
+          onFavoritesChange();
+        }
+      };
+      if (favoriteStateForBlock === "all") {
+        showRemovePinnedDialog(targetDocument, block.label, strings).then(
+          (shouldRemove) => {
+            if (!shouldRemove) {
+              return;
+            }
+            applyFavoriteChange();
+          },
+          () => undefined,
+        );
+        return;
+      }
+      applyFavoriteChange();
+    });
+    return favoriteButton;
+  }
+
+  function getBlockFavoriteState(block: CcxpLiteSidebarBlock): "none" | "partial" | "all" {
+    let favoriteCount = 0;
+    const favoriteIds = getFavoriteIds();
+    for (const linkItem of block.links) {
+      if (getMatchingFavoriteIds(linkItem, favoriteIds).length > 0) {
+        favoriteCount++;
+      }
+    }
+    if (favoriteCount === 0) {
+      return "none";
+    }
+    if (favoriteCount === block.links.length) {
+      return "all";
+    }
+    return "partial";
   }
 
   function trackNavigationEvent(
