@@ -30,13 +30,24 @@ describe("login captcha", () => {
     loadModules(window, loginCaptchaModulePaths);
     const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
 
-    let resolveFetch: ((value: Response) => void) | undefined;
-    window.fetch = vi.fn(
-      async () =>
-        await new Promise((resolve) => {
-          resolveFetch = resolve;
-        }),
-    ) as unknown as typeof window.fetch;
+    window.fetch = vi.fn() as unknown as typeof window.fetch;
+
+    const image = requireElement(
+      document.querySelector<HTMLImageElement>(".ccxp-lite-captcha-media-row img"),
+      "legacy captcha image",
+    );
+    Object.defineProperty(image, "complete", {
+      configurable: true,
+      get: () => true,
+    });
+    Object.defineProperty(image, "naturalWidth", {
+      configurable: true,
+      get: () => 150,
+    });
+    Object.defineProperty(image, "naturalHeight", {
+      configurable: true,
+      get: () => 80,
+    });
 
     const input = requireElement(
       document.querySelector<HTMLInputElement>("input[name='passwd2']"),
@@ -57,10 +68,6 @@ describe("login captcha", () => {
       (document.querySelector("form") as HTMLElement).dataset.ccxpLiteCaptchaAutofillBound,
     ).toBe("true");
 
-    resolveFetch?.({
-      ok: true,
-      arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
-    } as Response);
     await flushPromises();
     await flushPromises();
 
@@ -68,9 +75,11 @@ describe("login captcha", () => {
     expect(input.getAttribute("aria-busy")).toBe("false");
     expect(inputSpy).toHaveBeenCalled();
     expect(changeSpy).toHaveBeenCalled();
+    expect(window.fetch).not.toHaveBeenCalled();
+    expect(predictDigits.mock.calls[0]?.[0]).toBe(image);
 
     loginCaptcha.enableCaptchaAutofill(document, document);
-    expect(vi.mocked(window.fetch).mock.calls.length).toBeGreaterThan(0);
+    expect(predictDigits).toHaveBeenCalledTimes(1);
   });
 
   test("falls back to manual entry and flashes timeout when download and image fallback both fail", async () => {
@@ -120,7 +129,7 @@ describe("login captcha", () => {
     expect(input.value).toBe("");
   });
 
-  test("falls back to the rendered captcha image when legacy fetch fails", async () => {
+  test("falls back to network bytes when the legacy captcha image is not ready", async () => {
     const { window } = createTestWindow(createLoginHtml());
     const document = window.document as Document;
     const predictDigits = vi.fn().mockResolvedValue("432109");
@@ -128,9 +137,12 @@ describe("login captcha", () => {
     loadModules(window, loginCaptchaModulePaths);
     const loginCaptcha = requireValue(window.CCXP_LITE.loginCaptcha, "loginCaptcha");
 
-    window.fetch = vi.fn(() => {
-      throw new Error("network-failed");
-    }) as unknown as typeof window.fetch;
+    window.fetch = vi.fn(async () =>
+      await Promise.resolve({
+        ok: true,
+        arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
+      }),
+    ) as unknown as typeof window.fetch;
 
     const image = requireElement(
       document.querySelector<HTMLImageElement>(".ccxp-lite-captcha-media-row img"),
@@ -138,15 +150,15 @@ describe("login captcha", () => {
     );
     Object.defineProperty(image, "complete", {
       configurable: true,
-      get: () => true,
+      get: () => false,
     });
     Object.defineProperty(image, "naturalWidth", {
       configurable: true,
-      get: () => 150,
+      get: () => 0,
     });
     Object.defineProperty(image, "naturalHeight", {
       configurable: true,
-      get: () => 80,
+      get: () => 0,
     });
 
     const input = requireElement(
@@ -161,6 +173,7 @@ describe("login captcha", () => {
     expect(input.value).toBe("432109");
     expect(input.getAttribute("aria-busy")).toBe("false");
     expect(predictDigits).toHaveBeenCalledTimes(1);
-    expect(predictDigits.mock.calls[0]?.[0]).toBe(image);
+    expect(predictDigits.mock.calls[0]?.[0]).toBeInstanceOf(ArrayBuffer);
+    expect(window.fetch).toHaveBeenCalledTimes(1);
   });
 });
