@@ -391,6 +391,42 @@ describe("sidebar data", () => {
     expect(model.favorites.links).toHaveLength(0);
   });
 
+  test("drops duplicated links from broader blocks when a narrower block already contains them", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("Student services", ""));
+            insDoc(aux0, gLnk(0, "Overview", "/student-services"));
+            aux1 = insFld(aux0, gFld("Select courses", ""));
+            insDoc(aux1, gLnk(0, "Apply now", "/courses/apply"));
+            aux2 = insFld(foldersTree, gFld("Select courses", ""));
+            insDoc(aux2, gLnk(0, "Apply now", "/courses/apply"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const strings = shared.getLocalizedStrings("en");
+    const model = sidebarData.buildSidebarModel(root, window.document, strings);
+    const category = model.categories.find(
+      (entry: CcxpLiteSidebarCategoryNode) => entry.label === "Planning & Enrollment",
+    );
+
+    expect(category?.blocks.map((block) => block.label)).toEqual([
+      "Student services",
+      "Select courses",
+    ]);
+    expect(category?.blocks[0]?.links.map((link) => link.label)).toEqual(["Overview"]);
+    expect(category?.blocks[1]?.links.map((link) => link.label)).toEqual(["Apply now"]);
+  });
+
   test("applies manual english translations to unmatched chinese sidebar labels", () => {
     const { window } = createTestWindow(`
       <!doctype html>

@@ -118,8 +118,8 @@
             },
             ...groupedBlocks,
           ];
-    const decoratedBlocks = blocks.map((block) =>
-      decorateSidebarBlock(block, categoryId, categoryLabel),
+    const decoratedBlocks = pruneOverlappingSidebarBlocks(
+      blocks.map((block) => decorateSidebarBlock(block, categoryId, categoryLabel)),
     );
     return {
       id: categoryId,
@@ -179,6 +179,78 @@
       seen.add(dedupeKey);
       return true;
     });
+  }
+
+  function pruneOverlappingSidebarBlocks(
+    blocks: readonly CcxpLiteSidebarBlock[],
+  ): readonly CcxpLiteSidebarBlock[] {
+    const linkKeySets = blocks.map((block) => new Set(block.links.map(createSidebarLinkKey)));
+    const prunedBlocks = blocks
+      .map((block, blockIndex) => {
+        const blockLinkKeys = linkKeySets[blockIndex];
+        const overlappingSubsetKeys = new Set<string>();
+        for (const [candidateIndex, candidate] of blocks.entries()) {
+          if (candidateIndex === blockIndex || candidate.links.length === 0) {
+            continue;
+          }
+          const candidateLinkKeys = linkKeySets[candidateIndex];
+          const isExactDuplicateSet =
+            candidate.links.length === block.links.length &&
+            candidateLinkKeys.size === blockLinkKeys.size &&
+            isLinkKeySubset(candidateLinkKeys, blockLinkKeys);
+          if (
+            candidateLinkKeys.size === 0 ||
+            !isLinkKeySubset(candidateLinkKeys, blockLinkKeys) ||
+            (candidate.links.length > block.links.length && !isExactDuplicateSet) ||
+            (candidate.links.length === block.links.length &&
+              getBlockSpecificityScore(candidate) <= getBlockSpecificityScore(block))
+          ) {
+            continue;
+          }
+          for (const linkKey of candidateLinkKeys) {
+            overlappingSubsetKeys.add(linkKey);
+          }
+        }
+        if (overlappingSubsetKeys.size === 0) {
+          return block;
+        }
+        return {
+          ...block,
+          links: block.links.filter(
+            (linkItem) => !overlappingSubsetKeys.has(createSidebarLinkKey(linkItem)),
+          ),
+        };
+      })
+      .filter((block) => block.links.length > 0);
+    return dedupeBlockItems(prunedBlocks);
+  }
+
+  function isLinkKeySubset(
+    candidateLinkKeys: ReadonlySet<string>,
+    referenceLinkKeys: ReadonlySet<string>,
+  ) {
+    if (candidateLinkKeys.size === 0 || candidateLinkKeys.size > referenceLinkKeys.size) {
+      return false;
+    }
+    for (const linkKey of candidateLinkKeys) {
+      if (!referenceLinkKeys.has(linkKey)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function getBlockSpecificityScore(block: CcxpLiteSidebarBlock) {
+    const normalizedLabel = normalizeSidebarLabel(block.label);
+    return Math.max(
+      ...block.links.map((linkItem) => {
+        const matchingIndex = (linkItem.pathSegments ?? []).findIndex(
+          (pathSegment) => normalizeSidebarLabel(pathSegment) === normalizedLabel,
+        );
+        return matchingIndex;
+      }),
+      -1,
+    );
   }
 
   function createSidebarLinkKey(linkItem: CcxpLiteSidebarLinkItem) {
