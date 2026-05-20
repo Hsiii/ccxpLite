@@ -335,6 +335,8 @@
 
   function normalizeSidebarLabel(label: string | undefined): string {
     return (label ?? "")
+      .replaceAll(/([\u4E00-\u9FFF])([\dA-Za-z])/g, "$1 $2")
+      .replaceAll(/([\dA-Za-z])([\u4E00-\u9FFF])/g, "$1 $2")
       .replaceAll(/[()\uFF08\uFF09]/g, " ")
       .replaceAll(/[&,]/g, " ")
       .replaceAll(/\s*\/\s*/g, " ")
