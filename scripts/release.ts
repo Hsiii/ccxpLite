@@ -3,12 +3,12 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const projectRoot = process.cwd();
-const supportedTargets = new Set(["crx", "firefox"]);
+const supportedTargets = new Set(["all", "crx", "firefox"]);
 const targetArgIndex = process.argv.indexOf("--target");
 const target =
   targetArgIndex !== -1 && targetArgIndex + 1 < process.argv.length
     ? process.argv[targetArgIndex + 1]
-    : "crx";
+    : "all";
 
 if (!supportedTargets.has(target)) {
   throw new Error(`Unsupported release target: ${target}`);
@@ -28,15 +28,22 @@ const targetCommitish = headCommitResult.stdout.trim();
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
-const tag = `${target}-v${version}`;
-const archiveExtension = target === "firefox" ? "xpi" : "zip";
-const zipPath = path.join(
-  projectRoot,
-  "dist",
-  target,
-  `ccxpLite-${target}-v${version}.${archiveExtension}`,
-);
-const releaseAssets = [zipPath];
+const tag = target === "all" ? `v${version}` : `${target}-v${version}`;
+const releaseTitle = target === "all" ? `ccxpLite v${version}` : `ccxpLite ${target} ${tag}`;
+const releaseAssets =
+  target === "all"
+    ? [
+        path.join(projectRoot, "dist", "crx", `ccxpLite-crx-v${version}.zip`),
+        path.join(projectRoot, "dist", "firefox", `ccxpLite-firefox-v${version}.xpi`),
+      ]
+    : [
+        path.join(
+          projectRoot,
+          "dist",
+          target,
+          `ccxpLite-${target}-v${version}.${target === "firefox" ? "xpi" : "zip"}`,
+        ),
+      ];
 const firefoxSourceZipPath = path.join(
   projectRoot,
   "dist",
@@ -44,12 +51,20 @@ const firefoxSourceZipPath = path.join(
   `ccxpLite-firefox-v${version}-sources.zip`,
 );
 
-if (!existsSync(zipPath)) {
-  process.stderr.write(`Archive not found: ${zipPath}\nRun "bun run build:${target}" first.\n`);
-  process.exit(1);
+for (const releaseAsset of releaseAssets) {
+  if (!existsSync(releaseAsset)) {
+    if (target === "all") {
+      process.stderr.write(`Archive not found: ${releaseAsset}\nRun "bun run build" first.\n`);
+    } else {
+      process.stderr.write(
+        `Archive not found: ${releaseAsset}\nRun "bun run build:${target}" first.\n`,
+      );
+    }
+    process.exit(1);
+  }
 }
 
-if (target === "firefox") {
+if (target === "all" || target === "firefox") {
   if (!existsSync(firefoxSourceZipPath)) {
     process.stderr.write(
       `Firefox source archive not found: ${firefoxSourceZipPath}\nRun "bun run build:firefox" first.\n`,
@@ -67,7 +82,7 @@ const ghResult = spawnSync(
     tag,
     ...releaseAssets,
     "--title",
-    `ccxpLite ${target} ${tag}`,
+    releaseTitle,
     "--draft",
     "--generate-notes",
     "--target",

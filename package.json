@@ -15,7 +15,7 @@
     "clean": "rm -rf dist .build",
     "capture": "bun run scripts/capture_marketing_images.ts",
     "update:readme-assets": "bun run scripts/update_readme_assets.ts",
-    "release": "bun run release:crx && bun run release:firefox",
+    "release": "bun run scripts/release.ts",
     "release:crx": "bun run scripts/release.ts --target crx",
     "release:firefox": "bun run scripts/release.ts --target firefox",
     "test": "bunx vitest run",
