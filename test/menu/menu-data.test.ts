@@ -145,6 +145,66 @@ describe("sidebar data", () => {
     );
   });
 
+  test("categorizes newly surfaced mixed-language labels instead of leaving them unsorted", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            insDoc(foldersTree, gLnk(0, "\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5", "/teach-survey"));
+            insDoc(foldersTree, gLnk(0, "\u7D9C\u5408\u610F\u898B\u5E73\u5747\u5206\u6578", "/teach-average"));
+            insDoc(foldersTree, gLnk(0, "\u52A0\u7C3D\u7533\u8ACBapplication for extra selection", "/extra-selection"));
+            insDoc(foldersTree, gLnk(0, "\u505C\u4FEE\u7533\u8ACBCourse withdrawal application", "/withdrawal"));
+            insDoc(foldersTree, gLnk(0, "\u6821\u5712\u7DB2\u8DEF\u8207\u6388\u6B0A\u8EDF\u9AD4\u670D\u52D9\u54C1\u8CEA\u554F\u5377\u8ABF\u67E5", "/campus-network"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const categoryByLabel = new Map(
+      model.categories.map((category: CcxpLiteSidebarCategoryNode) => [category.label, category]),
+    );
+
+    expect(
+      categoryByLabel
+        .get("\u6559\u5B78\u610F\u898B")
+        ?.blocks.flatMap((block) => block.links.map((link) => link.label)),
+    ).toEqual(
+      expect.arrayContaining([
+        "\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5",
+        "\u7D9C\u5408\u610F\u898B\u5E73\u5747\u5206\u6578",
+      ]),
+    );
+    expect(
+      categoryByLabel
+        .get("\u9810\u6392\u8207\u9078\u8AB2")
+        ?.blocks.flatMap((block) => block.links.map((link) => link.label)),
+    ).toEqual(
+      expect.arrayContaining([
+        "\u52A0\u7C3D\u7533\u8ACBapplication for extra selection",
+        "\u505C\u4FEE\u7533\u8ACBCourse withdrawal application",
+      ]),
+    );
+    expect(
+      categoryByLabel
+        .get("\u6821\u5712\u7CFB\u7D71")
+        ?.blocks.flatMap((block) => block.links.map((link) => link.label)),
+    ).toEqual(
+      expect.arrayContaining([
+        "\u6821\u5712\u7DB2\u8DEF\u8207\u6388\u6B0A\u8EDF\u9AD4\u670D\u52D9\u54C1\u8CEA\u554F\u5377\u8ABF\u67E5",
+      ]),
+    );
+    expect(
+      model.categories.map((category: CcxpLiteSidebarCategoryNode) => category.label),
+    ).not.toContain("\u65B0\u589E\u8207\u672A\u5206\u985E");
+  });
+
   test("categorizes english-only groups instead of dropping them into new and unsorted", () => {
     const { window } = createTestWindow(`
       <!doctype html>
