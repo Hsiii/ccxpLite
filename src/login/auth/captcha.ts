@@ -403,6 +403,9 @@
     if (state.kind === "oauth") {
       return await waitForCaptchaImageLoad(state.image);
     }
+    if (state.image.complete && state.image.naturalWidth > 0 && state.image.naturalHeight > 0) {
+      return state.image;
+    }
     try {
       return await downloadCaptchaImageBytes(targetDocument, captchaSrc);
     } catch (error: unknown) {
