@@ -37,12 +37,8 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/",
-        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php*",
-        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php*",
-        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/",
-        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/index.php*",
-        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE/select_entry.php*"
+        "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE*",
+        "https://ccxp.nthu.edu.tw/ccxp/INQUIRE*"
       ],
       "run_at": "document_start",
       "js": [
