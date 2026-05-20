@@ -4,6 +4,11 @@
   "description": "__MSG_appDescription__",
   "default_locale": "en",
   "permissions": ["storage"],
+  "host_permissions": [
+    "https://www.ccxp.nthu.edu.tw/*",
+    "https://ccxp.nthu.edu.tw/*",
+    "https://oauth.ccxp.nthu.edu.tw/*"
+  ],
   "background": {
     "service_worker": "background/analytics.js"
   },
