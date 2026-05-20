@@ -16,6 +16,20 @@
     createLinkId,
     createLegacyLinkId,
   } = sidebarFavorites;
+
+  function isArray<T>(value: unknown): value is T[] {
+    const prototype =
+      value !== null && typeof value === "object"
+        ? (Reflect.getPrototypeOf(value) as { constructor?: { name?: string } } | undefined)
+        : undefined;
+    return (
+      value !== null &&
+      typeof value === "object" &&
+      prototype !== undefined &&
+      prototype.constructor?.name === "Array"
+    );
+  }
+
   function buildSidebarModel(
     root: CcxpLiteLegacySidebarFolderNode,
     navDocument: Document,
@@ -734,19 +748,21 @@
         directLinks.push(linkItem);
       }
     }
+    const prunedChildBlocks = pruneCoveredSiblingBlocks(childBlocks);
+    const prunedDirectLinks = pruneLinksCoveredByBlocks(directLinks, prunedChildBlocks);
     return [
-      ...(directLinks.length > 0
+      ...(prunedDirectLinks.length > 0
         ? [
             {
               id: `group-${index}`,
               label: groupLabel,
               pathSegments: groupPathSegments,
-              links: directLinks,
+              links: prunedDirectLinks,
               kind: "block",
             } satisfies CcxpLiteSidebarBlock,
           ]
         : []),
-      ...childBlocks,
+      ...prunedChildBlocks,
     ];
   }
 
@@ -782,6 +798,61 @@
       links: directLinks,
       kind: "block",
     };
+  }
+
+  function pruneLinksCoveredByBlocks(
+    linkItems: readonly CcxpLiteSidebarLinkItem[],
+    blocks: readonly CcxpLiteSidebarBlock[],
+  ): readonly CcxpLiteSidebarLinkItem[] {
+    if (linkItems.length === 0 || blocks.length === 0) {
+      return linkItems;
+    }
+    const coveredLinkKeys = new Set(
+      blocks.flatMap((block) => block.links.map((linkItem) => createSidebarLinkKey(linkItem))),
+    );
+    const coveredLinkLabels = new Set(
+      blocks.flatMap((block) =>
+        block.links.map((linkItem) => normalizeSidebarLabel(linkItem.label)),
+      ),
+    );
+    return linkItems.filter((linkItem) => {
+      const linkKey = createSidebarLinkKey(linkItem);
+      const normalizedLabel = normalizeSidebarLabel(linkItem.label);
+      return !coveredLinkKeys.has(linkKey) && !coveredLinkLabels.has(normalizedLabel);
+    });
+  }
+
+  function pruneCoveredSiblingBlocks(
+    blocks: readonly CcxpLiteSidebarBlock[],
+  ): readonly CcxpLiteSidebarBlock[] {
+    return blocks.filter((block, blockIndex) => {
+      const blockKeys = new Set(block.links.map((linkItem) => createSidebarLinkKey(linkItem)));
+      const blockLabels = new Set(
+        block.links.map((linkItem) => normalizeSidebarLabel(linkItem.label)),
+      );
+      return !blocks.some((candidate, candidateIndex) => {
+        if (candidateIndex === blockIndex || candidate.links.length < block.links.length) {
+          return false;
+        }
+        const candidateKeys = new Set(
+          candidate.links.map((linkItem) => createSidebarLinkKey(linkItem)),
+        );
+        const candidateLabels = new Set(
+          candidate.links.map((linkItem) => normalizeSidebarLabel(linkItem.label)),
+        );
+        const blockCoveredByKeys = isLinkKeySubset(blockKeys, candidateKeys);
+        const blockCoveredByLabels = isLinkKeySubset(blockLabels, candidateLabels);
+        if (!blockCoveredByKeys && !blockCoveredByLabels) {
+          return false;
+        }
+        if (candidate.links.length > block.links.length) {
+          return true;
+        }
+        return (
+          normalizeSidebarLabel(candidate.label).length > normalizeSidebarLabel(block.label).length
+        );
+      });
+    });
   }
 
   function collectNestedLinksIntoGroup(
@@ -1070,7 +1141,130 @@
       }
     }
     root.children.push(...collectRenderedLeafNodes(root, navDocument));
-    return root.children.length > 0 ? root : undefined;
+    return root.children.length > 0 ? canonicalizeLegacySidebarTree(root, navDocument) : undefined;
+  }
+
+  function canonicalizeLegacySidebarTree(
+    root: CcxpLiteLegacySidebarFolderNode,
+    navDocument: Document,
+  ): CcxpLiteLegacySidebarFolderNode {
+    return canonicalizeLegacyFolderNode(root, navDocument);
+  }
+
+  function canonicalizeLegacyFolderNode(
+    folderNode: CcxpLiteLegacySidebarFolderNode,
+    navDocument: Document,
+  ): CcxpLiteLegacySidebarFolderNode {
+    const normalizedChildren = folderNode.children.map((childNode) =>
+      isLegacyFolderNode(childNode)
+        ? canonicalizeLegacyFolderNode(childNode, navDocument)
+        : childNode,
+    );
+    const siblingFolders = normalizedChildren.filter(
+      (childNode): childNode is CcxpLiteLegacySidebarFolderNode => isLegacyFolderNode(childNode),
+    );
+    const siblingFolderLeafSets = siblingFolders.map((childNode) =>
+      collectLegacyLeafCoverage(childNode, navDocument),
+    );
+    const canonicalChildren = normalizedChildren.filter((childNode) => {
+      if (isLegacyFolderNode(childNode)) {
+        const childLeafCoverage = collectLegacyLeafCoverage(childNode, navDocument);
+        if (childLeafCoverage.keys.size === 0 && childLeafCoverage.labels.size === 0) {
+          return false;
+        }
+        return !siblingFolders.some((candidateNode, candidateIndex) => {
+          if (candidateNode === childNode) {
+            return false;
+          }
+          const candidateCoverage = siblingFolderLeafSets[candidateIndex];
+          const keysCovered = isLinkKeySubset(childLeafCoverage.keys, candidateCoverage.keys);
+          const labelsCovered = isLinkKeySubset(childLeafCoverage.labels, candidateCoverage.labels);
+          if (!keysCovered && !labelsCovered) {
+            return false;
+          }
+          if (candidateCoverage.keys.size !== childLeafCoverage.keys.size) {
+            return candidateCoverage.keys.size > childLeafCoverage.keys.size;
+          }
+          return (
+            normalizeSidebarLabel(candidateNode.desc).length >
+            normalizeSidebarLabel(childNode.desc).length
+          );
+        });
+      }
+      const docCoverage = collectLegacyDocCoverage(childNode, navDocument);
+      return !siblingFolderLeafSets.some(
+        (candidateCoverage) =>
+          candidateCoverage.keys.has(docCoverage.key) ||
+          candidateCoverage.labels.has(docCoverage.label),
+      );
+    });
+    return {
+      ...folderNode,
+      children: canonicalChildren,
+    };
+  }
+
+  function collectLegacyLeafCoverage(
+    folderNode: Readonly<CcxpLiteLegacySidebarFolderNode>,
+    navDocument: Document,
+  ): {
+    keys: ReadonlySet<string>;
+    labels: ReadonlySet<string>;
+  } {
+    const keys = new Set<string>();
+    const labels = new Set<string>();
+    for (const childNode of folderNode.children) {
+      if (isLegacyFolderNode(childNode)) {
+        const nestedCoverage = collectLegacyLeafCoverage(childNode, navDocument);
+        for (const key of nestedCoverage.keys) {
+          keys.add(key);
+        }
+        for (const label of nestedCoverage.labels) {
+          labels.add(label);
+        }
+        continue;
+      }
+      const { key, label } = collectLegacyDocCoverage(childNode, navDocument);
+      if (key !== "") {
+        keys.add(key);
+      }
+      if (label !== "") {
+        labels.add(label);
+      }
+    }
+    return { keys, labels };
+  }
+
+  function collectLegacyDocCoverage(
+    childNode: Readonly<CcxpLiteLegacySidebarDocNode>,
+    navDocument: Document,
+  ): {
+    key: string;
+    label: string;
+  } {
+    if (typeof childNode.link !== "string") {
+      return { key: "", label: "" };
+    }
+    const parsedLink = parseLegacyLink(childNode.link);
+    const label = normalizeSidebarLabel(toPlainText(childNode.desc, navDocument));
+    if (parsedLink.href === "" || label === "") {
+      return { key: "", label };
+    }
+    const linkKey = createLegacyCoverageKey(parsedLink.href, parsedLink.target);
+    return {
+      key: linkKey,
+      label,
+    };
+  }
+
+  function isLegacyFolderNode(
+    node: CcxpLiteLegacySidebarNode,
+  ): node is CcxpLiteLegacySidebarFolderNode {
+    return isArray((node as CcxpLiteLegacySidebarFolderNode).children);
+  }
+
+  function createLegacyCoverageKey(href: string, target: string) {
+    return [href, target, "", ""].join("||");
   }
 
   function collectRenderedLeafNodes(
