@@ -195,6 +195,35 @@ describe("sidebar favorites", () => {
     );
   });
 
+  test("matches pinned folders even when a menu gains an intermediate layer", () => {
+    const { window } = createTestWindow();
+    loadModules(window, menuModulePaths);
+
+    const api = requireValue(window.CCXP_LITE.sidebarFavorites, "sidebarFavorites");
+    const currentBlock: CcxpLiteSidebarBlock = {
+      id: "section-student-services",
+      favoriteId: api.createBlockId({
+        label: "Student services",
+        pathSegments: ["Student services", "Select courses"],
+        parentCategoryId: "category-planning-and-enrollment",
+      }),
+      label: "Student services",
+      pathSegments: ["Student services", "Select courses"],
+      parentCategoryId: "category-planning-and-enrollment",
+      links: [],
+      kind: "block",
+    };
+    const savedFavoriteId = api.createBlockId({
+      label: "Student services",
+      pathSegments: ["Student services"],
+      parentCategoryId: "category-planning-and-enrollment",
+    });
+
+    expect(api.getMatchingFavoriteBlockIds(currentBlock, new Set([savedFavoriteId]))).toEqual([
+      savedFavoriteId,
+    ]);
+  });
+
   test("matches stored v3 favorites across login sessions when volatile route values change", () => {
     const { window } = createTestWindow();
     loadModules(window, menuModulePaths);

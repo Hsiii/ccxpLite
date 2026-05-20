@@ -68,6 +68,10 @@ declare global {
     id: string;
     label: string;
     links: readonly CcxpLiteSidebarLinkItem[];
+    favoriteId?: string;
+    pathSegments?: readonly string[];
+    parentCategoryId?: string;
+    parentCategoryLabel?: string;
     kind: "block";
   }
 
@@ -529,10 +533,15 @@ declare global {
       item: CcxpLiteSidebarTreeNode | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => readonly CcxpLiteSidebarLinkItem[];
+    collectFavoriteBlocks: (
+      item: CcxpLiteSidebarTreeNode | undefined,
+      favoriteIds: ReadonlySet<string>,
+    ) => readonly CcxpLiteSidebarBlock[];
     dedupeLinkItems: (
       linkItems: readonly CcxpLiteSidebarLinkItem[],
     ) => readonly CcxpLiteSidebarLinkItem[];
     createLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
+    createBlockId: (blockItem: Partial<CcxpLiteSidebarBlock>) => string;
     createLegacyLinkId: (linkItem: Partial<CcxpLiteSidebarLinkItem>) => string;
     buildFavoritePathSegments: (
       parentPathSegments: readonly string[] | undefined,
@@ -543,8 +552,16 @@ declare global {
       linkItem: CcxpLiteSidebarLinkItem | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => boolean;
+    isFavoriteBlock: (
+      blockItem: CcxpLiteSidebarBlock | undefined,
+      favoriteIds: ReadonlySet<string>,
+    ) => boolean;
     getMatchingFavoriteIds: (
       linkItem: CcxpLiteSidebarLinkItem | undefined,
+      favoriteIds: ReadonlySet<string>,
+    ) => readonly string[];
+    getMatchingFavoriteBlockIds: (
+      blockItem: CcxpLiteSidebarBlock | undefined,
       favoriteIds: ReadonlySet<string>,
     ) => readonly string[];
     getScopedSessionStorage: () => Storage | undefined;

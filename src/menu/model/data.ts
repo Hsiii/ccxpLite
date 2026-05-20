@@ -7,10 +7,12 @@
   }
   const { STRINGS, SIDEBAR_CATEGORIES } = shared;
   const {
+    collectFavoriteBlocks,
     collectFavoriteLinks,
     dedupeLinkItems,
     getFavoriteIds,
     buildFavoritePathSegments,
+    createBlockId,
     createLinkId,
     createLegacyLinkId,
   } = sidebarFavorites;
@@ -36,7 +38,6 @@
       SIDEBAR_CATEGORIES.map((category) => [category.id, [] as CcxpLiteSidebarTreeNode[]]),
     );
     const unmatchedItems: CcxpLiteSidebarTreeNode[] = [];
-    const favoriteLinks = items.flatMap((item) => collectFavoriteLinks(item, favoriteIds));
     for (const item of items) {
       const category = findCategoryForItem(item);
       if (category) {
@@ -57,6 +58,12 @@
     if (unmatchedItems.length > 0) {
       categories.push(buildSidebarCategoryNode(UNCATEGORIZED_CATEGORY, unmatchedItems, strings));
     }
+    const favoriteLinks = categories.flatMap((category) =>
+      collectFavoriteLinks(category, favoriteIds),
+    );
+    const favoriteBlocks = dedupeBlockItems(
+      categories.flatMap((category) => collectFavoriteBlocks(category, favoriteIds)),
+    );
     return {
       favorites: {
         id: "category-favorites",
@@ -65,7 +72,7 @@
             ? "\u5E38\u7528\u529F\u80FD"
             : strings.sidebarCategoryFavorites,
         icon: "star",
-        blocks: [],
+        blocks: favoriteBlocks,
         links: dedupeLinkItems(favoriteLinks),
         emptyMessage:
           strings.sidebarFavoritesEmpty === ""
@@ -94,6 +101,11 @@
       .filter((item) => item.kind === "link")
       .map((item) => item.linkItem)
       .filter((linkItem) => !groupedLinkKeys.has(createSidebarLinkKey(linkItem)));
+    const categoryId = `category-${category.id}`;
+    const categoryLabel =
+      strings[category.labelKey] === ""
+        ? (category.fallbackLabel ?? "")
+        : strings[category.labelKey];
     const blocks: readonly CcxpLiteSidebarBlock[] =
       directLinkItems.length === 0
         ? groupedBlocks
@@ -106,18 +118,67 @@
             },
             ...groupedBlocks,
           ];
+    const decoratedBlocks = blocks.map((block) =>
+      decorateSidebarBlock(block, categoryId, categoryLabel),
+    );
     return {
-      id: `category-${category.id}`,
-      label:
-        strings[category.labelKey] === ""
-          ? (category.fallbackLabel ?? "")
-          : strings[category.labelKey],
+      id: categoryId,
+      label: categoryLabel,
       icon: category.icon,
       summary: (category.summaryLabels ?? []).join(" \u00B7 "),
-      blocks,
+      blocks: decoratedBlocks,
       emptyMessage: strings.emptyGroup,
       kind: "category",
     };
+  }
+
+  function decorateSidebarBlock(
+    block: CcxpLiteSidebarBlock,
+    parentCategoryId: string,
+    parentCategoryLabel: string,
+  ): CcxpLiteSidebarBlock {
+    const pathSegments =
+      block.pathSegments && block.pathSegments.length > 0
+        ? block.pathSegments
+        : deriveBlockPathSegments(block, parentCategoryLabel);
+    return {
+      ...block,
+      pathSegments,
+      parentCategoryId,
+      parentCategoryLabel,
+      favoriteId:
+        block.favoriteId ??
+        createBlockId({
+          label: block.label,
+          pathSegments,
+          parentCategoryId,
+        }),
+    };
+  }
+
+  function deriveBlockPathSegments(
+    block: CcxpLiteSidebarBlock,
+    parentCategoryLabel: string,
+  ): readonly string[] {
+    const firstLinkPathSegments = block.links[0]?.pathSegments;
+    if (firstLinkPathSegments && firstLinkPathSegments.length > 1) {
+      return firstLinkPathSegments.slice(0, -1);
+    }
+    return buildFavoritePathSegments([parentCategoryLabel], block.label);
+  }
+
+  function dedupeBlockItems(
+    blocks: readonly CcxpLiteSidebarBlock[],
+  ): readonly CcxpLiteSidebarBlock[] {
+    const seen = new Set<string>();
+    return blocks.filter((block) => {
+      const dedupeKey = block.favoriteId ?? block.id;
+      if (seen.has(dedupeKey)) {
+        return false;
+      }
+      seen.add(dedupeKey);
+      return true;
+    });
   }
 
   function createSidebarLinkKey(linkItem: CcxpLiteSidebarLinkItem) {
@@ -537,6 +598,7 @@
     return {
       id: `group-${index}`,
       label: groupLabel,
+      pathSegments: groupPathSegments,
       links: directLinks,
       kind: "block",
     };

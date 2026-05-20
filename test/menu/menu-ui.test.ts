@@ -20,6 +20,11 @@ describe("sidebar ui", () => {
     const strings = window.CCXP_LITE.sharedConstants?.LOCALIZED_STRINGS.en;
     const document = window.document as unknown as Document;
     const state = sidebarState.getSidebarUiState(document);
+    const blockFavoriteId = sidebarFavorites.createBlockId({
+      label: "Academic",
+      pathSegments: ["Courses & Grades", "Academic"],
+      parentCategoryId: "category-courses",
+    });
     const gradesLink: CcxpLiteSidebarLinkItem = {
       id: "grades",
       legacyId: "legacy-grades",
@@ -53,6 +58,9 @@ describe("sidebar ui", () => {
             {
               id: "section-academic",
               label: "Academic",
+              favoriteId: blockFavoriteId,
+              pathSegments: ["Courses & Grades", "Academic"],
+              parentCategoryId: "category-courses",
               links: [gradesLink, scheduleLink],
               kind: "block",
             },
@@ -98,7 +106,7 @@ describe("sidebar ui", () => {
     const clickEvent = new Event("click", { bubbles: true });
     favoriteToggle.dispatchEvent(clickEvent);
 
-    expect([...sidebarFavorites.getFavoriteIds()]).toEqual(["grades", "schedule"]);
+    expect([...sidebarFavorites.getFavoriteIds()]).toEqual([blockFavoriteId]);
 
     const nestedLinkRow = requireElement(
       document.querySelector('button[title="Semester Grades"]'),
