@@ -14,6 +14,17 @@ if (!supportedTargets.has(target)) {
   throw new Error(`Unsupported release target: ${target}`);
 }
 
+const headCommitResult = spawnSync("git", ["rev-parse", "HEAD"], {
+  cwd: projectRoot,
+  encoding: "utf8",
+});
+
+if (headCommitResult.status !== 0) {
+  throw new Error("Failed to resolve HEAD commit");
+}
+
+const targetCommitish = headCommitResult.stdout.trim();
+
 const { version } = JSON.parse(readFileSync(path.join(projectRoot, "package.json"), "utf8")) as {
   version: string;
 };
@@ -60,7 +71,7 @@ const ghResult = spawnSync(
     "--draft",
     "--generate-notes",
     "--target",
-    "HEAD",
+    targetCommitish,
   ],
   {
     cwd: projectRoot,
