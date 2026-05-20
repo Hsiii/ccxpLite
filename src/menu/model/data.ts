@@ -791,7 +791,97 @@
         });
       }
     }
+    root.children.push(...collectRenderedLeafNodes(root, navDocument));
     return root.children.length > 0 ? root : undefined;
+  }
+
+  function collectRenderedLeafNodes(
+    root: Readonly<CcxpLiteLegacySidebarFolderNode>,
+    navDocument: Document,
+  ): readonly CcxpLiteLegacySidebarDocNode[] {
+    const existingLeafKeys = new Set(collectExistingLeafKeys(root, navDocument));
+    const renderedItemNodes = [...navDocument.querySelectorAll<HTMLDivElement>("div[id^='item']")];
+    const renderedChildren: CcxpLiteLegacySidebarDocNode[] = [];
+    for (const itemNode of renderedItemNodes) {
+      const renderedLeaf = parseRenderedLeafNode(itemNode);
+      if (!renderedLeaf) {
+        continue;
+      }
+      const leafKey = createRenderedLeafKey(renderedLeaf.href, renderedLeaf.label, navDocument);
+      if (existingLeafKeys.has(leafKey)) {
+        continue;
+      }
+      existingLeafKeys.add(leafKey);
+      renderedChildren.push({
+        desc: renderedLeaf.label,
+        link: `'${renderedLeaf.href}' target="${renderedLeaf.target}"`,
+      });
+    }
+    return renderedChildren;
+  }
+
+  function collectExistingLeafKeys(
+    node: Readonly<CcxpLiteLegacySidebarFolderNode>,
+    navDocument: Document,
+  ): ReadonlySet<string> {
+    const output = new Set<string>();
+    for (const childNode of node.children) {
+      if ("children" in childNode) {
+        for (const key of collectExistingLeafKeys(childNode, navDocument)) {
+          output.add(key);
+        }
+        continue;
+      }
+      if (typeof childNode.link !== "string") {
+        continue;
+      }
+      const parsedLink = parseLegacyLink(childNode.link);
+      const label = toPlainText(childNode.desc, navDocument);
+      if (parsedLink.href === "" || label === "") {
+        continue;
+      }
+      output.add(createRenderedLeafKey(parsedLink.href, label, navDocument));
+    }
+    return output;
+  }
+
+  function parseRenderedLeafNode(itemNode: HTMLDivElement) {
+    const candidateAnchors = [...itemNode.querySelectorAll<HTMLAnchorElement>("a[href]")];
+    const leafAnchor = candidateAnchors.findLast((anchor) => {
+      const href = anchor.getAttribute("href") ?? "";
+      return href !== "" && !/^javascript:/i.test(href);
+    });
+    if (!leafAnchor) {
+      return undefined;
+    }
+    const href = leafAnchor.getAttribute("href") ?? "";
+    const anchorText = leafAnchor.textContent;
+    const itemText = itemNode.textContent;
+    const labelSource = anchorText === "" ? itemText : anchorText;
+    const label = normalizeRenderedLeafLabel(labelSource);
+    if (href === "" || label === "") {
+      return undefined;
+    }
+    const rawTarget = (leafAnchor.getAttribute("target") ?? "main").trim().toLowerCase();
+    const target = rawTarget === "" ? "main" : rawTarget;
+    return { href, label, target };
+  }
+
+  function normalizeRenderedLeafLabel(text: string) {
+    return text.replaceAll(/\s+/g, " ").trim();
+  }
+
+  function createRenderedLeafKey(href: string, label: string, navDocument: Document) {
+    return `${normalizeRenderedLeafHref(href, navDocument)}::${normalizeRenderedLeafLabel(label)}`;
+  }
+
+  function normalizeRenderedLeafHref(href: string, navDocument: Document) {
+    try {
+      const url = new URL(href, navDocument.location.href);
+      return `${url.pathname}${url.search}`;
+    } catch {
+      return href.trim();
+    }
   }
 
   function parseJsStringLiteral(literal: string): string {
