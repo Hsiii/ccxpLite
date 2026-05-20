@@ -1,26 +1,19 @@
 # ccxpLite
+<img src="demo/sidebar/login.png" alt="ccxpLite demo image" >
+A lightweight browser extension that improves the usability and navigation experience of the NTHU Academic Information System (CCXP). 
 
-A lightweight browser extension that enhances usability of the NTHU academic information system ([CCXP](<(https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/)>)) with a cleaner experience.
+## Features
 
-## Feature
+* Redesigned login page for improved usability and better announcement readability
+* Automatic CAPTCHA solving for both CCXP login and OAuth verification (used in [eLearn](https://elearn.nthu.edu.tw/) and [eeclass](https://eeclass.nthu.edu.tw/)) with 99.95% and 98.79% accuracy respectively
+* Faster access to frequently used functions with support for pinned functions and folders
+* Two navigation layouts available: redesigned sidebar or full-screen menu
+* Reduced visual clutter through saturation and texture suppression
 
-- Restructured login page prioritizing login usability
-- Auto decaptcha for login page (99.95% accuracy) and OAuth page (98.79% accuracy)
-- Save favorite functions for quick access
-- Categorized full-screen menu for better navigation (optional)
-- Saturation and texture suppression for a cleaner look
-- Broader English support
+## Installation
 
-## Download & Installation
-
-We provide both [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb) and [Firebox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/ccxplite/) support.
-
-Firefox builds also emit a trimmed source archive alongside the XPI:
-
-- `dist/firefox/ccxpLite-firefox-v<version>.xpi`
-- `dist/firefox/ccxpLite-firefox-v<version>-sources.zip`
-
-The source archive keeps the extension code and build metadata needed for review while excluding binary/demo assets such as images.
+- [Google Web Store](https://chromewebstore.google.com/detail/glcnfmnbmknbphfgjgbokbbchahmiakk?utm_source=item-share-cb) 
+- [Firebox Add-ons](https://addons.mozilla.org/zh-TW/firefox/addon/ccxplite/)
 
 ## Demo
 
