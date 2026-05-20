@@ -111,6 +111,40 @@ describe("sidebar data", () => {
     );
   });
 
+  test("merges rendered leaf nodes that are missing from the legacy script tree", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            insDoc(foldersTree, gLnk(0, "\u6559\u5B78\u52A9\u7406\u8A55\u91CF\u554F\u5377", "/ta-survey"));
+          </script>
+          <div id="item1">
+            <a href="/teach-survey">\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5</a>
+          </div>
+          <div id="item2">
+            <a href="/campus-network">\u6821\u5712\u7DB2\u8DEF\u8207\u6388\u6B0A\u8EDF\u9AD4\u670D\u52D9\u54C1\u8CEA\u554F\u5377\u8ABF\u67E5</a>
+          </div>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const allLabels = model.categories.flatMap((category: CcxpLiteSidebarCategoryNode) =>
+      category.blocks.flatMap((block) => block.links.map((link) => link.label)),
+    );
+
+    expect(allLabels).toContain("\u586B\u5BEB\u6559\u5B78\u610F\u898B\u8ABF\u67E5");
+    expect(allLabels).toContain(
+      "\u6821\u5712\u7DB2\u8DEF\u8207\u6388\u6B0A\u8EDF\u9AD4\u670D\u52D9\u54C1\u8CEA\u554F\u5377\u8ABF\u67E5",
+    );
+  });
+
   test("categorizes english-only groups instead of dropping them into new and unsorted", () => {
     const { window } = createTestWindow(`
       <!doctype html>
