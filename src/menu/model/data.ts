@@ -82,12 +82,18 @@
     categoryItems: readonly CcxpLiteSidebarTreeNode[],
     strings: Readonly<Record<string, string>>,
   ): CcxpLiteSidebarCategoryNode {
-    const directLinkItems = categoryItems
-      .filter((item) => item.kind === "link")
-      .map((item) => item.linkItem);
     const groupedBlocks = categoryItems.filter(
       (item): item is CcxpLiteSidebarBlock => item.kind === "block",
     );
+    const groupedLinkKeys = new Set(
+      groupedBlocks.flatMap((block) =>
+        block.links.map((linkItem) => createSidebarLinkKey(linkItem)),
+      ),
+    );
+    const directLinkItems = categoryItems
+      .filter((item) => item.kind === "link")
+      .map((item) => item.linkItem)
+      .filter((linkItem) => !groupedLinkKeys.has(createSidebarLinkKey(linkItem)));
     const blocks: readonly CcxpLiteSidebarBlock[] =
       directLinkItems.length === 0
         ? groupedBlocks
@@ -112,6 +118,13 @@
       emptyMessage: strings.emptyGroup,
       kind: "category",
     };
+  }
+
+  function createSidebarLinkKey(linkItem: CcxpLiteSidebarLinkItem) {
+    const { href = "", target = "main" } = linkItem;
+    const clickName = linkItem.clickLinkArgs?.name.trim().toLowerCase() ?? "";
+    const clickUrl = linkItem.clickLinkArgs?.url.trim() ?? "";
+    return [href, target, clickName, clickUrl].join("||");
   }
 
   function findCategoryForItem(item: CcxpLiteSidebarTreeNode) {
