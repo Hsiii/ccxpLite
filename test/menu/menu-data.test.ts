@@ -427,6 +427,64 @@ describe("sidebar data", () => {
     expect(category?.blocks[1]?.links.map((link) => link.label)).toEqual(["Apply now"]);
   });
 
+  test("drops mixed-language duplicates from a broad block when sibling blocks expose them separately", () => {
+    const { window } = createTestWindow(`
+      <!doctype html>
+      <html>
+        <body>
+          <script>
+            foldersTree = gFld("root", "");
+            aux0 = insFld(foldersTree, gFld("\u9078\u8AB2\u8207\u9810\u6392", ""));
+            aux1 = insFld(aux0, gFld("\u9810\u6392\u7CFB\u7D71 Tentative schedule", ""));
+            insDoc(aux1, gLnk(0, "\u8AB2\u7A0B\u9810\u6392Tentative schedule", "/tentative"));
+            aux2 = insFld(aux0, gFld("\u9078\u8AB2 Select courses", ""));
+            insDoc(aux2, gLnk(0, "\u7DB2\u8DEF\u9078\u8AB2Select courses", "/select"));
+            insDoc(aux2, gLnk(0, "\u52A0\u7C3D\u7533\u8ACBapplication for extra selection", "/extra"));
+            insDoc(aux2, gLnk(0, "\u505C\u4FEE\u7533\u8ACBCourse withdrawal application", "/withdraw"));
+            insDoc(aux2, gLnk(0, "\u9078\u8AB2\u60C5\u5F62\u67E5\u8A62Inquiries regarding course selection results", "/inquiry"));
+            aux3 = insFld(foldersTree, gFld("\u9810\u6392\u7CFB\u7D71 Tentative schedule", ""));
+            insDoc(aux3, gLnk(0, "\u8AB2\u7A0B\u9810\u6392 Tentative schedule", "/tentative"));
+            aux4 = insFld(foldersTree, gFld("\u9078\u8AB2 Select courses", ""));
+            insDoc(aux4, gLnk(0, "\u7DB2\u8DEF\u9078\u8AB2 Select courses", "/select"));
+            insDoc(aux4, gLnk(0, "\u52A0\u7C3D\u7533\u8ACB application for extra selection", "/extra"));
+            insDoc(aux4, gLnk(0, "\u505C\u4FEE\u7533\u8ACB Course withdrawal application", "/withdraw"));
+            insDoc(aux4, gLnk(0, "\u9078\u8AB2\u60C5\u5F62\u67E5\u8A62 Inquiries regarding course selection results", "/inquiry"));
+            insDoc(foldersTree, gLnk(0, "\u6821\u969B/\u8DE8\u7CFB\u7D71\u9078\u4FEE", "/cross"));
+            insDoc(foldersTree, gLnk(0, "\u6691\u4FEE Summer courses", "/summer"));
+          </script>
+        </body>
+      </html>
+    `);
+    loadModules(window, menuModulePaths);
+
+    const sidebarData = requireValue(window.CCXP_LITE.sidebarData, "sidebarData");
+    const shared = requireValue(window.CCXP_LITE.shared, "shared");
+    const root = requireValue(sidebarData.parseSidebarTree(window.document), "parsed sidebar tree");
+    const model = sidebarData.buildSidebarModel(root, window.document, shared.STRINGS);
+    const category = model.categories.find(
+      (entry: CcxpLiteSidebarCategoryNode) => entry.label === "\u9810\u6392\u8207\u9078\u8AB2",
+    );
+
+    expect(category?.blocks.map((block) => block.label)).toEqual([
+      "\u8DE8\u7CFB\u8207\u6821\u5167\u7CFB\u7D71",
+      "\u9810\u6392\u7CFB\u7D71 Tentative schedule",
+      "\u9078\u8AB2 Select courses",
+    ]);
+    expect(category?.blocks[0]?.links.map((link) => link.label)).toEqual([
+      "\u6821\u969B/\u8DE8\u7CFB\u7D71\u9078\u4FEE",
+      "\u6691\u4FEE Summer courses",
+    ]);
+    expect(category?.blocks[1]?.links.map((link) => link.label)).toEqual([
+      "\u8AB2\u7A0B\u9810\u6392 Tentative schedule",
+    ]);
+    expect(category?.blocks[2]?.links.map((link) => link.label)).toEqual([
+      "\u7DB2\u8DEF\u9078\u8AB2 Select courses",
+      "\u52A0\u7C3D\u7533\u8ACB application for extra selection",
+      "\u505C\u4FEE\u7533\u8ACB Course withdrawal application",
+      "\u9078\u8AB2\u60C5\u5F62\u67E5\u8A62 Inquiries regarding course selection results",
+    ]);
+  });
+
   test("applies manual english translations to unmatched chinese sidebar labels", () => {
     const { window } = createTestWindow(`
       <!doctype html>
