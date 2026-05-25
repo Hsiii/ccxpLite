@@ -74,6 +74,32 @@ export function createOauthLoginHtml(): string {
   `;
 }
 
+export function createInquireCaptchaHtml(): string {
+  return `
+    <!doctype html>
+    <html lang="zh">
+      <head></head>
+      <body>
+        <form method="post" action="JH62f002.php">
+          <input type="hidden" name="ACIXSTORE" value="demoacixstore123" />
+          <select name="YS">
+            <option value="114|20" selected>114 Spring</option>
+          </select>
+          <table border="0">
+            <tr>
+              <td>
+                <img src="../../../mod/auth_img/auth_img.php?ACIXSTORE=demoacixstore123" />
+                <input type="text" name="auth_num" maxlength="3" size="6" value="" />
+              </td>
+            </tr>
+          </table>
+          <button type="submit">GO</button>
+        </form>
+      </body>
+    </html>
+  `;
+}
+
 export function createEnglishLoginAnnouncementHtml(): string {
   return `
     <!doctype html>

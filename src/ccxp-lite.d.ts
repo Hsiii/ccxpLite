@@ -119,7 +119,7 @@ declare global {
     image: HTMLImageElement;
     mediaRow: HTMLElement;
     scope: ParentNode;
-    kind: "legacy" | "oauth";
+    kind: "legacy" | "oauth" | "inquire";
   }
 
   interface CcxpLiteCaptchaAutofillState extends CcxpLiteCaptchaField {
@@ -676,6 +676,8 @@ declare global {
     menuUi?: Record<string, unknown>;
     decaptcha?: CcxpLiteCaptchaPredictor;
     decaptchaModel?: CcxpLiteDecaptchaModel;
+    inquireDecaptcha?: CcxpLiteCaptchaPredictor;
+    inquireDecaptchaModel?: CcxpLiteDecaptchaModel;
     oauthDecaptcha?: CcxpLiteCaptchaPredictor;
     oauthDecaptchaModel?: CcxpLiteDecaptchaModel;
     isOrphan?: boolean;

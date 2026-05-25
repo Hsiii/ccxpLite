@@ -14,8 +14,8 @@
     rootNode: ParentNode,
     existingState?: CcxpLiteCaptchaAutofillState,
   ) {
-    const form = getLoginForm(targetDocument);
     const state = existingState ?? getOrCreateCaptchaState(targetDocument, rootNode);
+    const form = state?.input.form ?? getLoginForm(targetDocument);
     if (!form || form.dataset.ccxpLiteCaptchaAutofillBound === "true" || !state) {
       return;
     }
@@ -112,14 +112,19 @@
 
   function resolveCaptchaField(rootNode: ParentNode): CcxpLiteCaptchaField | undefined {
     const input = rootNode.querySelector<HTMLInputElement>(
-      "input[name='passwd2'], input[name='captcha']",
+      "input[name='passwd2'], input[name='captcha'], input[name='auth_num']",
     );
     if (!input) {
       return undefined;
     }
-    const kind = input.name === "captcha" ? "oauth" : "legacy";
+    let kind: CcxpLiteCaptchaField["kind"] = "legacy";
+    if (input.name === "captcha") {
+      kind = "oauth";
+    } else if (input.name === "auth_num") {
+      kind = "inquire";
+    }
     const scope =
-      input.closest(".ccxp-lite-login-field, .ccxp-lite-login-inline-field") ?? rootNode;
+      input.closest("form, .ccxp-lite-login-field, .ccxp-lite-login-inline-field") ?? rootNode;
     const mediaRow =
       scope.querySelector(".ccxp-lite-captcha-media-row") ??
       rootNode.querySelector(".ccxp-lite-captcha-media-row");
@@ -220,7 +225,7 @@
         trackEvent(targetDocument, {
           feature: "captcha",
           action: "autofill_result",
-          surface: captchaState.kind === "oauth" ? "oauth" : "login",
+          surface: resolveCaptchaSurface(captchaState.kind),
           captcha_kind: captchaState.kind,
           outcome: "success",
         });
@@ -274,7 +279,7 @@
     trackEvent(captchaState.input.ownerDocument, {
       feature: "captcha",
       action: "autofill_result",
-      surface: captchaState.kind === "oauth" ? "oauth" : "login",
+      surface: resolveCaptchaSurface(captchaState.kind),
       captcha_kind: captchaState.kind,
       outcome: options.didTimeout === true ? "timeout_fallback" : "manual_fallback",
     });
@@ -357,10 +362,12 @@
     captchaSrc: string,
     predictionSource: ArrayBuffer | HTMLImageElement,
   ) {
-    const predictor =
-      state.kind === "oauth" || captchaSrc.includes("captchaimg.php")
-        ? namespace.oauthDecaptcha
-        : namespace.decaptcha;
+    let predictor = namespace.decaptcha;
+    if (state.kind === "oauth" || captchaSrc.includes("captchaimg.php")) {
+      predictor = namespace.oauthDecaptcha;
+    } else if (state.kind === "inquire") {
+      predictor = namespace.inquireDecaptcha;
+    }
     if (!predictor) {
       return "";
     }
@@ -467,4 +474,14 @@
     getOrCreateCaptchaState,
     primeCaptchaAutofill,
   };
+
+  function resolveCaptchaSurface(kind: CcxpLiteCaptchaField["kind"]) {
+    if (kind === "oauth") {
+      return "oauth";
+    }
+    if (kind === "inquire") {
+      return "inquire";
+    }
+    return "login";
+  }
 })(globalThis);
