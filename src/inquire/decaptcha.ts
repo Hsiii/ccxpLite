@@ -442,16 +442,20 @@
       features = applyDepthwiseSeparableBlock(features, tensors, "features.5.block", { stride: 1 });
       const pooled = adaptiveAvgPool2d(features, 1, model.digits);
       const headInputs = getHeadInputVectors(pooled, model.digits);
-      return headInputs
-        .map((vector, digitIndex) => {
-          const logits = linear(
-            vector,
-            tensors[`heads.${digitIndex}.weight`],
-            tensors[`heads.${digitIndex}.bias`],
-          );
-          return String(argmax(logits));
-        })
-        .join("");
+      const predictedDigits = headInputs.map((vector, digitIndex) => {
+        const logits = linear(
+          vector,
+          tensors[`heads.${digitIndex}.weight`],
+          tensors[`heads.${digitIndex}.bias`],
+        );
+        return String(argmax(logits));
+      });
+
+      if (model.digits >= 6) {
+        return [predictedDigits[1], predictedDigits[2], predictedDigits[4]].join("");
+      }
+
+      return predictedDigits.slice(0, 3).join("");
     }
 
     async function predictDigits(imageBytes: unknown) {

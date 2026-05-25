@@ -72,4 +72,59 @@ describe("inquire captcha", () => {
     expect(legacyPredictDigits).not.toHaveBeenCalled();
     expect(window.fetch).not.toHaveBeenCalled();
   });
+
+  test("preserves nested inquire captcha image paths when fetching prediction bytes", async () => {
+    const { window } = createTestWindow(
+      createInquireCaptchaHtml(),
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/6/6.2/6.2.F/JH62f001.php",
+    );
+    const document = window.document as Document;
+    const inquirePredictDigits = vi.fn().mockResolvedValue("482");
+    const legacyPredictDigits = vi.fn().mockResolvedValue("654321");
+    window.CCXP_LITE.decaptcha = { predictDigits: legacyPredictDigits };
+    window.CCXP_LITE.inquireDecaptcha = { predictDigits: inquirePredictDigits };
+    window.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      arrayBuffer: async () => await Promise.resolve(new ArrayBuffer(8)),
+    }) as unknown as typeof window.fetch;
+
+    const image = requireElement(
+      document.querySelector<HTMLImageElement>("img[src*='auth_img.php?ACIXSTORE=']"),
+      "inquire captcha image",
+    );
+    Object.defineProperty(image, "complete", {
+      configurable: true,
+      get: () => false,
+    });
+    Object.defineProperty(image, "naturalWidth", {
+      configurable: true,
+      get: () => 0,
+    });
+    Object.defineProperty(image, "naturalHeight", {
+      configurable: true,
+      get: () => 0,
+    });
+
+    loadModules(window, inquireCaptchaModulePaths);
+
+    await flushPromises();
+    await flushPromises();
+
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+    expect(window.fetch).toHaveBeenCalledWith(
+      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/mod/auth_img/auth_img.php?ACIXSTORE=demoacixstore123",
+      expect.objectContaining({
+        credentials: "include",
+      }),
+    );
+
+    const input = requireElement(
+      document.querySelector<HTMLInputElement>("input[name='auth_num']"),
+      "inquire captcha input",
+    );
+    expect(input.value).toBe("482");
+    expect(inquirePredictDigits).toHaveBeenCalledTimes(1);
+    expect(inquirePredictDigits.mock.calls[0]?.[0]).toBeInstanceOf(ArrayBuffer);
+    expect(legacyPredictDigits).not.toHaveBeenCalled();
+  });
 });

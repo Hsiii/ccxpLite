@@ -333,13 +333,9 @@
     }
     try {
       const parsed = new URL(rawSource, targetDocument.location.href);
-      const pathSegments = parsed.pathname.split("/").filter(Boolean);
-      const fileName = pathSegments.at(-1) ?? "";
-      return `${fileName}${parsed.search}`;
+      return parsed.toString();
     } catch {
-      const trimmedSource = rawSource.replace(/^https?:\/\/[^/]+\//i, "");
-      const sourceSegments = trimmedSource.split("/").filter(Boolean);
-      return sourceSegments.at(-1) ?? "";
+      return rawSource;
     }
   }
 
@@ -475,6 +471,8 @@
     primeCaptchaAutofill,
   };
 
+  bootstrapInquireCaptchaAutofill(runtimeScope.document);
+
   function resolveCaptchaSurface(kind: CcxpLiteCaptchaField["kind"]) {
     if (kind === "oauth") {
       return "oauth";
@@ -483,5 +481,90 @@
       return "inquire";
     }
     return "login";
+  }
+
+  function bootstrapInquireCaptchaAutofill(targetDocument: Document | undefined) {
+    if (!targetDocument || !isInquireCaptchaDocument(targetDocument)) {
+      return;
+    }
+    const MAX_BIND_ATTEMPTS = 40;
+    const RETRY_DELAY_MS = 250;
+    let bindAttempts = 0;
+    let retryTimerId: number | undefined;
+
+    const stopRetry = () => {
+      if (retryTimerId !== undefined) {
+        globalThis.clearTimeout(retryTimerId);
+        retryTimerId = undefined;
+      }
+    };
+
+    const isAutofillBound = () =>
+      targetDocument.querySelector<HTMLInputElement>("input[name='auth_num']")?.form?.dataset
+        .ccxpLiteCaptchaAutofillBound === "true";
+
+    const tryBindAutofill = () => {
+      if (isAutofillBound()) {
+        stopRetry();
+        return true;
+      }
+      const state = getOrCreateCaptchaState(targetDocument, targetDocument);
+      if (!state || state.kind !== "inquire") {
+        return false;
+      }
+      enableCaptchaAutofill(targetDocument, targetDocument, state);
+      if (isAutofillBound()) {
+        stopRetry();
+        return true;
+      }
+      return false;
+    };
+
+    const scheduleRetry = () => {
+      if (bindAttempts >= MAX_BIND_ATTEMPTS) {
+        stopRetry();
+        return;
+      }
+      retryTimerId = globalThis.setTimeout(
+        () => {
+          retryTimerId = undefined;
+          bindAttempts++;
+          if (!tryBindAutofill()) {
+            scheduleRetry();
+          }
+        },
+        RETRY_DELAY_MS,
+        undefined,
+      );
+    };
+
+    const bindAutofill = () => {
+      bindAttempts++;
+      if (!tryBindAutofill()) {
+        scheduleRetry();
+      }
+    };
+
+    if (targetDocument.readyState === "loading") {
+      targetDocument.addEventListener("DOMContentLoaded", bindAutofill, {
+        once: true,
+      });
+    } else {
+      bindAutofill();
+    }
+
+    globalThis.requestAnimationFrame(bindAutofill);
+    globalThis.setTimeout(bindAutofill, 0, undefined);
+  }
+
+  function isInquireCaptchaDocument(targetDocument: Document) {
+    if (namespace.loginLocale?.isLoginPage(targetDocument) === true) {
+      return false;
+    }
+    const hostName = targetDocument.location.hostname.toLowerCase();
+    if (hostName !== "www.ccxp.nthu.edu.tw" && hostName !== "ccxp.nthu.edu.tw") {
+      return false;
+    }
+    return targetDocument.location.pathname.toLowerCase().includes("/ccxp/inquire/");
   }
 })(globalThis);

@@ -113,8 +113,5 @@ function isInquireCaptchaPage(targetDocument: Document, loginLocale: CcxpLiteLog
   if (!pathName.includes("/ccxp/inquire/")) {
     return false;
   }
-  return Boolean(
-    targetDocument.querySelector("input[name='auth_num']") &&
-    targetDocument.querySelector("img[src*='auth_img.php?ACIXSTORE=']"),
-  );
+  return true;
 }
