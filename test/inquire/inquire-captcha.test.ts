@@ -73,7 +73,7 @@ describe("inquire captcha", () => {
     expect(window.fetch).not.toHaveBeenCalled();
   });
 
-  test("preserves nested inquire captcha image paths when fetching prediction bytes", async () => {
+  test("uses the rendered inquire captcha image instead of re-fetching php output", async () => {
     const { window } = createTestWindow(
       createInquireCaptchaHtml(),
       "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/6/6.2/6.2.F/JH62f001.php",
@@ -107,16 +107,13 @@ describe("inquire captcha", () => {
 
     loadModules(window, inquireCaptchaModulePaths);
 
+    const EventConstructor = requireValue(document.defaultView?.Event, "event constructor");
+    image.dispatchEvent(new EventConstructor("load"));
+
     await flushPromises();
     await flushPromises();
 
-    expect(window.fetch).toHaveBeenCalledTimes(1);
-    expect(window.fetch).toHaveBeenCalledWith(
-      "https://www.ccxp.nthu.edu.tw/ccxp/INQUIRE/JH/mod/auth_img/auth_img.php?ACIXSTORE=demoacixstore123",
-      expect.objectContaining({
-        credentials: "include",
-      }),
-    );
+    expect(window.fetch).not.toHaveBeenCalled();
 
     const input = requireElement(
       document.querySelector<HTMLInputElement>("input[name='auth_num']"),
@@ -124,7 +121,7 @@ describe("inquire captcha", () => {
     );
     expect(input.value).toBe("482");
     expect(inquirePredictDigits).toHaveBeenCalledTimes(1);
-    expect(inquirePredictDigits.mock.calls[0]?.[0]).toBeInstanceOf(ArrayBuffer);
+    expect(inquirePredictDigits.mock.calls[0]?.[0]).toBe(image);
     expect(legacyPredictDigits).not.toHaveBeenCalled();
   });
 });

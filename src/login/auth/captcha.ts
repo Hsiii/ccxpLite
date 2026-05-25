@@ -403,7 +403,7 @@
     state: CcxpLiteCaptchaAutofillState,
     captchaSrc: string,
   ) {
-    if (state.kind === "oauth") {
+    if (state.kind === "oauth" || state.kind === "inquire") {
       return await waitForCaptchaImageLoad(state.image);
     }
     if (state.image.complete && state.image.naturalWidth > 0 && state.image.naturalHeight > 0) {
