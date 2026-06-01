@@ -6,15 +6,16 @@
 
 ## 封面
 
-### 投影片文字
+- 標題：ccxpLite：校務資訊系統介面優化概念驗證
+- 列點：
+  - 副標
+    - 清華大學學生會資訊處
 
-- 標題：`ccxpLite：校務資訊系統介面優化概念驗證`
-- 副標：`清華大學學生會資訊處`
-- 圖片：`../demo/sidebar/login.png`
+![ccxpLite 登入頁預覽](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/login.png)
 
-### 講稿備註
-
-- 這次的討論會針對我們對系統的觀察說明我們提出的解決方案，以及和計通合作的話能有哪些更近一步的改善。
+> 講稿備註
+>
+> - 這次的討論會針對我們對系統的觀察說明我們提出的解決方案，以及和計通合作的話能有哪些更近一步的改善。
 
 ---
 
@@ -47,12 +48,13 @@
 ## 登入頁版面
 
 - 標題：登入頁版面
-- 圖片：`../demo/original/login.png`
 - 列點：
   - 問題
     - 登入資訊分散
     - 視覺層級不明確
     - CTA 在暗區
+
+![登入頁版面現況](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/original/login.png)
 
 > 講稿備註
 >
@@ -65,13 +67,14 @@
 ## 登入頁版面：原型與解法
 
 - 標題：登入頁版面：原型與解法
-- 圖片：`../demo/sidebar/login.png`
 - 列點：
   - 解法
     - 統合登入資訊
     - 重構視覺層級
     - 收斂登入主流程
     - 提升欄位可讀性
+
+![登入頁版面原型](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/login.png)
 
 > 講稿備註
 >
@@ -105,12 +108,13 @@
 ## 常用功能
 
 - 標題：常用功能
-- 圖片：`../demo/original/main.png`
 - 列點：
   - 問題
     - 高頻功能沒有固定入口
     - 增加操作路徑
     - 增加 mental load
+
+![常用功能現況](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/original/main.png)
 
 > 講稿備註
 >
@@ -122,12 +126,13 @@
 ## 常用功能：原型與解法
 
 - 標題：常用功能：原型與解法
-- 圖片：`../demo/sidebar/main.png`
 - 列點：
   - 解法
     - 常用功能收藏
     - 固定區入口
     - 個人化任務捷徑
+
+![常用功能原型](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/main.png)
 
 > 講稿備註
 >
@@ -159,12 +164,13 @@
 ## 功能分類
 
 - 標題：功能分類
-- 圖片：`../demo/original/main-expanded.png`
 - 列點：
   - 問題
     - 分類偏系統邏輯
     - 不對應學生任務
     - 查找成本高
+
+![功能分類現況](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/original/main-expanded.png)
 
 > 講稿備註
 >
@@ -176,12 +182,13 @@
 ## 功能分類：原型與解法
 
 - 標題：功能分類：原型與解法
-- 圖片：`../demo/sidebar/main-expanded.png`
 - 列點：
   - 解法
     - 任務導向分類
     - 重組語意群組
     - 以「我要做什麼」找功能
+
+![功能分類原型](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/main-expanded.png)
 
 > 講稿備註
 >
@@ -213,12 +220,13 @@
 ## 導覽側欄
 
 - 標題：導覽側欄
-- 圖片：`../demo/original/select-courses-selected.png`
 - 列點：
   - 問題
     - 導覽密度高
     - 層級深
     - 搜尋成本高
+
+![導覽側欄現況](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/original/select-courses-selected.png)
 
 > 講稿備註
 >
@@ -230,12 +238,13 @@
 ## 導覽側欄：原型與解法
 
 - 標題：導覽側欄：原型與解法
-- 圖片：`../demo/sidebar/select-courses-selected.png`
 - 列點：
   - 解法
     - 側欄模式
     - 全螢幕選單模式
     - 分區與留白重整
+
+![導覽側欄原型](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/select-courses-selected.png)
 
 > 講稿備註
 >
