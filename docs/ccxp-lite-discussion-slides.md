@@ -7,9 +7,7 @@
 ## 封面
 
 - 標題：ccxpLite：校務資訊系統介面優化概念驗證
-- 列點：
-  - 副標
-    - 清華大學學生會資訊處
+- 副標：清華大學學生會資訊處
 
 ![ccxpLite 登入頁預覽](/Users/hsi/Documents/Projects/Personal/ccxpLite/demo/sidebar/login.png)
 
